@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 namespace Octans
@@ -70,5 +71,10 @@ namespace Octans
         }
 
         private static int Clamp(int v, int min, int max) => Math.Min(max, Math.Max(min, v));
+
+        public static void ToFile(Canvas c, string folderPath, string fileName)
+        {
+            File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), CanvasToPPM(c));
+        }
     }
 }
