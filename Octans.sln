@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28621.142
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octans", "Octans\Octans.csproj", "{882C0234-0607-423B-A525-6B2461C0FCB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octans.Test", "Octans.Test\Octans.Test.csproj", "{2A99AF51-CB8B-4F1E-99B6-70B5ABDD9F4E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{882C0234-0607-423B-A525-6B2461C0FCB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{882C0234-0607-423B-A525-6B2461C0FCB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{882C0234-0607-423B-A525-6B2461C0FCB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{882C0234-0607-423B-A525-6B2461C0FCB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A99AF51-CB8B-4F1E-99B6-70B5ABDD9F4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A99AF51-CB8B-4F1E-99B6-70B5ABDD9F4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A99AF51-CB8B-4F1E-99B6-70B5ABDD9F4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A99AF51-CB8B-4F1E-99B6-70B5ABDD9F4E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {39AC2D18-81AB-47BB-BD44-A5E3BAFDF04C}
+	EndGlobalSection
+EndGlobal
