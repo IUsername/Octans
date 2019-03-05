@@ -25,7 +25,7 @@ namespace Octans
 
         public static Tuple Point(double x, double y, double z) => new Tuple(x, y, z, 1.0);
 
-        public static Tuple Vector(double x, double y, double z) => new Tuple(x, y, z, 0);
+        public static Tuple Vector(double x, double y, double z) => new Tuple(x, y, z, 0.0);
 
         public Tuple Add(Tuple t)
         {
@@ -107,5 +107,17 @@ namespace Octans
     public static class Vector
     {
         public static Tuple Create(double x, double y, double z) => Tuple.Vector(x, y, z);
+
+        public static double Dot(Tuple a, Tuple b)
+        {
+            return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
+        }
+
+        public static Tuple Cross(Tuple a, Tuple b)
+        {
+            return Create(a.Y * b.Z - a.Z * b.Y,
+                          a.Z * b.X - a.X * b.Z,
+                          a.X * b.Y - a.Y * b.X);
+        }
     }
 }

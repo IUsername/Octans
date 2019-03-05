@@ -140,5 +140,22 @@ namespace Octans.Test
             v.Normalize().Magnitude().Should().BeApproximately(1.0, 0.0001);
         }
 
+        [Fact]
+        public void DotProduct()
+        {
+            var a = Vector.Create(1, 2, 3);
+            var b = Vector.Create(2, 3, 4);
+            Vector.Dot(a, b).Should().BeApproximately(20, 0.00001);
+        }
+
+        [Fact]
+        public void CrossProduct()
+        {
+            var a = Vector.Create(1, 2, 3);
+            var b = Vector.Create(2, 3, 4);
+            Vector.Cross(a, b).Should().BeEquivalentTo(Vector.Create (-1, 2, -1));
+            Vector.Cross(b,a).Should().BeEquivalentTo(Vector.Create (1, -2, 1));
+        }
+
     }
 }
