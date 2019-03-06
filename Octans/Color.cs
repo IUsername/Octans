@@ -4,7 +4,7 @@ namespace Octans
 {
     public readonly struct Color : IEquatable<Color>
     {
-        private const float Epsilon = 0.00001f;
+        private const float Epsilon = 0.0001f;
 
         public readonly float Red;
         public readonly float Green;
