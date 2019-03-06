@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Xunit;
 
 namespace Octans.Test
@@ -87,6 +88,38 @@ namespace Octans.Test
             s.SetTransform(t);
             var xs = s.Intersect(r);
             xs.Should().HaveCount(0);
+        }
+
+        [Fact(Skip = "creates file in My Pictures folder")]
+        public void RaycastTest()
+        {
+            const int canvasPixels = 100;
+            var canvas = new Canvas(canvasPixels, canvasPixels);
+            var color = Color.RGB(1f, 0f, 0f);
+            var s = new Sphere();
+            var rayOrigin = Point.Create(0f, 0f, -5f);
+            const float wallZ = 10f;
+            const float wallSize = 7.0f;
+            const float pixelSize = wallSize / canvasPixels;
+            const float half = wallSize / 2;
+
+            for (var y = 0; y < canvasPixels; y++)
+            {
+                var worldY = half - pixelSize * y;
+                for (var x = 0; x < canvasPixels; x++)
+                {
+                    var worldX = -half + pixelSize * x;
+                    var position = Point.Create(worldX, worldY, wallZ);
+                    var r = new Ray(rayOrigin, (position - rayOrigin).Normalize());
+                    var xs = s.Intersect(r);
+                    if (xs.Hit().HasValue)
+                    {
+                        canvas.WritePixel(color, x, y);
+                    }
+                }
+            }
+
+            PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "raycast");
         }
     }
 }
