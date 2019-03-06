@@ -19,10 +19,10 @@ namespace Octans
         {
             var rt = ray.Transform(Transform.Inverse());
             // TODO: Only works for unit sphere on origin.
-            var sphereToRay = rt.Origin - Point.Create(0, 0, 0);
-            var a = Vector.Dot(rt.Direction, rt.Direction);
-            var b = 2f * Vector.Dot(rt.Direction, sphereToRay);
-            var c = Vector.Dot(sphereToRay, sphereToRay) - 1f;
+            var sphereToRay = rt.Origin - Point.Zero;
+            var a = rt.Direction % rt.Direction;
+            var b = 2f * rt.Direction % sphereToRay;
+            var c = sphereToRay % sphereToRay - 1f;
             var discriminant = b * b - 4 * a * c;
             if (discriminant < 0f)
             {
@@ -47,13 +47,13 @@ namespace Octans
             Material = material;
         }
 
-        public Tuple NormalAt(Tuple worldPoint)
+        public Vector NormalAt(Point world)
         {
             var inv = Transform.Inverse();
-            var objPoint = inv * worldPoint;
-            var objNorm = objPoint - Point.Create(0f, 0f, 0f);
+            var objPoint = inv * world;
+            var objNorm = objPoint - Point.Zero;
             var worldNorm = inv.Transpose() * objNorm;
-            worldNorm = Vector.Create(worldNorm.X, worldNorm.Y, worldNorm.Z);
+            worldNorm = new Vector(worldNorm.X, worldNorm.Y, worldNorm.Z);
             return worldNorm.Normalize();
         }
     }

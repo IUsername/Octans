@@ -2,13 +2,13 @@
 {
     public class PointLight
     {
-        public PointLight(Tuple position, Color intensity)
+        public PointLight(Point position, Color intensity)
         {
             Position = position;
             Intensity = intensity;
         }
 
-        public Tuple Position { get; }
+        public Point Position { get; }
         public Color Intensity { get; }
     }
 }

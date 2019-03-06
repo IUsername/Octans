@@ -68,15 +68,13 @@ namespace Octans
 
         public bool Equals(Matrix other) => Rows == other.Rows && Columns == other.Columns && ValuesEqual(this, other);
 
-        private static bool Equal(float a, float b) => Math.Abs(a - b) < Epsilon;
-
         private bool ValuesEqual(Matrix a, Matrix b)
         {
             for (var row = 0; row < Rows; row++)
             {
                 for (var col = 0; col < Columns; col++)
                 {
-                    if (!Equal(a[row, col], b[row, col]))
+                    if (!Check.Within(a[row, col], b[row, col], Epsilon))
                     {
                         return false;
                     }
@@ -148,9 +146,12 @@ namespace Octans
             return new Matrix(arr);
         }
 
-        private static Matrix ToMatrix(Tuple t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
+        private static Matrix ToMatrix(Point t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
+        private static Matrix ToMatrix(Vector t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
 
-        private static Tuple ToTuple(Matrix m) => new Tuple(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
+        private static Point ToPoint(Matrix m) => new Point(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
+
+        private static Vector ToVector(Matrix m) => new Vector(m[0, 0], m[1, 0], m[2, 0]);
 
         private static Matrix Multiply(Matrix a, Matrix b)
         {
@@ -274,6 +275,8 @@ namespace Octans
 
         public static Matrix operator *(Matrix left, Matrix right) => Multiply(left, right);
 
-        public static Tuple operator *(Matrix left, Tuple right) => ToTuple(Multiply(left, ToMatrix(right)));
+        public static Point operator *(Matrix left, Point right) => ToPoint(Multiply(left, ToMatrix(right)));
+
+        public static Vector operator *(Matrix left, Vector right) => ToVector(Multiply(left, ToMatrix(right)));
     }
 }

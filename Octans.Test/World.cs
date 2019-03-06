@@ -2,13 +2,13 @@ namespace Octans.Test
 {
     public class World
     {
-        public World(Tuple gravity, Tuple wind)
+        public World(Vector gravity, Vector wind)
         {
             Gravity = gravity;
             Wind = wind;
         }
 
-        public Tuple Gravity { get; }
-        public Tuple Wind { get; }
+        public Vector Gravity { get; }
+        public Vector Wind { get; }
     }
 }

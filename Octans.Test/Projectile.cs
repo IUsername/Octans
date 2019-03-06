@@ -4,14 +4,14 @@ namespace Octans.Test
 {
     public class Projectile
     {
-        public Projectile(Tuple position, Tuple velocity)
+        public Projectile(Point position, Vector velocity)
         {
             Position = position;
             Velocity = velocity;
         }
 
-        public Tuple Position { get; }
-        public Tuple Velocity { get; }
+        public Point Position { get; }
+        public Vector Velocity { get; }
 
         public Projectile Tick(World world)
         {

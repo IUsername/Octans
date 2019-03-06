@@ -72,8 +72,8 @@ namespace Octans.Test
         public void MultipleMatrixAndTuple()
         {
             var a = Matrix.Square(1, 2, 3, 4, 2, 4, 4, 2, 8, 6, 4, 1, 0, 0, 0, 1);
-            var b = new Tuple(1, 2, 3, 1);
-            (a * b).Should().BeEquivalentTo(new Tuple(18, 24, 33, 1));
+            var b = new Point(1, 2, 3, 1);
+            (a * b).Should().BeEquivalentTo(new Point(18, 24, 33, 1));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Octans.Test
         [Fact]
         public void TupleMultipliedByIdentityMatrixIsTuple()
         {
-            var a = new Tuple(1, 2, 3, 4);
+            var a = new Point(1, 2, 3, 4);
             (Matrix.Identity * a).Should().BeEquivalentTo(a);
         }
 

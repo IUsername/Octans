@@ -56,10 +56,10 @@ namespace Octans.Test
         [Fact(Skip ="creates file in My Pictures folder")]
         public void ProjectileTest()
         {
-            var start = Point.Create(0, 1, 0);
-            var vel = Vector.Create(1f, 1.8f, 0f).Normalize() * 11.25f;
+            var start = new Point(0, 1, 0);
+            var vel = new Vector(1f, 1.8f, 0f).Normalize() * 11.25f;
             var p = new Projectile(start, vel);
-            var w = new World(Vector.Create(0f, -0.1f, 0f), Vector.Create(-0.01f, 0, 0));
+            var w = new World(new Vector(0f, -0.1f, 0f), new Vector(-0.01f, 0, 0));
             var c = new Canvas(900, 550);
             var (x, y) = p.ToXY();
             y = 550 - y;

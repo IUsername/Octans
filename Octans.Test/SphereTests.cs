@@ -9,7 +9,7 @@ namespace Octans.Test
         [Fact]
         public void NonEdgeRayIntersectsSphereAtTwoPoints()
         {
-            var r = new Ray(Point.Create(0, 0, -5), Vector.Create(0, 0, 1));
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.Intersect(r);
             xs.Should().HaveCount(2);
@@ -22,7 +22,7 @@ namespace Octans.Test
         [Fact]
         public void NonIntersectionReturnsZeroCount()
         {
-            var r = new Ray(Point.Create(0, 2, -5), Vector.Create(0, 0, 1));
+            var r = new Ray(new Point(0, 2, -5), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.Intersect(r);
             xs.Should().HaveCount(0);
@@ -31,7 +31,7 @@ namespace Octans.Test
         [Fact]
         public void RayOriginatingInsideSphereHasOneNegativeIntersect()
         {
-            var r = new Ray(Point.Create(0, 0, 0), Vector.Create(0, 0, 1));
+            var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.Intersect(r);
             xs.Should().HaveCount(2);
@@ -42,7 +42,7 @@ namespace Octans.Test
         [Fact]
         public void SphereBehindRayHasTwoNegativeIntersects()
         {
-            var r = new Ray(Point.Create(0, 0, 5), Vector.Create(0, 0, 1));
+            var r = new Ray(new Point(0, 0, 5), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.Intersect(r);
             xs.Should().HaveCount(2);
@@ -69,7 +69,7 @@ namespace Octans.Test
         [Fact]
         public void IntersectingScaledSphere()
         {
-            var r = new Ray(Point.Create(0, 0, -5), Vector.Create(0, 0, 1));
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var s = new Sphere();
             var t = Transforms.Scale(2, 2, 2);
             s.SetTransform(t);
@@ -82,7 +82,7 @@ namespace Octans.Test
         [Fact]
         public void IntersectingTranslatedSphere()
         {
-            var r = new Ray(Point.Create(0, 0, -5), Vector.Create(0, 0, 1));
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var s = new Sphere();
             var t = Transforms.Translate(5, 0, 0);
             s.SetTransform(t);
@@ -94,31 +94,31 @@ namespace Octans.Test
         public void NormalOnXAxis()
         {
             var s = new Sphere();
-            var n = s.NormalAt(Point.Create(1, 0, 0));
-            n.Should().Be(Vector.Create(1, 0, 0));
+            var n = s.NormalAt(new Point(1, 0, 0));
+            n.Should().Be(new Vector(1, 0, 0));
         }
 
         [Fact]
         public void NormalOnYAxis()
         {
             var s = new Sphere();
-            var n = s.NormalAt(Point.Create(0, 1, 0));
-            n.Should().Be(Vector.Create(0, 1, 0));
+            var n = s.NormalAt(new Point(0, 1, 0));
+            n.Should().Be(new Vector(0, 1, 0));
         }
 
         [Fact]
         public void NormalOnZAxis()
         {
             var s = new Sphere();
-            var n = s.NormalAt(Point.Create(0, 0, 1));
-            n.Should().Be(Vector.Create(0, 0, 1));
+            var n = s.NormalAt(new Point(0, 0, 1));
+            n.Should().Be(new Vector(0, 0, 1));
         }
 
         [Fact]
         public void NormalsAreNormalized()
         {
             var s = new Sphere();
-            var n = s.NormalAt(Point.Create(MathF.Sqrt(3f)/3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f));
+            var n = s.NormalAt(new Point(MathF.Sqrt(3f)/3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f));
             (n == n.Normalize()).Should().BeTrue();
         }
 
@@ -127,8 +127,8 @@ namespace Octans.Test
         {
             var s = new Sphere();
             s.SetTransform(Transforms.Translate(0,1,0));
-            var n = s.NormalAt(Point.Create(0, 1.70711f, -0.70711f));
-            n.Should().Be(Vector.Create(0, 0.70711f, -0.70711f));
+            var n = s.NormalAt(new Point(0, 1.70711f, -0.70711f));
+            n.Should().Be(new Vector(0, 0.70711f, -0.70711f));
         }
 
         [Fact]
@@ -136,8 +136,8 @@ namespace Octans.Test
         {
             var s = new Sphere();
             s.SetTransform(Transforms.Scale(1f, 0.5f, 1f) * Transforms.RotateZ(MathF.PI/5f));
-            var n = s.NormalAt(Point.Create(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f));
-            n.Should().Be(Vector.Create(0, 0.97014f, -0.24254f));
+            var n = s.NormalAt(new Point(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f));
+            n.Should().Be(new Vector(0, 0.97014f, -0.24254f));
         }
 
         [Fact]
@@ -162,10 +162,10 @@ namespace Octans.Test
             const int canvasPixels = 100;
             var canvas = new Canvas(canvasPixels, canvasPixels);
             var s = new Sphere {Material = {Color = new Color(0.4f, 0.2f, 1)}};
-            var light = new PointLight(Point.Create(-10, 10, -10), new Color(1f, 1f, 1f));
+            var light = new PointLight(new Point(-10, 10, -10), new Color(1f, 1f, 1f));
             //var t = Transforms.Shear(0.1f, 0, 0, 0, 0, 0).Scale(0.9f, 1f, 1f);
             //s.SetTransform(t);
-            var rayOrigin = Point.Create(0f, 0f, -5f);
+            var rayOrigin = new Point(0f, 0f, -5f);
             const float wallZ = 10f;
             const float wallSize = 7.0f;
             const float pixelSize = wallSize / canvasPixels;
@@ -177,7 +177,7 @@ namespace Octans.Test
                 for (var x = 0; x < canvasPixels; x++)
                 {
                     var worldX = -half + pixelSize * x;
-                    var position = Point.Create(worldX, worldY, wallZ);
+                    var position = new Point(worldX, worldY, wallZ);
                     var r = new Ray(rayOrigin, (position - rayOrigin).Normalize());
                     var xs = s.Intersect(r);
                     var hit = xs.Hit();

@@ -2,16 +2,16 @@
 {
     public readonly struct Ray
     {
-        public readonly Tuple Origin;
-        public readonly Tuple Direction;
+        public readonly Point Origin;
+        public readonly Vector Direction;
 
-        public Ray(Tuple origin, Tuple direction)
+        public Ray(Point origin, Vector direction)
         {
-            Origin = origin.AsPoint();
-            Direction = direction.AsVector();
+            Origin = origin;
+            Direction = direction;
         }
 
-        public Tuple Position(float t)
+        public Point Position(float t)
         {
             return Origin + Direction * t;
         }
