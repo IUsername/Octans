@@ -11,7 +11,7 @@ namespace Octans.Test
             var s = new Sphere();
             var i = new Intersection(3.5f, s);
             i.T.Should().Be(3.5f);
-            i.Obj.Should().Be(s);
+            i.Surface.Should().Be(s);
         }
 
         [Fact]

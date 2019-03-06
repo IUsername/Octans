@@ -59,7 +59,7 @@ namespace Octans.Test
             var start = new Point(0, 1, 0);
             var vel = new Vector(1f, 1.8f, 0f).Normalize() * 11.25f;
             var p = new Projectile(start, vel);
-            var w = new World(new Vector(0f, -0.1f, 0f), new Vector(-0.01f, 0, 0));
+            var w = new SimWorld(new Vector(0f, -0.1f, 0f), new Vector(-0.01f, 0, 0));
             var c = new Canvas(900, 550);
             var (x, y) = p.ToXY();
             y = 550 - y;

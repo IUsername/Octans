@@ -15,8 +15,8 @@ namespace Octans.Test
             xs.Should().HaveCount(2);
             xs[0].T.Should().Be(4.0f);
             xs[1].T.Should().Be(6.0f);
-            xs[0].Obj.Should().Be(s);
-            xs[1].Obj.Should().Be(s);
+            xs[0].Surface.Should().Be(s);
+            xs[1].Surface.Should().Be(s);
         }
 
         [Fact]
@@ -187,10 +187,10 @@ namespace Octans.Test
                     }
 
                     var point = r.Position(hit.Value.T);
-                    var obj = (Sphere)hit.Value.Obj;
-                    var normal = obj.NormalAt(point);
+                    var surface = hit.Value.Surface;
+                    var normal = surface.NormalAt(point);
                     var eye = -r.Direction;
-                    var color = Shading.Lighting(obj.Material, light, point, eye, normal);
+                    var color = Shading.Lighting(surface.Material, light, point, eye, normal);
                     canvas.WritePixel(color, x, y);
                 }
             }

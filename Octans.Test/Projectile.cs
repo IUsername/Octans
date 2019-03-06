@@ -13,10 +13,10 @@ namespace Octans.Test
         public Point Position { get; }
         public Vector Velocity { get; }
 
-        public Projectile Tick(World world)
+        public Projectile Tick(SimWorld simWorld)
         {
             var pos = Position + Velocity;
-            var vel = Velocity + world.Gravity + world.Wind;
+            var vel = Velocity + simWorld.Gravity + simWorld.Wind;
             return new Projectile(pos, vel);
         }
 

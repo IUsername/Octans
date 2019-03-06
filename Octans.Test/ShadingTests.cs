@@ -65,5 +65,59 @@ namespace Octans.Test
             var result = Shading.Lighting(m, light, position, eyeV, normalV);
             result.Should().BeEquivalentTo(Color.RGB(0.1f, 0.1f, 0.1f));
         }
+
+        [Fact]
+        public void ShadingOutsideIntersection()
+        {
+            var w = new World();
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
+            var shape = w.Objects[0];
+            var i = new Intersection(4f, shape);
+            var comps = new IntersectionInfo(i, r);
+            var c = Shading.HitColor(w, comps);
+            c.Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
+        }
+
+        [Fact]
+        public void ShadingInsideIntersection()
+        {
+            var w = new World();
+            w.SetLight(new PointLight(new Point(0, 0.25f, 0), new Color(1f, 1f, 1f)));
+            var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
+            var shape = w.Objects[1];
+            var i = new Intersection(0.5f, shape);
+            var comps = new IntersectionInfo(i, r);
+            var c = Shading.HitColor(w, comps);
+            c.Should().Be(new Color(0.90498f, 0.90498f, 0.90498f));
+        }
+
+        [Fact]
+        public void ColorWhenRayMissesIsBlack()
+        {
+            var w = new World();
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
+            var c = Shading.ColorAt(w, r);
+            c.Should().Be(new Color(0, 0, 0));
+        }
+
+        [Fact]
+        public void ColorWhenRayHits()
+        {
+            var w = new World();
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
+            var c = Shading.ColorAt(w, r);
+            c.Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
+        }
+
+        [Fact]
+        public void ColorWithIntersectionBehind()
+        {
+            var w = new World();
+            w.Objects[0].Material.Ambient = 1f;
+            w.Objects[1].Material.Ambient = 1f;
+            var r = new Ray(new Point(0, 0, 0.75f), new Vector(0, 0, -1));
+            var c = Shading.ColorAt(w, r);
+            c.Should().Be(w.Objects[1].Material.Color);
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Octans
 {
-    public class Sphere
+    public class Sphere : ISurface
     {
         public Sphere()
         {

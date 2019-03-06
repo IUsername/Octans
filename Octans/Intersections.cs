@@ -10,16 +10,18 @@ namespace Octans
         public static Intersections Empty = new Intersections();
         private readonly Intersection[] _sorted;
 
-        public Intersections(params Intersection[] intersections)
+        public Intersections(params Intersection[] intersections) : this(intersections.AsEnumerable())
         {
-            _sorted = intersections;
-            // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-            Array.Sort(_sorted, (a, b) => a.T.CompareTo(b.T));
         }
 
         private Intersections()
         {
             _sorted = Array.Empty<Intersection>();
+        }
+
+        public Intersections(IEnumerable<Intersection> intersections)
+        {
+            _sorted = intersections.OrderBy(i => i.T).ToArray();
         }
 
         public IEnumerator<Intersection> GetEnumerator() => _sorted.AsEnumerable().GetEnumerator();

@@ -1,8 +1,8 @@
 namespace Octans.Test
 {
-    public class World
+    public class SimWorld
     {
-        public World(Vector gravity, Vector wind)
+        public SimWorld(Vector gravity, Vector wind)
         {
             Gravity = gravity;
             Wind = wind;
