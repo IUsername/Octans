@@ -66,9 +66,9 @@ namespace Octans.Test
         public void RotatePointAroundX()
         {
             var p = Point.Create(0, 1, 0);
-            var halfQuarter = Transforms.RotateX(Math.PI / 4);
-            var fullQuarter = Transforms.RotateX(Math.PI / 2);
-            (halfQuarter * p).Should().BeEquivalentTo(Point.Create(0, Math.Sqrt(2) / 2, Math.Sqrt(2) / 2));
+            var halfQuarter = Transforms.RotateX(MathF.PI / 4);
+            var fullQuarter = Transforms.RotateX(MathF.PI / 2);
+            (halfQuarter * p).Should().BeEquivalentTo(Point.Create(0, MathF.Sqrt(2) / 2, MathF.Sqrt(2) / 2));
             (fullQuarter * p).Should().BeEquivalentTo(Point.Create(0, 0, 1));
         }
 
@@ -76,8 +76,8 @@ namespace Octans.Test
         public void RotateInversePointAroundX()
         {
             var p = Point.Create(0, 1, 0);
-            var halfQuarter = Transforms.RotateX(Math.PI / 4);
-            (Matrix.Inverse(halfQuarter) * p).Should().BeEquivalentTo(Point.Create(0, Math.Sqrt(2) / 2, -Math.Sqrt(2) / 2));
+            var halfQuarter = Transforms.RotateX(MathF.PI / 4);
+            (Matrix.Inverse(halfQuarter) * p).Should().BeEquivalentTo(Point.Create(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2));
         }
 
 
@@ -85,9 +85,9 @@ namespace Octans.Test
         public void RotatePointAroundY()
         {
             var p = Point.Create(0, 0, 1);
-            var halfQuarter = Transforms.RotateY(Math.PI / 4);
-            var fullQuarter = Transforms.RotateY(Math.PI / 2);
-            (halfQuarter * p).Should().BeEquivalentTo(Point.Create(Math.Sqrt(2) / 2,0, Math.Sqrt(2) / 2));
+            var halfQuarter = Transforms.RotateY(MathF.PI / 4);
+            var fullQuarter = Transforms.RotateY(MathF.PI / 2);
+            (halfQuarter * p).Should().BeEquivalentTo(Point.Create(MathF.Sqrt(2) / 2,0, MathF.Sqrt(2) / 2));
             (fullQuarter * p).Should().BeEquivalentTo(Point.Create(1, 0, 0));
         }
 
@@ -95,9 +95,9 @@ namespace Octans.Test
         public void RotatePointAroundZ()
         {
             var p = Point.Create(0, 1, 0);
-            var halfQuarter = Transforms.RotateZ(Math.PI / 4);
-            var fullQuarter = Transforms.RotateZ(Math.PI / 2);
-            (halfQuarter * p).Should().BeEquivalentTo(Point.Create(-Math.Sqrt(2) / 2, Math.Sqrt(2) / 2, 0));
+            var halfQuarter = Transforms.RotateZ(MathF.PI / 4);
+            var fullQuarter = Transforms.RotateZ(MathF.PI / 2);
+            (halfQuarter * p).Should().BeEquivalentTo(Point.Create(-MathF.Sqrt(2) / 2, MathF.Sqrt(2) / 2, 0));
             (fullQuarter * p).Should().BeEquivalentTo(Point.Create(-1, 0, 0));
         }
 
@@ -145,7 +145,7 @@ namespace Octans.Test
         public void SequenceTransforms()
         {
             var p = Point.Create(1, 0, 1);
-            var a = Transforms.RotateX(Math.PI / 2);
+            var a = Transforms.RotateX(MathF.PI / 2);
             var b = Transforms.Scale(5, 5, 5);
             var c = Transforms.Translate(10, 5, 7);
             var p2 = a * p;
@@ -158,7 +158,7 @@ namespace Octans.Test
         public void ChainInReverseOrder()
         {
             var p = Point.Create(1, 0, 1);
-            var a = Transforms.RotateX(Math.PI / 2);
+            var a = Transforms.RotateX(MathF.PI / 2);
             var b = Transforms.Scale(5, 5, 5);
             var c = Transforms.Translate(10, 5, 7);
             var t = c * b * a;
@@ -169,7 +169,7 @@ namespace Octans.Test
         public void FluentChaining()
         {
             var p = Point.Create(1, 0, 1);
-            var t = Matrix.Identity.RotateX(Math.PI / 2).Scale(5, 5, 5).Translate(10, 5, 7);
+            var t = Matrix.Identity.RotateX(MathF.PI / 2).Scale(5, 5, 5).Translate(10, 5, 7);
             (t * p).Should().BeEquivalentTo(Point.Create(15, 0, 7));
         }
     }

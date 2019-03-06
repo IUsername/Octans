@@ -1,31 +1,26 @@
-﻿using System;
-
-namespace Octans
+﻿namespace Octans
 {
     public class Canvas
     {
-        public int Width { get; }
-
-        public int Height { get; }
-
         private readonly Color[,] _data;
 
         public Canvas(int width, int height)
         {
             Width = width;
             Height = height;
-            _data = new Color[width,height];
+            _data = new Color[width, height];
         }
+
+        public int Width { get; }
+
+        public int Height { get; }
 
         public void WritePixel(Color c, int x, int y)
         {
             _data[x, y] = c;
         }
 
-        public Color PixelAt(int x, int y)
-        {
-            return _data[x, y];
-        }
+        public Color PixelAt(int x, int y) => _data[x, y];
 
         public void SetAllPixels(Color c)
         {

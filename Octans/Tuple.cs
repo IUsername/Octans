@@ -2,16 +2,16 @@
 
 namespace Octans
 {
-    public struct Tuple : IEquatable<Tuple>
+    public readonly struct Tuple : IEquatable<Tuple>
     {
-        private const double Epsilon = 0.00001;
+        private const float Epsilon = 0.00001f;
 
-        public double X;
-        public double Y;
-        public double Z;
-        public double W;
+        public readonly float X;
+        public readonly float Y;
+        public readonly float Z;
+        public readonly float W;
 
-        public Tuple(double x, double y, double z, double w)
+        public Tuple(float x, float y, float z, float w)
         {
             X = x;
             Y = y;
@@ -19,13 +19,13 @@ namespace Octans
             W = w;
         }
 
-        public bool IsPoint() => W.Equals(1.0);
+        public bool IsPoint() => 1.0.Equals(W);
 
-        public bool IsVector() => W.Equals(0.0);
+        public bool IsVector() => 0.0.Equals(W);
 
-        public static Tuple Point(double x, double y, double z) => new Tuple(x, y, z, 1.0);
+        public static Tuple Point(float x, float y, float z) => new Tuple(x, y, z, 1.0f);
 
-        public static Tuple Vector(double x, double y, double z) => new Tuple(x, y, z, 0.0);
+        public static Tuple Vector(float x, float y, float z) => new Tuple(x, y, z, 0.0f);
 
         public Tuple Add(Tuple t)
         {
@@ -42,19 +42,19 @@ namespace Octans
             return new Tuple(-X,-Y,-Z,-W);
         }
 
-        public Tuple Scale(double scalar)
+        public Tuple Scale(float scalar)
         {
             return new Tuple(X*scalar,Y*scalar,Z*scalar,W*scalar);
         }
 
-        public Tuple Divide(double scalar)
+        public Tuple Divide(float scalar)
         {
             return new Tuple(X / scalar, Y / scalar, Z / scalar, W / scalar);
         }
 
-        public double Magnitude()
+        public float Magnitude()
         {
-            return Math.Sqrt(X * X + Y * Y + Z * Z + W * W);
+            return MathF.Sqrt(X * X + Y * Y + Z * Z + W * W);
         }
 
         public Tuple Normalize()
@@ -63,7 +63,7 @@ namespace Octans
             return new Tuple(X / m, Y / m, Z / m, W / m);
         }
 
-        private static bool Equal(double a, double b) => Math.Abs(a - b) < Epsilon;
+        private static bool Equal(float a, float b) => Math.Abs(a - b) < Epsilon;
         
         public bool Equals(Tuple other) =>
             Equal(X, other.X) && Equal(Y, other.Y) && Equal(Z, other.Z) && Equal(W, other.W);
@@ -86,11 +86,11 @@ namespace Octans
 
         public static Tuple operator -(Tuple left, Tuple right) => left.Subtract(right);
 
-        public static Tuple operator *(Tuple t, double scalar) => t.Scale(scalar);
+        public static Tuple operator *(Tuple t, float scalar) => t.Scale(scalar);
 
-        public static Tuple operator *(double scalar, Tuple t) => t.Scale(scalar);
+        public static Tuple operator *(float scalar, Tuple t) => t.Scale(scalar);
 
-        public static Tuple operator /(Tuple t, double scalar) => t.Divide(scalar);
+        public static Tuple operator /(Tuple t, float scalar) => t.Divide(scalar);
 
         public static Tuple operator -(Tuple t) => t.Negate();
 
@@ -101,12 +101,12 @@ namespace Octans
 
     public static class Point
     {
-        public static Tuple Create(double x, double y, double z) => Tuple.Point(x, y, z);
+        public static Tuple Create(float x, float y, float z) => Tuple.Point(x, y, z);
     }
 
     public static class Vector
     {
-        public static Tuple Create(double x, double y, double z) => Tuple.Vector(x, y, z);
+        public static Tuple Create(float x, float y, float z) => Tuple.Vector(x, y, z);
 
         public static double Dot(Tuple a, Tuple b)
         {

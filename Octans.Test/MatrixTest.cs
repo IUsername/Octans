@@ -5,40 +5,42 @@ namespace Octans.Test
 {
     public class MatrixTest
     {
+        private const float Precision = 0.00001f;
+
         [Fact]
         public void Create4x4()
         {
             var m = new Matrix(
-                new[] {1.0, 2, 3, 4},
-                new[] {5.5, 6.5, 7.5, 8.5},
-                new[] {9.0, 10, 11, 12},
-                new[] {13.5, 14.5, 15.5, 16.5});
-            m[0, 0].Should().BeApproximately(1, 0.00001);
-            m[0, 3].Should().BeApproximately(4, 0.00001);
-            m[1, 0].Should().BeApproximately(5.5, 0.00001);
-            m[1, 2].Should().BeApproximately(7.5, 0.00001);
-            m[2, 2].Should().BeApproximately(11, 0.00001);
-            m[3, 0].Should().BeApproximately(13.5, 0.00001);
-            m[3, 2].Should().BeApproximately(15.5, 0.00001);
+                new[] {1.0f, 2f, 3f, 4f},
+                new[] {5.5f, 6.5f, 7.5f, 8.5f},
+                new[] {9.0f, 10, 11, 12},
+                new[] {13.5f, 14.5f, 15.5f, 16.5f});
+            m[0, 0].Should().BeApproximately(1f, Precision);
+            m[0, 3].Should().BeApproximately(4f, Precision);
+            m[1, 0].Should().BeApproximately(5.5f, Precision);
+            m[1, 2].Should().BeApproximately(7.5f, Precision);
+            m[2, 2].Should().BeApproximately(11f, Precision);
+            m[3, 0].Should().BeApproximately(13.5f, Precision);
+            m[3, 2].Should().BeApproximately(15.5f, Precision);
         }
 
         [Fact]
         public void Create2x2()
         {
-            var m = new Matrix(new[] {-3.0, 5.0}, new[] {1.0, -2.0});
-            m[0, 0].Should().BeApproximately(-3, 0.00001);
-            m[0, 1].Should().BeApproximately(5, 0.00001);
-            m[1, 0].Should().BeApproximately(1, 0.00001);
-            m[1, 1].Should().BeApproximately(-2, 0.00001);
+            var m = new Matrix(new[] {-3.0f, 5.0f}, new[] {1.0f, -2.0f});
+            m[0, 0].Should().BeApproximately(-3f, Precision);
+            m[0, 1].Should().BeApproximately(5f, Precision);
+            m[1, 0].Should().BeApproximately(1f, Precision);
+            m[1, 1].Should().BeApproximately(-2f, Precision);
         }
 
         [Fact]
         public void Create3x3()
         {
             var m = Matrix.Square(-3, 5, 0, 1, -2, -7, 0, 1, 1);
-            m[0, 0].Should().BeApproximately(-3, 0.00001);
-            m[1, 1].Should().BeApproximately(-2, 0.00001);
-            m[2, 2].Should().BeApproximately(1, 0.00001);
+            m[0, 0].Should().BeApproximately(-3f, Precision);
+            m[1, 1].Should().BeApproximately(-2f, Precision);
+            m[2, 2].Should().BeApproximately(1f, Precision);
         }
 
         [Fact]
@@ -173,19 +175,19 @@ namespace Octans.Test
             var invA = Matrix.Inverse(a);
             invA.Should()
                 .BeEquivalentTo(
-                    Matrix.Square(-0.15385, -0.15385, -0.28205, -0.53846,
-                                  -0.07692, 0.12308, 0.02564, 0.03077, 
-                                  0.35897, 0.35897, 0.43590, 0.92308, 
-                                  -0.69231, -0.69231,-0.76923, -1.92308));
+                    Matrix.Square(-0.15385f, -0.15385f, -0.28205f, -0.53846f,
+                                  -0.07692f, 0.12308f, 0.02564f, 0.03077f, 
+                                  0.35897f, 0.35897f, 0.43590f, 0.92308f, 
+                                  -0.69231f, -0.69231f,-0.76923f, -1.92308f));
 
             var b = Matrix.Square(9, 3, 0, 9, -5, -2, -6, -3, -4, 9, 6, 4, -7, 6, 6, 2);
             var invB = Matrix.Inverse(b);
             invB.Should()
                 .BeEquivalentTo(
-                    Matrix.Square(-0.04074, -0.07778, 0.14444, -0.22222,
-                                  -0.07778, 0.03333, 0.36667, -0.33333,
-                                  -0.02901, -0.14630, -0.10926, 0.12963,
-                                  0.17778, 0.06667, -0.26667, 0.33333));
+                    Matrix.Square(-0.04074f, -0.07778f, 0.14444f, -0.22222f,
+                                  -0.07778f, 0.03333f, 0.36667f, -0.33333f,
+                                  -0.02901f, -0.14630f, -0.10926f, 0.12963f,
+                                  0.17778f, 0.06667f, -0.26667f, 0.33333f));
         }
 
         [Fact]

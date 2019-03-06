@@ -1,4 +1,3 @@
-using System;
 using FluentAssertions;
 using Xunit;
 
@@ -9,18 +8,18 @@ namespace Octans.Test
         [Fact]
         public void CreateCanvas()
         {
-            var c = new Canvas(10,20);
+            var c = new Canvas(10, 20);
             c.Width.Should().Be(10);
             c.Height.Should().Be(20);
-            c.PixelAt(0, 0).Should().Be(Color.Create(0, 0, 0));
+            c.PixelAt(0, 0).Should().Be(Color.RGB(0, 0, 0));
         }
 
         [Fact]
         public void CanWriteToPixel()
         {
             var c = new Canvas(10, 20);
-            c.WritePixel(Color.Create(1,0,0), 2,3);
-            c.PixelAt(2, 3).Should().Be(Color.Create(1, 0, 0));
+            c.WritePixel(Color.RGB(1, 0, 0), 2, 3);
+            c.PixelAt(2, 3).Should().Be(Color.RGB(1, 0, 0));
         }
     }
 }

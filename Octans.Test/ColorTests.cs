@@ -8,41 +8,41 @@ namespace Octans.Test
         [Fact]
         public void ColorIsRgbTuple()
         {
-            var c = Color.Create(-0.5, 0.4, 1.7);
-            c.Red.Should().Be(-0.5);
-            c.Green.Should().Be(0.4);
-            c.Blue.Should().Be(1.7);
+            var c = Color.RGB(-0.5f, 0.4f, 1.7f);
+            c.Red.Should().Be(-0.5f);
+            c.Green.Should().Be(0.4f);
+            c.Blue.Should().Be(1.7f);
         }
 
         [Fact]
         public void AddingColors()
         {
-            var c1 = Color.Create(0.9, 0.6, 0.75);
-            var c2 = Color.Create(0.7, 0.1, 0.25);
-            (c1+c2).Should().BeEquivalentTo(Color.Create(1.6,0.7,1.0));
+            var c1 = Color.RGB(0.9f, 0.6f, 0.75f);
+            var c2 = Color.RGB(0.7f, 0.1f, 0.25f);
+            (c1 + c2 == Color.RGB(1.6f, 0.7f, 1.0f)).Should().BeTrue();
         }
 
         [Fact]
         public void SubtractingColors()
         {
-            var c1 = Color.Create(0.9, 0.6, 0.75);
-            var c2 = Color.Create(0.7, 0.1, 0.25);
-            (c1 - c2).Should().BeEquivalentTo(Color.Create(0.2, 0.5, 0.5));
+            var c1 = Color.RGB(0.9f, 0.6f, 0.75f);
+            var c2 = Color.RGB(0.7f, 0.1f, 0.25f);
+            (c1 - c2 == Color.RGB(0.2f, 0.5f, 0.5f)).Should().BeTrue();
         }
 
         [Fact]
         public void MultiplyingByScalar()
         {
-            var c = Color.Create(0.2, 0.3, 0.4);
-            (c * 2).Should().BeEquivalentTo(Color.Create(0.4, 0.6, 0.8));
+            var c = Color.RGB(0.2f, 0.3f, 0.4f);
+            (c * 2 == Color.RGB(0.4f, 0.6f, 0.8f)).Should().BeTrue();
         }
 
         [Fact]
         public void MultiplyingColors()
         {
-            var c1 = Color.Create(1.0, 0.2, 0.4);
-            var c2 = Color.Create(0.9, 1.0, 0.1);
-            (c1 * c2).Should().BeEquivalentTo(Color.Create(0.9, 0.2, 0.04));
+            var c1 = Color.RGB(1.0f, 0.2f, 0.4f);
+            var c2 = Color.RGB(0.9f, 1.0f, 0.1f);
+            (c1 * c2 == Color.RGB(0.9f, 0.2f, 0.04f)).Should().BeTrue();
         }
     }
 }

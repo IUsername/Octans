@@ -21,6 +21,6 @@ namespace Octans.Test
         }
 
         // ReSharper disable once InconsistentNaming
-        public (int x, int y) ToXY() => (x: (int) Math.Round(Position.X), y: (int) Math.Round(Position.Y));
+        public (int x, int y) ToXY() => (x: (int) MathF.Round(Position.X), y: (int) MathF.Round(Position.Y));
     }
 }

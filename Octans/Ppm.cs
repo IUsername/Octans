@@ -48,9 +48,9 @@ namespace Octans
         {
             var c1 = c * MaxValue;
             return (
-                r: Clamp((int) Math.Round(c1.Red), 0, MaxValue),
-                g: Clamp((int) Math.Round(c1.Green), 0, MaxValue),
-                b: Clamp((int) Math.Round(c1.Blue), 0, MaxValue));
+                r: Clamp((int) MathF.Round(c1.Red), 0, MaxValue),
+                g: Clamp((int) MathF.Round(c1.Green), 0, MaxValue),
+                b: Clamp((int) MathF.Round(c1.Blue), 0, MaxValue));
         }
 
         private static IEnumerable<string> ColorValuesToStrings(IEnumerable<int> values, int maxLength)

@@ -2,21 +2,21 @@
 
 namespace Octans
 {
-    public struct Matrix : IEquatable<Matrix>
+    public readonly struct Matrix : IEquatable<Matrix>
     {
-        private const double Epsilon = 0.00001;
+        private const float Epsilon = 0.00001f;
 
-        public int Rows { get; }
-        public int Columns { get; }
+        public readonly int Rows;
+        public readonly int Columns;
 
-        private readonly double[,] _data;
+        private readonly float[,] _data;
 
-        public Matrix(params double[][] values)
+        public Matrix(params float[][] values)
         {
             Rows = values.Length;
             Columns = values[0].Length;
 
-            _data = new double[Rows, Columns];
+            _data = new float[Rows, Columns];
             for (var row = 0; row < Rows; row++)
             {
                 for (var col = 0; col < Columns; col++)
@@ -30,21 +30,17 @@ namespace Octans
         {
             Rows = rows;
             Columns = columns;
-            _data = new double[Rows, Columns];
+            _data = new float[Rows, Columns];
         }
 
-        public double this[int row, int col]
-        {
-            get => _data[row, col];
-            private set => _data[row, col] = value;
-        }
+        public float this[int row, int col] => _data[row, col];
 
-        public double[][] ToArray()
+        public float[][] ToArray()
         {
-            var arr = new double[Rows][];
+            var arr = new float[Rows][];
             for (var row = 0; row < Rows; row++)
             {
-                var cur = new double[Columns];
+                var cur = new float[Columns];
                 for (var col = 0; col < Columns; col++)
                 {
                     cur[col] = this[row, col];
@@ -63,7 +59,7 @@ namespace Octans
             {
                 for (var col = 0; col < Columns; col++)
                 {
-                    m[col, row] = this[row, col];
+                    m._data[col, row] = this[row, col];
                 }
             }
 
@@ -72,7 +68,7 @@ namespace Octans
 
         public bool Equals(Matrix other) => Rows == other.Rows && Columns == other.Columns && ValuesEqual(this, other);
 
-        private static bool Equal(double a, double b) => Math.Abs(a - b) < Epsilon;
+        private static bool Equal(float a, float b) => Math.Abs(a - b) < Epsilon;
 
         private bool ValuesEqual(Matrix a, Matrix b)
         {
@@ -111,12 +107,12 @@ namespace Octans
             }
         }
 
-        public static Matrix Identity = new Matrix(new[] {1.0, 0, 0, 0},
-                                                    new[] {0.0, 1, 0, 0},
-                                                    new[] {0.0, 0, 1, 0},
-                                                    new[] {0.0, 0, 0, 1});
+        public static Matrix Identity = new Matrix(new[] {1.0f, 0, 0, 0},
+                                                    new[] {0.0f, 1, 0, 0},
+                                                    new[] {0.0f, 0, 1, 0},
+                                                    new[] {0.0f, 0, 0, 1});
 
-        public static Matrix Square(params double[] values)
+        public static Matrix Square(params float[] values)
         {
             var len = values.Length;
             int size;
@@ -136,11 +132,11 @@ namespace Octans
                     break;
             }
 
-            var arr = new double[size][];
+            var arr = new float[size][];
             var k = 0;
             for (var row = 0; row < size; row++)
             {
-                var cur = new double[size];
+                var cur = new float[size];
                 for (var col = 0; col < size; col++)
                 {
                     cur[col] = values[k++];
@@ -168,27 +164,27 @@ namespace Octans
             {
                 for (var c = 0; c < b.Columns; c++)
                 {
-                    var temp = 0.0;
+                    var temp = 0.0f;
                     for (var k = 0; k < a.Columns; k++)
                     {
                         temp += a[r, k] * b[k, c];
                     }
 
-                    m[r, c] = temp;
+                    m._data[r, c] = temp;
                 }
             }
 
             return m;
         }
 
-        public static double Determinant(Matrix m)
+        public static float Determinant(Matrix m)
         {
             if (m.Columns == 2 && m.Rows == 2)
             {
                return m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0];
             }
 
-            var det = 0.0;
+            var det = 0.0f;
             for (var c = 0; c < m.Columns; c++)
             {
                 det += m[0, c] * Cofactor(m, 0, c);
@@ -199,7 +195,7 @@ namespace Octans
 
         public static Matrix Submatrix(Matrix m, int row, int column)
         {
-            var arr = new double[m.Rows - 1][];
+            var arr = new float[m.Rows - 1][];
             var rr = 0;
             for (var r = 0; r < m.Rows; r++)
             {
@@ -209,7 +205,7 @@ namespace Octans
                 }
 
                 var cc = 0;
-                var cur = new double[m.Columns - 1];
+                var cur = new float[m.Columns - 1];
                 for (var c = 0; c < m.Columns; c++)
                 {
                     if (c == column)
@@ -226,13 +222,13 @@ namespace Octans
             return new Matrix(arr);
         }
 
-        public static double Minor(Matrix m, int row, int column)
+        public static float Minor(Matrix m, int row, int column)
         {
             var s = Submatrix(m, row, column);
             return Determinant(s);
         }
 
-        public static double Cofactor(Matrix m, int row, int column)
+        public static float Cofactor(Matrix m, int row, int column)
         {
             var n = Minor(m, row, column);
             return (row + column) % 2 == 0 ? n : -n;
@@ -241,14 +237,14 @@ namespace Octans
         public static bool IsInvertible(Matrix m)
         {
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            return Determinant(m) != 0.0;
+            return Determinant(m) != 0.0f;
         }
 
         public static Matrix Inverse(Matrix m)
         {
             var det = Determinant(m);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (det == 0.0)
+            if (det == 0.0f)
             {
                 throw new InvalidOperationException("Matrix is not invertible.");
             }
@@ -260,7 +256,7 @@ namespace Octans
                 {
                     var cf = Cofactor(m, r, c);
                     // Transpose.
-                    m2[c, r] = cf / det;
+                    m2._data[c, r] = cf / det;
                 }
             }
 
