@@ -14,7 +14,7 @@ namespace Octans
 
         public IReadOnlyList<Intersection> Intersect(Ray ray)
         {
-            var rt = ray.Transform(Matrix.Inverse(Transform));
+            var rt = ray.Transform(Transform.Inverse());
             // TODO: Only works for unit sphere on origin.
             var sphereToRay = rt.Origin - Point.Create(0, 0, 0);
             var a = Vector.Dot(rt.Direction, rt.Direction);
@@ -37,6 +37,16 @@ namespace Octans
         {
             // TODO: Allow mutations?
             Transform = matrix;
+        }
+
+        public Tuple NormalAt(Tuple worldPoint)
+        {
+            var inv = Transform.Inverse();
+            var objPoint = inv * worldPoint;
+            var objNorm = objPoint - Point.Create(0f, 0f, 0f);
+            var worldNorm = inv.Transpose() * objNorm;
+            worldNorm = Vector.Create(worldNorm.X, worldNorm.Y, worldNorm.Z);
+            return worldNorm.Normalize();
         }
     }
 }

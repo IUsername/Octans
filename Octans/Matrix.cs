@@ -263,6 +263,11 @@ namespace Octans
             return m2;
         }
 
+        public Matrix Inverse()
+        {
+            return Inverse(this);
+        }
+
         public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);
 
         public static bool operator !=(Matrix left, Matrix right) => !left.Equals(right);

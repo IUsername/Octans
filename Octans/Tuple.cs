@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Octans
 {
@@ -118,16 +119,21 @@ namespace Octans
     {
         public static Tuple Create(float x, float y, float z) => Tuple.Vector(x, y, z);
 
-        public static float Dot(Tuple a, Tuple b)
+        public static float Dot(in Tuple a, in Tuple b)
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
         }
 
-        public static Tuple Cross(Tuple a, Tuple b)
+        public static Tuple Cross(in Tuple a, in Tuple b)
         {
             return Create(a.Y * b.Z - a.Z * b.Y,
                           a.Z * b.X - a.X * b.Z,
                           a.X * b.Y - a.Y * b.X);
+        }
+
+        public static Tuple Reflect(in this Tuple vector, in Tuple normal)
+        {
+            return vector - normal * 2f * Dot(vector, normal);
         }
     }
 }

@@ -156,5 +156,23 @@ namespace Octans.Test
             Vector.Cross(a, b).Should().BeEquivalentTo(Vector.Create(-1, 2, -1));
             Vector.Cross(b, a).Should().BeEquivalentTo(Vector.Create(1, -2, 1));
         }
+
+        [Fact]
+        public void Reflect45DegVector()
+        {
+            var v = Vector.Create(1, -1, 0);
+            var n = Vector.Create(0, 1, 0);
+            var r = v.Reflect(n);
+            r.Should().BeEquivalentTo(Vector.Create(1,1,0));
+        }
+
+        [Fact]
+        public void ReflectOffSlantedSurface()
+        {
+            var v = Vector.Create(0, -1, 0);
+            var n = Vector.Create(MathF.Sqrt(2f)/2f, MathF.Sqrt(2f) / 2f, 0);
+            var r = v.Reflect(n);
+            r.Should().BeEquivalentTo(Vector.Create(1, 0, 0));
+        }
     }
 }

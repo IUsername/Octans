@@ -90,6 +90,56 @@ namespace Octans.Test
             xs.Should().HaveCount(0);
         }
 
+        [Fact]
+        public void NormalOnXAxis()
+        {
+            var s = new Sphere();
+            var n = s.NormalAt(Point.Create(1, 0, 0));
+            n.Should().Be(Vector.Create(1, 0, 0));
+        }
+
+        [Fact]
+        public void NormalOnYAxis()
+        {
+            var s = new Sphere();
+            var n = s.NormalAt(Point.Create(0, 1, 0));
+            n.Should().Be(Vector.Create(0, 1, 0));
+        }
+
+        [Fact]
+        public void NormalOnZAxis()
+        {
+            var s = new Sphere();
+            var n = s.NormalAt(Point.Create(0, 0, 1));
+            n.Should().Be(Vector.Create(0, 0, 1));
+        }
+
+        [Fact]
+        public void NormalsAreNormalized()
+        {
+            var s = new Sphere();
+            var n = s.NormalAt(Point.Create(MathF.Sqrt(3f)/3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f));
+            (n == n.Normalize()).Should().BeTrue();
+        }
+
+        [Fact]
+        public void NormalOnTranslatedSphere()
+        {
+            var s = new Sphere();
+            s.SetTransform(Transforms.Translate(0,1,0));
+            var n = s.NormalAt(Point.Create(0, 1.70711f, -0.70711f));
+            n.Should().Be(Vector.Create(0, 0.70711f, -0.70711f));
+        }
+
+        [Fact]
+        public void NormalOnTransformedSphere()
+        {
+            var s = new Sphere();
+            s.SetTransform(Transforms.Scale(1f, 0.5f, 1f) * Transforms.RotateZ(MathF.PI/5f));
+            var n = s.NormalAt(Point.Create(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f));
+            n.Should().Be(Vector.Create(0, 0.97014f, -0.24254f));
+        }
+
         [Fact(Skip = "creates file in My Pictures folder")]
         public void RaycastTest()
         {
@@ -97,6 +147,8 @@ namespace Octans.Test
             var canvas = new Canvas(canvasPixels, canvasPixels);
             var color = Color.RGB(1f, 0f, 0f);
             var s = new Sphere();
+            var t = Transforms.Shear(0.1f, 0, 0, 0, 0, 0).Scale(0.9f, 1f, 1f);
+            s.SetTransform(t);
             var rayOrigin = Point.Create(0f, 0f, -5f);
             const float wallZ = 10f;
             const float wallSize = 7.0f;

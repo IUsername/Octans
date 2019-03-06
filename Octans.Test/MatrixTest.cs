@@ -136,7 +136,7 @@ namespace Octans.Test
         [Fact]
         public void DeterminantOf3x3()
         {
-            var m = Matrix.Square(1, 2,6,-5,8,-4,2,6,4);
+            var m = Matrix.Square(1, 2, 6, -5, 8, -4, 2, 6, 4);
             Matrix.Cofactor(m, 0, 0).Should().Be(56);
             Matrix.Cofactor(m, 0, 1).Should().Be(12);
             Matrix.Cofactor(m, 0, 2).Should().Be(-46);
@@ -146,7 +146,7 @@ namespace Octans.Test
         [Fact]
         public void DeterminantOf4x4()
         {
-            var m = Matrix.Square(-2,-8,3,5,-3,1,7,3,1,2,-9,6,-6,7,7,-9);
+            var m = Matrix.Square(-2, -8, 3, 5, -3, 1, 7, 3, 1, 2, -9, 6, -6, 7, 7, -9);
             Matrix.Cofactor(m, 0, 0).Should().Be(690);
             Matrix.Cofactor(m, 0, 1).Should().Be(447);
             Matrix.Cofactor(m, 0, 2).Should().Be(210);
@@ -164,7 +164,7 @@ namespace Octans.Test
         [Fact]
         public void IsNotInvertible()
         {
-            var m = Matrix.Square(-4,2,-2,-3,9,6,2,6,0,-5,1,-5,0,0,0,0);
+            var m = Matrix.Square(-4, 2, -2, -3, 9, 6, 2, 6, 0, -5, 1, -5, 0, 0, 0, 0);
             Matrix.IsInvertible(m).Should().BeFalse();
         }
 
@@ -172,16 +172,16 @@ namespace Octans.Test
         public void MatrixInverse()
         {
             var a = Matrix.Square(8, -5, 9, 2, 7, 5, 6, 1, -6, 0, 9, 6, -3, 0, -9, -4);
-            var invA = Matrix.Inverse(a);
+            var invA = a.Inverse();
             invA.Should()
                 .BeEquivalentTo(
                     Matrix.Square(-0.15385f, -0.15385f, -0.28205f, -0.53846f,
-                                  -0.07692f, 0.12308f, 0.02564f, 0.03077f, 
-                                  0.35897f, 0.35897f, 0.43590f, 0.92308f, 
-                                  -0.69231f, -0.69231f,-0.76923f, -1.92308f));
+                                  -0.07692f, 0.12308f, 0.02564f, 0.03077f,
+                                  0.35897f, 0.35897f, 0.43590f, 0.92308f,
+                                  -0.69231f, -0.69231f, -0.76923f, -1.92308f));
 
             var b = Matrix.Square(9, 3, 0, 9, -5, -2, -6, -3, -4, 9, 6, 4, -7, 6, 6, 2);
-            var invB = Matrix.Inverse(b);
+            var invB = b.Inverse();
             invB.Should()
                 .BeEquivalentTo(
                     Matrix.Square(-0.04074f, -0.07778f, 0.14444f, -0.22222f,
@@ -194,9 +194,9 @@ namespace Octans.Test
         public void MultiplyProductByInverse()
         {
             var a = Matrix.Square(3, -9, 7, 3, 3, -8, 2, -9, -4, 4, 4, 1, -6, 5, -1, 1);
-            var b = Matrix.Square(8,2,2,2,3,-1,7,0,7,0,5,4,6,-2,0,5);
+            var b = Matrix.Square(8, 2, 2, 2, 3, -1, 7, 0, 7, 0, 5, 4, 6, -2, 0, 5);
             var c = a * b;
-            (c * Matrix.Inverse(b)).Should().BeEquivalentTo(a);
+            (c * b.Inverse()).Should().BeEquivalentTo(a);
         }
     }
 }
