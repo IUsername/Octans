@@ -118,7 +118,7 @@ namespace Octans
     {
         public static Tuple Create(float x, float y, float z) => Tuple.Vector(x, y, z);
 
-        public static double Dot(Tuple a, Tuple b)
+        public static float Dot(Tuple a, Tuple b)
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
         }

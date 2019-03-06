@@ -145,7 +145,7 @@ namespace Octans.Test
         {
             var a = Vector.Create(1, 2, 3);
             var b = Vector.Create(2, 3, 4);
-            Vector.Dot(a, b).Should().BeApproximately(20, 0.00001);
+            Vector.Dot(a, b).Should().BeApproximately(20f, 0.00001f);
         }
 
         [Fact]

@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Octans
+{
+    public class Sphere
+    {
+        public Sphere()
+        {
+            Transform = Matrix.Identity;
+        }
+
+        public Matrix Transform { get; private set; }
+
+        public IReadOnlyList<Intersection> Intersect(Ray ray)
+        {
+            var rt = ray.Transform(Matrix.Inverse(Transform));
+            // TODO: Only works for unit sphere on origin.
+            var sphereToRay = rt.Origin - Point.Create(0, 0, 0);
+            var a = Vector.Dot(rt.Direction, rt.Direction);
+            var b = 2f * Vector.Dot(rt.Direction, sphereToRay);
+            var c = Vector.Dot(sphereToRay, sphereToRay) - 1f;
+            var discriminant = b * b - 4 * a * c;
+            if (discriminant < 0f)
+            {
+                return Intersections.Empty;
+            }
+
+            var t1 = (-b - MathF.Sqrt(discriminant)) / (2f * a);
+            var t2 = (-b + MathF.Sqrt(discriminant)) / (2f * a);
+            return new Intersections(
+                new Intersection(t1, this),
+                new Intersection(t2, this));
+        }
+
+        public void SetTransform(in Matrix matrix)
+        {
+            // TODO: Allow mutations?
+            Transform = matrix;
+        }
+    }
+}
