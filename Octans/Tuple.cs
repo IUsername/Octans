@@ -97,6 +97,16 @@ namespace Octans
         public static bool operator ==(Tuple left, Tuple right) => left.Equals(right);
 
         public static bool operator !=(Tuple left, Tuple right) => !left.Equals(right);
+
+        public Tuple AsPoint()
+        {
+            return Point(X, Y, Z);
+        }
+
+        public Tuple AsVector()
+        {
+            return Vector(X, Y, Z);
+        }
     }
 
     public static class Point
