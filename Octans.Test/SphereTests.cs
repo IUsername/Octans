@@ -161,10 +161,10 @@ namespace Octans.Test
         {
             const int canvasPixels = 100;
             var canvas = new Canvas(canvasPixels, canvasPixels);
-            var color = Color.RGB(1f, 0f, 0f);
-            var s = new Sphere();
-            var t = Transforms.Shear(0.1f, 0, 0, 0, 0, 0).Scale(0.9f, 1f, 1f);
-            s.SetTransform(t);
+            var s = new Sphere {Material = {Color = new Color(0.4f, 0.2f, 1)}};
+            var light = new PointLight(Point.Create(-10, 10, -10), new Color(1f, 1f, 1f));
+            //var t = Transforms.Shear(0.1f, 0, 0, 0, 0, 0).Scale(0.9f, 1f, 1f);
+            //s.SetTransform(t);
             var rayOrigin = Point.Create(0f, 0f, -5f);
             const float wallZ = 10f;
             const float wallSize = 7.0f;
@@ -180,10 +180,18 @@ namespace Octans.Test
                     var position = Point.Create(worldX, worldY, wallZ);
                     var r = new Ray(rayOrigin, (position - rayOrigin).Normalize());
                     var xs = s.Intersect(r);
-                    if (xs.Hit().HasValue)
+                    var hit = xs.Hit();
+                    if (!hit.HasValue)
                     {
-                        canvas.WritePixel(color, x, y);
+                        continue;
                     }
+
+                    var point = r.Position(hit.Value.T);
+                    var obj = (Sphere)hit.Value.Obj;
+                    var normal = obj.NormalAt(point);
+                    var eye = -r.Direction;
+                    var color = Shading.Lighting(obj.Material, light, point, eye, normal);
+                    canvas.WritePixel(color, x, y);
                 }
             }
 
