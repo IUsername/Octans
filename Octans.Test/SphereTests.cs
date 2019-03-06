@@ -140,6 +140,22 @@ namespace Octans.Test
             n.Should().Be(Vector.Create(0, 0.97014f, -0.24254f));
         }
 
+        [Fact]
+        public void HasDefaultMaterial()
+        {
+            var s = new Sphere();
+            s.Material.Should().BeEquivalentTo(new Material());
+        }
+
+        [Fact]
+        public void CanBeAssignedMaterial()
+        {
+            var s = new Sphere();
+            var m = new Material {Ambient = 1f};
+            s.SetMaterial(m);
+            s.Material.Should().Be(m);
+        }
+
         [Fact(Skip = "creates file in My Pictures folder")]
         public void RaycastTest()
         {

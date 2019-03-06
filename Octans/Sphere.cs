@@ -8,9 +8,12 @@ namespace Octans
         public Sphere()
         {
             Transform = Matrix.Identity;
+            Material = new Material();
         }
 
         public Matrix Transform { get; private set; }
+
+        public Material Material { get; private set; }
 
         public IReadOnlyList<Intersection> Intersect(Ray ray)
         {
@@ -37,6 +40,11 @@ namespace Octans
         {
             // TODO: Allow mutations?
             Transform = matrix;
+        }
+
+        public void SetMaterial(Material material)
+        {
+            Material = material;
         }
 
         public Tuple NormalAt(Tuple worldPoint)
