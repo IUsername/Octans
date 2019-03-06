@@ -78,14 +78,14 @@ namespace Octans.Test
         public void MatrixMultipliedByIdentityIsMatrix()
         {
             var a = Matrix.Square(1, 2, 3, 4, 1, 2, 4, 8, 2, 4, 8, 16, 4, 8, 16, 32);
-            (a * Matrix.Identity4).Should().BeEquivalentTo(a);
+            (a * Matrix.Identity).Should().BeEquivalentTo(a);
         }
 
         [Fact]
         public void TupleMultipliedByIdentityMatrixIsTuple()
         {
             var a = new Tuple(1, 2, 3, 4);
-            (Matrix.Identity4 * a).Should().BeEquivalentTo(a);
+            (Matrix.Identity * a).Should().BeEquivalentTo(a);
         }
 
         [Fact]

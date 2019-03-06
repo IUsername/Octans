@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Octans
 {
@@ -112,7 +111,7 @@ namespace Octans
             }
         }
 
-        public static Matrix Identity4 = new Matrix(new[] {1.0, 0, 0, 0},
+        public static Matrix Identity = new Matrix(new[] {1.0, 0, 0, 0},
                                                     new[] {0.0, 1, 0, 0},
                                                     new[] {0.0, 0, 1, 0},
                                                     new[] {0.0, 0, 0, 1});
