@@ -19,7 +19,7 @@
                 IsInside = false;
             }
 
-            OverPoint = Point + (Normal * Epsilon);
+            OverPoint = Point + Normal * Epsilon;
         }
 
         public readonly float T;

@@ -20,5 +20,7 @@
         public Color Color { get; set; }
 
         public float Ambient { get; set; }
+
+        public StripePattern? Pattern { get; set; }
     }
 }

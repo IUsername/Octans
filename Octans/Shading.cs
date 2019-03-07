@@ -18,13 +18,14 @@ namespace Octans
         }
 
         public static Color Lighting(Material m,
+                                     IShape shape,
                                      PointLight light,
                                      Point position,
                                      Vector eyeVector,
                                      Vector normalVector,
                                      bool inShadow)
         {
-            var effectiveColor = m.Color * light.Intensity;
+            var effectiveColor = m.Pattern?.ColorAt(position, shape) ?? m.Color * light.Intensity;
             var ambient = effectiveColor * m.Ambient;
 
             if (inShadow)
@@ -61,7 +62,7 @@ namespace Octans
             {
                 var isShadowed = IsShadowed(world, info.OverPoint);
                 // TODO: Use OverPoint here?
-                color += Lighting(info.Shape.Material, light, info.OverPoint, info.Eye, info.Normal, isShadowed);
+                color += Lighting(info.Shape.Material, info.Shape, light, info.OverPoint, info.Eye, info.Normal, isShadowed);
             }
             return color;
         }

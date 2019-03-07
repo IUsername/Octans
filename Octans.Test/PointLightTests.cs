@@ -15,18 +15,4 @@ namespace Octans.Test
             light.Intensity.Should().Be(intensity);
         }
     }
-
-    public class MaterialTests
-    {
-        [Fact]
-        public void ContainsColorAmbientDiffuseSpecularAndShininess()
-        {
-            var m = new Material();
-            m.Color.Should().Be(new Color(1f, 1f, 1f));
-            m.Ambient.Should().Be(0.1f);
-            m.Diffuse.Should().Be(0.9f);
-            m.Specular.Should().Be(0.9f);
-            m.Shininess.Should().Be(200f);
-        }
-    }
 }

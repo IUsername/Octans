@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Octans.Test
 {
-    public class MatrixTest
+    public class MatrixTests
     {
         private const float Precision = 0.00001f;
 

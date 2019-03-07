@@ -112,10 +112,10 @@ namespace Octans.Test
                     }
 
                     var point = r.Position(hit.Value.T);
-                    var surface = hit.Value.Shape;
-                    var normal = surface.NormalAt(point);
+                    var shape = hit.Value.Shape;
+                    var normal = shape.NormalAt(point);
                     var eye = -r.Direction;
-                    var color = Shading.Lighting(surface.Material, light, point, eye, normal, false);
+                    var color = Shading.Lighting(shape.Material, shape, light, point, eye, normal, false);
                     canvas.WritePixel(color, x, y);
                 }
             }
