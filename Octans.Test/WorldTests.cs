@@ -27,12 +27,18 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact(Skip = "creates file in My Pictures folder")]
+        [Fact(Skip ="Generates file in My Pictures")]
         public void TestRender()
         {
+
+            var s1 = new StripePattern(Colors.White, Colors.Black);
+            var s2 = new StripePattern(Colors.White, Colors.Black);
+            s2.SetTransform(Transforms.RotateY(MathF.PI/2));
+            var pattern = new BlendedCompositePattern(s1, s2);
+
             var floor = new Plane {Material =
             {
-                Pattern = new CheckerPattern(new Color(0.75f, 0.75f, 0.75f), Colors.White),
+                Pattern = pattern,// new CheckerPattern(new Color(0.75f, 0.75f, 0.75f), Colors.White),
                 Specular = 0f
             }};
 
