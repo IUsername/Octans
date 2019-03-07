@@ -6,10 +6,10 @@ namespace Octans.Test
     public class MaterialTests
     {
         [Fact]
-        public void ContainsColorAmbientDiffuseSpecularAndShininess()
+        public void ContainsPatternAmbientDiffuseSpecularAndShininess()
         {
             var m = new Material();
-            m.Color.Should().Be(new Color(1f, 1f, 1f));
+            m.Pattern.Should().BeAssignableTo<IPattern>();
             m.Ambient.Should().Be(0.1f);
             m.Diffuse.Should().Be(0.9f);
             m.Specular.Should().Be(0.9f);

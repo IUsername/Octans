@@ -136,7 +136,7 @@ namespace Octans.Test
             w.Objects[1].Material.Ambient = 1f;
             var r = new Ray(new Point(0, 0, 0.75f), new Vector(0, 0, -1));
             var c = Shading.ColorAt(w, r);
-            c.Should().Be(w.Objects[1].Material.Color);
+            c.Should().Be(w.Objects[1].Material.Pattern.LocalColorAt(Point.Zero));
         }
 
         [Fact]

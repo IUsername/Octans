@@ -4,7 +4,7 @@
     {
         public Material()
         {
-            Color = new Color(1f, 1f, 1f);
+            Pattern = new SolidColor(Colors.White);
             Ambient = 0.1f;
             Diffuse = 0.9f;
             Specular = 0.9f;
@@ -17,10 +17,8 @@
 
         public float Diffuse { get; set; }
 
-        public Color Color { get; set; }
-
         public float Ambient { get; set; }
 
-        public StripePattern? Pattern { get; set; }
+        public IPattern Pattern { get; set; }
     }
 }

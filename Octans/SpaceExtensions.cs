@@ -20,6 +20,12 @@ namespace Octans
             return shape.Transform.Inverse() * worldPoint;
         }
 
+        public static Point ToLocal(in this Point worldPoint, IShape shape, IPattern pattern)
+        {
+            var localPoint = worldPoint.ToLocal(shape);
+            return pattern.Transform.Inverse() * localPoint;
+        }
+
         public static Vector NormalAt(this IShape shape, in Point worldPoint)
         {
             var inv = shape.Transform.Inverse();

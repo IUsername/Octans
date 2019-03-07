@@ -39,7 +39,7 @@ namespace Octans
         {
             var w = new World();
             var s1 = new Sphere();
-            var m = new Material { Color = new Color(0.8f, 1.0f, 0.6f), Diffuse = 0.7f, Specular = 0.2f };
+            var m = new Material { Pattern = new SolidColor(new Color(0.8f, 1.0f, 0.6f)), Diffuse = 0.7f, Specular = 0.2f };
             s1.SetMaterial(m);
             var s2 = new Sphere();
             s2.SetTransform(Matrix.Identity.Scale(0.5f, 0.5f, 0.5f));

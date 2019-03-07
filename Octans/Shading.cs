@@ -17,15 +17,21 @@ namespace Octans
             return h.HasValue && h.Value.T < distance;
         }
 
+        public static Color ShapeColor(this IPattern pattern, IShape shape, Point worldPoint)
+        {
+            var local = worldPoint.ToLocal(shape, pattern);
+            return pattern.LocalColorAt(local);
+        }
+
         public static Color Lighting(Material m,
                                      IShape shape,
                                      PointLight light,
-                                     Point position,
+                                     Point worldPoint,
                                      Vector eyeVector,
                                      Vector normalVector,
                                      bool inShadow)
         {
-            var effectiveColor = m.Pattern?.ColorAt(position, shape) ?? m.Color * light.Intensity;
+            var effectiveColor = m.Pattern.ShapeColor(shape, worldPoint) * light.Intensity;
             var ambient = effectiveColor * m.Ambient;
 
             if (inShadow)
@@ -33,7 +39,7 @@ namespace Octans
                 return ambient;
             }
 
-            var lightV = (light.Position - position).Normalize();
+            var lightV = (light.Position - worldPoint).Normalize();
             var lightDotNormal = lightV % normalVector;
 
             if (!(lightDotNormal >= 0f))
@@ -62,8 +68,10 @@ namespace Octans
             {
                 var isShadowed = IsShadowed(world, info.OverPoint);
                 // TODO: Use OverPoint here?
-                color += Lighting(info.Shape.Material, info.Shape, light, info.OverPoint, info.Eye, info.Normal, isShadowed);
+                color += Lighting(info.Shape.Material, info.Shape, light, info.OverPoint, info.Eye, info.Normal,
+                                  isShadowed);
             }
+
             return color;
         }
 

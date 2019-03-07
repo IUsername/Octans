@@ -30,16 +30,16 @@ namespace Octans.Test
         [Fact(Skip = "creates file in My Pictures folder")]
         public void TestRender()
         {
-            var floor = new Plane {Material = {Color = new Color(1f, 0.9f, 0.9f), Specular = 0f}};
+            var floor = new Plane {Material = {Pattern = new SolidColor(new Color(1f, 0.9f, 0.9f)), Specular = 0f}};
 
-            var middle = new Sphere {Material = {Color = new Color(0.1f, 1f, 0.5f), Diffuse = 0.7f, Specular = 0.3f}};
+            var middle = new Sphere {Material = { Pattern = new SolidColor(new Color(0.1f, 1f, 0.5f)), Diffuse = 0.7f, Specular = 0.3f}};
             middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.5f));
             //middle.SetTransform(Transforms.Translate(-0.5f, 0.5f, 0.5f));
 
-            var right = new Sphere {Material = {Color = new Color(0.5f, 1f, 0.1f), Diffuse = 0.7f, Specular = 0.3f}};
+            var right = new Sphere {Material = { Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f}};
             right.SetTransform(Transforms.Translate(1.5f, 0.5f, -0.5f) * Transforms.Scale(0.5f, 0.5f, 0.5f));
 
-            var left = new Sphere {Material = {Color = new Color(1f, 0.8f, 0.1f), Diffuse = 0.7f, Specular = 0.3f}};
+            var left = new Sphere {Material = { Pattern = new SolidColor(new Color(1f, 0.8f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f}};
             left.SetTransform(Transforms.Translate(-1.5f, 0.33f, -0.75f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
 
             var w = new World();

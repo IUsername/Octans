@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Octans.Test
 {
-    public class ShapeTests
+    public class ShapeBaseTests
     {
         [Fact]
         public void IsShape()

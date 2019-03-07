@@ -86,7 +86,7 @@ namespace Octans.Test
         {
             const int canvasPixels = 100;
             var canvas = new Canvas(canvasPixels, canvasPixels);
-            var s = new Sphere {Material = {Color = new Color(0.4f, 0.2f, 1)}};
+            var s = new Sphere {Material = {Pattern = new SolidColor(new Color(0.4f, 0.2f, 1))}};
             var light = new PointLight(new Point(-10, 10, -10), new Color(1f, 1f, 1f));
             //var t = Transforms.Shear(0.1f, 0, 0, 0, 0, 0).Scale(0.9f, 1f, 1f);
             //s.SetTransform(t);
