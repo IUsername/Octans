@@ -5,10 +5,10 @@
         public IntersectionInfo(Intersection intersection, Ray ray)
         {
             T = intersection.T;
-            Surface = intersection.Surface;
+            Shape = intersection.Shape;
             Point = ray.Position(T);
             Eye = -ray.Direction;
-            Normal = Surface.NormalAt(Point);
+            Normal = Shape.NormalAt(Point);
             if (Normal % Eye < 0f)
             {
                 IsInside = true;
@@ -18,13 +18,18 @@
             {
                 IsInside = false;
             }
+
+            OverPoint = Point + (Normal * Epsilon);
         }
 
         public readonly float T;
-        public readonly ISurface Surface;
+        public readonly IShape Shape;
         public readonly Point Point;
+        public readonly Point OverPoint;
         public readonly Vector Eye;
         public readonly Vector Normal;
         public readonly bool IsInside;
+
+        public const float Epsilon = 0.002f;
     }
 }

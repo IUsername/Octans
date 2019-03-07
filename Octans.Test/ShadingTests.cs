@@ -14,7 +14,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, light, position, eyeV, normalV);
+            var result = Shading.Lighting(m, light, position, eyeV, normalV, false);
             result.Should().BeEquivalentTo(new Color(1.9f, 1.9f, 1.9f));
         }
 
@@ -26,7 +26,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, light, position, eyeV, normalV);
+            var result = Shading.Lighting(m, light, position, eyeV, normalV, false);
             result.Should().BeEquivalentTo(new Color(1.0f, 1.0f, 1.0f));
         }
 
@@ -38,7 +38,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, light, position, eyeV, normalV);
+            var result = Shading.Lighting(m, light, position, eyeV, normalV, false);
             result.Should().BeEquivalentTo(new Color(0.7364f, 0.7364f, 0.7364f));
         }
 
@@ -50,7 +50,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, -MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, light, position, eyeV, normalV);
+            var result = Shading.Lighting(m, light, position, eyeV, normalV, false);
             result.Should().BeEquivalentTo(new Color(1.6364f, 1.6364f, 1.6364f));
         }
 
@@ -62,7 +62,20 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, 10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, light, position, eyeV, normalV);
+            var result = Shading.Lighting(m, light, position, eyeV, normalV, false);
+            result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
+        }
+
+        [Fact]
+        public void LightOnSurfaceInShadow()
+        {
+            var m = new Material();
+            var position = Point.Zero;
+            var eyeV = new Vector(0, 0, -1f);
+            var normalV = new Vector(0, 0, -1);
+            var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
+            const bool inShadow = true;
+            var result = Shading.Lighting(m, light, position, eyeV, normalV, inShadow);
             result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
         }
 
@@ -118,6 +131,30 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, 0.75f), new Vector(0, 0, -1));
             var c = Shading.ColorAt(w, r);
             c.Should().Be(w.Objects[1].Material.Color);
+        }
+
+        [Fact]
+        public void NotInShadowWhenNothingBetweenLightAndPoint()
+        {
+            var w = World.Default();
+            var p = new Point(0, 10, 0);
+            Shading.IsShadowed(w, p).Should().BeFalse();
+        }
+
+        [Fact]
+        public void InShadowWhenAnObjectIsBetweenLightAndPoint()
+        {
+            var w = World.Default();
+            var p = new Point(10, -10, 10);
+            Shading.IsShadowed(w, p).Should().BeTrue();
+        }
+
+        [Fact]
+        public void NotInShadowWhenObjectIsBehindPoint()
+        {
+            var w = World.Default();
+            var p = new Point(-2, 2, -2);
+            Shading.IsShadowed(w, p).Should().BeFalse();
         }
     }
 }

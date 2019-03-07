@@ -23,6 +23,11 @@ namespace Octans
         {
         }
 
+        public Vector ZeroW()
+        {
+            return new Vector(X, Y, Z);
+        }
+
         public Vector Add(Vector t) => new Vector(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
 
         public Vector Subtract(Vector t) => new Vector(X - t.X, Y - t.Y, Z - t.Z, W - t.W);

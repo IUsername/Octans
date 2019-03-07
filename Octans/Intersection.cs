@@ -5,12 +5,12 @@ namespace Octans
     public readonly struct Intersection
     {
         public readonly float T;
-        public readonly ISurface Surface;
+        public readonly IShape Shape;
 
-        public Intersection(float t, ISurface surface)
+        public Intersection(float t, IShape shape)
         {
             T = t;
-            Surface = surface;
+            Shape = shape;
         }
     }
 

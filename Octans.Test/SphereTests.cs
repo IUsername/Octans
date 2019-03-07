@@ -7,16 +7,23 @@ namespace Octans.Test
     public class SphereTests
     {
         [Fact]
+        public void IsShape()
+        {
+            var s = new Sphere();
+            s.Should().BeAssignableTo<IShape>();
+        }
+
+        [Fact]
         public void NonEdgeRayIntersectsSphereAtTwoPoints()
         {
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var s = new Sphere();
-            var xs = s.Intersect(r);
+            var xs = s.LocalIntersects(r);
             xs.Should().HaveCount(2);
             xs[0].T.Should().Be(4.0f);
             xs[1].T.Should().Be(6.0f);
-            xs[0].Surface.Should().Be(s);
-            xs[1].Surface.Should().Be(s);
+            xs[0].Shape.Should().Be(s);
+            xs[1].Shape.Should().Be(s);
         }
 
         [Fact]
@@ -24,7 +31,7 @@ namespace Octans.Test
         {
             var r = new Ray(new Point(0, 2, -5), new Vector(0, 0, 1));
             var s = new Sphere();
-            var xs = s.Intersect(r);
+            var xs = s.LocalIntersects(r);
             xs.Should().HaveCount(0);
         }
 
@@ -33,7 +40,7 @@ namespace Octans.Test
         {
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var s = new Sphere();
-            var xs = s.Intersect(r);
+            var xs = s.LocalIntersects(r);
             xs.Should().HaveCount(2);
             xs[0].T.Should().Be(-1.0f);
             xs[1].T.Should().Be(1.0f);
@@ -44,57 +51,17 @@ namespace Octans.Test
         {
             var r = new Ray(new Point(0, 0, 5), new Vector(0, 0, 1));
             var s = new Sphere();
-            var xs = s.Intersect(r);
+            var xs = s.LocalIntersects(r);
             xs.Should().HaveCount(2);
             xs[0].T.Should().Be(-6.0f);
             xs[1].T.Should().Be(-4.0f);
         }
 
         [Fact]
-        public void DefaultTransformIsIdentity()
-        {
-            var s = new Sphere();
-            s.Transform.Should().Be(Matrix.Identity);
-        }
-
-        [Fact]
-        public void CanChangeTransform()
-        {
-            var s = new Sphere();
-            var t = Transforms.Translate(2, 3, 4);
-            s.SetTransform(t);
-            s.Transform.Should().Be(t);
-        }
-
-        [Fact]
-        public void IntersectingScaledSphere()
-        {
-            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var s = new Sphere();
-            var t = Transforms.Scale(2, 2, 2);
-            s.SetTransform(t);
-            var xs = s.Intersect(r);
-            xs.Should().HaveCount(2);
-            xs[0].T.Should().Be(3f);
-            xs[1].T.Should().Be(7f);
-        }
-
-        [Fact]
-        public void IntersectingTranslatedSphere()
-        {
-            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var s = new Sphere();
-            var t = Transforms.Translate(5, 0, 0);
-            s.SetTransform(t);
-            var xs = s.Intersect(r);
-            xs.Should().HaveCount(0);
-        }
-
-        [Fact]
         public void NormalOnXAxis()
         {
             var s = new Sphere();
-            var n = s.NormalAt(new Point(1, 0, 0));
+            var n = s.LocalNormalAt(new Point(1, 0, 0));
             n.Should().Be(new Vector(1, 0, 0));
         }
 
@@ -102,7 +69,7 @@ namespace Octans.Test
         public void NormalOnYAxis()
         {
             var s = new Sphere();
-            var n = s.NormalAt(new Point(0, 1, 0));
+            var n = s.LocalNormalAt(new Point(0, 1, 0));
             n.Should().Be(new Vector(0, 1, 0));
         }
 
@@ -110,50 +77,8 @@ namespace Octans.Test
         public void NormalOnZAxis()
         {
             var s = new Sphere();
-            var n = s.NormalAt(new Point(0, 0, 1));
+            var n = s.LocalNormalAt(new Point(0, 0, 1));
             n.Should().Be(new Vector(0, 0, 1));
-        }
-
-        [Fact]
-        public void NormalsAreNormalized()
-        {
-            var s = new Sphere();
-            var n = s.NormalAt(new Point(MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f));
-            (n == n.Normalize()).Should().BeTrue();
-        }
-
-        [Fact]
-        public void NormalOnTranslatedSphere()
-        {
-            var s = new Sphere();
-            s.SetTransform(Transforms.Translate(0, 1, 0));
-            var n = s.NormalAt(new Point(0, 1.70711f, -0.70711f));
-            n.Should().Be(new Vector(0, 0.70711f, -0.70711f));
-        }
-
-        [Fact]
-        public void NormalOnTransformedSphere()
-        {
-            var s = new Sphere();
-            s.SetTransform(Transforms.Scale(1f, 0.5f, 1f) * Transforms.RotateZ(MathF.PI / 5f));
-            var n = s.NormalAt(new Point(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f));
-            n.Should().Be(new Vector(0, 0.97014f, -0.24254f));
-        }
-
-        [Fact]
-        public void HasDefaultMaterial()
-        {
-            var s = new Sphere();
-            s.Material.Should().BeEquivalentTo(new Material());
-        }
-
-        [Fact]
-        public void CanBeAssignedMaterial()
-        {
-            var s = new Sphere();
-            var m = new Material {Ambient = 1f};
-            s.SetMaterial(m);
-            s.Material.Should().Be(m);
         }
 
         [Fact(Skip = "creates file in My Pictures folder")]
@@ -179,7 +104,7 @@ namespace Octans.Test
                     var worldX = -half + pixelSize * x;
                     var position = new Point(worldX, worldY, wallZ);
                     var r = new Ray(rayOrigin, (position - rayOrigin).Normalize());
-                    var xs = s.Intersect(r);
+                    var xs = s.Intersects(r);
                     var hit = xs.Hit();
                     if (!hit.HasValue)
                     {
@@ -187,10 +112,10 @@ namespace Octans.Test
                     }
 
                     var point = r.Position(hit.Value.T);
-                    var surface = hit.Value.Surface;
+                    var surface = hit.Value.Shape;
                     var normal = surface.NormalAt(point);
                     var eye = -r.Direction;
-                    var color = Shading.Lighting(surface.Material, light, point, eye, normal);
+                    var color = Shading.Lighting(surface.Material, light, point, eye, normal, false);
                     canvas.WritePixel(color, x, y);
                 }
             }

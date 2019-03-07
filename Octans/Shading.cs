@@ -4,11 +4,35 @@ namespace Octans
 {
     public static class Shading
     {
-        public static Color Lighting(Material m, PointLight light, Point position, Vector eyeVector, Vector normalVector)
+        public static bool IsShadowed(World w, Point p)
+        {
+            // TODO: Only support one light.
+            var light = w.Lights[0];
+            var v = light.Position - p;
+            var distance = v.Magnitude();
+            var direction = v.Normalize();
+            var r = new Ray(p, direction);
+            var xs = w.Intersect(r);
+            var h = xs.Hit();
+            return h.HasValue && h.Value.T < distance;
+        }
+
+        public static Color Lighting(Material m,
+                                     PointLight light,
+                                     Point position,
+                                     Vector eyeVector,
+                                     Vector normalVector,
+                                     bool inShadow)
         {
             var effectiveColor = m.Color * light.Intensity;
-            var lightV = (light.Position - position).Normalize();
             var ambient = effectiveColor * m.Ambient;
+
+            if (inShadow)
+            {
+                return ambient;
+            }
+
+            var lightV = (light.Position - position).Normalize();
             var lightDotNormal = lightV % normalVector;
 
             if (!(lightDotNormal >= 0f))
@@ -35,7 +59,9 @@ namespace Octans
             var color = Colors.Black;
             foreach (var light in world.Lights)
             {
-                color += Lighting(info.Surface.Material, light, info.Point, info.Eye, info.Normal);
+                var isShadowed = IsShadowed(world, info.OverPoint);
+                // TODO: Use OverPoint here?
+                color += Lighting(info.Shape.Material, light, info.Point, info.Eye, info.Normal, isShadowed);
             }
             return color;
         }

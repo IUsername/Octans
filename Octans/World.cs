@@ -7,11 +7,11 @@ namespace Octans
     {
         public World()
         {
-            Objects = Array.Empty<ISurface>();
+            Objects = Array.Empty<IShape>();
             Lights = Array.Empty<PointLight>();
         }
 
-        public IReadOnlyList<ISurface> Objects { get; private set; }
+        public IReadOnlyList<IShape> Objects { get; private set; }
         public IReadOnlyList<PointLight> Lights { get; private set; }
 
         public IReadOnlyList<Intersection> Intersect(in Ray ray)
@@ -19,7 +19,7 @@ namespace Octans
             var list = new List<Intersection>();
             foreach (var surface in Objects)
             {
-                list.AddRange(surface.Intersect(ray));
+                list.AddRange(surface.Intersects(ray));
             }
 
             return new Intersections(list);
@@ -30,9 +30,9 @@ namespace Octans
             Lights = lights;
         }
 
-        public void SetObjects(params ISurface[] surfaces)
+        public void SetObjects(params IShape[] shapes)
         {
-            Objects = surfaces;
+            Objects = shapes;
         }
 
         public static World Default()
