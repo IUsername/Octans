@@ -6,7 +6,7 @@ namespace Octans
     {
         public static bool IsShadowed(World w, Point p)
         {
-            // TODO: Only support one light.
+            // TODO: Only supports one light.
             var light = w.Lights[0];
             var v = light.Position - p;
             var distance = v.Magnitude();
@@ -61,7 +61,7 @@ namespace Octans
             {
                 var isShadowed = IsShadowed(world, info.OverPoint);
                 // TODO: Use OverPoint here?
-                color += Lighting(info.Shape.Material, light, info.Point, info.Eye, info.Normal, isShadowed);
+                color += Lighting(info.Shape.Material, light, info.OverPoint, info.Eye, info.Normal, isShadowed);
             }
             return color;
         }

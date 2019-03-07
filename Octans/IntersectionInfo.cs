@@ -30,6 +30,6 @@
         public readonly Vector Normal;
         public readonly bool IsInside;
 
-        public const float Epsilon = 0.002f;
+        public const float Epsilon = 0.00001f;
     }
 }

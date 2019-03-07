@@ -30,48 +30,21 @@ namespace Octans.Test
         [Fact(Skip = "creates file in My Pictures folder")]
         public void TestRender()
         {
-            var floor = new Sphere();
-            floor.SetTransform(Transforms.Scale(10, 0.01f, 10));
-            floor.Material.Color = new Color(1f, 0.9f, 0.9f);
-            floor.Material.Specular = 0f;
+            var floor = new Plane {Material = {Color = new Color(1f, 0.9f, 0.9f), Specular = 0f}};
 
-            var leftWall = new Sphere();
-            leftWall.SetTransform(
-                Transforms.Translate(0, 0, 5)
-                * Transforms.RotateY(-MathF.PI / 4f)
-                * Transforms.RotateX(MathF.PI / 2f)
-                * Transforms.Scale(10, 0.01f, 10));
-            leftWall.SetMaterial(floor.Material);
-
-            var rightWall = new Sphere();
-            rightWall.SetTransform(
-                Transforms.Translate(0, 0, 5)
-                * Transforms.RotateY(MathF.PI / 4f)
-                * Transforms.RotateX(MathF.PI / 2f)
-                * Transforms.Scale(10, 0.01f, 10));
-            rightWall.SetMaterial(floor.Material);
-
-            var middle = new Sphere();
+            var middle = new Sphere {Material = {Color = new Color(0.1f, 1f, 0.5f), Diffuse = 0.7f, Specular = 0.3f}};
             middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.5f));
-            middle.Material.Color = new Color(0.1f, 1f, 0.5f);
-            middle.Material.Diffuse = 0.7f;
-            middle.Material.Specular = 0.3f;
+            //middle.SetTransform(Transforms.Translate(-0.5f, 0.5f, 0.5f));
 
-            var right = new Sphere();
+            var right = new Sphere {Material = {Color = new Color(0.5f, 1f, 0.1f), Diffuse = 0.7f, Specular = 0.3f}};
             right.SetTransform(Transforms.Translate(1.5f, 0.5f, -0.5f) * Transforms.Scale(0.5f, 0.5f, 0.5f));
-            right.Material.Color = new Color(0.5f, 1f, 0.1f);
-            right.Material.Diffuse = 0.7f;
-            right.Material.Specular = 0.3f;
 
-            var left = new Sphere();
+            var left = new Sphere {Material = {Color = new Color(1f, 0.8f, 0.1f), Diffuse = 0.7f, Specular = 0.3f}};
             left.SetTransform(Transforms.Translate(-1.5f, 0.33f, -0.75f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
-            left.Material.Color = new Color(1f, 0.8f, 0.1f);
-            left.Material.Diffuse = 0.7f;
-            left.Material.Specular = 0.3f;
 
             var w = new World();
             w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
-            w.SetObjects(floor, leftWall, rightWall, middle, right, left);
+            w.SetObjects(floor, middle, right, left);
 
             var c = new Camera(100, 50, MathF.PI / 3f);
             c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
