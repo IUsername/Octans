@@ -30,7 +30,7 @@ namespace Octans.Test
         [Fact(Skip = "creates file in My Pictures folder")]
         public void TestRender()
         {
-            var floor = new Plane {Material = {Pattern = new SolidColor(new Color(1f, 0.9f, 0.9f)), Specular = 0f}};
+            var floor = new Plane {Material = {Pattern = new CheckerPattern(new Color(1f, 0.9f, 0.9f), Colors.White), Specular = 0f}};
 
             var middle = new Sphere {Material = { Pattern = new SolidColor(new Color(0.1f, 1f, 0.5f)), Diffuse = 0.7f, Specular = 0.3f}};
             middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.5f));
