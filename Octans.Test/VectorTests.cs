@@ -111,14 +111,14 @@ namespace Octans.Test
             var v = new Vector(1, -1, 0);
             var n = new Vector(0, 1, 0);
             var r = v.Reflect(n);
-            r.Should().BeEquivalentTo(new Vector(1,1,0));
+            r.Should().BeEquivalentTo(new Vector(1, 1, 0));
         }
 
         [Fact]
         public void ReflectOffSlantedSurface()
         {
             var v = new Vector(0, -1, 0);
-            var n = new Vector(MathF.Sqrt(2f)/2f, MathF.Sqrt(2f) / 2f, 0);
+            var n = new Vector(MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f, 0);
             var r = v.Reflect(n);
             r.Should().BeEquivalentTo(new Vector(1, 0, 0));
         }

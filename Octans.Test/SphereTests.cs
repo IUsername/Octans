@@ -118,7 +118,7 @@ namespace Octans.Test
         public void NormalsAreNormalized()
         {
             var s = new Sphere();
-            var n = s.NormalAt(new Point(MathF.Sqrt(3f)/3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f));
+            var n = s.NormalAt(new Point(MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f));
             (n == n.Normalize()).Should().BeTrue();
         }
 
@@ -126,7 +126,7 @@ namespace Octans.Test
         public void NormalOnTranslatedSphere()
         {
             var s = new Sphere();
-            s.SetTransform(Transforms.Translate(0,1,0));
+            s.SetTransform(Transforms.Translate(0, 1, 0));
             var n = s.NormalAt(new Point(0, 1.70711f, -0.70711f));
             n.Should().Be(new Vector(0, 0.70711f, -0.70711f));
         }
@@ -135,7 +135,7 @@ namespace Octans.Test
         public void NormalOnTransformedSphere()
         {
             var s = new Sphere();
-            s.SetTransform(Transforms.Scale(1f, 0.5f, 1f) * Transforms.RotateZ(MathF.PI/5f));
+            s.SetTransform(Transforms.Scale(1f, 0.5f, 1f) * Transforms.RotateZ(MathF.PI / 5f));
             var n = s.NormalAt(new Point(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f));
             n.Should().Be(new Vector(0, 0.97014f, -0.24254f));
         }

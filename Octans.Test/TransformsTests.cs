@@ -27,7 +27,7 @@ namespace Octans.Test
         {
             var t = Transforms.Translate(5, -3, 2);
             var v = new Vector(-3, 4, 5);
-            (t*v).Should().BeEquivalentTo(v);
+            (t * v).Should().BeEquivalentTo(v);
         }
 
         [Fact]
@@ -77,7 +77,9 @@ namespace Octans.Test
         {
             var p = new Point(0, 1, 0);
             var halfQuarter = Transforms.RotateX(MathF.PI / 4);
-            (Matrix.Inverse(halfQuarter) * p).Should().BeEquivalentTo(new Point(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2));
+            (Matrix.Inverse(halfQuarter) * p)
+                .Should()
+                .BeEquivalentTo(new Point(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2));
         }
 
 
@@ -87,7 +89,7 @@ namespace Octans.Test
             var p = new Point(0, 0, 1);
             var halfQuarter = Transforms.RotateY(MathF.PI / 4);
             var fullQuarter = Transforms.RotateY(MathF.PI / 2);
-            (halfQuarter * p).Should().BeEquivalentTo(new Point(MathF.Sqrt(2) / 2,0, MathF.Sqrt(2) / 2));
+            (halfQuarter * p).Should().BeEquivalentTo(new Point(MathF.Sqrt(2) / 2, 0, MathF.Sqrt(2) / 2));
             (fullQuarter * p).Should().BeEquivalentTo(new Point(1, 0, 0));
         }
 
@@ -106,7 +108,7 @@ namespace Octans.Test
         {
             var t = Transforms.Shear(0, 1, 0, 0, 0, 0);
             var p = new Point(2, 3, 4);
-            (t*p).Should().BeEquivalentTo(new Point(6,3,4));
+            (t * p).Should().BeEquivalentTo(new Point(6, 3, 4));
         }
 
         [Fact]
@@ -151,7 +153,7 @@ namespace Octans.Test
             var p2 = a * p;
             var p3 = b * p2;
             var p4 = c * p3;
-            p4.Should().BeEquivalentTo(new Point(15,0,7));
+            p4.Should().BeEquivalentTo(new Point(15, 0, 7));
         }
 
         [Fact]
@@ -162,7 +164,7 @@ namespace Octans.Test
             var b = Transforms.Scale(5, 5, 5);
             var c = Transforms.Translate(10, 5, 7);
             var t = c * b * a;
-            (t*p).Should().BeEquivalentTo(new Point(15, 0, 7));
+            (t * p).Should().BeEquivalentTo(new Point(15, 0, 7));
         }
 
         [Fact]
@@ -171,6 +173,51 @@ namespace Octans.Test
             var p = new Point(1, 0, 1);
             var t = Matrix.Identity.RotateX(MathF.PI / 2).Scale(5, 5, 5).Translate(10, 5, 7);
             (t * p).Should().BeEquivalentTo(new Point(15, 0, 7));
+        }
+
+        [Fact]
+        public void DefaultViewTransformIsIdentity()
+        {
+            var from = new Point(0, 0, 0);
+            var to = new Point(0, 0, -1);
+            var up = new Vector(0, 1, 0);
+            var t = Transforms.View(from, to, up);
+            t.Should().Be(Matrix.Identity);
+        }
+
+        [Fact]
+        public void ViewTransformLookingInPositiveZ()
+        {
+            var from = new Point(0, 0, 0);
+            var to = new Point(0, 0, 1);
+            var up = new Vector(0, 1, 0);
+            var t = Transforms.View(from, to, up);
+            t.Should().Be(Transforms.Scale(-1, 1, -1));
+        }
+
+        [Fact]
+        public void ViewTranslation()
+        {
+            var from = new Point(0, 0, 8);
+            var to = new Point(0, 0, 0);
+            var up = new Vector(0, 1, 0);
+            var t = Transforms.View(from, to, up);
+            t.Should().Be(Transforms.Translate(0, 0, -8));
+        }
+
+        [Fact]
+        public void ArbitraryView()
+        {
+            var from = new Point(1, 3, 2);
+            var to = new Point(4, -2, 8);
+            var up = new Vector(1, 1, 0);
+            var t = Transforms.View(from, to, up);
+            t.Should()
+             .Be(Matrix.Square(
+                     -0.50709f, 0.50709f, 0.67612f, -2.36643f,
+                     0.76772f, 0.60609f, 0.12122f, -2.82843f,
+                     -0.35857f, 0.59761f, -0.71714f, 0.0000f,
+                     0.00000f, 0.00000f, 0.00000f, 1.0000f));
         }
     }
 }

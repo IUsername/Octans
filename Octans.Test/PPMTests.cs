@@ -53,7 +53,7 @@ namespace Octans.Test
             ppm.Should().EndWith(Environment.NewLine);
         }
 
-        [Fact(Skip ="creates file in My Pictures folder")]
+        [Fact(Skip = "creates file in My Pictures folder")]
         public void ProjectileTest()
         {
             var start = new Point(0, 1, 0);

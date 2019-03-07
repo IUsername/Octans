@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Octans
 {
@@ -6,16 +7,11 @@ namespace Octans
     {
         public World()
         {
-            var s1 = new Sphere();
-            var m = new Material {Color = new Color(0.8f, 1.0f, 0.6f), Diffuse = 0.7f, Specular = 0.2f};
-            s1.SetMaterial(m);
-            var s2 = new Sphere();
-            s2.SetTransform(Matrix.Identity.Scale(0.5f, 0.5f, 0.5f));
-            Objects = new[] {s1, s2};
-            Lights = new[] {new PointLight(new Point(-10f, 10f, -10f), Colors.White)};
+            Objects = Array.Empty<ISurface>();
+            Lights = Array.Empty<PointLight>();
         }
 
-        public IReadOnlyList<ISurface> Objects { get; }
+        public IReadOnlyList<ISurface> Objects { get; private set; }
         public IReadOnlyList<PointLight> Lights { get; private set; }
 
         public IReadOnlyList<Intersection> Intersect(in Ray ray)
@@ -29,9 +25,27 @@ namespace Octans
             return new Intersections(list);
         }
 
-        public void SetLight(params PointLight[] lights)
+        public void SetLights(params PointLight[] lights)
         {
             Lights = lights;
+        }
+
+        public void SetObjects(params ISurface[] surfaces)
+        {
+            Objects = surfaces;
+        }
+
+        public static World Default()
+        {
+            var w = new World();
+            var s1 = new Sphere();
+            var m = new Material { Color = new Color(0.8f, 1.0f, 0.6f), Diffuse = 0.7f, Specular = 0.2f };
+            s1.SetMaterial(m);
+            var s2 = new Sphere();
+            s2.SetTransform(Matrix.Identity.Scale(0.5f, 0.5f, 0.5f));
+            w.SetObjects(s1, s2 );
+            w.SetLights(new PointLight(new Point(-10f, 10f, -10f), Colors.White));
+            return w;
         }
     }
 }

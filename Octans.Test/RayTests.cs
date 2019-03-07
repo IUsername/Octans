@@ -18,7 +18,7 @@ namespace Octans.Test
         [Fact]
         public void ComputeDistance()
         {
-            var r = new Ray(new Point(2,3,4), new Vector(1,0,0));
+            var r = new Ray(new Point(2, 3, 4), new Vector(1, 0, 0));
             r.Position(0f).Should().BeEquivalentTo(new Point(2, 3, 4));
             r.Position(0f).Should().BeEquivalentTo(new Point(2, 3, 4));
             r.Position(1f).Should().BeEquivalentTo(new Point(3, 3, 4));

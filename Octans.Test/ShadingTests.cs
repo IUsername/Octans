@@ -69,7 +69,7 @@ namespace Octans.Test
         [Fact]
         public void ShadingOutsideIntersection()
         {
-            var w = new World();
+            var w = World.Default();
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var shape = w.Objects[0];
             var i = new Intersection(4f, shape);
@@ -81,8 +81,8 @@ namespace Octans.Test
         [Fact]
         public void ShadingInsideIntersection()
         {
-            var w = new World();
-            w.SetLight(new PointLight(new Point(0, 0.25f, 0), new Color(1f, 1f, 1f)));
+            var w = World.Default();
+            w.SetLights(new PointLight(new Point(0, 0.25f, 0), new Color(1f, 1f, 1f)));
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var shape = w.Objects[1];
             var i = new Intersection(0.5f, shape);
@@ -94,7 +94,7 @@ namespace Octans.Test
         [Fact]
         public void ColorWhenRayMissesIsBlack()
         {
-            var w = new World();
+            var w = World.Default();
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
             var c = Shading.ColorAt(w, r);
             c.Should().Be(new Color(0, 0, 0));
@@ -103,7 +103,7 @@ namespace Octans.Test
         [Fact]
         public void ColorWhenRayHits()
         {
-            var w = new World();
+            var w = World.Default();
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var c = Shading.ColorAt(w, r);
             c.Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
@@ -112,7 +112,7 @@ namespace Octans.Test
         [Fact]
         public void ColorWithIntersectionBehind()
         {
-            var w = new World();
+            var w = World.Default();
             w.Objects[0].Material.Ambient = 1f;
             w.Objects[1].Material.Ambient = 1f;
             var r = new Ray(new Point(0, 0, 0.75f), new Vector(0, 0, -1));
