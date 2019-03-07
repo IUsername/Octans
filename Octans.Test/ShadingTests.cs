@@ -15,7 +15,7 @@ namespace Octans.Test
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
             var result = Shading.Lighting(m, light, position, eyeV, normalV);
-            result.Should().BeEquivalentTo(Color.RGB(1.9f, 1.9f, 1.9f));
+            result.Should().BeEquivalentTo(new Color(1.9f, 1.9f, 1.9f));
         }
 
         [Fact]
@@ -27,7 +27,7 @@ namespace Octans.Test
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
             var result = Shading.Lighting(m, light, position, eyeV, normalV);
-            result.Should().BeEquivalentTo(Color.RGB(1.0f, 1.0f, 1.0f));
+            result.Should().BeEquivalentTo(new Color(1.0f, 1.0f, 1.0f));
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Octans.Test
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
             var result = Shading.Lighting(m, light, position, eyeV, normalV);
-            result.Should().BeEquivalentTo(Color.RGB(0.7364f, 0.7364f, 0.7364f));
+            result.Should().BeEquivalentTo(new Color(0.7364f, 0.7364f, 0.7364f));
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Octans.Test
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
             var result = Shading.Lighting(m, light, position, eyeV, normalV);
-            result.Should().BeEquivalentTo(Color.RGB(1.6364f, 1.6364f, 1.6364f));
+            result.Should().BeEquivalentTo(new Color(1.6364f, 1.6364f, 1.6364f));
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Octans.Test
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, 10), new Color(1f, 1f, 1f));
             var result = Shading.Lighting(m, light, position, eyeV, normalV);
-            result.Should().BeEquivalentTo(Color.RGB(0.1f, 0.1f, 0.1f));
+            result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
         }
 
         [Fact]

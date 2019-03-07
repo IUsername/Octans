@@ -21,9 +21,9 @@ namespace Octans.Test
         public void PPMPixelData()
         {
             var c = new Canvas(5, 3);
-            c.WritePixel(Color.RGB(1.5f, 0f, 0f), 0, 0);
-            c.WritePixel(Color.RGB(0f, 0.5f, 0f), 2, 1);
-            c.WritePixel(Color.RGB(-0.5f, 0f, 1f), 4, 2);
+            c.WritePixel(new Color(1.5f, 0f, 0f), 0, 0);
+            c.WritePixel(new Color(0f, 0.5f, 0f), 2, 1);
+            c.WritePixel(new Color(-0.5f, 0f, 1f), 4, 2);
             var ppm = PPM.CanvasToPPM(c);
             var lines = ppm.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
             lines[3].Should().Be("255 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
@@ -35,7 +35,7 @@ namespace Octans.Test
         public void SplitsLongLines()
         {
             var c = new Canvas(10, 2);
-            c.SetAllPixels(Color.RGB(1f, 0.8f, 0.6f));
+            c.SetAllPixels(new Color(1f, 0.8f, 0.6f));
             var ppm = PPM.CanvasToPPM(c);
             var lines = ppm.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
             lines[3].Should().Be("255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204");
@@ -48,7 +48,7 @@ namespace Octans.Test
         public void EndsInNewLineChar()
         {
             var c = new Canvas(10, 2);
-            c.SetAllPixels(Color.RGB(1f, 0.8f, 0.6f));
+            c.SetAllPixels(new Color(1f, 0.8f, 0.6f));
             var ppm = PPM.CanvasToPPM(c);
             ppm.Should().EndWith(Environment.NewLine);
         }
@@ -63,7 +63,7 @@ namespace Octans.Test
             var c = new Canvas(900, 550);
             var (x, y) = p.ToXY();
             y = 550 - y;
-            var red = Color.RGB(1f, 0f, 0f);
+            var red = new Color(1f, 0f, 0f);
             while (c.IsInBounds(x, y))
             {
                 c.WritePixel(red, x, y);

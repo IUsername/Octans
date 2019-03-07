@@ -17,11 +17,6 @@ namespace Octans
             Blue = blue;
         }
 
-        public Color(Color other)
-        {
-            this = other;
-        }
-
         public Color Add(Color c) => new Color(Red + c.Red, Green + c.Green, Blue + c.Blue);
 
         public Color Subtract(Color c) => new Color(Red - c.Red, Green - c.Green, Blue - c.Blue);
@@ -35,10 +30,10 @@ namespace Octans
         public static Color HadamardProduct(Color c1, Color c2) =>
             new Color(c1.Red * c2.Red, c1.Green * c2.Green, c1.Blue * c2.Blue);
 
-        private static bool Equal(float a, float b) => Math.Abs(a - b) < Epsilon;
-
         public bool Equals(Color other) =>
-            Equal(Red, other.Red) && Equal(Green, other.Green) && Equal(Blue, other.Blue);
+            Check.Within(Red, other.Red, Epsilon)
+            && Check.Within(Green, other.Green, Epsilon)
+            && Check.Within(Blue, other.Blue, Epsilon);
 
         public static Color operator +(Color left, Color right) => left.Add(right);
 
@@ -57,8 +52,6 @@ namespace Octans
         public static bool operator ==(Color left, Color right) => left.Equals(right);
 
         public static bool operator !=(Color left, Color right) => !left.Equals(right);
-
-        public static Color RGB(float red, float green, float blue) => new Color(red, green, blue);
 
         public override bool Equals(object obj)
         {
