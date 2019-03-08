@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact(Skip ="Generates file in My Pictures")]
+        [Fact(Skip ="Creates image in My Pictures folder")]
         public void TestRender()
         {
 
@@ -36,13 +36,18 @@ namespace Octans.Test
             s2.SetTransform(Transforms.RotateY(MathF.PI/2));
             var pattern = new BlendedCompositePattern(s1, s2);
 
+            var stripe = new StripePattern(new Color(0.9f, 0, 0), new Color(0.0f, 0.0f, 0.9f));
+            stripe.SetTransform(Transforms.Scale(0.25f, 0.25f, 0.25f).RotateY(MathF.PI / 4));
+            var perlin = new PerlinRippleCompositePattern(stripe, 0.8f);
+            perlin.SetTransform(Transforms.Scale(0.1f, 0.1f, 0.1f));
+
             var floor = new Plane {Material =
             {
                 Pattern = pattern,// new CheckerPattern(new Color(0.75f, 0.75f, 0.75f), Colors.White),
                 Specular = 0f
             }};
 
-            var middle = new Sphere {Material = { Pattern = new SolidColor(new Color(0.1f, 1f, 0.5f)), Diffuse = 0.7f, Specular = 0.3f}};
+            var middle = new Sphere {Material = { Pattern = perlin, Diffuse = 0.7f, Specular = 0.3f}};
             middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.5f));
             //middle.SetTransform(Transforms.Translate(-0.5f, 0.5f, 0.5f));
 

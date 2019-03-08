@@ -19,13 +19,17 @@ namespace Octans
             W = w;
         }
 
-        public Point(float x, float y, float z) : this(x, y, z, 1.0f) { }
+        public Point(float x, float y, float z) : this(x, y, z, 1.0f)
+        {
+        }
 
         public Point Add(Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
 
         public Vector Subtract(Point t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);
 
         public Point Subtract(Vector t) => new Point(X - t.X, Y - t.Y, Z - t.Z, W);
+
+        private Vector Multiply(in Vector vector) => new Vector(X * vector.X, Y * vector.Y, Z * vector.Z);
 
         public Point Negate() => new Point(-X, -Y, -Z, -W);
 
@@ -34,9 +38,9 @@ namespace Octans
         public Point Divide(float scalar) => new Point(X / scalar, Y / scalar, Z / scalar, W / scalar);
 
         public bool Equals(Point other) =>
-            Check.Within(X, other.X, Epsilon) 
-            && Check.Within(Y, other.Y, Epsilon) 
-            && Check.Within(Z, other.Z, Epsilon) 
+            Check.Within(X, other.X, Epsilon)
+            && Check.Within(Y, other.Y, Epsilon)
+            && Check.Within(Z, other.Z, Epsilon)
             && Check.Within(W, other.W, Epsilon);
 
         public override bool Equals(object obj) => !(obj is null) && obj is Point other && Equals(other);
@@ -62,6 +66,8 @@ namespace Octans
         public static Point operator *(Point t, float scalar) => t.Scale(scalar);
 
         public static Point operator *(float scalar, Point t) => t.Scale(scalar);
+
+        public static Vector operator *(Point t, Vector v) => t.Multiply(v);
 
         public static Point operator /(Point t, float scalar) => t.Divide(scalar);
 
