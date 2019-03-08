@@ -313,5 +313,59 @@ namespace Octans.Test
             var comps = new IntersectionInfo(xs[0], r,xs);
             Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93642f, 0.68642f, 0.68642f));
         }
+
+        [Fact]
+        public void SchlickApproximationForTotalInternalReflectionIsOne()
+        {
+            var s = Spheres.GlassSphere();
+            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f) / 2f), new Vector(0, 1,0));
+            var xs = new Intersections(new Intersection(-MathF.Sqrt(2f) / 2f, s),
+                                       new Intersection(MathF.Sqrt(2f) / 2f, s));
+            var comps = new IntersectionInfo(xs[1], r, xs);
+            var reflectance = Shading.Schlick(comps);
+            reflectance.Should().Be(1f);
+        }
+
+        [Fact]
+        public void ReflectanceIsSmallAtPerpendicularViewAngles()
+        {
+            var s = Spheres.GlassSphere();
+            var r = new Ray(new Point(0, 0, 0), new Vector(0, 1, 0));
+            var xs = new Intersections(new Intersection(-1f, s),
+                                       new Intersection(1f, s));
+            var comps = new IntersectionInfo(xs[1], r, xs);
+            var reflectance = Shading.Schlick(comps);
+            reflectance.Should().BeApproximately(0.04f,0.0001f);
+        }
+
+        [Fact]
+        public void ReflectanceIsSignificantAtSmallViewAngles()
+        {
+            var s = Spheres.GlassSphere();
+            var r = new Ray(new Point(0, 0.99f, -2f), new Vector(0, 0, 1));
+            var xs = new Intersections(new Intersection(1.8589f, s));
+            var comps = new IntersectionInfo(xs[0], r, xs);
+            var reflectance = Shading.Schlick(comps);
+            reflectance.Should().BeApproximately(0.48873f,0.0001f);
+        }
+
+        [Fact]
+        public void HitColorIncludesFresnelEffectOnReflectiveTransparentSurface()
+        {
+            var w = World.Default();
+            var floor = new Plane { Material = { Transparency = 0.5f, Reflective=0.5f, RefractiveIndex = 1.5f } };
+            floor.SetTransform(Transforms.Translate(0, -1, 0));
+            w.AddObject(floor);
+
+            var ball = new Sphere { Material = { Pattern = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f } };
+            ball.SetTransform(Transforms.Translate(0, -3.5f, -0.5f));
+            w.AddObject(ball);
+
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(MathF.Sqrt(2f), floor);
+            var xs = new Intersections(i);
+            var comps = new IntersectionInfo(xs[0], r, xs);
+            Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93391f, 0.69643f, 0.69243f));
+        }
     }
 }

@@ -79,6 +79,13 @@ namespace Octans
 
             var reflected = ReflectedColor(world, info, remaining);
             var refracted = RefractedColor(world, info, remaining);
+
+            var material = info.Shape.Material;
+            if (material.Reflective > 0f && material.Transparency > 0f)
+            {
+                var reflectance = Schlick(info);
+                return surface + reflected * reflectance + refracted * (1f-reflectance);
+            }
             return surface + reflected + refracted;
         }
 
@@ -138,6 +145,31 @@ namespace Octans
             var direction = info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
             var refractedRay = new Ray(info.UnderPoint, direction);
             return ColorAt(world, refractedRay, --remaining) * info.Shape.Material.Transparency;
+        }
+
+        public static float Schlick(in IntersectionInfo info)
+        {
+            // Cosine of angle between eye and normal vectors.
+            var cos = info.Eye % info.Normal;
+
+            // Total internal reflections can only occur when N1 > N2.
+            if (info.N1 > info.N2)
+            {
+                var n = info.N1 / info.N2;
+                var sin2T = n * n * (1f - cos * cos);
+                if( sin2T > 1f)
+                {
+                    return 1.0f;
+                }
+
+                // Cosine of theta_t
+                var cosT = MathF.Sqrt(1f - sin2T);
+                cos = cosT;
+            }
+
+            var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
+            r0 *= r0;
+            return r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
         }
     }
 }
