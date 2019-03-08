@@ -61,21 +61,27 @@ namespace Octans
             return ambient + diffuse + specular;
         }
 
-        public static Color HitColor(World world, in IntersectionInfo info)
+        public static Color HitColor(World world, in IntersectionInfo info, int remaining = 5)
         {
-            var color = Colors.Black;
+            var surface = Colors.Black;
             foreach (var light in world.Lights)
             {
                 var isShadowed = IsShadowed(world, info.OverPoint);
                 // TODO: Use OverPoint here?
-                color += Lighting(info.Shape.Material, info.Shape, light, info.OverPoint, info.Eye, info.Normal,
-                                  isShadowed);
+                surface += Lighting(info.Shape.Material,
+                                    info.Shape,
+                                    light,
+                                    info.OverPoint,
+                                    info.Eye,
+                                    info.Normal,
+                                    isShadowed);
             }
 
-            return color;
+            var reflected = ReflectedColor(world, info, remaining);
+            return surface + reflected;
         }
 
-        public static Color ColorAt(World world, in Ray ray)
+        public static Color ColorAt(World world, in Ray ray, int remaining = 5)
         {
             var xs = world.Intersect(ray);
             var hit = xs.Hit();
@@ -85,7 +91,26 @@ namespace Octans
             }
 
             var info = new IntersectionInfo(hit.Value, ray);
-            return HitColor(world, info);
+            return HitColor(world, info, remaining);
+        }
+
+        public static Color ReflectedColor(World world, in IntersectionInfo info, int remaining = 5)
+        {
+            if (remaining < 1)
+            {
+                return Colors.Black;
+            }
+
+            var reflective = info.Shape.Material.Reflective;
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (reflective == 0f)
+            {
+                return Colors.Black;
+            }
+
+            var reflectedRay = new Ray(info.OverPoint, info.Reflect);
+            var color = ColorAt(world, reflectedRay, --remaining);
+            return color * reflective;
         }
     }
 }

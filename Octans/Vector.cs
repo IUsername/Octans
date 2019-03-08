@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Octans
 {
@@ -46,7 +47,7 @@ namespace Octans
             return new Vector(X / m, Y / m, Z / m, W / m);
         }
 
-        public Vector Reflect(in Vector normal) => Reflect(this, normal);
+        public Vector Reflect(in Vector normal) => Reflect(in this, in normal);
 
         public bool Equals(Vector other) =>
             Check.Within(X, other.X, Epsilon)
@@ -68,31 +69,43 @@ namespace Octans
             }
         }
 
+        [Pure]
         public static Vector operator +(Vector left, Vector right) => left.Add(right);
 
+        [Pure]
         public static Vector operator -(Vector left, Vector right) => left.Subtract(right);
 
+        [Pure]
         public static Vector operator *(Vector t, float scalar) => t.Scale(scalar);
 
+        [Pure]
         public static Vector operator *(float scalar, Vector t) => t.Scale(scalar);
 
+        [Pure]
         public static Vector operator /(Vector t, float scalar) => t.Divide(scalar);
 
+        [Pure]
         public static Vector operator -(Vector t) => t.Negate();
 
+        [Pure]
         public static bool operator ==(Vector left, Vector right) => left.Equals(right);
 
+        [Pure]
         public static bool operator !=(Vector left, Vector right) => !left.Equals(right);
 
-        public static float operator %(Vector left, Vector right) => Dot(left, right);
+        [Pure]
+        public static float operator %(Vector left, Vector right) => Dot(in left, in right);
 
+        [Pure]
         public static float Dot(in Vector a, in Vector b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
 
+        [Pure]
         public static Vector Cross(in Vector a, in Vector b) =>
             new Vector(a.Y * b.Z - a.Z * b.Y,
                        a.Z * b.X - a.X * b.Z,
                        a.X * b.Y - a.Y * b.X);
 
-        public static Vector Reflect(in Vector @in, in Vector normal) => @in - normal * 2f * Dot(@in, normal);
+        [Pure]
+        public static Vector Reflect(in Vector @in, in Vector normal) => @in - normal * 2f * Dot(in @in, in normal);
     }
 }

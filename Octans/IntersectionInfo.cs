@@ -8,7 +8,7 @@
             Shape = intersection.Shape;
             Point = ray.Position(T);
             Eye = -ray.Direction;
-            Normal = Shape.NormalAt(Point);
+            Normal = Shape.NormalAt(in Point);
             if (Normal % Eye < 0f)
             {
                 IsInside = true;
@@ -20,6 +20,7 @@
             }
 
             OverPoint = Point + Normal * Epsilon;
+            Reflect = Vector.Reflect(in ray.Direction, in Normal);
         }
 
         public readonly float T;
@@ -29,6 +30,7 @@
         public readonly Vector Eye;
         public readonly Vector Normal;
         public readonly bool IsInside;
+        public readonly Vector Reflect;
 
         public const float Epsilon = 0.00001f;
     }

@@ -35,5 +35,12 @@ namespace Octans.Test
             c1.Should().Be(Colors.White);
             c2.Should().Be(Colors.Black);
         }
+
+        [Fact]
+        public void DefaultReflectivityOfZero()
+        {
+            var m = new Material();
+            m.Reflective.Should().Be(0f);
+        }
     }
 }

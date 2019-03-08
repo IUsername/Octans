@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact(Skip ="Creates image in My Pictures folder")]
+        [Fact(Skip = "Generates image in My Pictures folder")]
         public void TestRender()
         {
 
@@ -47,11 +47,11 @@ namespace Octans.Test
                 Specular = 0f
             }};
 
-            var middle = new Sphere {Material = { Pattern = perlin, Diffuse = 0.7f, Specular = 0.3f}};
+            var middle = new Sphere {Material = { Pattern = perlin, Diffuse = 0.7f, Specular = 0.3f, Reflective = 0.4f}};
             middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.5f));
             //middle.SetTransform(Transforms.Translate(-0.5f, 0.5f, 0.5f));
 
-            var right = new Sphere {Material = { Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f}};
+            var right = new Sphere {Material = { Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f, Reflective = 0.2f}};
             right.SetTransform(Transforms.Translate(1.5f, 0.5f, -0.5f) * Transforms.Scale(0.5f, 0.5f, 0.5f));
 
             var left = new Sphere {Material = { Pattern = new SolidColor(new Color(1f, 0.8f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f}};

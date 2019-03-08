@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Xunit;
 
 namespace Octans.Test
@@ -50,6 +51,16 @@ namespace Octans.Test
             var comps = new IntersectionInfo(i, r);
             comps.OverPoint.Z.Should().BeLessThan( -IntersectionInfo.Epsilon / 2f);
             comps.Point.Z.Should().BeGreaterThan(comps.OverPoint.Z);
+        }
+
+        [Fact]
+        public void ComputesReflectionVector()
+        {
+            var shape = new Plane();
+            var r = new Ray(new Point(0, 1, -1), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var comps = new IntersectionInfo(i, r);
+            comps.Reflect.Should().Be(new Vector(0, MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
         }
     }
 }

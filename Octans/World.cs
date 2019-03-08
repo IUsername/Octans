@@ -35,6 +35,12 @@ namespace Octans
             Objects = shapes;
         }
 
+        public void AddObject(IShape shape)
+        {
+            var list = new List<IShape>(Objects) {shape};
+            Objects = list.ToArray();
+        }
+
         public static World Default()
         {
             var w = new World();

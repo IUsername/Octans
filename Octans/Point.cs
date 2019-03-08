@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Octans
 {
@@ -57,24 +58,34 @@ namespace Octans
             }
         }
 
+        [Pure]
         public static Point operator +(Point left, Vector right) => left.Add(right);
 
+        [Pure]
         public static Vector operator -(Point left, Point right) => left.Subtract(right);
 
+        [Pure]
         public static Point operator -(Point left, Vector right) => left.Subtract(right);
 
+        [Pure]
         public static Point operator *(Point t, float scalar) => t.Scale(scalar);
 
+        [Pure]
         public static Point operator *(float scalar, Point t) => t.Scale(scalar);
 
+        [Pure]
         public static Vector operator *(Point t, Vector v) => t.Multiply(v);
 
+        [Pure]
         public static Point operator /(Point t, float scalar) => t.Divide(scalar);
 
+        [Pure]
         public static Point operator -(Point t) => t.Negate();
 
+        [Pure]
         public static bool operator ==(Point left, Point right) => left.Equals(right);
 
+        [Pure]
         public static bool operator !=(Point left, Point right) => !left.Equals(right);
 
         public static Point Zero = new Point(0f, 0f, 0f);

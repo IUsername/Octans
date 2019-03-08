@@ -162,5 +162,76 @@ namespace Octans.Test
             var p = new Point(-2, 2, -2);
             Shading.IsShadowed(w, p).Should().BeFalse();
         }
+
+        [Fact]
+        public void ReflectedColorForNonReflectiveMaterialIsBlack()
+        {
+            var w = World.Default();
+            var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
+            var shape = w.Objects[1];
+            shape.Material.Ambient = 1f;
+            var i = new Intersection(1, shape);
+            var comps = new IntersectionInfo(i, r);
+            Shading.ReflectedColor(w, comps).Should().Be(Colors.Black);
+        }
+
+        [Fact]
+        public void ReflectedColorForReflectiveMaterialIsNotBlack()
+        {
+            var w = World.Default();
+            var shape = new Plane();
+            shape.SetMaterial(new Material {Reflective = 0.5f});
+            shape.SetTransform(Transforms.Translate(0, -1, 0));
+            w.AddObject(shape);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var comps = new IntersectionInfo(i, r);
+            Shading.ReflectedColor(w, comps).Should().Be(new Color(0.19032f, 0.2379f, 0.14274f));
+        }
+
+        [Fact]
+        public void HitColorIncludeReflectedColor()
+        {
+            var w = World.Default();
+            var shape = new Plane();
+            shape.SetMaterial(new Material { Reflective = 0.5f });
+            shape.SetTransform(Transforms.Translate(0, -1, 0));
+            w.AddObject(shape);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var comps = new IntersectionInfo(i, r);
+            Shading.HitColor(w, comps).Should().Be(new Color(0.87677f, 0.92436f, 0.82918f));
+        }
+
+        [Fact]
+        public void ReflectedColorIsBlackIsRemainingBouncesIsZero()
+        {
+            var w = World.Default();
+            var shape = new Plane();
+            shape.SetMaterial(new Material { Reflective = 0.5f });
+            shape.SetTransform(Transforms.Translate(0, -1, 0));
+            w.AddObject(shape);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var comps = new IntersectionInfo(i, r);
+            Shading.ReflectedColor(w, comps, 0).Should().Be(Colors.Black);
+        }
+
+        [Fact]
+        public void HandleParallelReflectiveSurfaces()
+        {
+            var w = new World();
+            w.SetLights(new PointLight(new Point(0, 0, 0), Colors.White));
+            var lower = new Plane { Material = { Reflective = 1f } };
+            lower.SetTransform(Transforms.Translate(0, -1, 0));
+
+            var upper = new Plane { Material = { Reflective = 1f } };
+            upper.SetTransform(Transforms.Translate(0, 1, 0));
+
+            w.SetObjects(lower, upper);
+            var r = new Ray(new Point(0, 0, 0), new Vector(0, 1, 0));
+            // Test to ensure an infinite loop is not hit.
+            Shading.ColorAt(w, r).Should().NotBe(new Color(1, 0, 0));
+        }
     }
 }

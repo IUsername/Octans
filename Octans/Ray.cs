@@ -11,16 +11,13 @@
             Direction = direction;
         }
 
-        public Point Position(float t)
-        {
-            return Origin + Direction * t;
-        }
+        public Point Position(float t) => Origin + Direction * t;
 
         public Ray Transform(in Matrix matrix)
         {
             var origin = matrix * Origin;
             var direction = matrix * Direction;
-            return new Ray(origin,direction);
+            return new Ray(origin, direction);
         }
     }
 }

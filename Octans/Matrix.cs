@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Octans
 {
@@ -35,22 +36,22 @@ namespace Octans
 
         public float this[int row, int col] => _data[row, col];
 
-        public float[][] ToArray()
-        {
-            var arr = new float[Rows][];
-            for (var row = 0; row < Rows; row++)
-            {
-                var cur = new float[Columns];
-                for (var col = 0; col < Columns; col++)
-                {
-                    cur[col] = this[row, col];
-                }
+        //public float[][] ToArray()
+        //{
+        //    var arr = new float[Rows][];
+        //    for (var row = 0; row < Rows; row++)
+        //    {
+        //        var cur = new float[Columns];
+        //        for (var col = 0; col < Columns; col++)
+        //        {
+        //            cur[col] = this[row, col];
+        //        }
 
-                arr[row] = cur;
-            }
+        //        arr[row] = cur;
+        //    }
 
-            return arr;
-        }
+        //    return arr;
+        //}
 
         public Matrix Transpose()
         {
@@ -65,10 +66,11 @@ namespace Octans
 
             return m;
         }
+        
+        public bool Equals(Matrix other) => Rows == other.Rows && Columns == other.Columns && ValuesEqual(in this, in other);
 
-        public bool Equals(Matrix other) => Rows == other.Rows && Columns == other.Columns && ValuesEqual(this, other);
-
-        private bool ValuesEqual(Matrix a, Matrix b)
+        [Pure]
+        private bool ValuesEqual(in Matrix a, in Matrix b)
         {
             for (var row = 0; row < Rows; row++)
             {
@@ -146,14 +148,20 @@ namespace Octans
             return new Matrix(arr);
         }
 
-        private static Matrix ToMatrix(Point t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
-        private static Matrix ToMatrix(Vector t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
+        [Pure]
+        private static Matrix ToMatrix(in Point t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
 
-        private static Point ToPoint(Matrix m) => new Point(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
+        [Pure]
+        private static Matrix ToMatrix(in Vector t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
 
-        private static Vector ToVector(Matrix m) => new Vector(m[0, 0], m[1, 0], m[2, 0]);
+        [Pure]
+        private static Point ToPoint(in Matrix m) => new Point(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
 
-        private static Matrix Multiply(Matrix a, Matrix b)
+        [Pure]
+        private static Vector ToVector(in Matrix m) => new Vector(m[0, 0], m[1, 0], m[2, 0]);
+
+        [Pure]
+        private static Matrix Multiply(in Matrix a, in Matrix b)
         {
             if (a.Columns != b.Rows)
             {
@@ -178,7 +186,8 @@ namespace Octans
             return m;
         }
 
-        public static float Determinant(Matrix m)
+        [Pure]
+        public static float Determinant(in Matrix m)
         {
             if (m.Columns == 2 && m.Rows == 2)
             {
@@ -194,7 +203,8 @@ namespace Octans
             return det;
         }
 
-        public static Matrix Submatrix(Matrix m, int row, int column)
+        [Pure]
+        public static Matrix Submatrix(in Matrix m, int row, int column)
         {
             var arr = new float[m.Rows - 1][];
             var rr = 0;
@@ -223,25 +233,29 @@ namespace Octans
             return new Matrix(arr);
         }
 
-        public static float Minor(Matrix m, int row, int column)
+        [Pure]
+        public static float Minor(in Matrix m, int row, int column)
         {
             var s = Submatrix(m, row, column);
             return Determinant(s);
         }
 
-        public static float Cofactor(Matrix m, int row, int column)
+        [Pure]
+        public static float Cofactor(in Matrix m, int row, int column)
         {
             var n = Minor(m, row, column);
             return (row + column) % 2 == 0 ? n : -n;
         }
 
-        public static bool IsInvertible(Matrix m)
+        [Pure]
+        public static bool IsInvertible(in Matrix m)
         {
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             return Determinant(m) != 0.0f;
         }
 
-        public static Matrix Inverse(Matrix m)
+        [Pure]
+        public static Matrix Inverse(in Matrix m)
         {
             var det = Determinant(m);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
@@ -269,14 +283,19 @@ namespace Octans
             return Inverse(this);
         }
 
+        [Pure]
         public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);
 
+        [Pure]
         public static bool operator !=(Matrix left, Matrix right) => !left.Equals(right);
 
-        public static Matrix operator *(Matrix left, Matrix right) => Multiply(left, right);
+        [Pure]
+        public static Matrix operator *(Matrix left, Matrix right) => Multiply(in left, in right);
 
-        public static Point operator *(Matrix left, Point right) => ToPoint(Multiply(left, ToMatrix(right)));
+        [Pure]
+        public static Point operator *(Matrix left, Point right) => ToPoint(Multiply(in left, ToMatrix(in right)));
 
-        public static Vector operator *(Matrix left, Vector right) => ToVector(Multiply(left, ToMatrix(right)));
+        [Pure]
+        public static Vector operator *(Matrix left, Vector right) => ToVector(Multiply(in left, ToMatrix(in right)));
     }
 }

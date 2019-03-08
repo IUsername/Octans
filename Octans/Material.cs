@@ -9,6 +9,7 @@
             Diffuse = 0.9f;
             Specular = 0.9f;
             Shininess = 200f;
+            Reflective = 0f;
         }
 
         public float Shininess { get; set; }
@@ -20,5 +21,6 @@
         public float Ambient { get; set; }
 
         public IPattern Pattern { get; set; }
+        public float Reflective { get; set; }
     }
 }
