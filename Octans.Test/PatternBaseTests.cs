@@ -47,14 +47,14 @@ namespace Octans.Test
             pattern.SetTransform(Transforms.Translate(0.5f, 1, 1.5f));
             pattern.ShapeColor(obj, new Point(2.5f, 3f, 3.5f)).Should().Be(new Color(0.75f, 0.5f, 0.25f));
         }
+    }
 
-        private class TestPattern : PatternBase
+    internal class TestPattern : PatternBase
+    {
+        public override Color LocalColorAt(Point localPoint)
         {
-            public override Color LocalColorAt(Point localPoint)
-            {
-                // For testing world to pattern local transform.
-                return new Color(localPoint.X, localPoint.Y, localPoint.Z);
-            }
+            // For testing world to pattern local transform.
+            return new Color(localPoint.X, localPoint.Y, localPoint.Z);
         }
     }
 }

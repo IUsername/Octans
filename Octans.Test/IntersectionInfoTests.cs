@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Xunit;
 
@@ -42,7 +43,7 @@ namespace Octans.Test
         }
 
         [Fact]
-        public void ContainsPointOffset()
+        public void DeterminesOverPoint()
         {
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var shape = new Sphere();
@@ -61,6 +62,63 @@ namespace Octans.Test
             var i = new Intersection(MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
             comps.Reflect.Should().Be(new Vector(0, MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+        }
+
+        [Fact]
+        public void DeterminesN1AndN2()
+        {
+            var a = Spheres.GlassSphere();
+            a.SetTransform(Transforms.Scale(2f));
+            a.Material.RefractiveIndex = 1.5f;
+
+            var b = Spheres.GlassSphere();
+            b.SetTransform(Transforms.TranslateZ(-0.25f));
+            b.Material.RefractiveIndex = 2.0f;
+
+            var c = Spheres.GlassSphere();
+            c.SetTransform(Transforms.TranslateZ(0.25f));
+            c.Material.RefractiveIndex = 2.5f;
+
+            var r = new Ray(new Point(0, 0, -4), new Vector(0, 0, 1));
+            var xs = new Intersections(
+                new Intersection(2.00f, a),
+                new Intersection(2.75f, b),
+                new Intersection(3.25f, c),
+                new Intersection(4.75f, b),
+                new Intersection(5.25f, c),
+                new Intersection(6.00f, a)
+            );
+
+            var comps = new List<IntersectionInfo>();
+            foreach(var intersection in xs)
+            {
+                comps.Add(new IntersectionInfo(intersection, r, xs));
+            }
+
+            comps[0].N1.Should().Be(1.0f);
+            comps[0].N2.Should().Be(1.5f);
+            comps[1].N1.Should().Be(1.5f);
+            comps[1].N2.Should().Be(2.0f);
+            comps[2].N1.Should().Be(2.0f);
+            comps[2].N2.Should().Be(2.5f);
+            comps[3].N1.Should().Be(2.5f);
+            comps[3].N2.Should().Be(2.5f);
+            comps[4].N1.Should().Be(2.5f);
+            comps[4].N2.Should().Be(1.5f);
+            comps[5].N1.Should().Be(1.5f);
+            comps[5].N2.Should().Be(1.0f);
+        }
+
+        [Fact]
+        public void DeterminesUnderPoint()
+        {
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
+            var shape = new Sphere();
+            shape.SetTransform(Transforms.Translate(0, 0, 1));
+            var i = new Intersection(5, shape);
+            var comps = new IntersectionInfo(i, r);
+            comps.UnderPoint.Z.Should().BeGreaterThan(IntersectionInfo.Epsilon / 2f);
+            comps.Point.Z.Should().BeLessThan(comps.UnderPoint.Z);
         }
     }
 }

@@ -10,6 +10,8 @@
             Specular = 0.9f;
             Shininess = 200f;
             Reflective = 0f;
+            Transparency = 0f;
+            RefractiveIndex = 1f;
         }
 
         public float Shininess { get; set; }
@@ -22,5 +24,7 @@
 
         public IPattern Pattern { get; set; }
         public float Reflective { get; set; }
+        public float Transparency { get; set; }
+        public float RefractiveIndex { get; set; }
     }
 }

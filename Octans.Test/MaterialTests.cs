@@ -42,5 +42,19 @@ namespace Octans.Test
             var m = new Material();
             m.Reflective.Should().Be(0f);
         }
+
+        [Fact]
+        public void DefaultTransparencyOfZero()
+        {
+            var m = new Material();
+            m.Transparency.Should().Be(0f);
+        }
+
+        [Fact]
+        public void DefaultRefractiveIndexOfOne()
+        {
+            var m = new Material();
+            m.RefractiveIndex.Should().Be(1f);
+        }
     }
 }

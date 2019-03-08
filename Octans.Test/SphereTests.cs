@@ -81,6 +81,15 @@ namespace Octans.Test
             n.Should().Be(new Vector(0, 0, 1));
         }
 
+        [Fact]
+        public void GlassSphereProperties()
+        {
+            var s = Spheres.GlassSphere();
+            s.Transform.Should().Be(Matrix.Identity);
+            s.Material.Transparency.Should().Be(1f);
+            s.Material.RefractiveIndex.Should().Be(1.5f);
+        }
+
         [Fact(Skip = "creates file in My Pictures folder")]
         public void RaycastTest()
         {
@@ -121,6 +130,15 @@ namespace Octans.Test
             }
 
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "raycast");
+        }
+    }
+
+    public static class Spheres
+    {
+        public static Sphere GlassSphere()
+        {
+            var s = new Sphere {Material = {Transparency = 1.0f, RefractiveIndex = 1.5f}};
+            return s;
         }
     }
 }

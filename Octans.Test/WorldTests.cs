@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact(Skip = "Generates image in My Pictures folder")]
+        [Fact(Skip = "Slow to render")]
         public void TestRender()
         {
 
@@ -54,7 +54,7 @@ namespace Octans.Test
             var right = new Sphere {Material = { Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f, Reflective = 0.2f}};
             right.SetTransform(Transforms.Translate(1.5f, 0.5f, -0.5f) * Transforms.Scale(0.5f, 0.5f, 0.5f));
 
-            var left = new Sphere {Material = { Pattern = new SolidColor(new Color(1f, 0.8f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f}};
+            var left = new Sphere {Material = { Pattern = new SolidColor(new Color(0.1f, 0.1f, 0.1f)), Diffuse = 0.2f, Specular = 0.6f, Transparency = 0.9f, RefractiveIndex=1.52f, Reflective = 0.4f, Ambient = 0f}};
             left.SetTransform(Transforms.Translate(-1.5f, 0.33f, -0.75f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
 
             var w = new World();

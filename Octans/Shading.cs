@@ -78,7 +78,8 @@ namespace Octans
             }
 
             var reflected = ReflectedColor(world, info, remaining);
-            return surface + reflected;
+            var refracted = RefractedColor(world, info, remaining);
+            return surface + reflected + refracted;
         }
 
         public static Color ColorAt(World world, in Ray ray, int remaining = 5)
@@ -102,8 +103,7 @@ namespace Octans
             }
 
             var reflective = info.Shape.Material.Reflective;
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (reflective == 0f)
+            if (reflective <= 0f)
             {
                 return Colors.Black;
             }
@@ -111,6 +111,33 @@ namespace Octans
             var reflectedRay = new Ray(info.OverPoint, info.Reflect);
             var color = ColorAt(world, reflectedRay, --remaining);
             return color * reflective;
+        }
+
+        public static Color RefractedColor(World world, in IntersectionInfo info, int remaining)
+        {
+            if (remaining < 1)
+            {
+                return Colors.Black;
+            }
+
+            if (info.Shape.Material.Transparency <= 0f)
+            {
+                return Colors.Black;
+            }
+
+            var nRatio = info.N1 / info.N2;
+            var cosI = info.Eye % info.Normal;
+            var sin2T = nRatio * nRatio * (1f - cosI * cosI);
+            if (sin2T > 1f)
+            {
+                // Total internal reflection.
+                return Colors.Black;
+            }
+
+            var cosT = MathF.Sqrt(1f - sin2T);
+            var direction = info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
+            var refractedRay = new Ray(info.UnderPoint, direction);
+            return ColorAt(world, refractedRay, --remaining) * info.Shape.Material.Transparency;
         }
     }
 }

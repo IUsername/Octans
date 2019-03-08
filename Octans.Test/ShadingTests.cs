@@ -204,7 +204,7 @@ namespace Octans.Test
         }
 
         [Fact]
-        public void ReflectedColorIsBlackIsRemainingBouncesIsZero()
+        public void ReflectedColorIsBlackIfRemainingBouncesIsZero()
         {
             var w = World.Default();
             var shape = new Plane();
@@ -232,6 +232,86 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 1, 0));
             // Test to ensure an infinite loop is not hit.
             Shading.ColorAt(w, r).Should().NotBe(new Color(1, 0, 0));
+        }
+
+        [Fact]
+        public void RefractedColorOfOpaqueSurfaceIsBlack()
+        {
+            var w = World.Default();
+            var s = w.Objects[0];
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
+            var xs = new Intersections(new Intersection(4f, s), new Intersection(6f, s));
+            var comps = new IntersectionInfo(xs[0], r, xs);
+            Shading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
+        }
+
+
+        [Fact]
+        public void RefractedColorIsBlackIfRemainingBouncesIsZero()
+        {
+            var w = World.Default();
+            var s = w.Objects[0];
+            s.Material.Transparency = 1.0f;
+            s.Material.RefractiveIndex = 1.5f;
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
+            var xs = new Intersections(new Intersection(4f, s), new Intersection(6f, s));
+            var comps = new IntersectionInfo(xs[0], r, xs);
+            Shading.RefractedColor(w, comps, 0).Should().Be(Colors.Black);
+        }
+
+        [Fact]
+        public void RefractedColorIsBlackForTotalInternalRefraction()
+        {
+            var w = World.Default();
+            var s = w.Objects[0];
+            s.Material.Transparency = 1.0f;
+            s.Material.RefractiveIndex = 1.5f;
+            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f)/2f), new Vector(0, 1, 0));
+            var xs = new Intersections(
+                new Intersection(-MathF.Sqrt(2f) / 2f, s), 
+                new Intersection(MathF.Sqrt(2f) / 2f, s));
+            // Inside sphere so look at second intersection.
+            var comps = new IntersectionInfo(xs[1], r, xs);
+            Shading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
+        }
+
+        [Fact]
+        public void RefractsRayWhenHitsTransparentSurface()
+        {
+            var w = World.Default();
+            var a = w.Objects[0];
+            a.Material.Ambient = 1.0f;
+            a.Material.Pattern = new TestPattern();
+            var b = w.Objects[1];
+            b.Material.Transparency = 1.0f;
+            b.Material.RefractiveIndex = 1.5f;
+            var r = new Ray(new Point(0, 0, 0.1f), new Vector(0, 1, 0));
+            var xs = new Intersections(
+                new Intersection(-0.9899f, a),
+                new Intersection(-0.4899f, b),
+                new Intersection(0.4899f, b),
+                new Intersection(0.9899f, a));
+            var comps = new IntersectionInfo(xs[2], r, xs);
+            Shading.RefractedColor(w, comps, 5).Should().Be(new Color(0, 0.99888f, 0.04725f));
+        }
+
+        [Fact]
+        public void HitColorIncludeRefractedColor()
+        {
+            var w = World.Default();
+            var floor = new Plane {Material = {Transparency = 0.5f, RefractiveIndex = 1.5f}};
+            floor.SetTransform(Transforms.Translate(0, -1, 0));
+            w.AddObject(floor);
+
+            var ball = new Sphere {Material = {Pattern = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
+            ball.SetTransform(Transforms.Translate(0, -3.5f, -0.5f));
+            w.AddObject(ball);
+
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(MathF.Sqrt(2f), floor);
+            var xs = new Intersections(i);
+            var comps = new IntersectionInfo(xs[0], r,xs);
+            Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93642f, 0.68642f, 0.68642f));
         }
     }
 }
