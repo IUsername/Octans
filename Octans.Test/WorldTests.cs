@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact]
+        [Fact(Skip ="Slow to render")]
         public void TestRender()
         {
 
