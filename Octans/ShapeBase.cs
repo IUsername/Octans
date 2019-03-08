@@ -18,7 +18,7 @@ namespace Octans
 
         public abstract Vector LocalNormalAt(in Point localPoint);
 
-        public void SetTransform(in Matrix matrix)
+        public void SetTransform(Matrix matrix)
         {
             // TODO: Allow mutations?
             Transform = matrix;

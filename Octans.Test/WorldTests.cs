@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact(Skip ="Slow to render")]
+        [Fact]
         public void TestRender()
         {
 
@@ -54,12 +54,18 @@ namespace Octans.Test
             var right = new Sphere {Material = { Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f, Reflective = 0.2f}};
             right.SetTransform(Transforms.Translate(1.5f, 0.5f, -0.5f) * Transforms.Scale(0.5f, 0.5f, 0.5f));
 
-            var left = new Sphere {Material = { Pattern = new SolidColor(new Color(0.9f, 0.9f, 1f)), Diffuse = 0.1f, Specular = 0.9f, Transparency = 0.95f, RefractiveIndex=1.52f, Reflective = 1.5f, Ambient = 0.11f, Shininess = 300}};
-            left.SetTransform(Transforms.Translate(-1.6f, 0.33f, -0.75f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
+            var left = new Sphere {Material = { Pattern = new SolidColor(new Color(0.9f, 0.9f, 1f)), Diffuse = 0.05f, Specular = 0.9f, Transparency = 0.9f, RefractiveIndex=1.52f, Reflective = 1.4f, Ambient = 0.11f, Shininess = 300}};
+            left.SetTransform(Transforms.Translate(-1.5f, 0.33f, -1.0f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
+
+            var cube = new Cube();
+            cube.Material.Pattern = new GradientPattern(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f));
+            cube.Material.Pattern.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
+            cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
 
             var w = new World();
             w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
-            w.SetObjects(floor, middle, right, left);
+            //w.SetObjects(floor, middle, right, left, cube);
+            w.SetObjects(floor, cube, middle, right, left);
 
             var c = new Camera(300, 200, MathF.PI / 3f);
             c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));

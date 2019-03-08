@@ -8,7 +8,7 @@ namespace Octans
         Material Material { get; }
         Matrix Transform { get; }
         Vector LocalNormalAt(in Point localPoint);
-        void SetTransform(in Matrix matrix);
+        void SetTransform(Matrix matrix);
         void SetMaterial(Material material);
     }
 }
