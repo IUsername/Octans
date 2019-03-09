@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact(Skip ="Slow render")]
+        [Fact(Skip ="Slow")]
         public void TestRender()
         {
             var s1 = new StripePattern(Colors.White, Colors.Black);
@@ -80,6 +80,16 @@ namespace Octans.Test
             cube.Material.Pattern.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
             cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
 
+            var cone = new Cone {IsClosed = true, Minimum = -1f, Maximum = 0f,
+                Material =
+                {
+                    Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
+                    Reflective = 0.2f
+                }
+            };
+            
+            cone.SetTransform(Transforms.Scale(0.6f, 2f, 0.6f).Translate(1.5f, 2.0f, 0));
+
             var cylinder = new Cylinder
             {
                 Minimum = 0f,
@@ -92,7 +102,8 @@ namespace Octans.Test
 
             var w = new World();
             w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
-            w.SetObjects(floor, cylinder, cube, middle, right, left);
+            w.SetObjects(floor, floor, cylinder, cube, middle, left, cone);
+            //w.SetObjects(floor, cylinder, cube, middle, right, left);
             //w.SetObjects(floor, cube, middle, right, left);
 
             var c = new Camera(300, 200, MathF.PI / 3f);

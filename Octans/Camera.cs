@@ -65,7 +65,7 @@ namespace Octans
                 for (var x = 0; x < HSize; x++)
                 {
                     var ray = RayForPixel(x, y);
-                    var color = Shading.ColorAt(world, ray);
+                    var color = Shading.ColorAt(world, ray, 8);
                     canvas.WritePixel(color, x, y);
                 }
             }

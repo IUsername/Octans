@@ -75,6 +75,6 @@ namespace Octans
         public readonly float N1;
         public readonly float N2;
 
-        public const float Epsilon = 0.00001f;
+        public const float Epsilon = 0.000052f;
     }
 }
