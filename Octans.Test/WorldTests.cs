@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact]
+        [Fact(Skip ="Slow render")]
         public void TestRender()
         {
             var s1 = new StripePattern(Colors.White, Colors.Black);
