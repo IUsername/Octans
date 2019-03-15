@@ -7,8 +7,10 @@ namespace Octans
         IReadOnlyList<Intersection> LocalIntersects(in Ray localRay);
         Material Material { get; }
         Matrix Transform { get; }
+        IShape Parent { get; set; }
         Vector LocalNormalAt(in Point localPoint);
         void SetTransform(Matrix matrix);
         void SetMaterial(Material material);
+        Bounds LocalBounds();
     }
 }

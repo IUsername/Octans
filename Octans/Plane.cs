@@ -5,7 +5,7 @@ namespace Octans
 {
     public class Plane : ShapeBase
     {
-        private const float Epsilon = 0.00001f;
+        private const float Epsilon = 0.0001f;
 
         public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
         {
@@ -20,5 +20,10 @@ namespace Octans
         }
 
         public override Vector LocalNormalAt(in Point localPoint) => new Vector(0, 1, 0);
+
+
+        // TODO: Epsilon?
+        public override Bounds LocalBounds() => new Bounds(new Point(float.NegativeInfinity, 0, float.NegativeInfinity),
+                                                           new Point(float.PositiveInfinity, 0, float.PositiveInfinity));
     }
 }

@@ -54,5 +54,16 @@ namespace Octans.Test
             xs.Should().HaveCount(1);
             xs[0].Shape.Should().Be(p);
         }
+
+        [Fact]
+        public void LocalBoundsIsInfiniteInXZ()
+        {
+            var p = new Plane();
+            var b = p.LocalBounds();
+            b.Min.X.Should().Be(float.NegativeInfinity);
+            b.Min.Z.Should().Be(float.NegativeInfinity);
+            b.Max.X.Should().Be(float.PositiveInfinity);
+            b.Max.Z.Should().Be(float.PositiveInfinity);
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace Octans
     public class Cube : ShapeBase
     {
         private const float Epsilon = 0.0001f;
+        private static readonly Bounds UnitBounds = new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
         public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
         {
@@ -16,8 +17,8 @@ namespace Octans
             var tMin = MathF.Max(MathF.Max(xtMin, ytMin), ztMin);
             var tMax = MathF.Min(MathF.Min(xtMax, ytMax), ztMax);
 
-            return tMin > tMax 
-                ? Intersections.Empty 
+            return tMin > tMax
+                ? Intersections.Empty
                 : new Intersections(new Intersection(tMin, this), new Intersection(tMax, this));
         }
 
@@ -33,8 +34,8 @@ namespace Octans
             }
             else
             {
-                tMin = tMinNum * float.PositiveInfinity;
-                tMax = tMaxNum * float.PositiveInfinity;
+                tMin = float.IsNegative(tMinNum) ? float.NegativeInfinity : float.PositiveInfinity;
+                tMax = float.IsNegative(tMaxNum) ? float.NegativeInfinity : float.PositiveInfinity;
             }
 
             return tMin > tMax ? (tmin: tMax, tmax: tMin) : (tmin: tMin, tmax: tMax);
@@ -49,12 +50,14 @@ namespace Octans
             var maxC = MathF.Max(MathF.Max(xAbs, yAbs), zAbs);
 
             // ReSharper disable CompareOfFloatsByEqualityOperator
-            return maxC == xAbs 
-                ? new Vector(localPoint.X, 0, 0) 
-                : maxC == yAbs 
-                    ? new Vector(0, localPoint.Y, 0) 
+            return maxC == xAbs
+                ? new Vector(localPoint.X, 0, 0)
+                : maxC == yAbs
+                    ? new Vector(0, localPoint.Y, 0)
                     : new Vector(0, 0, localPoint.Z);
             // ReSharper restore CompareOfFloatsByEqualityOperator
         }
+
+        public override Bounds LocalBounds() => UnitBounds;
     }
 }

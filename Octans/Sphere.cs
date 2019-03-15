@@ -5,6 +5,8 @@ namespace Octans
 {
     public class Sphere : ShapeBase
     {
+        private static readonly Bounds UnitBounds = new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
+
         public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
         {
             var sphereToRay = localRay.Origin - Point.Zero;
@@ -24,9 +26,8 @@ namespace Octans
                 new Intersection(t2, this));
         }
 
-        public override Vector LocalNormalAt(in Point localPoint)
-        {
-            return localPoint - Point.Zero;
-        }
+        public override Vector LocalNormalAt(in Point localPoint) => localPoint - Point.Zero;
+
+        public override Bounds LocalBounds() => UnitBounds;
     }
 }

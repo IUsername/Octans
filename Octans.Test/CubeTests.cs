@@ -86,6 +86,15 @@ namespace Octans.Test
             NormalAtPoint(c, new Point(-1f, -1f, -1f)).Should().Be(new Vector(-1, 0, 0));
         }
 
+        [Fact]
+        public void LocalBoundsIsUnitAABB()
+        {
+            var c = new Cube();
+            var b = c.LocalBounds();
+            b.Min.Should().Be(new Point(-1, -1, -1));
+            b.Max.Should().Be(new Point(1, 1, 1));
+        }
+
         private static Vector NormalAtPoint(Cube cube, Point point)
         {
             return cube.LocalNormalAt(point);

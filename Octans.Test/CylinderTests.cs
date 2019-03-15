@@ -100,5 +100,23 @@ namespace Octans.Test
             c.LocalNormalAt(new Point(0.5f, 2, 0)).Should().Be(new Vector(0, 1, 0));
             c.LocalNormalAt(new Point(0, 2, 0.5f)).Should().Be(new Vector(0, 1, 0));
         }
+
+        [Fact]
+        public void LocalBoundsIsInfiniteInYIfUnbound()
+        {
+            var c = new Cylinder();
+            var b = c.LocalBounds();
+            b.Min.Should().Be(new Point(-1, float.NegativeInfinity, -1));
+            b.Max.Should().Be(new Point(1, float.PositiveInfinity, 1));
+        }
+
+        [Fact]
+        public void LocalBoundsIsMinMaxInYIfBound()
+        {
+            var c = new Cylinder {Minimum = -2f, Maximum = 4f};
+            var b = c.LocalBounds();
+            b.Min.Should().Be(new Point(-1, -2, -1));
+            b.Max.Should().Be(new Point(1, 4, 1));
+        }
     }
 }

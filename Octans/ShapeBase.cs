@@ -28,5 +28,8 @@ namespace Octans
         {
             Material = material;
         }
+
+        public IShape Parent { get; set; }
+        public abstract Bounds LocalBounds();
     }
 }

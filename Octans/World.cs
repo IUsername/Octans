@@ -17,9 +17,9 @@ namespace Octans
         public IReadOnlyList<Intersection> Intersect(in Ray ray)
         {
             var list = new List<Intersection>();
-            foreach (var surface in Objects)
+            foreach (var shape in Objects)
             {
-                list.AddRange(surface.Intersects(ray));
+                list.AddRange(shape.Intersects(ray));
             }
 
             return new Intersections(list);

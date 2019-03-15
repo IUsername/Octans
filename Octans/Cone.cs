@@ -151,5 +151,10 @@ namespace Octans
 
             return new Vector(localPoint.X, y, localPoint.Z);
         }
+
+        public override Bounds LocalBounds()
+        {
+            return new Bounds(new Point(Minimum, Minimum, Minimum), new Point(Maximum, Maximum, Maximum));
+        }
     }
 }

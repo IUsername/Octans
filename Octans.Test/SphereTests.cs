@@ -82,6 +82,15 @@ namespace Octans.Test
         }
 
         [Fact]
+        public void LocalBoundsIsUnitAABB()
+        {
+            var s = new Sphere();
+            var b = s.LocalBounds();
+            b.Min.Should().Be(new Point(-1, -1, -1));
+            b.Max.Should().Be(new Point(1, 1, 1));
+        }
+
+        [Fact]
         public void GlassSphereProperties()
         {
             var s = Spheres.GlassSphere();

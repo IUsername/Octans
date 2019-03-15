@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using FluentAssertions;
 using Xunit;
 
@@ -98,21 +97,56 @@ namespace Octans.Test
             s.Material.Should().Be(m);
         }
 
-        private class TestShape : ShapeBase
+        [Fact]
+        public void HasNoParentByDefault()
         {
-            public Ray SavedRay { get; private set; }
+            var s = new TestShape();
+            s.Parent.Should().BeNull();
+        }
 
-            public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
-            {
-                SavedRay = localRay;
-                return Intersections.Empty;
-            }
+        [Fact]
+        public void ConvertsPointFromWorldToObjectSpace()
+        {
+            var g1 = new Group();
+            g1.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            var g2 = new Group();
+            g2.SetTransform(Transforms.Scale(2));
+            g1.AddChild(g2);
+            var s = new Sphere();
+            s.SetTransform(Transforms.TranslateX(5));
+            g2.AddChild(s);
+            var p = s.ToLocal(new Point(-2, 0, -10));
+            p.Should().BeEquivalentTo(new Point(0, 0, -1));
+        }
 
-            public override Vector LocalNormalAt(in Point localPoint)
-            {
-                // For testing locality of point.
-                return new Vector(localPoint.X, localPoint.Y, localPoint.Z);
-            }
+        [Fact]
+        public void ConvertsNormalsFromObjectToWorldSpace()
+        {
+            var g1 = new Group();
+            g1.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            var g2 = new Group();
+            g2.SetTransform(Transforms.Scale(1,2,3));
+            g1.AddChild(g2);
+            var s = new Sphere();
+            s.SetTransform(Transforms.TranslateX(5));
+            g2.AddChild(s);
+            var n = s.NormalToWorld(new Vector(MathF.PI / 3, MathF.PI / 3, MathF.PI / 3));
+            n.Should().Be(new Vector(0.2857f, 0.4286f, -0.8571f));
+        }
+
+        [Fact]
+        public void FindNormalOnChild()
+        {
+            var g1 = new Group();
+            g1.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            var g2 = new Group();
+            g2.SetTransform(Transforms.Scale(1, 2, 3));
+            g1.AddChild(g2);
+            var s = new Sphere();
+            s.SetTransform(Transforms.TranslateX(5));
+            g2.AddChild(s);
+            var n = s.NormalAt(new Point(1.7321f, 1.1547f, -5.5774f));
+            n.Should().Be(new Vector(0.2857f, 0.4286f, -0.8571f));
         }
     }
 }

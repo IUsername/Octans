@@ -110,5 +110,10 @@ namespace Octans
 
             return new Vector(localPoint.X, 0, localPoint.Z);
         }
+
+        public override Bounds LocalBounds()
+        {
+            return new Bounds(new Point(-1, Minimum, -1), new Point(1, Maximum, 1));
+        }
     }
 }

@@ -17,25 +17,44 @@ namespace Octans
         }
 
         [Pure]
-        public static Point ToLocal(in this Point worldPoint, IShape shape)
+        public static Point ToLocal(this IShape shape, in Point worldPoint)
         {
-            return Matrix.Inverse(shape.Transform) * worldPoint;
+            var world = worldPoint;
+            if (shape.Parent != null)
+            {
+                world = shape.Parent.ToLocal(in worldPoint);
+            }
+            return Matrix.Inverse(shape.Transform) * world;
         }
 
         [Pure]
         public static Point ToLocal(in this Point worldPoint, IShape shape, IPattern pattern)
         {
-            var localPoint = worldPoint.ToLocal(shape);
+            var world = worldPoint;
+            if (shape.Parent != null)
+            {
+                world = shape.Parent.ToLocal(in worldPoint);
+            }
+            var localPoint = shape.ToLocal(in world);
             return Matrix.Inverse(pattern.Transform) * localPoint;
         }
 
         public static Vector NormalAt(this IShape shape, in Point worldPoint)
         {
-            var inv = Matrix.Inverse(shape.Transform);
-            var localPoint = inv * worldPoint;
+            var localPoint = shape.ToLocal(in worldPoint);
             var localNormal = shape.LocalNormalAt(localPoint);
-            var worldNormal = inv.Transpose() * localNormal;
-            return worldNormal.ZeroW().Normalize();
+            return shape.NormalToWorld(in localNormal);
+        }
+
+        public static Vector NormalToWorld(this IShape shape, in Vector localNormal)
+        {
+            var normal = shape.Transform.Inverse().Transpose() * localNormal;
+            normal = normal.ZeroW().Normalize();
+            if(shape.Parent != null)
+            {
+                normal = NormalToWorld(shape.Parent, normal);
+            }
+            return normal;
         }
     }
 }
