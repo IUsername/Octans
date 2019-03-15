@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact]
+        [Fact(Skip ="Slow")]
         public void TestRender()
         {
             var s1 = new StripePattern(Colors.White, Colors.Black);
@@ -101,6 +101,13 @@ namespace Octans.Test
             };
             cylinder.SetTransform(Transforms.Translate(-3f, 0f, 3.5f));
 
+            var t = new Triangle(new Point(0, 0, 0), new Point(1, 0.5f, 0), new Point(0.5f, 1f, 1f))
+            {
+                Material = { Pattern = new GradientPattern(new Color(0f, 1, 0), new Color(0f, 0f, 1f)) }
+            };
+            t.SetTransform(Transforms.Translate(1f, 2f, 1f));
+            
+
             var gl = new Group();
             gl.AddChild(middle);
             gl.AddChild(left);
@@ -117,11 +124,11 @@ namespace Octans.Test
 
             var w = new World();
             w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
-            w.SetObjects(floor, g);
+            w.SetObjects(floor, g, t);
             //w.SetObjects(floor, cylinder, cube, middle, right, left);
             //w.SetObjects(floor, cube, middle, right, left);
 
-            var c = new Camera(600, 400, MathF.PI / 3f);
+            var c = new Camera(300, 200, MathF.PI / 3f);
             c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
 
             var canvas = c.Render(w);
