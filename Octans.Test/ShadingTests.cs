@@ -240,7 +240,7 @@ namespace Octans.Test
             var w = World.Default();
             var s = w.Objects[0];
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var xs = new Intersections(new Intersection(4f, s), new Intersection(6f, s));
+            var xs = Intersections.Create(new Intersection(4f, s), new Intersection(6f, s));
             var comps = new IntersectionInfo(xs[0], r, xs);
             Shading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
         }
@@ -254,7 +254,7 @@ namespace Octans.Test
             s.Material.Transparency = 1.0f;
             s.Material.RefractiveIndex = 1.5f;
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var xs = new Intersections(new Intersection(4f, s), new Intersection(6f, s));
+            var xs = Intersections.Create(new Intersection(4f, s), new Intersection(6f, s));
             var comps = new IntersectionInfo(xs[0], r, xs);
             Shading.RefractedColor(w, comps, 0).Should().Be(Colors.Black);
         }
@@ -267,7 +267,7 @@ namespace Octans.Test
             s.Material.Transparency = 1.0f;
             s.Material.RefractiveIndex = 1.5f;
             var r = new Ray(new Point(0, 0, MathF.Sqrt(2f)/2f), new Vector(0, 1, 0));
-            var xs = new Intersections(
+            var xs = Intersections.Create(
                 new Intersection(-MathF.Sqrt(2f) / 2f, s), 
                 new Intersection(MathF.Sqrt(2f) / 2f, s));
             // Inside sphere so look at second intersection.
@@ -286,7 +286,7 @@ namespace Octans.Test
             b.Material.Transparency = 1.0f;
             b.Material.RefractiveIndex = 1.5f;
             var r = new Ray(new Point(0, 0, 0.1f), new Vector(0, 1, 0));
-            var xs = new Intersections(
+            var xs = Intersections.Create(
                 new Intersection(-0.9899f, a),
                 new Intersection(-0.4899f, b),
                 new Intersection(0.4899f, b),
@@ -309,7 +309,7 @@ namespace Octans.Test
 
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), floor);
-            var xs = new Intersections(i);
+            var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(xs[0], r,xs);
             Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93642f, 0.68642f, 0.68642f));
         }
@@ -319,7 +319,7 @@ namespace Octans.Test
         {
             var s = Spheres.GlassSphere();
             var r = new Ray(new Point(0, 0, MathF.Sqrt(2f) / 2f), new Vector(0, 1,0));
-            var xs = new Intersections(new Intersection(-MathF.Sqrt(2f) / 2f, s),
+            var xs = Intersections.Create(new Intersection(-MathF.Sqrt(2f) / 2f, s),
                                        new Intersection(MathF.Sqrt(2f) / 2f, s));
             var comps = new IntersectionInfo(xs[1], r, xs);
             var reflectance = Shading.Schlick(comps);
@@ -331,7 +331,7 @@ namespace Octans.Test
         {
             var s = Spheres.GlassSphere();
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 1, 0));
-            var xs = new Intersections(new Intersection(-1f, s),
+            var xs = Intersections.Create(new Intersection(-1f, s),
                                        new Intersection(1f, s));
             var comps = new IntersectionInfo(xs[1], r, xs);
             var reflectance = Shading.Schlick(comps);
@@ -343,7 +343,7 @@ namespace Octans.Test
         {
             var s = Spheres.GlassSphere();
             var r = new Ray(new Point(0, 0.99f, -2f), new Vector(0, 0, 1));
-            var xs = new Intersections(new Intersection(1.8589f, s));
+            var xs = Intersections.Create(new Intersection(1.8589f, s));
             var comps = new IntersectionInfo(xs[0], r, xs);
             var reflectance = Shading.Schlick(comps);
             reflectance.Should().BeApproximately(0.48873f,0.0001f);
@@ -363,7 +363,7 @@ namespace Octans.Test
 
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), floor);
-            var xs = new Intersections(i);
+            var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(xs[0], r, xs);
             Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93391f, 0.69643f, 0.69243f));
         }

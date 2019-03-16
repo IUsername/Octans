@@ -52,7 +52,7 @@ namespace Octans.Test
             g.AddChild(s2);
             g.AddChild(s3);
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var xs = g.LocalIntersects(r);
+            var xs = g.LocalIntersects(r).ToSorted();
             xs.Should().HaveCount(4);
             xs[0].Shape.Should().Be(s2);
             xs[1].Shape.Should().Be(s2);

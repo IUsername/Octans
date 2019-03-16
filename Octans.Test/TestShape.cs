@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-
-namespace Octans.Test
+﻿namespace Octans.Test
 {
     internal class TestShape : ShapeBase
     {
         public Ray SavedRay { get; private set; }
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             SavedRay = localRay;
-            return Intersections.Empty;
+            return Intersections.Empty();
         }
 
         public override Vector LocalNormalAt(in Point localPoint) =>

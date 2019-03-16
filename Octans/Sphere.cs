@@ -7,7 +7,7 @@ namespace Octans
     {
         private static readonly Bounds UnitBounds = new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             var sphereToRay = localRay.Origin - Point.Zero;
             var a = localRay.Direction % localRay.Direction;
@@ -16,12 +16,12 @@ namespace Octans
             var discriminant = b * b - 4 * a * c;
             if (discriminant < 0f)
             {
-                return Intersections.Empty;
+                return Intersections.Empty();
             }
 
             var t1 = (-b - MathF.Sqrt(discriminant)) / (2f * a);
             var t2 = (-b + MathF.Sqrt(discriminant)) / (2f * a);
-            return new Intersections(
+            return Intersections.Create(
                 new Intersection(t1, this),
                 new Intersection(t2, this));
         }

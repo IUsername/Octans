@@ -1,35 +1,157 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Octans
 {
-    public class Intersections : IReadOnlyList<Intersection>
+    public interface IIntersectionsBuilder
     {
-        public static Intersections Empty = new Intersections();
-        private readonly Intersection[] _sorted;
+        int Count { get; }
+        void AddRange(IEnumerable<Intersection> intersections);
+        void Add(Intersection intersection);
+        IIntersections ToIntersections();
+    }
 
-        public Intersections(params Intersection[] intersections) : this(intersections.AsEnumerable())
+    public interface IIntersections : IEnumerable<Intersection>
+    {
+        int Count { get; }
+        Intersection this[int index] { get; }
+        IIntersections Add(IIntersections intersections);
+        IIntersections Add(Intersection intersection);
+        Intersection? Hit();
+        Intersection[] ToSorted();
+    }
+
+    public class Intersections : IIntersections
+    {
+        private readonly ImmutableList<Intersection> _list;
+
+        private Intersections(IEnumerable<Intersection> intersections)
         {
+            _list = intersections.ToImmutableList();
         }
 
-        private Intersections()
+        private Intersections(params Intersection[] intersections)
         {
-            _sorted = Array.Empty<Intersection>();
+            _list = intersections.ToImmutableList();
         }
 
-        public Intersections(IEnumerable<Intersection> intersections)
+        private Intersections(ImmutableList<Intersection> intersections)
         {
-            _sorted = intersections.OrderBy(i => i.T).ToArray();
+            _list = intersections;
         }
 
-        public IEnumerator<Intersection> GetEnumerator() => _sorted.AsEnumerable().GetEnumerator();
+        public IIntersections Add(IIntersections intersections) => new Intersections(_list.AddRange(intersections));
+
+        public IIntersections Add(Intersection intersection) => new Intersections(_list.Add(intersection));
+
+        public Intersection? Hit()
+        {
+            if (_list.IsEmpty)
+            {
+                return null;
+            }
+
+            Intersection? min = null;
+            for (var i = 0; i < _list.Count; i++)
+            {
+                if (!(_list[i].T > 0))
+                {
+                    continue;
+                }
+
+                if (!min.HasValue || min.Value.T > _list[i].T)
+                {
+                    min = _list[i];
+                }
+            }
+
+            return min;
+        }
+
+        public int Count => _list.Count;
+
+        public Intersection this[int index] => _list[index];
+        public Intersection[] ToSorted() => _list.Sort().ToArray();
+
+        public static IntersectionsBuilder Builder() => IntersectionsBuilder.Create();
+        //public static IntersectionsBuilder Builder()
+        //{
+        //    return new IntersectionsBuilder();
+        //}
+
+        public static IIntersections Create(params Intersection[] intersection) => new Intersections(intersection);
+
+        private static readonly IIntersections EmptySingleton = new Intersections(ImmutableSortedSet<Intersection>.Empty);
+
+        public static IIntersections Empty() => EmptySingleton;
+
+        public class IntersectionsBuilder : IIntersectionsBuilder
+        {
+            private static readonly ObjectPool<IntersectionsBuilder> Pool =
+                new ObjectPool<IntersectionsBuilder>(() => new IntersectionsBuilder());
+
+            private readonly List<Intersection> _list;
+
+            internal IntersectionsBuilder()
+            {
+                _list = new List<Intersection>();
+            }
+
+            public void AddRange(IEnumerable<Intersection> intersections)
+            {
+                _list.AddRange(intersections);
+            }
+
+            public void Add(Intersection intersection)
+            {
+                _list.Add(intersection);
+            }
+
+            public int Count => _list.Count;
+
+            public IIntersections ToIntersections()
+            {
+                if (_list.Count == 0)
+                {
+                    Pool.PutObject(this);
+                    return Empty();
+                }
+
+                var intersections = new Intersections(_list);
+                _list.Clear();
+                Pool.PutObject(this);
+                return intersections;
+            }
+
+            public static IntersectionsBuilder Create() => Pool.GetObject();
+        }
+
+        public IEnumerator<Intersection> GetEnumerator() => _list.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
 
-        public int Count => _sorted.Length;
 
-        public Intersection this[int index] => _sorted[index];
+    public class ObjectPool<T>
+    {
+        private readonly Func<T> _generator;
+        private readonly ConcurrentBag<T> _objects;
+
+        public ObjectPool(Func<T> generator)
+        {
+            _generator = generator ?? throw new ArgumentNullException(nameof(generator));
+            _objects = new ConcurrentBag<T>();
+        }
+
+        public T GetObject() => _objects.TryTake(out var item) ? item : _generator();
+
+        public void PutObject(T item)
+        {
+            _objects.Add(item);
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace Octans
         public float Maximum { get; set; }
         public bool IsClosed { get; set; }
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             var dX = localRay.Direction.X;
             var dY = localRay.Direction.Y;
@@ -32,17 +32,17 @@ namespace Octans
             var b = 2f * (oX * dX - oY * dY + oZ * dZ);
             var c = oX * oX - oY * oY + oZ * oZ;
 
-            var list = new List<Intersection>();
+            var builder = Intersections.Builder();
 
             if (Check.Within(a, 0f, Epsilon))
             {
                 if (Check.Within(b, 0f, Epsilon))
                 {
-                    return Intersections.Empty;
+                    return builder.ToIntersections();
                 }
 
                 var t = -c / (2f * b);
-                list.Add(new Intersection(t, this));
+                builder.Add(new Intersection(t, this));
             }
             else
             {
@@ -51,7 +51,7 @@ namespace Octans
                 {
                     if (disc < -Epsilon / 2f)
                     {
-                        return Intersections.Empty;
+                        return builder.ToIntersections();
                     }
 
                     //// Corner case where ray will intersect at one
@@ -72,19 +72,19 @@ namespace Octans
                 var y0 = localRay.Origin.Y + t0 * localRay.Direction.Y;
                 if (Minimum < y0 && y0 < Maximum)
                 {
-                    list.Add(new Intersection(t0, this));
+                    builder.Add(new Intersection(t0, this));
                 }
 
                 var y1 = localRay.Origin.Y + t1 * localRay.Direction.Y;
                 if (Minimum < y1 && y1 < Maximum)
                 {
-                    list.Add(new Intersection(t1, this));
+                    builder.Add(new Intersection(t1, this));
                 }
             }
 
-            IntersectCaps(this, localRay, list);
+            IntersectCaps(this, localRay, builder);
 
-            return new Intersections(list);
+            return builder.ToIntersections();
         }
 
         private static bool CheckCap(Ray ray, float t)
@@ -96,7 +96,7 @@ namespace Octans
             return check <= r || Check.Within(check, r, Epsilon);
         }
 
-        private static void IntersectCaps(Cone cone, Ray ray, ICollection<Intersection> list)
+        private static void IntersectCaps(Cone cone, Ray ray, IIntersectionsBuilder builder)
         {
             if (!cone.IsClosed)
             {
@@ -106,13 +106,13 @@ namespace Octans
             var t = (cone.Minimum - ray.Origin.Y) / ray.Direction.Y;
             if (CheckCap(ray, t))
             {
-                list.Add(new Intersection(t, cone));
+                builder.Add(new Intersection(t, cone));
             }
 
             t = (cone.Maximum - ray.Origin.Y) / ray.Direction.Y;
             if (CheckCap(ray, t))
             {
-                list.Add(new Intersection(t, cone));
+                builder.Add(new Intersection(t, cone));
             }
         }
 

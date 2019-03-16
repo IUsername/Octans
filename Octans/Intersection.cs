@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Octans
 {
-    public readonly struct Intersection : IEquatable<Intersection>
+    public readonly struct Intersection : IEquatable<Intersection>, IComparable<Intersection>
     {
         public readonly float T;
         public readonly IShape Shape;
@@ -37,21 +36,7 @@ namespace Octans
         public static bool operator ==(Intersection left, Intersection right) => left.Equals(right);
 
         public static bool operator !=(Intersection left, Intersection right) => !left.Equals(right);
-    }
 
-    public static class IntersectionExtensions
-    {
-        public static Intersection? Hit(this IReadOnlyList<Intersection> intersections)
-        {
-            for (var i = 0; i < intersections.Count; i++)
-            {
-                if (intersections[i].T > 0)
-                {
-                    return intersections[i];
-                }
-            }
-
-            return null;
-        }
+        public int CompareTo(Intersection other) => T.CompareTo(other.T);
     }
 }

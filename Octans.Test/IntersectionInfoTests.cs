@@ -80,7 +80,7 @@ namespace Octans.Test
             c.Material.RefractiveIndex = 2.5f;
 
             var r = new Ray(new Point(0, 0, -4), new Vector(0, 0, 1));
-            var xs = new Intersections(
+            var xs = Intersections.Create(
                 new Intersection(2.00f, a),
                 new Intersection(2.75f, b),
                 new Intersection(3.25f, c),

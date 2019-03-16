@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace Octans
 {
     public abstract class ShapeBase : IShape
@@ -28,7 +27,7 @@ namespace Octans
 
         public Material Material { get; protected set; }
 
-        public abstract IReadOnlyList<Intersection> LocalIntersects(in Ray localRay);
+        public abstract IIntersections LocalIntersects(in Ray localRay);
 
         public abstract Vector LocalNormalAt(in Point localPoint);
 

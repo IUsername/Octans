@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Octans
 {
@@ -8,7 +7,7 @@ namespace Octans
         private const float Epsilon = 0.0001f;
         private static readonly Bounds UnitBounds = new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             var (xtMin, xtMax) = CheckAxis(localRay.Origin.X, localRay.Direction.X);
             var (ytMin, ytMax) = CheckAxis(localRay.Origin.Y, localRay.Direction.Y);
@@ -18,8 +17,8 @@ namespace Octans
             var tMax = MathF.Min(MathF.Min(xtMax, ytMax), ztMax);
 
             return tMin > tMax
-                ? Intersections.Empty
-                : new Intersections(new Intersection(tMin, this), new Intersection(tMax, this));
+                ? Intersections.Empty()
+                : Intersections.Create(new Intersection(tMin, this), new Intersection(tMax, this));
         }
 
         private static (float min, float max) CheckAxis(float origin, float direction)

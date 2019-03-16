@@ -9,6 +9,7 @@ namespace Octans
 
         public readonly int Rows;
         public readonly int Columns;
+        private readonly bool _isIdentity;
 
         private readonly float[,] _data;
 
@@ -18,20 +19,39 @@ namespace Octans
             Columns = values[0].Length;
 
             _data = new float[Rows, Columns];
+            var isIdentity = true;
             for (var row = 0; row < Rows; row++)
             {
                 for (var col = 0; col < Columns; col++)
                 {
                     _data[row, col] = values[row][col];
+                    if (!isIdentity)
+                    {
+                        continue;
+                    }
+
+                    // ReSharper disable CompareOfFloatsByEqualityOperator
+                    if (row == col)
+                    {
+                        isIdentity = _data[row, col] == 1.0f;
+                    }
+                    else
+                    {
+                        isIdentity = _data[row, col] == 0.0f;
+                    }
+                    // ReSharper restore CompareOfFloatsByEqualityOperator
                 }
             }
+
+            _isIdentity = isIdentity;
         }
 
-        public Matrix(int rows, int columns)
+        private Matrix(int rows, int columns)
         {
             Rows = rows;
             Columns = columns;
             _data = new float[Rows, Columns];
+            _isIdentity = false;
         }
 
         public float this[int row, int col] => _data[row, col];
@@ -55,6 +75,11 @@ namespace Octans
 
         public Matrix Transpose()
         {
+            if (_isIdentity)
+            {
+                return this;
+            }
+
             var m = new Matrix(Columns, Rows);
             for (var row = 0; row < Rows; row++)
             {
@@ -66,8 +91,9 @@ namespace Octans
 
             return m;
         }
-        
-        public bool Equals(Matrix other) => Rows == other.Rows && Columns == other.Columns && ValuesEqual(in this, in other);
+
+        public bool Equals(Matrix other) =>
+            Rows == other.Rows && Columns == other.Columns && ValuesEqual(in this, in other);
 
         [Pure]
         private bool ValuesEqual(in Matrix a, in Matrix b)
@@ -108,9 +134,9 @@ namespace Octans
         }
 
         public static Matrix Identity = new Matrix(new[] {1.0f, 0, 0, 0},
-                                                    new[] {0.0f, 1, 0, 0},
-                                                    new[] {0.0f, 0, 1, 0},
-                                                    new[] {0.0f, 0, 0, 1});
+                                                   new[] {0.0f, 1, 0, 0},
+                                                   new[] {0.0f, 0, 1, 0},
+                                                   new[] {0.0f, 0, 0, 1});
 
         public static Matrix Square(params float[] values)
         {
@@ -163,6 +189,16 @@ namespace Octans
         [Pure]
         private static Matrix Multiply(in Matrix a, in Matrix b)
         {
+            if (a._isIdentity)
+            {
+                return b;
+            }
+
+            if (b._isIdentity)
+            {
+                return a;
+            }
+
             if (a.Columns != b.Rows)
             {
                 throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
@@ -191,7 +227,7 @@ namespace Octans
         {
             if (m.Columns == 2 && m.Rows == 2)
             {
-               return m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0];
+                return m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0];
             }
 
             var det = 0.0f;
@@ -248,15 +284,17 @@ namespace Octans
         }
 
         [Pure]
-        public static bool IsInvertible(in Matrix m)
-        {
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            return Determinant(m) != 0.0f;
-        }
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
+        public static bool IsInvertible(in Matrix m) => Determinant(m) != 0.0f;
 
         [Pure]
         public static Matrix Inverse(in Matrix m)
         {
+            if (m._isIdentity)
+            {
+                return m;
+            }
+
             var det = Determinant(m);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (det == 0.0f)
@@ -278,10 +316,13 @@ namespace Octans
             return m2;
         }
 
-        public Matrix Inverse()
-        {
-            return Inverse(this);
-        }
+        public Matrix Inverse() => Inverse(this);
+
+        private static Point OpMultiplyPoint(in Matrix left, in Point right) =>
+            left._isIdentity ? right : ToPoint(Multiply(in left, ToMatrix(in right)));
+
+        private static Vector OpMultiplyVector(in Matrix left, in Vector right) =>
+            left._isIdentity ? right : ToVector(Multiply(in left, ToMatrix(in right)));
 
         [Pure]
         public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);
@@ -293,9 +334,11 @@ namespace Octans
         public static Matrix operator *(Matrix left, Matrix right) => Multiply(in left, in right);
 
         [Pure]
-        public static Point operator *(Matrix left, Point right) => ToPoint(Multiply(in left, ToMatrix(in right)));
+        public static Point operator *(Matrix left, Point right) => OpMultiplyPoint(in left, in right);
 
         [Pure]
-        public static Vector operator *(Matrix left, Vector right) => ToVector(Multiply(in left, ToMatrix(in right)));
+        public static Vector operator *(Matrix left, Vector right) => OpMultiplyVector(in left, in right);
+
+      
     }
 }

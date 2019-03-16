@@ -19,7 +19,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var xs = w.Intersect(r);
+            var xs = w.Intersect(r).ToSorted();
             xs.Should().HaveCount(4);
             xs[0].T.Should().Be(4f);
             xs[1].T.Should().Be(4.5f);

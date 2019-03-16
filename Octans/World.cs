@@ -14,15 +14,14 @@ namespace Octans
         public IReadOnlyList<IShape> Objects { get; private set; }
         public IReadOnlyList<PointLight> Lights { get; private set; }
 
-        public IReadOnlyList<Intersection> Intersect(in Ray ray)
+        public IIntersections Intersect(in Ray ray)
         {
-            var list = new List<Intersection>();
+            var builder = Intersections.Builder();
             foreach (var shape in Objects)
             {
-                list.AddRange(shape.Intersects(ray));
+                builder.AddRange(shape.Intersects(ray));
             }
-
-            return list.Count > 0 ? new Intersections(list) : Intersections.Empty;
+            return builder.ToIntersections();
         }
 
         public void SetLights(params PointLight[] lights)

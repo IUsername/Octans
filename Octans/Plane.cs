@@ -7,16 +7,16 @@ namespace Octans
     {
         private const float Epsilon = 0.0001f;
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             // XZ plane
             if (MathF.Abs(localRay.Direction.Y) < Epsilon)
             {
-                return Intersections.Empty;
+                return Intersections.Empty();
             }
 
             var t = -localRay.Origin.Y / localRay.Direction.Y;
-            return new Intersections(new Intersection(t, this));
+            return Intersections.Create(new Intersection(t, this));
         }
 
         public override Vector LocalNormalAt(in Point localPoint) => new Vector(0, 1, 0);

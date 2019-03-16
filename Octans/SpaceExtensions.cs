@@ -5,14 +5,14 @@ namespace Octans
 {
     public static class SpaceExtensions
     {
-        public static Ray ToLocal(in this Ray worldRay, IShape shape)
+        public static Ray ToLocal(in this Ray worldRay, in IShape shape)
         {
             return worldRay.Transform(shape.TransformInverse());
         }
         
-        public static IReadOnlyList<Intersection> Intersects(this IShape shape, in Ray worldRay)
+        public static IIntersections Intersects(this IShape shape, in Ray worldRay)
         {
-            var localRay = worldRay.ToLocal(shape);
+            var localRay = worldRay.ToLocal(in shape);
             return shape.LocalIntersects(in localRay);
         }
 

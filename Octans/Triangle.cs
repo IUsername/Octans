@@ -27,7 +27,7 @@ namespace Octans
 
         public Vector E1 { get; }
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             // Möller–Trumbore algorithm.
             // www.tandfonline.com/doi/abs/10.1080/10867651.1997.10487468 
@@ -35,7 +35,7 @@ namespace Octans
             var det = E1 % dirCrossE2;
             if (MathF.Abs(det) < Epsilon)
             {
-                return Intersections.Empty;
+                return Intersections.Empty();
             }
 
             var f = 1f / det;
@@ -43,18 +43,18 @@ namespace Octans
             var u = f * p1ToOrigin % dirCrossE2;
             if (u < 0f || u > 1f)
             {
-                return Intersections.Empty;
+                return Intersections.Empty();
             }
 
             var originCrossE1 = Vector.Cross(p1ToOrigin, E1);
             var v = f * localRay.Direction % originCrossE1;
             if (v < 0 || u + v > 1)
             {
-                return Intersections.Empty;
+                return Intersections.Empty();
             }
 
             var t = f * E2 % originCrossE1;
-            return new Intersections(new Intersection(t, this));
+            return Intersections.Create(new Intersection(t, this));
         }
 
         public override Vector LocalNormalAt(in Point localPoint) => Normal;

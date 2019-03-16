@@ -18,12 +18,12 @@ namespace Octans
         public float Maximum { get; set; }
         public bool IsClosed { get; set; }
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             var dX = localRay.Direction.X;
             var dZ = localRay.Direction.Z;
             var a = dX * dX + dZ * dZ;
-            var list = new List<Intersection>();
+            var builder = Intersections.Builder();
 
             if (!Check.Within(a, 0f, Epsilon))
             {
@@ -34,7 +34,7 @@ namespace Octans
                 var disc = b * b - 4f * a * c;
                 if (disc < 0f)
                 {
-                    return Intersections.Empty;
+                    return builder.ToIntersections();
                 }
 
                 var t0 = (-b - MathF.Sqrt(disc)) / (2f * a);
@@ -49,19 +49,19 @@ namespace Octans
                 var y0 = localRay.Origin.Y + t0 * localRay.Direction.Y;
                 if (Minimum < y0 && y0 < Maximum)
                 {
-                    list.Add(new Intersection(t0, this));
+                    builder.Add(new Intersection(t0, this));
                 }
 
                 var y1 = localRay.Origin.Y + t1 * localRay.Direction.Y;
                 if (Minimum < y1 && y1 < Maximum)
                 {
-                    list.Add(new Intersection(t1, this));
+                    builder.Add(new Intersection(t1, this));
                 }
             }
 
-            IntersectCaps(this, localRay, list);
+            IntersectCaps(this, localRay, builder);
 
-            return new Intersections(list);
+            return builder.ToIntersections();
         }
 
         private static bool CheckCap(Ray ray, float t)
@@ -72,7 +72,7 @@ namespace Octans
             return check <= 1f || Check.Within(check, 1f, Epsilon);
         }
 
-        private static void IntersectCaps(Cylinder cylinder, Ray ray, ICollection<Intersection> list)
+        private static void IntersectCaps(Cylinder cylinder, Ray ray, IIntersectionsBuilder list)
         {
             if (!cylinder.IsClosed || Check.Within(ray.Direction.Y, 0f, Epsilon) || list.Count == 2)
             {

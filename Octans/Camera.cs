@@ -14,6 +14,7 @@ namespace Octans
             VSize = vSize;
             FieldOfView = fieldOfView;
             Transform = Matrix.Identity;
+            _transformInverse = Matrix.Identity;
 
             var halfView = MathF.Tan(fieldOfView / 2f);
             var aspect = (float) hSize / vSize;

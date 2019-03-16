@@ -18,26 +18,26 @@ namespace Octans
 
         public IReadOnlyList<IShape> Children => _children;
 
-        public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
+        public override IIntersections LocalIntersects(in Ray localRay)
         {
             if (_children.Count == 0)
             {
-                return Intersections.Empty;
+                return Intersections.Empty();
             }
 
             var bounds = LocalBounds();
             if (!bounds.DoesIntersect(localRay))
             {
-                return Intersections.Empty;
+                return Intersections.Empty();
             }
 
-            var intersections = new List<Intersection>();
+            var intersections = Intersections.Builder();
             foreach (var child in _children)
             {
                 intersections.AddRange(child.Intersects(in localRay));
             }
 
-            return intersections.Count > 0 ? new Intersections(intersections) : Intersections.Empty;
+            return intersections.ToIntersections();
         }
 
         public override Vector LocalNormalAt(in Point localPoint) => throw new NotImplementedException();
