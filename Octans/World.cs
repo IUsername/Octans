@@ -22,7 +22,7 @@ namespace Octans
                 list.AddRange(shape.Intersects(ray));
             }
 
-            return new Intersections(list);
+            return list.Count > 0 ? new Intersections(list) : Intersections.Empty;
         }
 
         public void SetLights(params PointLight[] lights)

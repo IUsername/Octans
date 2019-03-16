@@ -59,6 +59,9 @@ namespace Octans
 
         public override Vector LocalNormalAt(in Point localPoint) => Normal;
 
-        public override Bounds LocalBounds() => throw new NotImplementedException();
+        public override Bounds LocalBounds()
+        {
+            return Bounds.FromPoints(new[] {P1, P2, P3});
+        }
     }
 }

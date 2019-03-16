@@ -8,13 +8,15 @@ namespace Octans
     public class Group : ShapeBase
     {
         private readonly List<IShape> _children;
+        private readonly Lazy<Bounds> _bounds;
 
         public Group()
         {
             _children = new List<IShape>();
+            _bounds = new Lazy<Bounds>(BoundsFactory);
         }
 
-        public IReadOnlyCollection<IShape> Children => _children;
+        public IReadOnlyList<IShape> Children => _children;
 
         public override IReadOnlyList<Intersection> LocalIntersects(in Ray localRay)
         {
@@ -35,12 +37,17 @@ namespace Octans
                 intersections.AddRange(child.Intersects(in localRay));
             }
 
-            return new Intersections(intersections);
+            return intersections.Count > 0 ? new Intersections(intersections) : Intersections.Empty;
         }
 
         public override Vector LocalNormalAt(in Point localPoint) => throw new NotImplementedException();
 
         public override Bounds LocalBounds()
+        {
+            return _bounds.Value;
+        }
+
+        private Bounds BoundsFactory()
         {
             return Children.Aggregate(Bounds.Empty, (current, child) => current + ToLocalBounds(child));
         }
