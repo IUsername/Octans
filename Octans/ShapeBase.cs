@@ -4,13 +4,27 @@ namespace Octans
 {
     public abstract class ShapeBase : IShape
     {
+        private Matrix _inverse;
+        private Matrix _transform;
+
         protected ShapeBase()
         {
             Transform = Matrix.Identity;
+            _inverse = Matrix.Identity;
             Material = new Material();
         }
 
-        public Matrix Transform { get; protected set; }
+        public Matrix Transform
+        {
+            get => _transform;
+            protected set
+            {
+                _transform = value;
+                _inverse = value.Inverse();
+            }
+        }
+
+        public Matrix TransformInverse() => _inverse;
 
         public Material Material { get; protected set; }
 

@@ -6,6 +6,7 @@ namespace Octans
     {
         private readonly float _halfHeight;
         private readonly float _halfWidth;
+        private Matrix _transformInverse;
 
         public Camera(int hSize, int vSize, float fieldOfView)
         {
@@ -41,6 +42,7 @@ namespace Octans
         public void SetTransform(in Matrix transform)
         {
             Transform = transform;
+            _transformInverse = transform.Inverse();
         }
 
         public Ray RayForPixel(int px, int py)
@@ -50,7 +52,7 @@ namespace Octans
             var worldX = _halfWidth - xOffset;
             var worldY = _halfHeight - yOffset;
 
-            var inv = Transform.Inverse();
+            var inv = _transformInverse;
             var pixel = inv * new Point(worldX, worldY, -1f);
             var origin = inv * Point.Zero;
             var direction = (pixel - origin).Normalize();

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Octans
+﻿namespace Octans
 {
     public class BlendedCompositePattern : PatternBase
     {
@@ -15,10 +13,10 @@ namespace Octans
 
         public override Color LocalColorAt(Point localPoint)
         {
-            var aLocal = A.Transform.Inverse() * localPoint;
+            var aLocal = A.TransformInverse() * localPoint;
             var a = A.LocalColorAt(aLocal);
 
-            var bLocal = B.Transform.Inverse() * localPoint;
+            var bLocal = B.TransformInverse() * localPoint;
             var b = B.LocalColorAt(bLocal);
 
             return (a + b) / 2f;

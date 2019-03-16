@@ -7,7 +7,7 @@ namespace Octans
     {
         public static Ray ToLocal(in this Ray worldRay, IShape shape)
         {
-            return worldRay.Transform(shape.Transform.Inverse());
+            return worldRay.Transform(shape.TransformInverse());
         }
         
         public static IReadOnlyList<Intersection> Intersects(this IShape shape, in Ray worldRay)
@@ -24,7 +24,7 @@ namespace Octans
             {
                 world = shape.Parent.ToLocal(in worldPoint);
             }
-            return Matrix.Inverse(shape.Transform) * world;
+            return shape.TransformInverse() * world;
         }
 
         [Pure]
@@ -36,7 +36,7 @@ namespace Octans
                 world = shape.Parent.ToLocal(in worldPoint);
             }
             var localPoint = shape.ToLocal(in world);
-            return Matrix.Inverse(pattern.Transform) * localPoint;
+            return pattern.TransformInverse() * localPoint;
         }
 
         public static Vector NormalAt(this IShape shape, in Point worldPoint)
@@ -48,7 +48,7 @@ namespace Octans
 
         public static Vector NormalToWorld(this IShape shape, in Vector localNormal)
         {
-            var normal = shape.Transform.Inverse().Transpose() * localNormal;
+            var normal = shape.TransformInverse().Transpose() * localNormal;
             normal = normal.ZeroW().Normalize();
             if(shape.Parent != null)
             {

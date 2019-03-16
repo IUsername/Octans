@@ -19,7 +19,7 @@
             var offset = new Vector(x, y, z) * Perturbation;
 
             var global = Transform * (localPoint + offset); 
-            var baseLocal = BasePattern.Transform.Inverse() * global;
+            var baseLocal = BasePattern.TransformInverse() * global;
             return BasePattern.LocalColorAt(baseLocal);
         }
     }
