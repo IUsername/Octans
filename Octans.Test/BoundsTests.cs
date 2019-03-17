@@ -83,6 +83,8 @@ namespace Octans.Test
             var pMax = new Point(float.PositiveInfinity, 0, float.PositiveInfinity);
             var b = new Bounds(pMin, pMax);
             var r = new Ray(new Point(0, 10, 0), new Vector(0, 1, 0));
+            b.DoesIntersect(r).Should().BeFalse();
+            r = new Ray(new Point(0, 10, 0), new Vector(0, -1, 0));
             b.DoesIntersect(r).Should().BeTrue();
         }
     }

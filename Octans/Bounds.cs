@@ -9,7 +9,7 @@ namespace Octans
     /// </summary>
     public readonly struct Bounds
     {
-        private const float Epsilon = 0.0001f;
+        //private const float Epsilon = 0.0001f;
 
         public Point Min { get; }
         public Point Max { get; }
@@ -62,36 +62,70 @@ namespace Octans
         }
 
 
-        private static (float min, float max) CheckAxis(float origin, float direction, float bMin, float bMax)
-        {
-            var tMinNum = bMin - origin;
-            var tMaxNum = bMax - origin;
-            float tMin, tMax;
-            if (MathF.Abs(direction) >= Epsilon)
-            {
-                tMin = tMinNum / direction;
-                tMax = tMaxNum / direction;
-            }
-            else
-            {
-                tMin = float.IsNegative(tMinNum) ? float.NegativeInfinity : float.PositiveInfinity;
-                tMax = float.IsNegative(tMaxNum) ? float.NegativeInfinity : float.PositiveInfinity;
-            }
+        //private static (float min, float max) CheckAxis(float origin, float direction, float bMin, float bMax)
+        //{
+        //    var tMinNum = bMin - origin;
+        //    var tMaxNum = bMax - origin;
+        //    float tMin, tMax;
+        //    if (MathF.Abs(direction) >= Epsilon)
+        //    {
+        //        tMin = tMinNum / direction;
+        //        tMax = tMaxNum / direction;
+        //    }
+        //    else
+        //    {
+        //        tMin = float.IsNegative(tMinNum) ? float.NegativeInfinity : float.PositiveInfinity;
+        //        tMax = float.IsNegative(tMaxNum) ? float.NegativeInfinity : float.PositiveInfinity;
+        //    }
 
-            return tMin > tMax ? (tmin: tMax, tmax: tMin) : (tmin: tMin, tmax: tMax);
-        }
+        //    return tMin > tMax ? (tmin: tMax, tmax: tMin) : (tmin: tMin, tmax: tMax);
+        //}
 
         public bool DoesIntersect(in Ray ray)
         {
-            var (xtMin, xtMax) = CheckAxis(ray.Origin.X, ray.Direction.X, Min.X, Max.X);
-            var (ytMin, ytMax) = CheckAxis(ray.Origin.Y, ray.Direction.Y, Min.Y, Max.Y);
-            var (ztMin, ztMax) = CheckAxis(ray.Origin.Z, ray.Direction.Z, Min.Z, Max.Z);
+            var t1 = (Min.X - ray.Origin.X) * ray.InverseDirection.X;
+            var t2 = (Max.X - ray.Origin.X) * ray.InverseDirection.X;
+            var t3 = (Min.Y - ray.Origin.Y) * ray.InverseDirection.Y;
+            var t4 = (Max.Y - ray.Origin.Y) * ray.InverseDirection.Y;
+            var t5 = (Min.Z - ray.Origin.Z) * ray.InverseDirection.Z;
+            var t6 = (Max.Z - ray.Origin.Z) * ray.InverseDirection.Z;
+           
+            var tMax = MathF.Min(MathF.Min(MathF.Max(t1, t2), MathF.Max(t3, t4)), MathF.Max(t5, t6));
 
-            var tMin = MathF.Max(MathF.Max(xtMin, ytMin), ztMin);
-            var tMax = MathF.Min(MathF.Min(xtMax, ytMax), ztMax);
+            //var t = 0f;
+            if (tMax < 0f)
+            {
+                //t = tMax;
+                return false;
+            }
 
-            return tMin <= tMax;
+            var tMin = MathF.Max(MathF.Max(MathF.Min(t1, t2), MathF.Min(t3, t4)), MathF.Min(t5, t6));
+            if (tMin > tMax)
+            {
+                //t = tMax;
+                return false;
+            }
+
+            if (float.IsNaN(tMax))
+            {
+                //t = float.PositiveInfinity;
+                return false;
+            }
+            //t = tMin;
+            return true;
         }
+
+        //public bool DoesIntersect(in Ray ray)
+        //{
+        //    var (xtMin, xtMax) = CheckAxis(ray.Origin.X, ray.Direction.X, Min.X, Max.X);
+        //    var (ytMin, ytMax) = CheckAxis(ray.Origin.Y, ray.Direction.Y, Min.Y, Max.Y);
+        //    var (ztMin, ztMax) = CheckAxis(ray.Origin.Z, ray.Direction.Z, Min.Z, Max.Z);
+
+        //    var tMin = MathF.Max(MathF.Max(xtMin, ytMin), ztMin);
+        //    var tMax = MathF.Min(MathF.Min(xtMax, ytMax), ztMax);
+
+        //    return tMin <= tMax;
+        //}
 
         public static Bounds Empty => new Bounds(Point.Zero, Point.Zero, true);
 

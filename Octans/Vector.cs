@@ -39,6 +39,8 @@ namespace Octans
 
         public Vector Divide(float scalar) => new Vector(X / scalar, Y / scalar, Z / scalar, W / scalar);
 
+        public Vector Fraction(float scalar) => new Vector(scalar/ X, scalar/ Y, scalar / Z, scalar / W);
+
         public float Magnitude() => MathF.Sqrt(X * X + Y * Y + Z * Z + W * W);
 
         public Vector Normalize()
@@ -83,6 +85,9 @@ namespace Octans
 
         [Pure]
         public static Vector operator /(Vector t, float scalar) => t.Divide(scalar);
+
+        [Pure]
+        public static Vector operator /(float scalar, Vector t) => t.Fraction(scalar);
 
         [Pure]
         public static Vector operator -(Vector t) => t.Negate();
