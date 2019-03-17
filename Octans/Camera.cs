@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Octans
 {
@@ -60,19 +61,39 @@ namespace Octans
             return new Ray(origin, direction);
         }
 
+        //public Canvas Render(World world)
+        //{
+        //    var canvas = new Canvas(HSize, VSize);
+        //    for (var y = 0; y < VSize; y++)
+        //    {
+        //        for (var x = 0; x < HSize; x++)
+        //        {
+        //            RenderPixel(world, x, y, canvas);
+        //        }
+        //    }
+        //    return canvas;
+        //}
+
         public Canvas Render(World world)
         {
             var canvas = new Canvas(HSize, VSize);
-            for (var y = 0; y < VSize; y++)
-            {
-                for (var x = 0; x < HSize; x++)
-                {
-                    var ray = RayForPixel(x, y);
-                    var color = Shading.ColorAt(world, ray, 8);
-                    canvas.WritePixel(color, x, y);
-                }
-            }
+            Parallel.For(0, VSize, y => RenderRow(world, y, canvas));
             return canvas;
+        }
+
+        private void RenderRow(World world, int y, Canvas canvas)
+        {
+            for (var x = 0; x < HSize; x++)
+            {
+                RenderPixel(world, x, y, canvas);
+            }
+        }
+
+        private void RenderPixel(World world, int x, int y, Canvas canvas)
+        {
+            var ray = RayForPixel(x, y);
+            var color = Shading.ColorAt(world, ray, 8);
+            canvas.WritePixel(color, x, y);
         }
     }
 }

@@ -19,8 +19,6 @@ namespace Octans
     {
         int Count { get; }
         Intersection this[int index] { get; }
-        IIntersections Add(IIntersections intersections);
-        IIntersections Add(Intersection intersection);
         Intersection? Hit();
         Intersection[] ToSorted();
     }
@@ -43,10 +41,6 @@ namespace Octans
         {
             _list = intersections;
         }
-
-        public IIntersections Add(IIntersections intersections) => new Intersections(_list.AddRange(intersections));
-
-        public IIntersections Add(Intersection intersection) => new Intersections(_list.Add(intersection));
 
         public Intersection? Hit()
         {
@@ -85,7 +79,7 @@ namespace Octans
 
         public static IIntersections Create(params Intersection[] intersection) => new Intersections(intersection);
 
-        private static readonly IIntersections EmptySingleton = new Intersections(ImmutableSortedSet<Intersection>.Empty);
+        private static readonly IIntersections EmptySingleton = new Intersections(ImmutableList<Intersection>.Empty);
 
         public static IIntersections Empty() => EmptySingleton;
 

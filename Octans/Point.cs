@@ -24,11 +24,11 @@ namespace Octans
         {
         }
 
-        public Point Add(Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
+        public Point Add(in Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
 
-        public Vector Subtract(Point t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);
+        public Vector Subtract(in Point t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);
 
-        public Point Subtract(Vector t) => new Point(X - t.X, Y - t.Y, Z - t.Z, W);
+        public Point Subtract(in Vector t) => new Point(X - t.X, Y - t.Y, Z - t.Z, W);
 
         private Vector Multiply(in Vector vector) => new Vector(X * vector.X, Y * vector.Y, Z * vector.Z);
 
@@ -59,13 +59,13 @@ namespace Octans
         }
 
         [Pure]
-        public static Point operator +(Point left, Vector right) => left.Add(right);
+        public static Point operator +(Point left, Vector right) => left.Add(in right);
 
         [Pure]
-        public static Vector operator -(Point left, Point right) => left.Subtract(right);
+        public static Vector operator -(Point left, Point right) => left.Subtract(in right);
 
         [Pure]
-        public static Point operator -(Point left, Vector right) => left.Subtract(right);
+        public static Point operator -(Point left, Vector right) => left.Subtract(in right);
 
         [Pure]
         public static Point operator *(Point t, float scalar) => t.Scale(scalar);
@@ -74,7 +74,7 @@ namespace Octans
         public static Point operator *(float scalar, Point t) => t.Scale(scalar);
 
         [Pure]
-        public static Vector operator *(Point t, Vector v) => t.Multiply(v);
+        public static Vector operator *(Point t, Vector v) => t.Multiply(in v);
 
         [Pure]
         public static Point operator /(Point t, float scalar) => t.Divide(scalar);

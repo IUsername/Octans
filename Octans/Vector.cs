@@ -29,9 +29,9 @@ namespace Octans
             return new Vector(X, Y, Z);
         }
 
-        public Vector Add(Vector t) => new Vector(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
+        public Vector Add(in Vector t) => new Vector(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
 
-        public Vector Subtract(Vector t) => new Vector(X - t.X, Y - t.Y, Z - t.Z, W - t.W);
+        public Vector Subtract(in Vector t) => new Vector(X - t.X, Y - t.Y, Z - t.Z, W - t.W);
 
         public Vector Negate() => new Vector(-X, -Y, -Z, -W);
 
@@ -70,10 +70,10 @@ namespace Octans
         }
 
         [Pure]
-        public static Vector operator +(Vector left, Vector right) => left.Add(right);
+        public static Vector operator +(Vector left, Vector right) => left.Add(in right);
 
         [Pure]
-        public static Vector operator -(Vector left, Vector right) => left.Subtract(right);
+        public static Vector operator -(Vector left, Vector right) => left.Subtract(in right);
 
         [Pure]
         public static Vector operator *(Vector t, float scalar) => t.Scale(scalar);

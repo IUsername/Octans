@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 
 namespace Octans
 {
     public static class SpaceExtensions
     {
-        public static Ray ToLocal(in this Ray worldRay, in IShape shape)
-        {
-            return worldRay.Transform(shape.TransformInverse());
-        }
-        
+        public static Ray ToLocal(in this Ray worldRay, in IShape shape) =>
+            worldRay.Transform(shape.TransformInverse());
+
         public static IIntersections Intersects(this IShape shape, in Ray worldRay)
         {
             var localRay = worldRay.ToLocal(in shape);
@@ -24,6 +21,7 @@ namespace Octans
             {
                 world = shape.Parent.ToLocal(in worldPoint);
             }
+
             return shape.TransformInverse() * world;
         }
 
@@ -35,6 +33,7 @@ namespace Octans
             {
                 world = shape.Parent.ToLocal(in worldPoint);
             }
+
             var localPoint = shape.ToLocal(in world);
             return pattern.TransformInverse() * localPoint;
         }
@@ -50,10 +49,11 @@ namespace Octans
         {
             var normal = shape.TransformInverse().Transpose() * localNormal;
             normal = normal.ZeroW().Normalize();
-            if(shape.Parent != null)
+            if (shape.Parent != null)
             {
                 normal = NormalToWorld(shape.Parent, normal);
             }
+
             return normal;
         }
     }

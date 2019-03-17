@@ -17,10 +17,12 @@ namespace Octans
         public IIntersections Intersect(in Ray ray)
         {
             var builder = Intersections.Builder();
-            foreach (var shape in Objects)
+            for (var index = 0; index < Objects.Count; index++)
             {
+                var shape = Objects[index];
                 builder.AddRange(shape.Intersects(ray));
             }
+
             return builder.ToIntersections();
         }
 
