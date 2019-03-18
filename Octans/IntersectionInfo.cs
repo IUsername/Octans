@@ -28,8 +28,9 @@ namespace Octans
                 IsInside = false;
             }
 
-            OverPoint = Point + Normal * Epsilon;
-            UnderPoint = Point - Normal * Epsilon;
+            var offset = Normal * Epsilon;
+            OverPoint = Point + offset;
+            UnderPoint = Point - offset;
             Reflect = Vector.Reflect(in ray.Direction, in Normal);
 
             N1 = 1.0f;
@@ -51,15 +52,17 @@ namespace Octans
                     containers.Add(current);
                 }
 
-                if (isCurrent)
+                if (!isCurrent)
                 {
-                    if (containers.Count > 0)
-                    {
-                        N2 = containers[containers.Count - 1].Shape.Material.RefractiveIndex;
-                    }
-
-                    break;
+                    continue;
                 }
+
+                if (containers.Count > 0)
+                {
+                    N2 = containers[containers.Count - 1].Shape.Material.RefractiveIndex;
+                }
+
+                break;
             }
         }
 
@@ -75,6 +78,6 @@ namespace Octans
         public readonly float N1;
         public readonly float N2;
 
-        public const float Epsilon = 0.000052f;
+        public const float Epsilon = 0.0001f;
     }
 }
