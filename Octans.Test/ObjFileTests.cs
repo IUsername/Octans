@@ -37,6 +37,20 @@ v 1 1 0
         }
 
         [Fact]
+        public void ParsesNormalRecords()
+        {
+            var file = @"
+vn 0 0 1
+vn 0.707 0 -0.707
+vn 1 2 3 
+";
+            var data = ObjFile.Parse(file);
+            data.Normals[1].Should().Be(new Vector(0,0,1));
+            data.Normals[2].Should().Be(new Vector(0.707f,0,-0.707f));
+            data.Normals[3].Should().Be(new Vector(1, 2, 3));
+        }
+
+        [Fact]
         public void ParsesToTriangles()
         {
             var file = @"
@@ -59,6 +73,33 @@ f 1 3 4
             t2.P1.Should().Be(data.Vertices[1]);
             t2.P2.Should().Be(data.Vertices[3]);
             t2.P3.Should().Be(data.Vertices[4]);
+        }
+
+        [Fact]
+        public void ParsesToTrianglesWithNormals()
+        {
+            var file = @"
+v 0 1 0
+v -1 0 0
+v 1 0 0
+
+vn -1 0 0
+vn 1 0 0
+vn 0 1 0
+
+f 1//3 2//1 3//2
+f 1/0/3 2/102/1 3/14/2
+";
+            var data = ObjFile.Parse(file);
+            var g = data.DefaultGroup;
+            var t1 = (SmoothTriangle)g.Children[0];
+            var t2 = (SmoothTriangle)g.Children[1];
+            t1.P1.Should().Be(data.Vertices[1]);
+            t1.P2.Should().Be(data.Vertices[2]);
+            t1.P3.Should().Be(data.Vertices[3]);
+            t1.N1.Should().Be(data.Normals[3]);
+            t1.N2.Should().Be(data.Normals[1]);
+            t1.N3.Should().Be(data.Normals[2]);
         }
 
         [Fact]

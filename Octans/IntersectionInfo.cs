@@ -17,7 +17,7 @@ namespace Octans
             Shape = intersection.Shape;
             Point = ray.Position(T);
             Eye = -ray.Direction;
-            Normal = Shape.NormalAt(in Point);
+            Normal = Shape.NormalAt(in Point, in intersection);
             if (Normal % Eye < 0f)
             {
                 IsInside = true;

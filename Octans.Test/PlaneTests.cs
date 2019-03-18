@@ -9,9 +9,9 @@ namespace Octans.Test
         public void NormalOfPlaneIsConstantEverywhere()
         {
             var p = new Plane();
-            var n1 = p.LocalNormalAt(new Point(0, 0, 0));
-            var n2 = p.LocalNormalAt(new Point(10, 0, -10));
-            var n3 = p.LocalNormalAt(new Point(-5, 0, 1500));
+            var n1 = p.LocalNormalAt(new Point(0, 0, 0), new Intersection(1, p));
+            var n2 = p.LocalNormalAt(new Point(10, 0, -10), new Intersection(1, p));
+            var n3 = p.LocalNormalAt(new Point(-5, 0, 1500), new Intersection(1, p));
             n1.Should().Be(new Vector(0, 1, 0));
             n2.Should().Be(new Vector(0, 1, 0));
             n3.Should().Be(new Vector(0, 1, 0));

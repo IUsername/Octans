@@ -92,7 +92,7 @@ namespace Octans
             }
         }
 
-        public override Vector LocalNormalAt(in Point localPoint)
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
             var dist = localPoint.X * localPoint.X + localPoint.Z * localPoint.Z;
             if (dist < 1f)

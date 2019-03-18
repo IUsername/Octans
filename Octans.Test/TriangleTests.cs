@@ -24,9 +24,9 @@ namespace Octans.Test
         public void CanFindNormalAtLocalPoint()
         {
             var t = new Triangle(new Point(0, 1, 0), new Point(-1, 0, 0), new Point(1, 0, 0));
-            var n1 = t.LocalNormalAt(new Point(0, 0.5f, 0));
-            var n2 = t.LocalNormalAt(new Point(-0.5f, 0.75f, 0));
-            var n3 = t.LocalNormalAt(new Point(0.5f, 0.25f, 0));
+            var n1 = t.LocalNormalAt(new Point(0, 0.5f, 0), new Intersection(1, t));
+            var n2 = t.LocalNormalAt(new Point(-0.5f, 0.75f, 0), new Intersection(1, t));
+            var n3 = t.LocalNormalAt(new Point(0.5f, 0.25f, 0), new Intersection(1, t));
             n1.Should().Be(t.Normal);
             n2.Should().Be(t.Normal);
             n3.Should().Be(t.Normal);

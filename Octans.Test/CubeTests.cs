@@ -97,7 +97,7 @@ namespace Octans.Test
 
         private static Vector NormalAtPoint(Cube cube, Point point)
         {
-            return cube.LocalNormalAt(point);
+            return cube.LocalNormalAt(point, new Intersection(1,cube));
         }
     }
 }

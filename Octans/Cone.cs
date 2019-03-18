@@ -123,7 +123,7 @@ namespace Octans
             return dist < r;
         }
 
-        public override Vector LocalNormalAt(in Point localPoint)
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
             if (IsClosed)
             {

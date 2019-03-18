@@ -61,7 +61,7 @@ namespace Octans.Test
         public void NormalOnXAxis()
         {
             var s = new Sphere();
-            var n = s.LocalNormalAt(new Point(1, 0, 0));
+            var n = s.LocalNormalAt(new Point(1, 0, 0), new Intersection(1,s));
             n.Should().Be(new Vector(1, 0, 0));
         }
 
@@ -69,7 +69,7 @@ namespace Octans.Test
         public void NormalOnYAxis()
         {
             var s = new Sphere();
-            var n = s.LocalNormalAt(new Point(0, 1, 0));
+            var n = s.LocalNormalAt(new Point(0, 1, 0), new Intersection(1, s));
             n.Should().Be(new Vector(0, 1, 0));
         }
 
@@ -77,7 +77,7 @@ namespace Octans.Test
         public void NormalOnZAxis()
         {
             var s = new Sphere();
-            var n = s.LocalNormalAt(new Point(0, 0, 1));
+            var n = s.LocalNormalAt(new Point(0, 0, 1), new Intersection(1, s));
             n.Should().Be(new Vector(0, 0, 1));
         }
 
@@ -131,7 +131,7 @@ namespace Octans.Test
 
                     var point = r.Position(hit.Value.T);
                     var shape = hit.Value.Shape;
-                    var normal = shape.NormalAt(point);
+                    var normal = shape.NormalAt(point, hit.Value);
                     var eye = -r.Direction;
                     var color = Shading.Lighting(shape.Material, shape, light, point, eye, normal, false);
                     canvas.WritePixel(color, x, y);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Octans
 {
     public class ObjFile
     {
-        private static readonly Parser<char, IObjPart> ObjPart = Parser.OneOf(Vertex, FaceIndices, Group);
+        private static readonly Parser<char, IObjPart> ObjPart = Parser.OneOf(Vertex, Normal, FaceIndices, Group);
 
         // TODO: This will require strings to be allocated and then tossed. Investigate direct conversion from character stream.
         private static Parser<char, float> FloatNum =>
@@ -17,8 +18,14 @@ namespace Octans
         private static Parser<char, Point> PointXYZ =>
             Parser.Map((x, y, z) => new Point(x, y, z), Tok(FloatNum), Tok(FloatNum), FloatNum).Labelled("PointXYZ");
 
+        private static Parser<char, Vector> VectorXYZ =>
+            Parser.Map((x, y, z) => new Vector(x, y, z), Tok(FloatNum), Tok(FloatNum), FloatNum).Labelled("VectorXYZ");
+
         private static Parser<char, IObjPart> Vertex =>
-            Tok(Parser.Char('v')).Then(PointXYZ).Select<IObjPart>(p => new VertexPart(p)).Labelled("Vertex");
+            Tok(Parser.String("v ")).Then(PointXYZ).Select<IObjPart>(p => new VertexPart(p)).Labelled("Vertex");
+
+        private static Parser<char, IObjPart> Normal =>
+            Tok(Parser.String("vn ")).Then(VectorXYZ).Select<IObjPart>(v => new NormalPart(v)).Labelled("Normal");
 
         private static Parser<char, IEnumerable<Maybe<int>>> IndexGroup =>
             Parser.Num.Optional().Separated(Parser.Char('/'));
@@ -27,13 +34,13 @@ namespace Octans
             IndexGroup.Separated(Parser.Whitespace);
 
         private static Parser<char, IObjPart> FaceIndices =>
-            Tok(Parser.Char('f')).Then(FaceIndexGroup).Select<IObjPart>(FacePart.Extract).Labelled("Face");
+            Tok(Parser.String("f ")).Then(FaceIndexGroup).Select<IObjPart>(FacePart.Extract).Labelled("Face");
 
         private static Parser<char, string> Identifier =>
             Parser<char>.Token(char.IsLetterOrDigit).AtLeastOnceString();
 
         private static Parser<char, IObjPart> Group =>
-            Tok(Parser.Char('g')).Then(Identifier).Select<IObjPart>(n => new GroupPart(n));
+            Tok(Parser.String("g ")).Then(Identifier).Select<IObjPart>(n => new GroupPart(n));
 
         public static ParsedObjData Parse(string input)
         {
@@ -61,6 +68,7 @@ namespace Octans
         {
             // Vertex indices are 1-based.
             var vertices = new List<Point> {new Point()};
+            var normals = new List<Vector> {new Vector()};
             var groups = new List<ObjGroup>();
             var current = new ObjGroup("Default");
             string line;
@@ -74,8 +82,11 @@ namespace Octans
                         case VertexPart v:
                             vertices.Add(v.Point);
                             break;
+                        case NormalPart n:
+                            normals.Add(n.Vector);
+                            break;
                         case FacePart f:
-                            current.AddFaceIndices(f.Indices);
+                            current.AddFaceIndices(f);
                             break;
                         case GroupPart g:
                             if (current.IsDefined())
@@ -97,9 +108,9 @@ namespace Octans
                 groups.Add(current);
             }
 
-            var groupArray = groups.Select(og => og.BuildGroup(vertices)).ToArray();
+            var groupArray = groups.Select(og => og.BuildGroup(vertices, normals)).ToArray();
 
-            return new ParsedObjData(vertices.ToArray(), groupArray);
+            return new ParsedObjData(vertices.ToArray(), normals.ToArray(), groupArray);
         }
 
         private static Parser<char, T> Tok<T>(Parser<char, T> token) =>
@@ -156,16 +167,21 @@ namespace Octans
 
         private class FacePart : IObjPart
         {
+            public readonly int?[] Normals;
             public readonly int[] Indices;
 
-            private FacePart(int[] indices)
+            private FacePart(int[] indices, int?[] normals)
             {
+                Normals = normals;
                 Indices = indices;
             }
 
             public static FacePart Extract(IEnumerable<IEnumerable<Maybe<int>>> indices)
             {
-                return new FacePart(indices.Select(indexGroup => indexGroup.First().Value).ToArray());
+                var groups = indices as IEnumerable<Maybe<int>>[] ?? indices.ToArray();
+                var ind = groups.Select(indexGroup => indexGroup.First().Value).ToArray();
+                var nor = groups.Select(indexGroup => indexGroup.Skip(2).FirstOrDefault()).Select<Maybe<int>,int?>(m => m.HasValue ? m.Value : new int?()).ToArray();
+                return new FacePart(ind, nor);
             }
         }
 
@@ -181,7 +197,7 @@ namespace Octans
 
         private class ObjGroup
         {
-            private readonly IList<int[]> _faces = new List<int[]>();
+            private readonly IList<FacePart> _faces = new List<FacePart>();
 
             public ObjGroup(string name)
             {
@@ -190,22 +206,34 @@ namespace Octans
 
             public string Name { get; }
 
-            public void AddFaceIndices(int[] indices)
+            public void AddFaceIndices(FacePart f)
             {
-                _faces.Add(indices);
+                _faces.Add(f);
             }
 
-            public Group BuildGroup(IReadOnlyList<Point> vertices)
+            public Group BuildGroup(IReadOnlyList<Point> vertices, IReadOnlyList<Vector> normals)
             {
                 var g = new Group();
                 foreach (var f in _faces)
                 {
-                    for (var i = 1; i < f.Length - 1; i++)
+                    for (var i = 1; i < f.Indices.Length - 1; i++)
                     {
-                        var p1 = vertices[f[0]];
-                        var p2 = vertices[f[i]];
-                        var p3 = vertices[f[i + 1]];
-                        var t = new Triangle(p1, p2, p3);
+                        var p1 = vertices[f.Indices[0]];
+                        var p2 = vertices[f.Indices[i]];
+                        var p3 = vertices[f.Indices[i + 1]];
+                        IShape t;
+                        if (f.Normals[0].HasValue && f.Normals[i].HasValue && f.Normals[i+1].HasValue)
+                        {
+                            var n1 = normals[f.Normals[0].Value];
+                            var n2 = normals[f.Normals[i].Value];
+                            // ReSharper disable once PossibleInvalidOperationException
+                            var n3 = normals[f.Normals[i+1].Value];
+                            t = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
+                        }
+                        else
+                        {
+                            t = new Triangle(p1, p2, p3);
+                        }
                         g.AddChild(t);
                     }
                 }
@@ -215,17 +243,30 @@ namespace Octans
 
             public bool IsDefined() => _faces.Count > 0;
         }
+
+        private class NormalPart : IObjPart
+        {
+            public readonly Vector Vector;
+
+            public NormalPart(Vector vector)
+            {
+                Vector = vector;
+            }
+        }
     }
 
     public class ParsedObjData
     {
-        public ParsedObjData(Point[] vertices, Group[] groups)
+        public ParsedObjData(Point[] vertices, Vector[] normals, Group[] groups)
         {
             Vertices = vertices;
+            Normals = normals;
             Groups = groups;
         }
 
         public Point[] Vertices { get; }
+
+        public Vector[] Normals { get; }
 
         public Group DefaultGroup => Groups[0];
 

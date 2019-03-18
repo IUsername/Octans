@@ -45,10 +45,10 @@ namespace Octans.Test
         public void CylinderNormals()
         {
             var c = new Cylinder();
-            c.LocalNormalAt(new Point(1, 0, 0)).Should().Be(new Vector(1, 0, 0));
-            c.LocalNormalAt(new Point(0, 5, -1)).Should().Be(new Vector(0, 0, -1));
-            c.LocalNormalAt(new Point(0, -2, 1)).Should().Be(new Vector(0, 0, 1));
-            c.LocalNormalAt(new Point(-1, 1, 0)).Should().Be(new Vector(-1, 0, 0));
+            c.LocalNormalAt(new Point(1, 0, 0), new Intersection(1, c)).Should().Be(new Vector(1, 0, 0));
+            c.LocalNormalAt(new Point(0, 5, -1), new Intersection(1, c)).Should().Be(new Vector(0, 0, -1));
+            c.LocalNormalAt(new Point(0, -2, 1), new Intersection(1, c)).Should().Be(new Vector(0, 0, 1));
+            c.LocalNormalAt(new Point(-1, 1, 0), new Intersection(1, c)).Should().Be(new Vector(-1, 0, 0));
         }
 
         [Fact]
@@ -93,12 +93,12 @@ namespace Octans.Test
         public void CylinderNormalsAtCaps()
         {
             var c = new Cylinder { Minimum = 1f, Maximum = 2f, IsClosed = true };
-            c.LocalNormalAt(new Point(0, 1, 0)).Should().Be(new Vector(0, -1, 0));
-            c.LocalNormalAt(new Point(0.5f, 1, 0)).Should().Be(new Vector(0, -1, 0));
-            c.LocalNormalAt(new Point(0, 1, 0.5f)).Should().Be(new Vector(0, -1, 0));
-            c.LocalNormalAt(new Point(0, 2, 0)).Should().Be(new Vector(0, 1, 0));
-            c.LocalNormalAt(new Point(0.5f, 2, 0)).Should().Be(new Vector(0, 1, 0));
-            c.LocalNormalAt(new Point(0, 2, 0.5f)).Should().Be(new Vector(0, 1, 0));
+            c.LocalNormalAt(new Point(0, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
+            c.LocalNormalAt(new Point(0.5f, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
+            c.LocalNormalAt(new Point(0, 1, 0.5f), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
+            c.LocalNormalAt(new Point(0, 2, 0), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
+            c.LocalNormalAt(new Point(0.5f, 2, 0), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
+            c.LocalNormalAt(new Point(0, 2, 0.5f), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
         }
 
         [Fact]

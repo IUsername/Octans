@@ -9,8 +9,8 @@ namespace Octans
     {
         private static void Main(string[] args)
         {
-            //TestRender();
-            TeapotTest();
+            TestRender();
+            //TeapotTest();
         }
 
         public static void TestRender()
@@ -141,7 +141,8 @@ namespace Octans
                                           pathItems.Take(pathItems.Length - pos - 1));
 
 
-            path = Path.Combine(projectPath, "teapot-low.obj");
+            //path = Path.Combine(projectPath, "teapot-low.obj");
+            path = Path.Combine(projectPath, "teapot.obj");
 
 
             Console.WriteLine("Loading file {0}...", path);
@@ -150,30 +151,43 @@ namespace Octans
             Console.WriteLine("File parsed...");
 
             var g = data.Groups[0];
-            g.SetTransform(Transforms.Scale(0.1f).RotateX(-MathF.PI / 2f));
+            g.SetTransform(Transforms.Scale(0.15f).RotateX(-MathF.PI / 2f));
 
-            var material = new Material
+            var chrome = new Material
             {
-                Pattern = new SolidColor(new Color(0.3f, 0.3f, 1f)),
-                Reflective = 0.4f,
+                Pattern = new SolidColor(new Color(0.3f, 0.3f, 0.9f)),
+                Reflective = 0.65f,
+                Ambient = 0.05f,
+                Diffuse = 0.35f,
+                Shininess = 300f
+            };
+
+            ApplyMaterialToChildren(g, chrome);
+
+            var checkerboard = new Material
+            {
+                Pattern = new CheckerPattern(new Color(0.5f, 0.5f, 0.5f), new Color(0.7f,0.7f,0.7f)),
+                Reflective = 0.1f,
                 Ambient = 0.2f,
                 Diffuse = 0.3f
             };
 
+            checkerboard.Pattern.SetTransform(Transforms.Scale(0.025f));
+
             var floor = new Cube();
-            floor.SetMaterial(material);
+            floor.SetMaterial(checkerboard);
             var fg = new Group();
             fg.AddChild(floor);
-            fg.SetTransform(Transforms.TranslateY(-1).Scale(1f));
+            fg.SetTransform(Transforms.TranslateY(-1).Scale(5f));
 
             var w = new World();
             w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
             w.SetObjects(fg, g);
 
-            var x = 300;
-            var y = 200;
+            var x = 600;
+            var y = 400;
             var c = new Camera(x, y, MathF.PI / 3f);
-            c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
+            c.SetTransform(Transforms.View(new Point(0, 3.0f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
 
             Console.WriteLine("Rendering at {0}x{1}...", x, y);
             var stopwatch = new Stopwatch();
@@ -183,6 +197,14 @@ namespace Octans
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
             Console.ReadKey();
+        }
+
+        private static void ApplyMaterialToChildren(Group @group, Material material)
+        {
+            foreach (var child in group.Children)
+            {
+                child.SetMaterial(material);
+            }
         }
     }
 }

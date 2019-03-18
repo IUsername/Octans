@@ -19,7 +19,7 @@ namespace Octans
             return Intersections.Create(new Intersection(t, this));
         }
 
-        public override Vector LocalNormalAt(in Point localPoint) => new Vector(0, 1, 0);
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) => new Vector(0, 1, 0);
 
 
         // TODO: Epsilon?

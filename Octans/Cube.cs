@@ -40,7 +40,7 @@ namespace Octans
             return tMin > tMax ? (tmin: tMax, tmax: tMin) : (tmin: tMin, tmax: tMax);
         }
 
-        public override Vector LocalNormalAt(in Point localPoint)
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
             var xAbs = MathF.Abs(localPoint.X);
             var yAbs = MathF.Abs(localPoint.Y);

@@ -2,15 +2,18 @@
 
 namespace Octans
 {
-    public class Triangle : ShapeBase
+    public class SmoothTriangle : ShapeBase
     {
         private const float Epsilon = 0.0001f;
 
-        public Triangle(Point p1, Point p2, Point p3)
+        public SmoothTriangle(Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3)
         {
             P1 = p1;
             P2 = p2;
             P3 = p3;
+            N1 = n1;
+            N2 = n2;
+            N3 = n3;
             E1 = p2 - p1;
             E2 = p3 - p1;
             Normal = Vector.Cross(E2, E1).Normalize();
@@ -19,6 +22,9 @@ namespace Octans
         public Point P1 { get; }
         public Point P2 { get; }
         public Point P3 { get; }
+        public Vector N1 { get; }
+        public Vector N2 { get; }
+        public Vector N3 { get; }
 
         public Vector Normal { get; }
 
@@ -53,14 +59,14 @@ namespace Octans
             }
 
             var t = f * E2 % originCrossE1;
-            return Intersections.Create(new Intersection(t, this));
+            return Intersections.Create(new Intersection(t, this, u, v));
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) => Normal;
-
-        public override Bounds LocalBounds()
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
-            return Bounds.FromPoints(new[] {P1, P2, P3});
+            return N2 * intersection.U + N3 * intersection.V + N1 * (1f - intersection.U - intersection.V);
         }
+
+        public override Bounds LocalBounds() => Bounds.FromPoints(new[] {P1, P2, P3});
     }
 }

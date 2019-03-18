@@ -59,5 +59,14 @@ namespace Octans.Test
             var hit = xs.Hit();
             hit?.Should().Be(i4);
         }
+
+        [Fact]
+        public void ContainsUAndV()
+        {
+            var s = new Triangle(new Point(0,1,0), new Point(-1,0,0), new Point(1,0,0));
+            var i = new Intersection(3.5f, s, 0.2f, 0.4f);
+            i.U.Should().Be(0.2f);
+            i.V.Should().Be(0.4f);
+        }
     }
 }

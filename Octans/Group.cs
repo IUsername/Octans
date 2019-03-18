@@ -40,7 +40,7 @@ namespace Octans
             return intersections.ToIntersections();
         }
 
-        public override Vector LocalNormalAt(in Point localPoint) => throw new NotImplementedException();
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) => throw new NotImplementedException();
 
         public override Bounds LocalBounds()
         {

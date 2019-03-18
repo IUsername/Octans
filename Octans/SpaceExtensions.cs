@@ -4,9 +4,11 @@ namespace Octans
 {
     public static class SpaceExtensions
     {
+        [Pure]
         public static Ray ToLocal(in this Ray worldRay, in IShape shape) =>
             worldRay.Transform(shape.TransformInverse());
 
+        [Pure]
         public static IIntersections Intersects(this IShape shape, in Ray worldRay)
         {
             var localRay = worldRay.ToLocal(in shape);
@@ -38,13 +40,15 @@ namespace Octans
             return pattern.TransformInverse() * localPoint;
         }
 
-        public static Vector NormalAt(this IShape shape, in Point worldPoint)
+        [Pure]
+        public static Vector NormalAt(this IShape shape, in Point worldPoint, in Intersection intersection)
         {
             var localPoint = shape.ToLocal(in worldPoint);
-            var localNormal = shape.LocalNormalAt(localPoint);
+            var localNormal = shape.LocalNormalAt(localPoint, in intersection);
             return shape.NormalToWorld(in localNormal);
         }
 
+        [Pure]
         public static Vector NormalToWorld(this IShape shape, in Vector localNormal)
         {
             var normal = shape.TransformInverse().Transpose() * localNormal;
