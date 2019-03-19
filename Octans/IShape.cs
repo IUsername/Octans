@@ -14,5 +14,6 @@ namespace Octans
         void SetTransform(Matrix matrix);
         void SetMaterial(Material material);
         Bounds LocalBounds();
+        void Divide(int threshold);
     }
 }

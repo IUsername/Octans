@@ -90,5 +90,27 @@ namespace Octans
             AddChild(g);
             return g;
         }
+
+        public override void Divide(int threshold)
+        {
+            if(threshold <= Children.Count)
+            {
+                var (l, r) = PartitionChildren();
+                if(l.Length > 0)
+                {
+                    AddSubgroup(l);
+                }
+                if (r.Length > 0)
+                {
+                    AddSubgroup(r);
+                }
+            }
+
+            // Always divide children.
+            foreach (var child in Children)
+            {
+                child.Divide(threshold);
+            }
+        }
     }
 }

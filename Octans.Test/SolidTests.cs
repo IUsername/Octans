@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using Xunit;
 
 namespace Octans.Test
@@ -139,6 +140,33 @@ namespace Octans.Test
             // Child tested so SavedRay in not default.
             l.SavedRay.Should().NotBe(new Ray());
             r.SavedRay.Should().NotBe(new Ray());
+        }
+
+        [Fact]
+        public void DivideSubdividesChildren()
+        {
+            var s1 = new Sphere();
+            s1.SetTransform(Transforms.Translate(-1.5f,0,0));
+            var s2 = new Sphere();
+            s2.SetTransform(Transforms.Translate(1.5f, 0, 0));
+            var left = new Group(s1,s2);
+            var s3 = new Sphere();
+            s3.SetTransform(Transforms.Translate(0, 0, -1.5f));
+            var s4 = new Sphere();
+            s4.SetTransform(Transforms.Translate(0, 0, 1.5f));
+            var right = new Group(s3,s4);
+            var s = new Solid(SolidOp.Difference, left, right);
+            s.Divide(1);
+            var lg = (Group) s.Left;
+            var rg = (Group) s.Right;
+            var lsg1 = (Group) lg.Children[0];
+            lsg1.Children.Should().Contain(s1);
+            var lsg2 = (Group)lg.Children[1];
+            lsg2.Children.Should().Contain(s2);
+            var rsg1 = (Group)rg.Children[0];
+            rsg1.Children.Should().Contain(s3);
+            var rsg2 = (Group)rg.Children[1];
+            rsg2.Children.Should().Contain(s4);
         }
     }
 }

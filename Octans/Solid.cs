@@ -88,6 +88,12 @@ namespace Octans
 
             return result.ToIntersections();
         }
+
+        public override void Divide(int threshold)
+        {
+            Left.Divide(threshold);
+            Right.Divide(threshold);
+        }
     }
 
     internal static class SolidExtensions

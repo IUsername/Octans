@@ -27,7 +27,7 @@ namespace Octans.Test
             var s = new TestShape();
             g.AddChild(s);
             s.Parent.Should().Be(g);
-            g.Children.Should().OnlyContain(c=>c==s);
+            g.Children.Should().OnlyContain(c => c == s);
         }
 
         [Fact]
@@ -81,17 +81,17 @@ namespace Octans.Test
             c.SetTransform(Transforms.RotateZ(MathF.PI / 4));
             g.AddChild(c);
             var b = g.LocalBounds();
-            b.Min.Should().Be(new Point(-1/MathF.Sin(MathF.PI / 4), -1/MathF.Sin(MathF.PI / 4), -1));
-            b.Max.Should().Be(new Point(1/MathF.Sin(MathF.PI / 4), 1/MathF.Sin(MathF.PI / 4), 1));
+            b.Min.Should().Be(new Point(-1 / MathF.Sin(MathF.PI / 4), -1 / MathF.Sin(MathF.PI / 4), -1));
+            b.Max.Should().Be(new Point(1 / MathF.Sin(MathF.PI / 4), 1 / MathF.Sin(MathF.PI / 4), 1));
         }
 
         [Fact]
         public void LocalBoundsConsidersAllChildren()
         {
             var s = new Sphere();
-            s.SetTransform(Transforms.Translate(2,5,-3) * Transforms.Scale(2f));
+            s.SetTransform(Transforms.Translate(2, 5, -3) * Transforms.Scale(2f));
             var c = new Cylinder {Minimum = -2, Maximum = 2};
-            c.SetTransform(Transforms.Translate(-4,-1,4) * Transforms.Scale(0.5f,1,0.5f));
+            c.SetTransform(Transforms.Translate(-4, -1, 4) * Transforms.Scale(0.5f, 1, 0.5f));
             var g = new Group();
             g.AddChild(s);
             g.AddChild(c);
@@ -118,7 +118,7 @@ namespace Octans.Test
             var c = new TestShape();
             var g = new Group();
             g.AddChild(c);
-            var r = new Ray(new Point(0,0,-5), new Vector(0,1,0) );
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
             var xs = g.Intersects(r);
             // Child not tested so SavedRay remains default.
             c.SavedRay.Should().Be(new Ray());
@@ -140,11 +140,11 @@ namespace Octans.Test
         public void PartitionChildren()
         {
             var s1 = new Sphere();
-            s1.SetTransform(Transforms.Translate(-2,0,0));
+            s1.SetTransform(Transforms.Translate(-2, 0, 0));
             var s2 = new Sphere();
-            s2.SetTransform(Transforms.Translate(2,0,0));
+            s2.SetTransform(Transforms.Translate(2, 0, 0));
             var s3 = new Sphere();
-            var g = new Group(s1,s2,s3);
+            var g = new Group(s1, s2, s3);
             var (left, right) = g.PartitionChildren();
             g.Children[0].Should().Be(s3);
             left.Should().Contain(new[] {s1});
@@ -161,7 +161,46 @@ namespace Octans.Test
             g.Children.Should().HaveCount(1);
             g.Children[0].Should().BeAssignableTo<Group>();
             var sg = (Group) g.Children[0];
-            sg.Children.Should().Contain(new []{ s1, s2});
+            sg.Children.Should().Contain(new[] {s1, s2});
+        }
+
+        [Fact]
+        public void DivideGroup()
+        {
+            var s1 = new Sphere();
+            s1.SetTransform(Transforms.Translate(-2, 0, 0));
+            var s2 = new Sphere();
+            s2.SetTransform(Transforms.Translate(2, 0, 0));
+            var s3 = new Sphere();
+            var g = new Group(s1, s2, s3);
+            g.Divide(1);
+            g.Children[0].Should().Be(s3);
+            var sg1 = (Group) g.Children[1];
+            sg1.Children.Should().Contain(new[] {s1});
+            var sg2 = (Group) g.Children[2];
+            sg2.Children.Should().Contain(new[] {s2});
+        }
+
+        [Fact]
+        public void DivideGroupWithHigherThreshold()
+        {
+            var s1 = new Sphere();
+            s1.SetTransform(Transforms.Translate(-2, 0, 0));
+            var s2 = new Sphere();
+            s2.SetTransform(Transforms.Translate(2, 0, 0));
+            var s3 = new Sphere();
+            s3.SetTransform(Transforms.Translate(2, -1, 0));
+            var sg = new Group(s1, s2, s3);
+            var s4 = new Sphere();
+            var g = new Group(sg, s4);
+            g.Divide(3);
+            g.Children[0].Should().Be(sg);
+            g.Children[1].Should().Be(s4);
+            var dsg = (Group) g.Children[0];
+            var dsg1 = (Group) dsg.Children[0];
+            var dsg2 = (Group) dsg.Children[1];
+            dsg1.Children.Should().Contain(new[] {s1});
+            dsg2.Children.Should().Contain(new[] {s2, s3});
         }
     }
 }

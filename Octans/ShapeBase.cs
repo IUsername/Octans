@@ -44,5 +44,11 @@ namespace Octans
 
         public IShape Parent { get; set; }
         public abstract Bounds LocalBounds();
+
+        public virtual void Divide(int threshold)
+        {
+            // Do nothing
+            // Should override to internally divide groups and CSG
+        }
     }
 }

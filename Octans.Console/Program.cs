@@ -10,8 +10,8 @@ namespace Octans
         private static void Main(string[] args)
         {
             //TestRender();
-            TeapotTest();
-            //SolidTestRender();
+            //TeapotTest();
+            SolidTestRender();
         }
 
         private static Solid RoundedCube(float radius, Material mat)
@@ -195,12 +195,14 @@ namespace Octans
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1f).Scale(20f));
+            var g = new Group(d1, d2, d3, d4, floor);
+            g.Divide(1);
 
             var w = new World();
             //w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
             w.SetLights(new AreaLight(new Point(-3, 6, -4), new Vector(2f, 0, 0), 3, new Vector(0, 2f, 0), 3, new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             //w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1,0,0), 4, new Vector(0,1,0), 3, Colors.White));
-            w.SetObjects(floor, new Group(d1, d2, d3, d4));
+            w.SetObjects(g);
 
             var x = 600;
             var y = 400;
@@ -338,28 +340,23 @@ namespace Octans
             gl.AddChild(cylinder);
             gl.AddChild(s);
 
-            var gr = new Group();
-            gr.AddChild(cube);
-            gr.AddChild(cone);
-            gr.AddChild(t);
+        
+            gl.AddChild(cube);
+            gl.AddChild(cone);
+            gl.AddChild(t);
 
+            gl.AddChild(floor);
 
-            var gt = new Group();
-            gt.AddChild(gl);
-            gt.AddChild(gr);
-            gt.SetTransform(Transforms.TranslateZ(-0.5f));
-
-            var gf = new Group();
-            gf.AddChild(floor);
+            gl.Divide(1);
 
             var w = new World();
-            w.SetLights(new AreaLight(new Point(-2, 4, -7), new Vector(0.01f, 0, 0), 2, new Vector(0, 0.4f, 0), 4, new Color(1.4f,1.4f,1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
-            w.SetObjects(gt, gf);
+            w.SetLights(new AreaLight(new Point(-3f, 4, -5), new Vector(1f, 0, 0), 6, new Vector(0, 0.01f, 0), 3, new Color(1.4f,1.4f,1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
+            w.SetObjects(gl);
 
-            var x = 400;
-            var y = 300;
+            var x = 1200;
+            var y = 800;
             var c = new Camera(x, y, MathF.PI / 3f);
-            c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
+            c.SetTransform(Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0)));
 
             Console.WriteLine("Rendering at {0}x{1}...", x, y);
             var stopwatch = new Stopwatch();
@@ -389,22 +386,23 @@ namespace Octans
             var data = ObjFile.ParseFile(path);
             Console.WriteLine("File parsed...");
 
-            var g = data.Groups[0];
-            g.SetTransform(Transforms.Scale(0.10f).RotateX(-MathF.PI / 2f).RotateY(MathF.PI / 8f));
+            var triangulated = data.Groups[0];
+            triangulated.SetTransform(Transforms.Scale(0.10f).RotateX(-MathF.PI / 2f).RotateY(MathF.PI / 8f));
 
             var chrome = new Material
             {
-                Pattern = new SolidColor(new Color(1f, 0.7f, 0.75f)),
-                Reflective = 0.85f,
-                //RefractiveIndex = 1.1f,
-                //Transparency = 0.8f,
-                Ambient = 0.05f,
+                Pattern = new SolidColor(new Color(0.8f, 0.8f, 0.9f)),
+                Reflective = 0.95f,
+                RefractiveIndex = 0.86f,
+                Transparency = 0.93f,
+                Ambient = 0.02f,
                 Diffuse = 0.2f,
-                Shininess = 400f,
+                Shininess = 200f,
                 Specular = 0.9f
             };
 
-            ApplyMaterialToChildren(g, chrome);
+            ApplyMaterialToChildren(triangulated, chrome);
+            
 
             var checkerboard = new Material
             {
@@ -414,17 +412,19 @@ namespace Octans
                 Diffuse = 0.3f
             };
 
-            checkerboard.Pattern.SetTransform(Transforms.Scale(0.025f));
+            checkerboard.Pattern.SetTransform(Transforms.Scale(0.125f));
 
+            var group = new Group();
             var floor = new Cube();
             floor.SetMaterial(checkerboard);
-            var fg = new Group();
-            fg.AddChild(floor);
-            fg.SetTransform(Transforms.TranslateY(-1).Scale(5f));
+            floor.SetTransform(Transforms.TranslateY(-1).Scale(5f));
+            group.AddChild(floor);
+            group.AddChild(triangulated);
+            group.Divide(1);
 
             var w = new World();
             w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.4f,1.4f,1.4f)));
-            w.SetObjects(fg, g);
+            w.SetObjects(group);
 
             var x = 600;
             var y = 400;
