@@ -135,5 +135,33 @@ namespace Octans.Test
             // Child tested so SavedRay in not default.
             c.SavedRay.Should().NotBe(new Ray());
         }
+
+        [Fact]
+        public void PartitionChildren()
+        {
+            var s1 = new Sphere();
+            s1.SetTransform(Transforms.Translate(-2,0,0));
+            var s2 = new Sphere();
+            s2.SetTransform(Transforms.Translate(2,0,0));
+            var s3 = new Sphere();
+            var g = new Group(s1,s2,s3);
+            var (left, right) = g.PartitionChildren();
+            g.Children[0].Should().Be(s3);
+            left.Should().Contain(new[] {s1});
+            right.Should().Contain(new[] {s2});
+        }
+
+        [Fact]
+        public void CreateSubGroup()
+        {
+            var s1 = new Sphere();
+            var s2 = new Sphere();
+            var g = new Group();
+            g.AddSubgroup(new IShape[] {s1, s2});
+            g.Children.Should().HaveCount(1);
+            g.Children[0].Should().BeAssignableTo<Group>();
+            var sg = (Group) g.Children[0];
+            sg.Children.Should().Contain(new []{ s1, s2});
+        }
     }
 }

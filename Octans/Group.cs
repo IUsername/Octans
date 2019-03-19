@@ -57,5 +57,38 @@ namespace Octans
             _children.Add(shape);
             shape.Parent = this;
         }
+
+        public (IShape[] left, IShape[] right) PartitionChildren()
+        {
+            var (l, r) = LocalBounds().Split();
+            var left = new List<IShape>();
+            var right = new List<IShape>();
+            var remaining = new List<IShape>();
+            foreach (var child in _children)
+            {
+                var cb = child.ParentSpaceBounds();
+                if(l.ContainsBounds(cb))
+                {
+                    left.Add(child);
+                }else if (r.ContainsBounds(cb))
+                {
+                    right.Add(child);
+                }
+                else
+                {
+                    remaining.Add(child);
+                }
+            }
+            _children.Clear();
+            _children.AddRange(remaining);
+            return (left.ToArray(), right.ToArray());
+        }
+
+        public Group AddSubgroup(IShape[] shapes)
+        {
+            var g = new Group(shapes);
+            AddChild(g);
+            return g;
+        }
     }
 }

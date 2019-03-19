@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Octans
@@ -40,10 +41,7 @@ namespace Octans
                 new Point(b.Max.X, b.Max.Y, b.Min.Z)
             };
 
-        public static Bounds FromPoints(params Point[] points)
-        {
-            return FromPoints(points.AsEnumerable());
-        }
+        public static Bounds FromPoints(params Point[] points) => FromPoints(points.AsEnumerable());
 
         public static Bounds FromPoints(IEnumerable<Point> points)
         {
@@ -87,7 +85,10 @@ namespace Octans
 
         public bool DoesIntersect(in Ray ray)
         {
-            if (IsEmpty) return false;
+            if (IsEmpty)
+            {
+                return false;
+            }
 
             var t1 = (Min.X - ray.Origin.X) * ray.InverseDirection.X;
             var t2 = (Max.X - ray.Origin.X) * ray.InverseDirection.X;
@@ -95,7 +96,7 @@ namespace Octans
             var t4 = (Max.Y - ray.Origin.Y) * ray.InverseDirection.Y;
             var t5 = (Min.Z - ray.Origin.Z) * ray.InverseDirection.Z;
             var t6 = (Max.Z - ray.Origin.Z) * ray.InverseDirection.Z;
-           
+
             var tMax = MathF.Min(MathF.Min(MathF.Max(t1, t2), MathF.Max(t3, t4)), MathF.Max(t5, t6));
 
             //var t = 0f;
@@ -117,6 +118,7 @@ namespace Octans
                 //t = float.PositiveInfinity;
                 return false;
             }
+
             //t = tMin;
             return true;
         }
@@ -134,8 +136,12 @@ namespace Octans
         //}
 
         public static Bounds Empty => new Bounds(Point.Zero, Point.Zero, true);
-        public static Bounds Infinite =>  new Bounds(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity), new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));
-        public static Bounds Unit =>  new Bounds(new Point(-1,-1,-1), new Point(1,1,1));
+
+        public static Bounds Infinite =>
+            new Bounds(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity),
+                       new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));
+
+        public static Bounds Unit => new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
         public static Bounds Add(in Bounds a, in Bounds b)
         {
@@ -164,26 +170,45 @@ namespace Octans
 
         public static Bounds operator +(in Bounds left, in Bounds right) => Add(in left, in right);
 
-        public bool ContainsPoint(Point point)
-        {
-            return point.X >= Min.X && point.X <= Max.X
-                                    && point.Y >= Min.Y && point.Y <= Max.Y
-                                    && point.Z >= Min.Z && point.Z <= Max.Z;
-        }
+        public bool ContainsPoint(Point point) =>
+            point.X >= Min.X && point.X <= Max.X
+                             && point.Y >= Min.Y && point.Y <= Max.Y
+                             && point.Z >= Min.Z && point.Z <= Max.Z;
 
-        public bool ContainsBounds(Bounds bounds)
-        {
-            return ContainsPoint(bounds.Min) && ContainsPoint(bounds.Max);
-        }
+        public bool ContainsBounds(Bounds bounds) => ContainsPoint(bounds.Min) && ContainsPoint(bounds.Max);
 
         public Bounds Transform(in Matrix matrix)
         {
-            var corners = Bounds.ToCornerPoints(this);
+            var corners = ToCornerPoints(this);
             for (var i = 0; i < 8; i++)
             {
                 corners[i] = matrix * corners[i];
             }
-            return Bounds.FromPoints(corners);
+
+            return FromPoints(corners);
+        }
+
+        public (Bounds left, Bounds right) Split()
+        {
+            var wX = Max.X - Min.X;
+            var wY = Max.Y - Min.Y;
+            var wZ = Max.Z - Min.Z;
+            var maxW = MathF.Max(wX, MathF.Max(wY, wZ));
+            // ReSharper disable CompareOfFloatsByEqualityOperator
+            if (maxW == wX)
+            {
+                var midX = Min.X + wX / 2f;
+                return (new Bounds(Min, new Point(midX, Max.Y, Max.Z)), new Bounds(new Point(midX, Min.Y, Min.Z), Max));
+            }
+            if(maxW == wY)
+            {
+                var midY = Min.Y + wY / 2f;
+                return (new Bounds(Min, new Point(Max.X, midY, Max.Z)), new Bounds(new Point(Min.X, midY, Min.Z), Max));
+            }
+            // ReSharper restore CompareOfFloatsByEqualityOperator
+            var midZ = Min.Z + wZ / 2f;
+            return (new Bounds(Min, new Point(Max.X, Max.Y, midZ)), new Bounds(new Point(Min.X, Min.Y, midZ), Max));
+
         }
     }
 }

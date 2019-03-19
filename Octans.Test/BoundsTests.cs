@@ -122,5 +122,49 @@ namespace Octans.Test
             t.Min.Should().Be(new Point(-1.4142f, -1.7071f, -1.7071f));
             t.Max.Should().Be(new Point(1.4142f, 1.7071f, 1.7071f));
         }
+
+        [Fact]
+        public void SplittingPerfectCube()
+        {
+            var b = new Bounds(new Point(-1,-4,-5), new Point(9,6,5) );
+            var (left, right) = b.Split();
+            left.Min.Should().Be(new Point(-1, -4, -5));
+            left.Max.Should().Be(new Point(4, 6, 5));
+            right.Min.Should().Be(new Point(4, -4, -5));
+            right.Max.Should().Be(new Point(9, 6, 5));
+        }
+
+        [Fact]
+        public void SplitXWide()
+        {
+            var b = new Bounds(new Point(-1, -2, -3), new Point(9, 5.5f, 3));
+            var (left, right) = b.Split();
+            left.Min.Should().Be(new Point(-1, -2, -3));
+            left.Max.Should().Be(new Point(4, 5.5f, 3));
+            right.Min.Should().Be(new Point(4, -2, -3));
+            right.Max.Should().Be(new Point(9, 5.5f, 3));
+        }
+
+        [Fact]
+        public void SplitYWide()
+        {
+            var b = new Bounds(new Point(-1, -2, -3), new Point(5,8,3));
+            var (left, right) = b.Split();
+            left.Min.Should().Be(new Point(-1, -2, -3));
+            left.Max.Should().Be(new Point(5, 3f, 3));
+            right.Min.Should().Be(new Point(-1, 3, -3));
+            right.Max.Should().Be(new Point(5, 8f, 3));
+        }
+
+        [Fact]
+        public void SplitZWide()
+        {
+            var b = new Bounds(new Point(-1, -2, -3), new Point(5, 3, 7));
+            var (left, right) = b.Split();
+            left.Min.Should().Be(new Point(-1, -2, -3));
+            left.Max.Should().Be(new Point(5, 3f, 2));
+            right.Min.Should().Be(new Point(-1, -2, 2));
+            right.Max.Should().Be(new Point(5, 3, 7));
+        }
     }
 }
