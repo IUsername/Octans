@@ -408,5 +408,21 @@ namespace Octans.Test
             Shading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
             Shading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
         }
+
+
+        [Fact]
+        public void CalculateAreaLightIntensityWithJitter()
+        {
+            var w = World.Default();
+            var corner = new Point(-0.5f, -0.5f, -5);
+            var v1 = new Vector(1, 0, 0);
+            var v2 = new Vector(0, 1, 0);
+            var light = new AreaLight(corner, v1, 2, v2, 2, Colors.White, new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f));
+            Shading.IntensityAt(w, new Point(0, 0, 2), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1, -1, 2), light).Should().BeApproximately(0.25f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1.5f, 0, 2), light).Should().BeApproximately(0.75f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
+        }
     }
 }

@@ -343,7 +343,7 @@ namespace Octans
             gf.AddChild(floor);
 
             var w = new World();
-            w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1, 0, 0), 4, new Vector(0, 1, 0), 3, Colors.White));
+            w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1, 0, 0), 4, new Vector(0, 1, 0), 3, Colors.White, new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             //w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
             w.SetObjects(gt, gf);
 
