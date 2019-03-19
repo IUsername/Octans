@@ -4,11 +4,11 @@ namespace Octans
 {
     public static class Shading
     {
-        public static bool IsShadowed(World w, Point p, PointLight light)
+        public static bool IsShadowed(World w, Point p, Point lightPoint)
         {
             // TODO: Only supports one light.
             //var light = w.Lights[0];
-            var v = light.Position - p;
+            var v = lightPoint - p;
             var distance = v.Magnitude();
             var direction = v.Normalize();
             var r = new Ray(p, direction);
@@ -25,16 +25,16 @@ namespace Octans
 
         public static Color Lighting(Material m,
                                      IShape shape,
-                                     PointLight light,
+                                     ILight light,
                                      Point worldPoint,
                                      Vector eyeVector,
                                      Vector normalVector,
-                                     bool inShadow)
+                                     float intensity)
         {
             var effectiveColor = m.Pattern.ShapeColor(shape, worldPoint) * light.Intensity;
             var ambient = effectiveColor * m.Ambient;
 
-            if (inShadow)
+            if (intensity == 0.0f)
             {
                 return ambient;
             }
@@ -53,12 +53,12 @@ namespace Octans
             var reflectDotEye = reflectV % eyeVector;
             if (!(reflectDotEye > 0f))
             {
-                return ambient + diffuse;
+                return ambient + diffuse * intensity;
             }
 
             var factor = MathF.Pow(reflectDotEye, m.Shininess);
             var specular = light.Intensity * m.Specular * factor;
-            return ambient + diffuse + specular;
+            return ambient + (diffuse + specular) * intensity;
         }
 
         public static Color HitColor(World world, in IntersectionInfo info, int remaining = 5)
@@ -66,7 +66,7 @@ namespace Octans
             var surface = Colors.Black;
             foreach (var light in world.Lights)
             {
-                var isShadowed = IsShadowed(world, info.OverPoint, light);
+                var intensity = IntensityAt(world, info.OverPoint, light);
                 // TODO: Use OverPoint here?
                 surface += Lighting(info.Shape.Material,
                                     info.Shape,
@@ -74,7 +74,7 @@ namespace Octans
                                     info.OverPoint,
                                     info.Eye,
                                     info.Normal,
-                                    isShadowed);
+                                    intensity);
             }
 
             var reflected = ReflectedColor(world, info, remaining);
@@ -170,6 +170,33 @@ namespace Octans
             var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
             r0 *= r0;
             return r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
+        }
+
+        public static float IntensityAt(World world, in Point point, ILight light)
+        {
+            switch (light)
+            {
+                case PointLight _:
+                    return IsShadowed(world, point, light.Position) ? 0.0f : 1.0f;
+                case AreaLight area:
+                {
+                    var total = 0.0f;
+                    for (var v = 0; v < area.VSteps; v++)
+                    {
+                        for (var u = 0; u < area.USteps; u++)
+                        {
+                            if (!IsShadowed(world, point, area.UVPoint(u, v)))
+                            {
+                                total += 1.0f;
+                            }
+                        }
+                    }
+
+                    return total / area.Samples;
+                }
+                default:
+                    return 0f;
+            }
         }
     }
 }

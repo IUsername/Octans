@@ -133,7 +133,7 @@ namespace Octans.Test
                     var shape = hit.Value.Shape;
                     var normal = shape.NormalAt(point, hit.Value);
                     var eye = -r.Direction;
-                    var color = Shading.Lighting(shape.Material, shape, light, point, eye, normal, false);
+                    var color = Shading.Lighting(shape.Material, shape, light, point, eye, normal, 1);
                     canvas.WritePixel(color, x, y);
                 }
             }

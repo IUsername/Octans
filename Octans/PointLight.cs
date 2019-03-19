@@ -1,6 +1,6 @@
 ﻿namespace Octans
 {
-    public class PointLight
+    public class PointLight : ILight
     {
         public PointLight(Point position, Color intensity)
         {

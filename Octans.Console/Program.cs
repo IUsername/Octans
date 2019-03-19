@@ -9,9 +9,9 @@ namespace Octans
     {
         private static void Main(string[] args)
         {
-            //TestRender();
+            TestRender();
             //TeapotTest();
-            SolidTestRender();
+            //SolidTestRender();
         }
 
         private static Solid RoundedCube(float radius, Material mat)
@@ -179,19 +179,21 @@ namespace Octans
             {
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0f, 0.1f, 0f)),
+                    Pattern = new SolidColor(new Color(0f, 0.2f, 0f)),
                     Specular = 0.1f,
+                    Diffuse = 0.3f,
                     Reflective = 0.1f
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1f).Scale(20f));
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
+            //w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
+            w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1,0,0), 4, new Vector(0,1,0), 3, Colors.White));
             w.SetObjects(floor, d1, d2, d3, d4);
 
-            var x = 1200;
-            var y = 800;
+            var x = 600;
+            var y = 400;
             var c = new Camera(x, y, MathF.PI / 3f);
             c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
 
@@ -341,7 +343,8 @@ namespace Octans
             gf.AddChild(floor);
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
+            w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1, 0, 0), 4, new Vector(0, 1, 0), 3, Colors.White));
+            //w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
             w.SetObjects(gt, gf);
 
             var x = 1200;

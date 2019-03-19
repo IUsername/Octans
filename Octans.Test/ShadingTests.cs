@@ -15,7 +15,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, false);
+            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(1.9f, 1.9f, 1.9f));
         }
 
@@ -28,7 +28,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, false);
+            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(1.0f, 1.0f, 1.0f));
         }
 
@@ -41,7 +41,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, false);
+            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(0.7364f, 0.7364f, 0.7364f));
         }
 
@@ -54,7 +54,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, -MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, false);
+            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(1.6364f, 1.6364f, 1.6364f));
         }
 
@@ -67,7 +67,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, 10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, false);
+            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
         }
 
@@ -80,9 +80,21 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            const bool inShadow = true;
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, inShadow);
+            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 0);
             result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
+        }
+
+        [Fact]
+        public void LightOnSurfaceInPartialShadow()
+        {
+            var s = new Sphere();
+            var m = new Material {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0};
+            var position = new Point(0,0,-1);
+            var eyeV = new Vector(0, 0, -1f);
+            var normalV = new Vector(0, 0, -1);
+            var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
+            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 0.5f);
+            result.Should().BeEquivalentTo(new Color(0.55f, 0.55f, 0.55f));
         }
 
         [Fact]
@@ -144,7 +156,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var p = new Point(0, 10, 0);
-            Shading.IsShadowed(w, p).Should().BeFalse();
+            Shading.IsShadowed(w, p, w.Lights[0].Position).Should().BeFalse();
         }
 
         [Fact]
@@ -152,7 +164,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var p = new Point(10, -10, 10);
-            Shading.IsShadowed(w, p).Should().BeTrue();
+            Shading.IsShadowed(w, p, w.Lights[0].Position).Should().BeTrue();
         }
 
         [Fact]
@@ -160,7 +172,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var p = new Point(-2, 2, -2);
-            Shading.IsShadowed(w, p).Should().BeFalse();
+            Shading.IsShadowed(w, p, w.Lights[0].Position).Should().BeFalse();
         }
 
         [Fact]
@@ -366,6 +378,35 @@ namespace Octans.Test
             var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(xs[0], r, xs);
             Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93391f, 0.69643f, 0.69243f));
+        }
+
+        [Fact]
+        public void LightIntensityAtPoint()
+        {
+            var w = World.Default();
+            var light = w.Lights[0];
+            Shading.IntensityAt(w, new Point(0, 1.0001f, 0), light).Should().BeApproximately(1.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(-1.0001f, 0, 0), light).Should().BeApproximately(1.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0,0,-1.0001f), light).Should().BeApproximately(1.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0,0,1.0001f), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1.0001f,0,0), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0,-1.0001f,0), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0,0,0), light).Should().BeApproximately(0.0f, 0.0001f);
+        }
+
+        [Fact]
+        public void CalculateAreaLightIntensity()
+        {
+            var w = World.Default();
+            var corner = new Point(-0.5f, -0.5f, -5);
+            var v1 = new Vector(1, 0, 0);
+            var v2 = new Vector(0, 1, 0);
+            var light = new AreaLight(corner, v1, 2, v2, 2, Colors.White);
+            Shading.IntensityAt(w, new Point(0, 0, 2), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1, -1, 2), light).Should().BeApproximately(0.25f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1.5f, 0, 2), light).Should().BeApproximately(0.5f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Octans
         }
 
         public IReadOnlyList<IShape> Objects { get; private set; }
-        public IReadOnlyList<PointLight> Lights { get; private set; }
+        public IReadOnlyList<ILight> Lights { get; private set; }
 
         public IIntersections Intersect(in Ray ray)
         {
@@ -26,7 +26,7 @@ namespace Octans
             return builder.ToIntersections();
         }
 
-        public void SetLights(params PointLight[] lights)
+        public void SetLights(params ILight[] lights)
         {
             Lights = lights;
         }
