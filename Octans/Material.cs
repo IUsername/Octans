@@ -12,7 +12,10 @@
             Reflective = 0f;
             Transparency = 0f;
             RefractiveIndex = 1f;
+            CastsShadows = true;
         }
+
+        public bool CastsShadows { get; set; }
 
         public float Shininess { get; set; }
 

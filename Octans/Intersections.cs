@@ -19,7 +19,7 @@ namespace Octans
     {
         int Count { get; }
         Intersection this[int index] { get; }
-        Intersection? Hit();
+        Intersection? Hit(bool isInShadow=false);
         Intersection[] ToSorted();
     }
 
@@ -42,13 +42,13 @@ namespace Octans
             _list = intersections;
         }
 
-        public Intersection? Hit()
+        public Intersection? Hit(bool isInShadow)
         {
             if (_list.IsEmpty)
             {
                 return null;
             }
-
+            
             Intersection? min = null;
             for (var i = 0; i < _list.Count; i++)
             {
@@ -59,7 +59,10 @@ namespace Octans
 
                 if (!min.HasValue || min.Value.T > _list[i].T)
                 {
-                    min = _list[i];
+                    if (!isInShadow || _list[i].Shape.Material.CastsShadows)
+                    {
+                        min = _list[i];
+                    }
                 }
             }
 

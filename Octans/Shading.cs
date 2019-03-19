@@ -4,16 +4,16 @@ namespace Octans
 {
     public static class Shading
     {
-        public static bool IsShadowed(World w, Point p)
+        public static bool IsShadowed(World w, Point p, PointLight light)
         {
             // TODO: Only supports one light.
-            var light = w.Lights[0];
+            //var light = w.Lights[0];
             var v = light.Position - p;
             var distance = v.Magnitude();
             var direction = v.Normalize();
             var r = new Ray(p, direction);
             var xs = w.Intersect(r);
-            var h = xs.Hit();
+            var h = xs.Hit(true);
             return h.HasValue && h.Value.T < distance;
         }
 
@@ -66,7 +66,7 @@ namespace Octans
             var surface = Colors.Black;
             foreach (var light in world.Lights)
             {
-                var isShadowed = IsShadowed(world, info.OverPoint);
+                var isShadowed = IsShadowed(world, info.OverPoint, light);
                 // TODO: Use OverPoint here?
                 surface += Lighting(info.Shape.Material,
                                     info.Shape,

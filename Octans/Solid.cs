@@ -56,11 +56,11 @@ namespace Octans
             switch (op)
             {
                 case SolidOp.Union:
-                    return lHit && !inR || !lHit && !inL;
+                    return (lHit & !inR) | (!lHit & !inL);
                 case SolidOp.Intersection:
-                    return lHit && inR || !lHit && inL;
+                    return (lHit & inR) | (!lHit & inL);
                 case SolidOp.Difference:
-                    return lHit && !inR || !lHit && inL;
+                    return (lHit & !inR) | (!lHit & inL);
                 default:
                     return false;
             }
@@ -77,7 +77,8 @@ namespace Octans
             var inR = false;
 
             var result = Intersections.Builder();
-            foreach (var i in intersections.ToSorted())
+            var sorted = intersections.ToSorted();
+            foreach (var i in sorted)
             {
                 var lHit = Left.Includes(i.Shape);
                 if (IntersectionAllowed(Op, lHit, inL, inR))
@@ -105,10 +106,10 @@ namespace Octans
         {
             switch (a)
             {
-                case Group g when g.Children.Any(c => c.Includes(b)):
+                case Group g when g.Children.Any(c => ReferenceEquals(a,c) || c.Includes(b)):
                     return true;
                 case Solid s:
-                    return ReferenceEquals(s.Left, b) || ReferenceEquals(s.Right, b);
+                    return s.Left.Includes(b) || s.Right.Includes(b);
                 default:
                     return ReferenceEquals(a, b);
             }

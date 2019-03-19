@@ -60,6 +60,8 @@ namespace Octans
 
         public static Matrix Translate(this Matrix m, float x, float y, float z) => Translate(x, y, z) * m;
 
+        public static Matrix Apply(this Matrix m, in Matrix n) => n * m;
+
         public static Matrix TranslateX(this Matrix m, float x) => TranslateX(x) * m;
 
         public static Matrix TranslateY(this Matrix m, float y) => TranslateY(y) * m;
