@@ -62,9 +62,6 @@ namespace Octans
         }
 
         [Pure]
-        public static Bounds ParentSpaceBounds(this IShape shape)
-        {
-            return shape.LocalBounds().Transform(shape.Transform);
-        }
+        public static Bounds ParentSpaceBounds(this IShape shape) => shape.LocalBounds().Transform(shape.Transform);
     }
 }

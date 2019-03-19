@@ -1,5 +1,4 @@
-﻿
-namespace Octans
+﻿namespace Octans
 {
     public abstract class ShapeBase : IShape
     {

@@ -8,9 +8,9 @@ namespace Octans.Test
         [Fact]
         public void CreateLight()
         {
-            var corner = new Point(0,0,0);
-            var v1 = new Vector(2,0,0);
-            var v2 = new Vector(0,0,1);
+            var corner = new Point(0, 0, 0);
+            var v1 = new Vector(2, 0, 0);
+            var v2 = new Vector(0, 0, 1);
             var light = new AreaLight(corner, v1, 4, v2, 2, Colors.White);
             light.Corner.Should().Be(corner);
             light.U.Should().Be(new Vector(0.5f, 0, 0));

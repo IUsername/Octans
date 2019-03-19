@@ -61,7 +61,7 @@ namespace Octans.Test
         public void NormalOnXAxis()
         {
             var s = new Sphere();
-            var n = s.LocalNormalAt(new Point(1, 0, 0), new Intersection(1,s));
+            var n = s.LocalNormalAt(new Point(1, 0, 0), new Intersection(1, s));
             n.Should().Be(new Vector(1, 0, 0));
         }
 

@@ -12,7 +12,7 @@ namespace Octans.Test
             var s = new TestShape();
             s.Should().BeAssignableTo<IShape>();
         }
-       
+
         [Fact]
         public void DefaultTransformIsIdentity()
         {
@@ -59,7 +59,8 @@ namespace Octans.Test
         public void NormalsAreNormalized()
         {
             var s = new TestShape();
-            var n = s.NormalAt(new Point(MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f), new Intersection(1f, s));
+            var n = s.NormalAt(new Point(MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f),
+                               new Intersection(1f, s));
             (n == n.Normalize()).Should().BeTrue();
         }
 
@@ -125,7 +126,7 @@ namespace Octans.Test
             var g1 = new Group();
             g1.SetTransform(Transforms.RotateY(MathF.PI / 2));
             var g2 = new Group();
-            g2.SetTransform(Transforms.Scale(1,2,3));
+            g2.SetTransform(Transforms.Scale(1, 2, 3));
             g1.AddChild(g2);
             var s = new Sphere();
             s.SetTransform(Transforms.TranslateX(5));

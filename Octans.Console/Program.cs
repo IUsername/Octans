@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Octans
+﻿namespace Octans.ConsoleApp
 {
     internal class Program
     {
@@ -8,9 +6,9 @@ namespace Octans
         {
             //TestScenes.TestRender();
             //TestScenes.TeapotTest();
-            TestScenes.SolidTestRender();
-            //TestScenes.LowPolyTeapotTest();
-            Console.ReadKey();
+            //TestScenes.SolidTestRender();
+            TestScenes.LowPolyTeapotTest();
+            System.Console.ReadKey();
         }
     }
 }

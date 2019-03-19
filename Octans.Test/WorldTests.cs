@@ -27,7 +27,7 @@ namespace Octans.Test
             xs[3].T.Should().Be(6f);
         }
 
-        [Fact(Skip ="Slow")]
+        [Fact(Skip = "Slow")]
         public void TestRender()
         {
             var s1 = new StripePattern(Colors.White, Colors.Black);
@@ -82,14 +82,16 @@ namespace Octans.Test
             cube.Material.Pattern.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
             cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
 
-            var cone = new Cone {IsClosed = true, Minimum = -1f, Maximum = 0f,
+            var cone = new Cone
+            {
+                IsClosed = true, Minimum = -1f, Maximum = 0f,
                 Material =
                 {
                     Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
                     Reflective = 0.2f
                 }
             };
-            
+
             cone.SetTransform(Transforms.Scale(0.6f, 2f, 0.6f).Translate(1.5f, 2.0f, 0));
 
             var cylinder = new Cylinder
@@ -97,16 +99,16 @@ namespace Octans.Test
                 Minimum = 0f,
                 Maximum = 3f,
                 IsClosed = true,
-                Material = {Reflective = 0.8f, Specular = 0.8f, Diffuse = 0.4f, Ambient=0.1f, Shininess = 200}
+                Material = {Reflective = 0.8f, Specular = 0.8f, Diffuse = 0.4f, Ambient = 0.1f, Shininess = 200}
             };
             cylinder.SetTransform(Transforms.Translate(-3f, 0f, 3.5f));
 
             var t = new Triangle(new Point(0, 0, 0), new Point(1, 0.5f, 0), new Point(0.5f, 1f, 1f))
             {
-                Material = { Pattern = new GradientPattern(new Color(0f, 1, 0), new Color(0f, 0f, 1f)) }
+                Material = {Pattern = new GradientPattern(new Color(0f, 1, 0), new Color(0f, 0f, 1f))}
             };
             t.SetTransform(Transforms.Translate(1f, 2f, 1f));
-            
+
 
             var gl = new Group();
             gl.AddChild(middle);

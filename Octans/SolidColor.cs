@@ -2,12 +2,12 @@
 {
     public class SolidColor : PatternBase
     {
-        public Color Color { get; }
-
         public SolidColor(Color color)
         {
             Color = color;
         }
+
+        public Color Color { get; }
 
         public override Color LocalColorAt(Point localPoint) => Color;
     }

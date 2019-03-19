@@ -338,7 +338,5 @@ namespace Octans
 
         [Pure]
         public static Vector operator *(Matrix left, Vector right) => OpMultiplyVector(in left, in right);
-
-      
     }
 }

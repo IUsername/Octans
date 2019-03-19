@@ -37,7 +37,8 @@ namespace Octans.Test
             var b = b1 + b2;
             b.Min.Should().Be(new Point(-3, -2, -3));
             b.Max.Should().Be(new Point(3, 4, 1));
-            var b3 = new Bounds(new Point(float.NegativeInfinity, 0, float.NegativeInfinity), new Point(float.PositiveInfinity, 0, float.PositiveInfinity));
+            var b3 = new Bounds(new Point(float.NegativeInfinity, 0, float.NegativeInfinity),
+                                new Point(float.PositiveInfinity, 0, float.PositiveInfinity));
             b += b3;
             b.Min.Should().Be(new Point(float.NegativeInfinity, -2, float.NegativeInfinity));
             b.Max.Should().Be(new Point(float.PositiveInfinity, 4, float.PositiveInfinity));
@@ -93,20 +94,20 @@ namespace Octans.Test
         public void ChecksIfBoundsContainsPoint()
         {
             var b = new Bounds(new Point(5, -2, 0), new Point(11, 4, 7));
-            b.ContainsPoint(new Point(5,-2,0)).Should().BeTrue();
-            b.ContainsPoint(new Point(11,4,7)).Should().BeTrue();
-            b.ContainsPoint(new Point(8,1,3)).Should().BeTrue();
-            b.ContainsPoint(new Point(3,0,3)).Should().BeFalse();
-            b.ContainsPoint(new Point(8,-4,3)).Should().BeFalse();
-            b.ContainsPoint(new Point(8,1,-1)).Should().BeFalse();
-            b.ContainsPoint(new Point(13,1,3)).Should().BeFalse();
-            b.ContainsPoint(new Point(8,1,8)).Should().BeFalse();
+            b.ContainsPoint(new Point(5, -2, 0)).Should().BeTrue();
+            b.ContainsPoint(new Point(11, 4, 7)).Should().BeTrue();
+            b.ContainsPoint(new Point(8, 1, 3)).Should().BeTrue();
+            b.ContainsPoint(new Point(3, 0, 3)).Should().BeFalse();
+            b.ContainsPoint(new Point(8, -4, 3)).Should().BeFalse();
+            b.ContainsPoint(new Point(8, 1, -1)).Should().BeFalse();
+            b.ContainsPoint(new Point(13, 1, 3)).Should().BeFalse();
+            b.ContainsPoint(new Point(8, 1, 8)).Should().BeFalse();
         }
 
         [Fact]
         public void ChecksIfBoundsContainGivenBounds()
         {
-            var b = new Bounds(new Point(5,-2,0), new Point(11,4,7));
+            var b = new Bounds(new Point(5, -2, 0), new Point(11, 4, 7));
             b.ContainsBounds(new Bounds(new Point(5, -2, 0), new Point(11, 4, 7))).Should().BeTrue();
             b.ContainsBounds(new Bounds(new Point(6, -1, 1), new Point(10, 3, 6))).Should().BeTrue();
             b.ContainsBounds(new Bounds(new Point(4, -3, -1), new Point(10, 3, 6))).Should().BeFalse();
@@ -126,7 +127,7 @@ namespace Octans.Test
         [Fact]
         public void SplittingPerfectCube()
         {
-            var b = new Bounds(new Point(-1,-4,-5), new Point(9,6,5) );
+            var b = new Bounds(new Point(-1, -4, -5), new Point(9, 6, 5));
             var (left, right) = b.Split();
             left.Min.Should().Be(new Point(-1, -4, -5));
             left.Max.Should().Be(new Point(4, 6, 5));
@@ -148,7 +149,7 @@ namespace Octans.Test
         [Fact]
         public void SplitYWide()
         {
-            var b = new Bounds(new Point(-1, -2, -3), new Point(5,8,3));
+            var b = new Bounds(new Point(-1, -2, -3), new Point(5, 8, 3));
             var (left, right) = b.Split();
             left.Min.Should().Be(new Point(-1, -2, -3));
             left.Max.Should().Be(new Point(5, 3f, 3));

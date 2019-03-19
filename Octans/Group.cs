@@ -6,8 +6,8 @@ namespace Octans
 {
     public class Group : ShapeBase
     {
-        private readonly List<IShape> _children;
         private readonly Lazy<Bounds> _bounds;
+        private readonly List<IShape> _children;
 
         public Group()
         {
@@ -40,12 +40,10 @@ namespace Octans
             return intersections.ToIntersections();
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) => throw new NotImplementedException();
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
+            throw new NotImplementedException();
 
-        public override Bounds LocalBounds()
-        {
-            return _bounds.Value;
-        }
+        public override Bounds LocalBounds() => _bounds.Value;
 
         private Bounds BoundsFactory()
         {
@@ -67,10 +65,11 @@ namespace Octans
             foreach (var child in _children)
             {
                 var cb = child.ParentSpaceBounds();
-                if(l.ContainsBounds(cb))
+                if (l.ContainsBounds(cb))
                 {
                     left.Add(child);
-                }else if (r.ContainsBounds(cb))
+                }
+                else if (r.ContainsBounds(cb))
                 {
                     right.Add(child);
                 }
@@ -79,6 +78,7 @@ namespace Octans
                     remaining.Add(child);
                 }
             }
+
             _children.Clear();
             _children.AddRange(remaining);
             return (left.ToArray(), right.ToArray());
@@ -93,13 +93,14 @@ namespace Octans
 
         public override void Divide(int threshold)
         {
-            if(threshold <= Children.Count)
+            if (threshold <= Children.Count)
             {
                 var (l, r) = PartitionChildren();
-                if(l.Length > 0)
+                if (l.Length > 0)
                 {
                     AddSubgroup(l);
                 }
+
                 if (r.Length > 0)
                 {
                     AddSubgroup(r);

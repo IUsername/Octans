@@ -62,11 +62,9 @@ namespace Octans
             return Intersections.Create(new Intersection(t, this, u, v));
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
-        {
-            return N2 * intersection.U + N3 * intersection.V + N1 * (1f - intersection.U - intersection.V);
-        }
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
+            N2 * intersection.U + N3 * intersection.V + N1 * (1f - intersection.U - intersection.V);
 
-        public override Bounds LocalBounds() => Bounds.FromPoints(new[] {P1, P2, P3});
+        public override Bounds LocalBounds() => Bounds.FromPoints(P1, P2, P3);
     }
 }

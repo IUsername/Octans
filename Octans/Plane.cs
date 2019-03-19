@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Octans
 {
@@ -24,6 +23,7 @@ namespace Octans
 
         // TODO: Epsilon?
         public override Bounds LocalBounds() => new Bounds(new Point(float.NegativeInfinity, 0, float.NegativeInfinity),
-                                                           new Point(float.PositiveInfinity, 0, float.PositiveInfinity));
+                                                           new Point(float.PositiveInfinity, 0,
+                                                                     float.PositiveInfinity));
     }
 }

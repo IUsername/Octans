@@ -19,12 +19,13 @@ namespace Octans
     {
         int Count { get; }
         Intersection this[int index] { get; }
-        Intersection? Hit(bool isInShadow=false);
+        Intersection? Hit(bool isInShadow = false);
         Intersection[] ToSorted();
     }
 
     public class Intersections : IIntersections
     {
+        private static readonly IIntersections EmptySingleton = new Intersections(ImmutableList<Intersection>.Empty);
         private readonly ImmutableList<Intersection> _list;
 
         private Intersections(IEnumerable<Intersection> intersections)
@@ -48,7 +49,7 @@ namespace Octans
             {
                 return null;
             }
-            
+
             Intersection? min = null;
             for (var i = 0; i < _list.Count; i++)
             {
@@ -74,6 +75,10 @@ namespace Octans
         public Intersection this[int index] => _list[index];
         public Intersection[] ToSorted() => _list.Sort().ToArray();
 
+        public IEnumerator<Intersection> GetEnumerator() => _list.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
         public static IntersectionsBuilder Builder() => IntersectionsBuilder.Create();
         //public static IntersectionsBuilder Builder()
         //{
@@ -81,8 +86,6 @@ namespace Octans
         //}
 
         public static IIntersections Create(params Intersection[] intersection) => new Intersections(intersection);
-
-        private static readonly IIntersections EmptySingleton = new Intersections(ImmutableList<Intersection>.Empty);
 
         public static IIntersections Empty() => EmptySingleton;
 
@@ -126,10 +129,6 @@ namespace Octans
 
             public static IntersectionsBuilder Create() => Pool.GetObject();
         }
-
-        public IEnumerator<Intersection> GetEnumerator() => _list.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -167,8 +166,8 @@ namespace Octans
 
         private class FacePart : IObjPart
         {
-            public readonly int?[] Normals;
             public readonly int[] Indices;
+            public readonly int?[] Normals;
 
             private FacePart(int[] indices, int?[] normals)
             {
@@ -180,7 +179,9 @@ namespace Octans
             {
                 var groups = indices as IEnumerable<Maybe<int>>[] ?? indices.ToArray();
                 var ind = groups.Select(indexGroup => indexGroup.First().Value).ToArray();
-                var nor = groups.Select(indexGroup => indexGroup.Skip(2).FirstOrDefault()).Select<Maybe<int>,int?>(m => m.HasValue ? m.Value : new int?()).ToArray();
+                var nor = groups.Select(indexGroup => indexGroup.Skip(2).FirstOrDefault())
+                                .Select(m => m.HasValue ? m.Value : new int?())
+                                .ToArray();
                 return new FacePart(ind, nor);
             }
         }
@@ -222,18 +223,19 @@ namespace Octans
                         var p2 = vertices[f.Indices[i]];
                         var p3 = vertices[f.Indices[i + 1]];
                         IShape t;
-                        if (f.Normals[0].HasValue && f.Normals[i].HasValue && f.Normals[i+1].HasValue)
+                        if (f.Normals[0].HasValue && f.Normals[i].HasValue && f.Normals[i + 1].HasValue)
                         {
                             var n1 = normals[f.Normals[0].Value];
                             var n2 = normals[f.Normals[i].Value];
                             // ReSharper disable once PossibleInvalidOperationException
-                            var n3 = normals[f.Normals[i+1].Value];
+                            var n3 = normals[f.Normals[i + 1].Value];
                             t = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
                         }
                         else
                         {
                             t = new Triangle(p1, p2, p3);
                         }
+
                         g.AddChild(t);
                     }
                 }

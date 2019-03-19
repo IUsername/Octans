@@ -51,10 +51,10 @@ namespace Octans
             var forward = (to - from).Normalize();
             var left = Vector.Cross(forward, up.Normalize());
             var trueUp = Vector.Cross(left, forward);
-            var orientation = new Matrix(new[] { left.X, left.Y, left.Z, 0 },
-                              new[] { trueUp.X, trueUp.Y, trueUp.Z, 0 },
-                              new[] { -forward.X, -forward.Y, -forward.Z, 0 },
-                              new[] { 0.0f, 0, 0, 1 });
+            var orientation = new Matrix(new[] {left.X, left.Y, left.Z, 0},
+                                         new[] {trueUp.X, trueUp.Y, trueUp.Z, 0},
+                                         new[] {-forward.X, -forward.Y, -forward.Z, 0},
+                                         new[] {0.0f, 0, 0, 1});
             return orientation * Translate(-from.X, -from.Y, -from.Z);
         }
 

@@ -24,10 +24,7 @@ namespace Octans
         {
         }
 
-        public Vector ZeroW()
-        {
-            return new Vector(X, Y, Z);
-        }
+        public Vector ZeroW() => new Vector(X, Y, Z);
 
         public Vector Add(in Vector t) => new Vector(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
 
@@ -39,7 +36,7 @@ namespace Octans
 
         public Vector Divide(float scalar) => new Vector(X / scalar, Y / scalar, Z / scalar, W / scalar);
 
-        public Vector Fraction(float scalar) => new Vector(scalar/ X, scalar/ Y, scalar / Z, scalar / W);
+        public Vector Fraction(float scalar) => new Vector(scalar / X, scalar / Y, scalar / Z, scalar / W);
 
         public float Magnitude() => MathF.Sqrt(X * X + Y * Y + Z * Z + W * W);
 

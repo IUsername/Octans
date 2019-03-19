@@ -48,7 +48,7 @@ namespace Octans.Test
             pattern.LocalColorAt(new Point(2.01f, 0, 0)).Should().Be(Colors.White);
             pattern.LocalColorAt(new Point(2.01f, 1.01f, 0)).Should().Be(Colors.Black);
 
-            stripe.SetTransform(Transforms.RotateY(MathF.PI/2));
+            stripe.SetTransform(Transforms.RotateY(MathF.PI / 2));
             pattern = new CheckerCompositePattern(new SolidColor(Colors.White), stripe);
             pattern.LocalColorAt(new Point(0, 0, 0)).Should().Be(Colors.White);
             pattern.LocalColorAt(new Point(0.99f, 0, 0)).Should().Be(Colors.White);

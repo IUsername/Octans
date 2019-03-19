@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace Octans.Test
@@ -11,7 +10,7 @@ namespace Octans.Test
         {
             var s1 = new Sphere();
             var s2 = new Cube();
-            var c = new Solid(SolidOp.Union, s1,s2);
+            var c = new Solid(SolidOp.Union, s1, s2);
             c.Left.Should().Be(s1);
             c.Right.Should().Be(s2);
             s1.Parent.Should().Be(c);
@@ -56,8 +55,8 @@ namespace Octans.Test
         {
             var s1 = new Sphere();
             var s2 = new Cube();
-            var xs = Intersections.Create(new Intersection(1, s1), 
-                                          new Intersection(2, s2), 
+            var xs = Intersections.Create(new Intersection(1, s1),
+                                          new Intersection(2, s2),
                                           new Intersection(3, s1),
                                           new Intersection(4, s2));
             var c = new Solid(SolidOp.Union, s1, s2);
@@ -94,7 +93,7 @@ namespace Octans.Test
             var s1 = new Sphere();
             var s2 = new Sphere();
             s2.SetTransform(Transforms.TranslateZ(0.5f));
-            var c = new Solid(SolidOp.Union, s1,s2);
+            var c = new Solid(SolidOp.Union, s1, s2);
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = c.LocalIntersects(in r);
             xs.Should().HaveCount(2);
@@ -109,8 +108,8 @@ namespace Octans.Test
         {
             var l = new Sphere();
             var r = new Sphere();
-            r.SetTransform(Transforms.Translate(2,3,4));
-            var s = new Solid(SolidOp.Difference, l,r);
+            r.SetTransform(Transforms.Translate(2, 3, 4));
+            var s = new Solid(SolidOp.Difference, l, r);
             var b = s.LocalBounds();
             b.Min.Should().Be(new Point(-1, -1, -1));
             b.Max.Should().Be(new Point(3, 4, 5));
@@ -121,7 +120,7 @@ namespace Octans.Test
         {
             var l = new TestShape();
             var r = new TestShape();
-            var s = new Solid(SolidOp.Difference, l,r);
+            var s = new Solid(SolidOp.Difference, l, r);
             var ray = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
             var xs = s.Intersects(ray);
             // Child not tested so SavedRay remains default.
@@ -146,26 +145,26 @@ namespace Octans.Test
         public void DivideSubdividesChildren()
         {
             var s1 = new Sphere();
-            s1.SetTransform(Transforms.Translate(-1.5f,0,0));
+            s1.SetTransform(Transforms.Translate(-1.5f, 0, 0));
             var s2 = new Sphere();
             s2.SetTransform(Transforms.Translate(1.5f, 0, 0));
-            var left = new Group(s1,s2);
+            var left = new Group(s1, s2);
             var s3 = new Sphere();
             s3.SetTransform(Transforms.Translate(0, 0, -1.5f));
             var s4 = new Sphere();
             s4.SetTransform(Transforms.Translate(0, 0, 1.5f));
-            var right = new Group(s3,s4);
+            var right = new Group(s3, s4);
             var s = new Solid(SolidOp.Difference, left, right);
             s.Divide(1);
             var lg = (Group) s.Left;
             var rg = (Group) s.Right;
             var lsg1 = (Group) lg.Children[0];
             lsg1.Children.Should().Contain(s1);
-            var lsg2 = (Group)lg.Children[1];
+            var lsg2 = (Group) lg.Children[1];
             lsg2.Children.Should().Contain(s2);
-            var rsg1 = (Group)rg.Children[0];
+            var rsg1 = (Group) rg.Children[0];
             rsg1.Children.Should().Contain(s3);
-            var rsg2 = (Group)rg.Children[1];
+            var rsg2 = (Group) rg.Children[1];
             rsg2.Children.Should().Contain(s4);
         }
     }

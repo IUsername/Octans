@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Octans
+namespace Octans.ConsoleApp
 {
     internal static partial class TestScenes
     {
@@ -57,13 +57,13 @@ namespace Octans
             var floor = new Cube();
             floor.SetMaterial(checkerboard);
             floor.SetTransform(Transforms.TranslateY(-1).Scale(5f));
-            @group.AddChild(floor);
-            @group.AddChild(triangulated);
-            @group.Divide(1);
+            group.AddChild(floor);
+            group.AddChild(triangulated);
+            group.Divide(1);
 
             var w = new World();
             w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.4f, 1.4f, 1.4f)));
-            w.SetObjects(@group);
+            w.SetObjects(group);
 
             var x = 600;
             var y = 400;

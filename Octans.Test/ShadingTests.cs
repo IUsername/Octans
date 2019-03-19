@@ -89,7 +89,7 @@ namespace Octans.Test
         {
             var s = new Sphere();
             var m = new Material {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0};
-            var position = new Point(0,0,-1);
+            var position = new Point(0, 0, -1);
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
@@ -206,7 +206,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var shape = new Plane();
-            shape.SetMaterial(new Material { Reflective = 0.5f });
+            shape.SetMaterial(new Material {Reflective = 0.5f});
             shape.SetTransform(Transforms.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
@@ -220,7 +220,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var shape = new Plane();
-            shape.SetMaterial(new Material { Reflective = 0.5f });
+            shape.SetMaterial(new Material {Reflective = 0.5f});
             shape.SetTransform(Transforms.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
@@ -234,10 +234,10 @@ namespace Octans.Test
         {
             var w = new World();
             w.SetLights(new PointLight(new Point(0, 0, 0), Colors.White));
-            var lower = new Plane { Material = { Reflective = 1f } };
+            var lower = new Plane {Material = {Reflective = 1f}};
             lower.SetTransform(Transforms.Translate(0, -1, 0));
 
-            var upper = new Plane { Material = { Reflective = 1f } };
+            var upper = new Plane {Material = {Reflective = 1f}};
             upper.SetTransform(Transforms.Translate(0, 1, 0));
 
             w.SetObjects(lower, upper);
@@ -278,9 +278,9 @@ namespace Octans.Test
             var s = w.Objects[0];
             s.Material.Transparency = 1.0f;
             s.Material.RefractiveIndex = 1.5f;
-            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f)/2f), new Vector(0, 1, 0));
+            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f) / 2f), new Vector(0, 1, 0));
             var xs = Intersections.Create(
-                new Intersection(-MathF.Sqrt(2f) / 2f, s), 
+                new Intersection(-MathF.Sqrt(2f) / 2f, s),
                 new Intersection(MathF.Sqrt(2f) / 2f, s));
             // Inside sphere so look at second intersection.
             var comps = new IntersectionInfo(xs[1], r, xs);
@@ -322,7 +322,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), floor);
             var xs = Intersections.Create(i);
-            var comps = new IntersectionInfo(xs[0], r,xs);
+            var comps = new IntersectionInfo(xs[0], r, xs);
             Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93642f, 0.68642f, 0.68642f));
         }
 
@@ -330,9 +330,9 @@ namespace Octans.Test
         public void SchlickApproximationForTotalInternalReflectionIsOne()
         {
             var s = Spheres.GlassSphere();
-            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f) / 2f), new Vector(0, 1,0));
+            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f) / 2f), new Vector(0, 1, 0));
             var xs = Intersections.Create(new Intersection(-MathF.Sqrt(2f) / 2f, s),
-                                       new Intersection(MathF.Sqrt(2f) / 2f, s));
+                                          new Intersection(MathF.Sqrt(2f) / 2f, s));
             var comps = new IntersectionInfo(xs[1], r, xs);
             var reflectance = Shading.Schlick(comps);
             reflectance.Should().Be(1f);
@@ -344,10 +344,10 @@ namespace Octans.Test
             var s = Spheres.GlassSphere();
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 1, 0));
             var xs = Intersections.Create(new Intersection(-1f, s),
-                                       new Intersection(1f, s));
+                                          new Intersection(1f, s));
             var comps = new IntersectionInfo(xs[1], r, xs);
             var reflectance = Shading.Schlick(comps);
-            reflectance.Should().BeApproximately(0.04f,0.0001f);
+            reflectance.Should().BeApproximately(0.04f, 0.0001f);
         }
 
         [Fact]
@@ -358,18 +358,18 @@ namespace Octans.Test
             var xs = Intersections.Create(new Intersection(1.8589f, s));
             var comps = new IntersectionInfo(xs[0], r, xs);
             var reflectance = Shading.Schlick(comps);
-            reflectance.Should().BeApproximately(0.48873f,0.0001f);
+            reflectance.Should().BeApproximately(0.48873f, 0.0001f);
         }
 
         [Fact]
         public void HitColorIncludesFresnelEffectOnReflectiveTransparentSurface()
         {
             var w = World.Default();
-            var floor = new Plane { Material = { Transparency = 0.5f, Reflective=0.5f, RefractiveIndex = 1.5f } };
+            var floor = new Plane {Material = {Transparency = 0.5f, Reflective = 0.5f, RefractiveIndex = 1.5f}};
             floor.SetTransform(Transforms.Translate(0, -1, 0));
             w.AddObject(floor);
 
-            var ball = new Sphere { Material = { Pattern = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f } };
+            var ball = new Sphere {Material = {Pattern = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
             ball.SetTransform(Transforms.Translate(0, -3.5f, -0.5f));
             w.AddObject(ball);
 
@@ -387,11 +387,11 @@ namespace Octans.Test
             var light = w.Lights[0];
             Shading.IntensityAt(w, new Point(0, 1.0001f, 0), light).Should().BeApproximately(1.0f, 0.0001f);
             Shading.IntensityAt(w, new Point(-1.0001f, 0, 0), light).Should().BeApproximately(1.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0,0,-1.0001f), light).Should().BeApproximately(1.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0,0,1.0001f), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1.0001f,0,0), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0,-1.0001f,0), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0,0,0), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0, 0, -1.0001f), light).Should().BeApproximately(1.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0, 0, 1.0001f), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(1.0001f, 0, 0), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0, -1.0001f, 0), light).Should().BeApproximately(0.0f, 0.0001f);
+            Shading.IntensityAt(w, new Point(0, 0, 0), light).Should().BeApproximately(0.0f, 0.0001f);
         }
 
         [Fact]
@@ -436,8 +436,8 @@ namespace Octans.Test
             {
                 Material = {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0f, Pattern = new SolidColor(Colors.White)}
             };
-            var eye = new Point(0,0,-5);
-            var pt = new Point(0,0,-1);
+            var eye = new Point(0, 0, -5);
+            var pt = new Point(0, 0, -1);
             var eyeV = (eye - pt).Normalize();
             var normal = new Vector(pt.X, pt.Y, pt.Z);
             var r = Shading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);

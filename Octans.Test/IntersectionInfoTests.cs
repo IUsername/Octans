@@ -50,7 +50,7 @@ namespace Octans.Test
             shape.SetTransform(Transforms.Translate(0, 0, 1));
             var i = new Intersection(5, shape);
             var comps = new IntersectionInfo(i, r);
-            comps.OverPoint.Z.Should().BeLessThan( -IntersectionInfo.Epsilon / 2f);
+            comps.OverPoint.Z.Should().BeLessThan(-IntersectionInfo.Epsilon / 2f);
             comps.Point.Z.Should().BeGreaterThan(comps.OverPoint.Z);
         }
 
@@ -90,7 +90,7 @@ namespace Octans.Test
             );
 
             var comps = new List<IntersectionInfo>();
-            foreach(var intersection in xs)
+            foreach (var intersection in xs)
             {
                 comps.Add(new IntersectionInfo(intersection, r, xs));
             }

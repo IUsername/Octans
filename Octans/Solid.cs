@@ -5,6 +5,8 @@ namespace Octans
 {
     public class Solid : ShapeBase
     {
+        private readonly Bounds _bounds;
+
         public Solid(SolidOp op, IShape left, IShape right)
         {
             Op = op;
@@ -19,14 +21,13 @@ namespace Octans
         public IShape Left { get; }
         public IShape Right { get; }
 
-        private readonly Bounds _bounds;
-
         public override IIntersections LocalIntersects(in Ray localRay)
         {
             if (!LocalBounds().DoesIntersect(localRay))
             {
                 return Intersections.Empty();
             }
+
             var builder = Intersections.Builder();
             builder.AddRange(Left.Intersects(in localRay));
             builder.AddRange(Right.Intersects(in localRay));
@@ -36,10 +37,7 @@ namespace Octans
         public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
             throw new NotImplementedException();
 
-        public override Bounds LocalBounds()
-        {
-            return _bounds;
-        }
+        public override Bounds LocalBounds() => _bounds;
 
         public static bool IntersectionAllowed(SolidOp op, bool lHit, bool inL, bool inR)
         {
@@ -102,7 +100,7 @@ namespace Octans
         {
             switch (a)
             {
-                case Group g when g.Children.Any(c => ReferenceEquals(a,c) || c.Includes(b)):
+                case Group g when g.Children.Any(c => ReferenceEquals(a, c) || c.Includes(b)):
                     return true;
                 case Solid s:
                     return s.Left.Includes(b) || s.Right.Includes(b);

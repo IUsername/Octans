@@ -36,7 +36,7 @@ namespace Octans.Test
             var c = new Cylinder();
             ExtractT1T2(c, new Point(1, 0, -5), new Vector(0, 0, 1)).Should().Be((5f, 5f));
             ExtractT1T2(c, new Point(0, 0, -5), new Vector(0, 0, 1)).Should().Be((4f, 6f));
-            var (t1,t2) = ExtractT1T2(c, new Point(0.5f, 0, -5), new Vector(0.1f, 1f, 1f));
+            var (t1, t2) = ExtractT1T2(c, new Point(0.5f, 0, -5), new Vector(0.1f, 1f, 1f));
             t1.Should().BeApproximately(6.80798f, 0.0001f);
             t2.Should().BeApproximately(7.08872f, 0.0001f);
         }
@@ -81,7 +81,7 @@ namespace Octans.Test
         [Fact]
         public void IntersectingClosedCylinder()
         {
-            var c = new Cylinder { Minimum = 1f, Maximum = 2f, IsClosed = true };
+            var c = new Cylinder {Minimum = 1f, Maximum = 2f, IsClosed = true};
             IntersectCount(c, new Point(0, 3, 0), new Vector(0f, -1, 0)).Should().Be(2);
             IntersectCount(c, new Point(0, 3, -2), new Vector(0, -1, 2)).Should().Be(2);
             IntersectCount(c, new Point(0, 4, -2), new Vector(0, -1, 1)).Should().Be(2);
@@ -92,7 +92,7 @@ namespace Octans.Test
         [Fact]
         public void CylinderNormalsAtCaps()
         {
-            var c = new Cylinder { Minimum = 1f, Maximum = 2f, IsClosed = true };
+            var c = new Cylinder {Minimum = 1f, Maximum = 2f, IsClosed = true};
             c.LocalNormalAt(new Point(0, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
             c.LocalNormalAt(new Point(0.5f, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
             c.LocalNormalAt(new Point(0, 1, 0.5f), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));

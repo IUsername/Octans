@@ -22,8 +22,8 @@ namespace Octans
         }
 
         public bool Equals(Intersection other) => T.Equals(other.T)
-                                                  && U.Equals(other.U) 
-                                                  && V.Equals(other.V) 
+                                                  && U.Equals(other.U)
+                                                  && V.Equals(other.V)
                                                   && ReferenceEquals(Shape, other.Shape);
 
         public override bool Equals(object obj)

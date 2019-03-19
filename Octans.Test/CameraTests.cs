@@ -54,8 +54,8 @@ namespace Octans.Test
             var c = new Camera(201, 101, MathF.PI / 2f);
             c.SetTransform(Transforms.RotateY(MathF.PI / 4f) * Transforms.Translate(0, -2, 5));
             var r = c.RayForPixel(100, 50);
-            r.Origin.Should().Be(new Point(0,2,-5));
-            r.Direction.Should().Be(new Vector(MathF.Sqrt(2f)/ 2f, 0.0f, -MathF.Sqrt(2f) / 2f));
+            r.Origin.Should().Be(new Point(0, 2, -5));
+            r.Direction.Should().Be(new Vector(MathF.Sqrt(2f) / 2f, 0.0f, -MathF.Sqrt(2f) / 2f));
         }
 
         [Fact]
@@ -69,7 +69,6 @@ namespace Octans.Test
             c.SetTransform(Transforms.View(from, to, up));
             var image = c.Render(w);
             image.PixelAt(5, 5).Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
-
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Octans
+namespace Octans.ConsoleApp
 {
     internal static partial class TestScenes
     {

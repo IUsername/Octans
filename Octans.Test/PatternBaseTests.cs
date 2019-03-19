@@ -26,7 +26,7 @@ namespace Octans.Test
             var obj = new Sphere();
             obj.SetTransform(Transforms.Scale(2, 2, 2));
             var pattern = new TestPattern();
-            pattern.ShapeColor(obj, new Point(2f, 3f, 4f)).Should().Be(new Color(1f,1.5f,2f));
+            pattern.ShapeColor(obj, new Point(2f, 3f, 4f)).Should().Be(new Color(1f, 1.5f, 2f));
         }
 
         [Fact]
@@ -51,10 +51,6 @@ namespace Octans.Test
 
     internal class TestPattern : PatternBase
     {
-        public override Color LocalColorAt(Point localPoint)
-        {
-            // For testing world to pattern local transform.
-            return new Color(localPoint.X, localPoint.Y, localPoint.Z);
-        }
+        public override Color LocalColorAt(Point localPoint) => new Color(localPoint.X, localPoint.Y, localPoint.Z);
     }
 }

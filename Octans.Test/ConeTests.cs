@@ -36,7 +36,7 @@ namespace Octans.Test
         {
             var c = new Cone();
             ExtractT1T2(c, new Point(0, 0, -5), new Vector(0, 0, 1)).Should().Be((5f, 5f));
-            var (t1,t2) = ExtractT1T2(c, new Point(1f, 1, -5), new Vector(-0.5f, -1f, 1f));
+            var (t1, t2) = ExtractT1T2(c, new Point(1f, 1, -5), new Vector(-0.5f, -1f, 1f));
             t1.Should().BeApproximately(4.55006f, 0.0001f);
             t2.Should().BeApproximately(49.44994f, 0.0001f);
             (t1, t2) = ExtractT1T2(c, new Point(0, 0, -5f), new Vector(1, 1, 1));
@@ -59,7 +59,7 @@ namespace Octans.Test
         public void ConeNormals()
         {
             var c = new Cone();
-            c.LocalNormalAt(new Point(0, 0, 0), new Intersection(1,c)).Should().Be(new Vector(0, 0, 0));
+            c.LocalNormalAt(new Point(0, 0, 0), new Intersection(1, c)).Should().Be(new Vector(0, 0, 0));
             c.LocalNormalAt(new Point(1, 1, 1), new Intersection(1, c)).Should().Be(new Vector(1, -MathF.Sqrt(2f), 1));
             c.LocalNormalAt(new Point(-1, -1, 0), new Intersection(1, c)).Should().Be(new Vector(-1, 1, 0));
         }
@@ -75,7 +75,7 @@ namespace Octans.Test
         [Fact]
         public void IntersectingTruncatedCone()
         {
-            var c = new Cone { Minimum = 1f, Maximum = 2f };
+            var c = new Cone {Minimum = 1f, Maximum = 2f};
             IntersectCount(c, new Point(0, 1.5f, 0), new Vector(0.1f, 1, 0)).Should().Be(0);
             IntersectCount(c, new Point(0, 3, -5), new Vector(0, 0, 1)).Should().Be(0);
             IntersectCount(c, new Point(0, 0, -5), new Vector(0, 0, 1)).Should().Be(0);
@@ -94,7 +94,7 @@ namespace Octans.Test
         [Fact]
         public void IntersectingClosedCone()
         {
-            var c = new Cone { Minimum = -0.5f, Maximum = 0.5f, IsClosed = true };
+            var c = new Cone {Minimum = -0.5f, Maximum = 0.5f, IsClosed = true};
             IntersectCount(c, new Point(0, 0, -5), new Vector(0f, 1, 0)).Should().Be(0);
             IntersectCount(c, new Point(0, 0, -0.25f), new Vector(0, 1, 1)).Should().Be(2);
             IntersectCount(c, new Point(0, 0, -0.25f), new Vector(0, 1, 0)).Should().Be(4);
@@ -103,7 +103,7 @@ namespace Octans.Test
         [Fact]
         public void ConeNormalsAtCaps()
         {
-            var c = new Cone { Minimum = 1f, Maximum = 2f, IsClosed = true };
+            var c = new Cone {Minimum = 1f, Maximum = 2f, IsClosed = true};
             c.LocalNormalAt(new Point(0, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
             c.LocalNormalAt(new Point(0.5f, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
             c.LocalNormalAt(new Point(0, 1, 0.5f), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
@@ -115,16 +115,16 @@ namespace Octans.Test
         [Fact]
         public void BoundsOfBoundCone()
         {
-            var c = new Cone { Minimum = 1f, Maximum = 2f, IsClosed = true };
+            var c = new Cone {Minimum = 1f, Maximum = 2f, IsClosed = true};
             var b = c.LocalBounds();
             b.Min.Should().Be(new Point(1, 1, 1));
-            b.Max.Should().Be(new Point(2,2,2));
+            b.Max.Should().Be(new Point(2, 2, 2));
         }
 
         [Fact]
         public void BoundsOfUnboundCone()
         {
-            var c = new Cone( );
+            var c = new Cone();
             var b = c.LocalBounds();
             b.Min.Should().Be(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity));
             b.Max.Should().Be(new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));

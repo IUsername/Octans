@@ -1,15 +1,14 @@
-﻿
-namespace Octans
+﻿namespace Octans
 {
     public interface IShape
     {
-        IIntersections LocalIntersects(in Ray localRay);
         Material Material { get; }
         Matrix Transform { get; }
 
-        Matrix TransformInverse();
-
         IShape Parent { get; set; }
+        IIntersections LocalIntersects(in Ray localRay);
+
+        Matrix TransformInverse();
         Vector LocalNormalAt(in Point localPoint, in Intersection intersection);
         void SetTransform(Matrix matrix);
         void SetMaterial(Material material);

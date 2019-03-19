@@ -30,10 +30,8 @@ namespace Octans
             Samples = uSteps * vSteps;
             Position = corner + uLen * 0.5f + vLen * 0.5f;
             Jitter = jitter;
-           // SamplePoints = Gen();
+            // SamplePoints = Gen();
         }
-
-        public Point[] SamplePoints => Gen();
 
         public Point Corner { get; }
         public Vector U { get; }
@@ -41,9 +39,11 @@ namespace Octans
         public Vector V { get; }
         public int VSteps { get; }
 
-        public int Samples { get; }
-
         public Sequence Jitter { get; }
+
+        public Point[] SamplePoints => Gen();
+
+        public int Samples { get; }
         public Color Intensity { get; }
 
         public Point Position { get; }

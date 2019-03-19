@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 
-namespace Octans
+namespace Octans.ConsoleApp
 {
     internal static partial class TestScenes
     {

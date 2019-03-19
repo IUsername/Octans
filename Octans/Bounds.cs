@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Octans
@@ -200,15 +199,16 @@ namespace Octans
                 var midX = Min.X + wX / 2f;
                 return (new Bounds(Min, new Point(midX, Max.Y, Max.Z)), new Bounds(new Point(midX, Min.Y, Min.Z), Max));
             }
-            if(maxW == wY)
+
+            if (maxW == wY)
             {
                 var midY = Min.Y + wY / 2f;
                 return (new Bounds(Min, new Point(Max.X, midY, Max.Z)), new Bounds(new Point(Min.X, midY, Min.Z), Max));
             }
             // ReSharper restore CompareOfFloatsByEqualityOperator
+
             var midZ = Min.Z + wZ / 2f;
             return (new Bounds(Min, new Point(Max.X, Max.Y, midZ)), new Bounds(new Point(Min.X, Min.Y, midZ), Max));
-
         }
     }
 }

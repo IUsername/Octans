@@ -5,6 +5,13 @@ namespace Octans.Test
 {
     public class PerlinNoisePatternTests
     {
+        private static void CheckForValidGray(Color color)
+        {
+            color.Red.Should().BeApproximately(color.Green, 0.0001f);
+            color.Green.Should().BeApproximately(color.Blue, 0.0001f);
+            color.Red.Should().BeInRange(0f, 1f);
+        }
+
         [Fact]
         public void ContainsTwoColors()
         {
@@ -25,13 +32,6 @@ namespace Octans.Test
             CheckForValidGray(c3);
             c1.Should().NotBe(c2);
             c1.Should().NotBe(c3);
-        }
-
-        private static void CheckForValidGray(Color color)
-        {
-            color.Red.Should().BeApproximately(color.Green, 0.0001f);
-            color.Green.Should().BeApproximately(color.Blue, 0.0001f);
-            color.Red.Should().BeInRange(0f, 1f);
         }
     }
 }

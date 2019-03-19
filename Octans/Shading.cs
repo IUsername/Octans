@@ -39,8 +39,8 @@ namespace Octans
                 return ambient;
             }
 
-            Color sum = Colors.Black;
-            foreach(var lightPoint in light.SamplePoints)
+            var sum = Colors.Black;
+            foreach (var lightPoint in light.SamplePoints)
             {
                 var lightV = (lightPoint - worldPoint).Normalize();
                 var lightDotNormal = lightV % normalVector;
@@ -61,7 +61,7 @@ namespace Octans
                 }
             }
 
-            return ambient + (sum / light.Samples) * intensity;
+            return ambient + sum / light.Samples * intensity;
 
             //var lightV = (light.Position - worldPoint).Normalize();
             //var lightDotNormal = lightV % normalVector;
@@ -108,8 +108,9 @@ namespace Octans
             if (material.Reflective > 0f && material.Transparency > 0f)
             {
                 var reflectance = Schlick(info);
-                return surface + reflected * reflectance + refracted * (1f-reflectance);
+                return surface + reflected * reflectance + refracted * (1f - reflectance);
             }
+
             return surface + reflected + refracted;
         }
 
@@ -181,7 +182,7 @@ namespace Octans
             {
                 var n = info.N1 / info.N2;
                 var sin2T = n * n * (1f - cos * cos);
-                if( sin2T > 1f)
+                if (sin2T > 1f)
                 {
                     return 1.0f;
                 }

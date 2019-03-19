@@ -19,6 +19,9 @@ namespace Octans.Test
             return xs.Count;
         }
 
+        private static Vector NormalAtPoint(Cube cube, Point point) =>
+            cube.LocalNormalAt(point, new Intersection(1, cube));
+
         [Fact]
         public void ProperlyIntersectsFaces()
         {
@@ -93,11 +96,6 @@ namespace Octans.Test
             var b = c.LocalBounds();
             b.Min.Should().Be(new Point(-1, -1, -1));
             b.Max.Should().Be(new Point(1, 1, 1));
-        }
-
-        private static Vector NormalAtPoint(Cube cube, Point point)
-        {
-            return cube.LocalNormalAt(point, new Intersection(1,cube));
         }
     }
 }
