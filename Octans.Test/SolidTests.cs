@@ -102,5 +102,43 @@ namespace Octans.Test
             xs[1].T.Should().Be(6.5f);
             xs[1].Shape.Should().Be(s2);
         }
+
+        [Fact]
+        public void BoundsContainsChildren()
+        {
+            var l = new Sphere();
+            var r = new Sphere();
+            r.SetTransform(Transforms.Translate(2,3,4));
+            var s = new Solid(SolidOp.Difference, l,r);
+            var b = s.LocalBounds();
+            b.Min.Should().Be(new Point(-1, -1, -1));
+            b.Max.Should().Be(new Point(3, 4, 5));
+        }
+
+        [Fact]
+        public void IntersectDoesNotTestChildrenIfRayMissesBounds()
+        {
+            var l = new TestShape();
+            var r = new TestShape();
+            var s = new Solid(SolidOp.Difference, l,r);
+            var ray = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
+            var xs = s.Intersects(ray);
+            // Child not tested so SavedRay remains default.
+            l.SavedRay.Should().Be(new Ray());
+            r.SavedRay.Should().Be(new Ray());
+        }
+
+        [Fact]
+        public void IntersectTestChildrenIfRayHitsBounds()
+        {
+            var l = new TestShape();
+            var r = new TestShape();
+            var s = new Solid(SolidOp.Difference, l, r);
+            var ray = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
+            var xs = s.Intersects(ray);
+            // Child tested so SavedRay in not default.
+            l.SavedRay.Should().NotBe(new Ray());
+            r.SavedRay.Should().NotBe(new Ray());
+        }
     }
 }

@@ -58,9 +58,6 @@ namespace Octans
 
         public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) => Normal;
 
-        public override Bounds LocalBounds()
-        {
-            return Bounds.FromPoints(new[] {P1, P2, P3});
-        }
+        public override Bounds LocalBounds() => Bounds.FromPoints(P1, P2, P3);
     }
 }

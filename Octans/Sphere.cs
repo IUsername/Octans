@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Octans
 {
     public class Sphere : ShapeBase
     {
-        private static readonly Bounds UnitBounds = new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
-
         public override IIntersections LocalIntersects(in Ray localRay)
         {
             var sphereToRay = localRay.Origin - Point.Zero;
@@ -26,8 +23,9 @@ namespace Octans
                 new Intersection(t2, this));
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) => localPoint - Point.Zero;
+        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
+            localPoint - Point.Zero;
 
-        public override Bounds LocalBounds() => UnitBounds;
+        public override Bounds LocalBounds() => Bounds.Unit;
     }
 }

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Xunit;
 
 namespace Octans.Test
@@ -86,6 +87,40 @@ namespace Octans.Test
             b.DoesIntersect(r).Should().BeFalse();
             r = new Ray(new Point(0, 10, 0), new Vector(0, -1, 0));
             b.DoesIntersect(r).Should().BeTrue();
+        }
+
+        [Fact]
+        public void ChecksIfBoundsContainsPoint()
+        {
+            var b = new Bounds(new Point(5, -2, 0), new Point(11, 4, 7));
+            b.ContainsPoint(new Point(5,-2,0)).Should().BeTrue();
+            b.ContainsPoint(new Point(11,4,7)).Should().BeTrue();
+            b.ContainsPoint(new Point(8,1,3)).Should().BeTrue();
+            b.ContainsPoint(new Point(3,0,3)).Should().BeFalse();
+            b.ContainsPoint(new Point(8,-4,3)).Should().BeFalse();
+            b.ContainsPoint(new Point(8,1,-1)).Should().BeFalse();
+            b.ContainsPoint(new Point(13,1,3)).Should().BeFalse();
+            b.ContainsPoint(new Point(8,1,8)).Should().BeFalse();
+        }
+
+        [Fact]
+        public void ChecksIfBoundsContainGivenBounds()
+        {
+            var b = new Bounds(new Point(5,-2,0), new Point(11,4,7));
+            b.ContainsBounds(new Bounds(new Point(5, -2, 0), new Point(11, 4, 7))).Should().BeTrue();
+            b.ContainsBounds(new Bounds(new Point(6, -1, 1), new Point(10, 3, 6))).Should().BeTrue();
+            b.ContainsBounds(new Bounds(new Point(4, -3, -1), new Point(10, 3, 6))).Should().BeFalse();
+            b.ContainsBounds(new Bounds(new Point(6, -1, 1), new Point(12, 5, 8))).Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanTransformByMatrix()
+        {
+            var b = Bounds.Unit;
+            var m = Transforms.RotateX(MathF.PI / 4f) * Transforms.RotateY(MathF.PI / 4f);
+            var t = b.Transform(in m);
+            t.Min.Should().Be(new Point(-1.4142f, -1.7071f, -1.7071f));
+            t.Max.Should().Be(new Point(1.4142f, 1.7071f, 1.7071f));
         }
     }
 }

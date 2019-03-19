@@ -5,7 +5,7 @@ namespace Octans
 {
     public readonly struct Point : IEquatable<Point>
     {
-        private const float Epsilon = 0.00001f;
+        private const float Epsilon = 0.0001f;
 
         public readonly float X;
         public readonly float Y;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Octans
 {
@@ -152,9 +151,8 @@ namespace Octans
             return new Vector(localPoint.X, y, localPoint.Z);
         }
 
-        public override Bounds LocalBounds()
-        {
-            return new Bounds(new Point(Minimum, Minimum, Minimum), new Point(Maximum, Maximum, Maximum));
-        }
+        public override Bounds LocalBounds() => IsClosed
+            ? new Bounds(new Point(Minimum, Minimum, Minimum), new Point(Maximum, Maximum, Maximum))
+            : Bounds.Infinite;
     }
 }

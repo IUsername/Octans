@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Octans
@@ -13,17 +12,21 @@ namespace Octans
             right.Parent = this;
             Left = left;
             Right = right;
-            _bounds = new Lazy<Bounds>(BoundsFactory);
+            _bounds = Left.ParentSpaceBounds() + Right.ParentSpaceBounds();
         }
 
         public SolidOp Op { get; }
         public IShape Left { get; }
         public IShape Right { get; }
 
-        private readonly Lazy<Bounds> _bounds;
+        private readonly Bounds _bounds;
 
         public override IIntersections LocalIntersects(in Ray localRay)
         {
+            if (!LocalBounds().DoesIntersect(localRay))
+            {
+                return Intersections.Empty();
+            }
             var builder = Intersections.Builder();
             builder.AddRange(Left.Intersects(in localRay));
             builder.AddRange(Right.Intersects(in localRay));
@@ -35,20 +38,7 @@ namespace Octans
 
         public override Bounds LocalBounds()
         {
-            return _bounds.Value;
-        }
-
-        private Bounds BoundsFactory()
-        {
-            return ToLocalBounds(Left) + ToLocalBounds(Right);
-        }
-
-        [Pure]
-        private static Bounds ToLocalBounds(IShape child)
-        {
-            var corners = Bounds.ToCornerPoints(child.LocalBounds());
-            var localPoints = corners.Select(point => child.Transform * point).ToArray();
-            return Bounds.FromPoints(localPoints);
+            return _bounds;
         }
 
         public static bool IntersectionAllowed(SolidOp op, bool lHit, bool inL, bool inR)

@@ -5,7 +5,6 @@ namespace Octans
     public class Cube : ShapeBase
     {
         private const float Epsilon = 0.0001f;
-        private static readonly Bounds UnitBounds = new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
         public override IIntersections LocalIntersects(in Ray localRay)
         {
@@ -57,6 +56,6 @@ namespace Octans
             // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
-        public override Bounds LocalBounds() => UnitBounds;
+        public override Bounds LocalBounds() => Bounds.Unit;
     }
 }

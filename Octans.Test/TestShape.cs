@@ -13,8 +13,6 @@
         public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
             new Vector(localPoint.X, localPoint.Y, localPoint.Z);
 
-        public override Bounds LocalBounds() =>
-            new Bounds(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity),
-                       new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));
+        public override Bounds LocalBounds() => Bounds.Unit;
     }
 }

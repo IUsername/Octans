@@ -10,8 +10,8 @@ namespace Octans
         private static void Main(string[] args)
         {
             //TestRender();
-            //TeapotTest();
-            SolidTestRender();
+            TeapotTest();
+            //SolidTestRender();
         }
 
         private static Solid RoundedCube(float radius, Material mat)
@@ -165,10 +165,10 @@ namespace Octans
             var blackPip = new Material {Pattern = new SolidColor(new Color(0.1f, 0.1f, 0.1f))};
             var whitePip = new Material {CastsShadows = true};
 
-            var d1 = ToGroup(CutPips(RoundedCube(radius, blue), whitePip));
-            var d2 = ToGroup(CutPips(RoundedCube(radius, red), whitePip));
-            var d3 = ToGroup(CutPips(RoundedCube(radius, white), blackPip));
-            var d4 = ToGroup(CutPips(RoundedCube(radius, yellow), blackPip));
+            var d1 = CutPips(RoundedCube(radius, blue), whitePip);
+            var d2 = CutPips(RoundedCube(radius, red), whitePip);
+            var d3 = CutPips(RoundedCube(radius, white), blackPip);
+            var d4 = CutPips(RoundedCube(radius, yellow), blackPip);
 
             d1.SetTransform(Transforms.RotateY(-2.2f).TranslateY(1f).Scale(0.5f));
             d2.SetTransform(Transforms.RotateZ(MathF.PI / 2f).TranslateY(1f).TranslateX(2f).TranslateZ(1f).Scale(0.5f));
@@ -200,7 +200,7 @@ namespace Octans
             //w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
             w.SetLights(new AreaLight(new Point(-3, 6, -4), new Vector(2f, 0, 0), 3, new Vector(0, 2f, 0), 3, new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             //w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1,0,0), 4, new Vector(0,1,0), 3, Colors.White));
-            w.SetObjects(floor, d1, d2, d3, d4);
+            w.SetObjects(floor, new Group(d1, d2, d3, d4));
 
             var x = 600;
             var y = 400;
@@ -356,8 +356,8 @@ namespace Octans
             w.SetLights(new AreaLight(new Point(-2, 4, -7), new Vector(0.01f, 0, 0), 2, new Vector(0, 0.4f, 0), 4, new Color(1.4f,1.4f,1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             w.SetObjects(gt, gf);
 
-            var x = 1200;
-            var y = 800;
+            var x = 400;
+            var y = 300;
             var c = new Camera(x, y, MathF.PI / 3f);
             c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
 
@@ -395,12 +395,12 @@ namespace Octans
             var chrome = new Material
             {
                 Pattern = new SolidColor(new Color(1f, 0.7f, 0.75f)),
-                Reflective = 0.35f,
+                Reflective = 0.85f,
                 //RefractiveIndex = 1.1f,
                 //Transparency = 0.8f,
                 Ambient = 0.05f,
-                Diffuse = 0.45f,
-                Shininess = 100f,
+                Diffuse = 0.2f,
+                Shininess = 400f,
                 Specular = 0.9f
             };
 
@@ -408,9 +408,9 @@ namespace Octans
 
             var checkerboard = new Material
             {
-                Pattern = new CheckerPattern(new Color(0.5f, 0.5f, 0.5f), new Color(0.7f, 0.7f, 0.7f)),
+                Pattern = new CheckerPattern(new Color(1f, 1f, 0.5f), new Color(0.55f, 0.55f, 1f)),
                 Reflective = 0.2f,
-                Ambient = 0.2f,
+                Ambient = 0.1f,
                 Diffuse = 0.3f
             };
 
@@ -423,7 +423,7 @@ namespace Octans
             fg.SetTransform(Transforms.TranslateY(-1).Scale(5f));
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
+            w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.4f,1.4f,1.4f)));
             w.SetObjects(fg, g);
 
             var x = 600;

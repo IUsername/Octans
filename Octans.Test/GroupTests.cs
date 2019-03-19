@@ -74,7 +74,7 @@ namespace Octans.Test
         }
 
         [Fact]
-        public void LocalBoundsConsidersTransformOfChildren()
+        public void LocalBoundsConsidersTransformOfChild()
         {
             var g = new Group();
             var c = new Cube();
@@ -83,6 +83,21 @@ namespace Octans.Test
             var b = g.LocalBounds();
             b.Min.Should().Be(new Point(-1/MathF.Sin(MathF.PI / 4), -1/MathF.Sin(MathF.PI / 4), -1));
             b.Max.Should().Be(new Point(1/MathF.Sin(MathF.PI / 4), 1/MathF.Sin(MathF.PI / 4), 1));
+        }
+
+        [Fact]
+        public void LocalBoundsConsidersAllChildren()
+        {
+            var s = new Sphere();
+            s.SetTransform(Transforms.Translate(2,5,-3) * Transforms.Scale(2f));
+            var c = new Cylinder {Minimum = -2, Maximum = 2};
+            c.SetTransform(Transforms.Translate(-4,-1,4) * Transforms.Scale(0.5f,1,0.5f));
+            var g = new Group();
+            g.AddChild(s);
+            g.AddChild(c);
+            var b = g.LocalBounds();
+            b.Min.Should().Be(new Point(-4.5f, -3, -5));
+            b.Max.Should().Be(new Point(4f, 7, 4.5f));
         }
 
         [Fact]
@@ -95,6 +110,30 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var intersects = g.Intersects(r);
             intersects.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public void IntersectDoesNotTestChildrenIfRayMissesBounds()
+        {
+            var c = new TestShape();
+            var g = new Group();
+            g.AddChild(c);
+            var r = new Ray(new Point(0,0,-5), new Vector(0,1,0) );
+            var xs = g.Intersects(r);
+            // Child not tested so SavedRay remains default.
+            c.SavedRay.Should().Be(new Ray());
+        }
+
+        [Fact]
+        public void IntersectTestChildrenIfRayHitsBounds()
+        {
+            var c = new TestShape();
+            var g = new Group();
+            g.AddChild(c);
+            var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
+            var xs = g.Intersects(r);
+            // Child tested so SavedRay in not default.
+            c.SavedRay.Should().NotBe(new Ray());
         }
     }
 }

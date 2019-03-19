@@ -40,6 +40,11 @@ namespace Octans
                 new Point(b.Max.X, b.Max.Y, b.Min.Z)
             };
 
+        public static Bounds FromPoints(params Point[] points)
+        {
+            return FromPoints(points.AsEnumerable());
+        }
+
         public static Bounds FromPoints(IEnumerable<Point> points)
         {
             var enumerable = points as Point[] ?? points.ToArray();
@@ -54,8 +59,7 @@ namespace Octans
             if (float.IsNaN(minX))
             {
                 // Odd case where an transform produces NaN for points. Give up and return global bounds.
-                return new Bounds(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity),
-                                  new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));
+                return Infinite;
             }
 
             return new Bounds(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
@@ -83,6 +87,8 @@ namespace Octans
 
         public bool DoesIntersect(in Ray ray)
         {
+            if (IsEmpty) return false;
+
             var t1 = (Min.X - ray.Origin.X) * ray.InverseDirection.X;
             var t2 = (Max.X - ray.Origin.X) * ray.InverseDirection.X;
             var t3 = (Min.Y - ray.Origin.Y) * ray.InverseDirection.Y;
@@ -128,6 +134,8 @@ namespace Octans
         //}
 
         public static Bounds Empty => new Bounds(Point.Zero, Point.Zero, true);
+        public static Bounds Infinite =>  new Bounds(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity), new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));
+        public static Bounds Unit =>  new Bounds(new Point(-1,-1,-1), new Point(1,1,1));
 
         public static Bounds Add(in Bounds a, in Bounds b)
         {
@@ -155,5 +163,27 @@ namespace Octans
         }
 
         public static Bounds operator +(in Bounds left, in Bounds right) => Add(in left, in right);
+
+        public bool ContainsPoint(Point point)
+        {
+            return point.X >= Min.X && point.X <= Max.X
+                                    && point.Y >= Min.Y && point.Y <= Max.Y
+                                    && point.Z >= Min.Z && point.Z <= Max.Z;
+        }
+
+        public bool ContainsBounds(Bounds bounds)
+        {
+            return ContainsPoint(bounds.Min) && ContainsPoint(bounds.Max);
+        }
+
+        public Bounds Transform(in Matrix matrix)
+        {
+            var corners = Bounds.ToCornerPoints(this);
+            for (var i = 0; i < 8; i++)
+            {
+                corners[i] = matrix * corners[i];
+            }
+            return Bounds.FromPoints(corners);
+        }
     }
 }

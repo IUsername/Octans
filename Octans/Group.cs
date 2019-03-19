@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Octans
@@ -16,15 +15,16 @@ namespace Octans
             _bounds = new Lazy<Bounds>(BoundsFactory);
         }
 
+        public Group(params IShape[] shapes)
+        {
+            _children = new List<IShape>(shapes);
+            _bounds = new Lazy<Bounds>(BoundsFactory);
+        }
+
         public IReadOnlyList<IShape> Children => _children;
 
         public override IIntersections LocalIntersects(in Ray localRay)
         {
-            if (_children.Count == 0)
-            {
-                return Intersections.Empty();
-            }
-
             var bounds = LocalBounds();
             if (!bounds.DoesIntersect(localRay))
             {
@@ -49,15 +49,7 @@ namespace Octans
 
         private Bounds BoundsFactory()
         {
-            return Children.Aggregate(Bounds.Empty, (current, child) => current + ToLocalBounds(child));
-        }
-
-        [Pure]
-        private static Bounds ToLocalBounds(IShape child)
-        {
-            var corners = Bounds.ToCornerPoints(child.LocalBounds());
-            var localPoints = corners.Select(point => child.Transform * point).ToArray();
-            return Bounds.FromPoints(localPoints);
+            return Children.Aggregate(Bounds.Empty, (current, child) => current + child.ParentSpaceBounds());
         }
 
         public void AddChild(IShape shape)

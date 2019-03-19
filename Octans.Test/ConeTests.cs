@@ -22,14 +22,14 @@ namespace Octans.Test
             return xs.Count;
         }
 
-        //[Fact]
-        //public void NoIntersectsWhenRayMissesCylinder()
-        //{
-        //    var c = new Cylinder();
-        //    IntersectCount(c, new Point(1, 0, 0), new Vector(0, 1, 0)).Should().Be(0);
-        //    IntersectCount(c, new Point(0, 0, 0), new Vector(0, 1, 0)).Should().Be(0);
-        //    IntersectCount(c, new Point(0, 0, -5), new Vector(1, 1, 1)).Should().Be(0);
-        //}
+        [Fact]
+        public void NoIntersectsWhenRayMissesCylinder()
+        {
+            var c = new Cylinder();
+            IntersectCount(c, new Point(1, 0, 0), new Vector(0, 1, 0)).Should().Be(0);
+            IntersectCount(c, new Point(0, 0, 0), new Vector(0, 1, 0)).Should().Be(0);
+            IntersectCount(c, new Point(0, 0, -5), new Vector(1, 1, 1)).Should().Be(0);
+        }
 
         [Fact]
         public void IntersectionsWhenRayHitsCone()
@@ -110,6 +110,24 @@ namespace Octans.Test
             c.LocalNormalAt(new Point(0, 2, 0), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
             c.LocalNormalAt(new Point(0.5f, 2, 0), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
             c.LocalNormalAt(new Point(0, 2, 0.5f), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
+        }
+
+        [Fact]
+        public void BoundsOfBoundCone()
+        {
+            var c = new Cone { Minimum = 1f, Maximum = 2f, IsClosed = true };
+            var b = c.LocalBounds();
+            b.Min.Should().Be(new Point(1, 1, 1));
+            b.Max.Should().Be(new Point(2,2,2));
+        }
+
+        [Fact]
+        public void BoundsOfUnboundCone()
+        {
+            var c = new Cone( );
+            var b = c.LocalBounds();
+            b.Min.Should().Be(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity));
+            b.Max.Should().Be(new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));
         }
     }
 }
