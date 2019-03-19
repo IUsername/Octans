@@ -424,5 +424,30 @@ namespace Octans.Test
             Shading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
             Shading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
         }
+
+        [Fact]
+        public void CalculateLightingWithAreaLight()
+        {
+            var corner = new Point(-0.5f, -0.5f, -5);
+            var v1 = new Vector(1, 0, 0);
+            var v2 = new Vector(0, 1, 0);
+            var light = new AreaLight(corner, v1, 2, v2, 2, Colors.White);
+            var s = new Sphere
+            {
+                Material = {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0f, Pattern = new SolidColor(Colors.White)}
+            };
+            var eye = new Point(0,0,-5);
+            var pt = new Point(0,0,-1);
+            var eyeV = (eye - pt).Normalize();
+            var normal = new Vector(pt.X, pt.Y, pt.Z);
+            var r = Shading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
+            r.Should().Be(new Color(0.9965f, 0.9965f, 0.9965f));
+
+            pt = new Point(0, 0.7071f, -0.7071f);
+            eyeV = (eye - pt).Normalize();
+            normal = new Vector(pt.X, pt.Y, pt.Z);
+            r = Shading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
+            r.Should().Be(new Color(0.6232f, 0.6232f, 0.6232f));
+        }
     }
 }

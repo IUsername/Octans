@@ -39,26 +39,50 @@ namespace Octans
                 return ambient;
             }
 
-            var lightV = (light.Position - worldPoint).Normalize();
-            var lightDotNormal = lightV % normalVector;
-
-            if (!(lightDotNormal >= 0f))
+            Color sum = Colors.Black;
+            foreach(var lightPoint in light.SamplePoints)
             {
-                return ambient;
+                var lightV = (lightPoint - worldPoint).Normalize();
+                var lightDotNormal = lightV % normalVector;
+
+                if (lightDotNormal >= 0f)
+                {
+                    var diffuse = effectiveColor * m.Diffuse * lightDotNormal;
+                    sum += diffuse;
+
+                    var reflectV = -lightV.Reflect(normalVector);
+                    var reflectDotEye = reflectV % eyeVector;
+                    if (reflectDotEye > 0f)
+                    {
+                        var factor = MathF.Pow(reflectDotEye, m.Shininess);
+                        var specular = light.Intensity * m.Specular * factor;
+                        sum += specular;
+                    }
+                }
             }
 
-            var diffuse = effectiveColor * m.Diffuse * lightDotNormal;
+            return ambient + (sum / light.Samples) * intensity;
 
-            var reflectV = -lightV.Reflect(normalVector);
-            var reflectDotEye = reflectV % eyeVector;
-            if (!(reflectDotEye > 0f))
-            {
-                return ambient + diffuse * intensity;
-            }
+            //var lightV = (light.Position - worldPoint).Normalize();
+            //var lightDotNormal = lightV % normalVector;
 
-            var factor = MathF.Pow(reflectDotEye, m.Shininess);
-            var specular = light.Intensity * m.Specular * factor;
-            return ambient + (diffuse + specular) * intensity;
+            //if (!(lightDotNormal >= 0f))
+            //{
+            //    return ambient;
+            //}
+
+            //var diffuse = effectiveColor * m.Diffuse * lightDotNormal;
+
+            //var reflectV = -lightV.Reflect(normalVector);
+            //var reflectDotEye = reflectV % eyeVector;
+            //if (!(reflectDotEye > 0f))
+            //{
+            //    return ambient + diffuse * intensity;
+            //}
+
+            //var factor = MathF.Pow(reflectDotEye, m.Shininess);
+            //var specular = light.Intensity * m.Specular * factor;
+            //return ambient + (diffuse + specular) * intensity;
         }
 
         public static Color HitColor(World world, in IntersectionInfo info, int remaining = 5)

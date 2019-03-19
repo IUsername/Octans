@@ -9,9 +9,9 @@ namespace Octans
     {
         private static void Main(string[] args)
         {
-            TestRender();
+            //TestRender();
             //TeapotTest();
-            //SolidTestRender();
+            SolidTestRender();
         }
 
         private static Solid RoundedCube(float radius, Material mat)
@@ -175,21 +175,31 @@ namespace Octans
             d3.SetTransform(Transforms.RotateY(0.5f).TranslateY(1f).TranslateX(-4f).TranslateZ(1f).Scale(0.5f));
             d4.SetTransform(Transforms.RotateY(-0.2f).TranslateY(3f).TranslateX(0.2f).TranslateZ(1.25f).Scale(0.5f));
 
+            var lightGray = new Color(0.6f,0.6f,0.6f);
+            var darkGray = new Color(0.4f,0.4f,0.4f);
+            var s1 = new StripePattern(lightGray, darkGray);
+            var s2 = new StripePattern(lightGray, darkGray);
+            s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            var pattern = new BlendedCompositePattern(s1, s2);
+            pattern.SetTransform(Transforms.Scale(1f / 20f));
+
             var floor = new Cube
             {
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0f, 0.2f, 0f)),
+                    Pattern = pattern,
                     Specular = 0.1f,
                     Diffuse = 0.3f,
-                    Reflective = 0.1f
+                    Reflective = 0.15f,
+                    Ambient = 0f
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1f).Scale(20f));
 
             var w = new World();
             //w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
-            w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1,0,0), 4, new Vector(0,1,0), 3, Colors.White));
+            w.SetLights(new AreaLight(new Point(-3, 6, -4), new Vector(2f, 0, 0), 3, new Vector(0, 2f, 0), 3, new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
+            //w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1,0,0), 4, new Vector(0,1,0), 3, Colors.White));
             w.SetObjects(floor, d1, d2, d3, d4);
 
             var x = 600;
@@ -232,7 +242,7 @@ namespace Octans
             floor.SetTransform(Transforms.TranslateY(-1).Scale(20f));
 
             var middle = new Sphere
-                {Material = {Pattern = perlin, Diffuse = 0.7f, Specular = 0.8f, Reflective = 0.4f, Shininess = 300}};
+                {Material = {Pattern = perlin, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600}};
             middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.1f));
 
             var right = new Sphere
@@ -280,7 +290,7 @@ namespace Octans
                 Minimum = 0f,
                 Maximum = 3f,
                 IsClosed = true,
-                Material = {Reflective = 0.8f, Specular = 0.8f, Diffuse = 0.4f, Ambient = 0.1f, Shininess = 200}
+                Material = {Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.01f, Shininess = 100}
             };
             cylinder.SetTransform(Transforms.Translate(-3f, 0f, 3.5f));
 
@@ -343,8 +353,7 @@ namespace Octans
             gf.AddChild(floor);
 
             var w = new World();
-            w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1, 0, 0), 4, new Vector(0, 1, 0), 3, Colors.White, new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
-            //w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
+            w.SetLights(new AreaLight(new Point(-2, 4, -7), new Vector(0.01f, 0, 0), 2, new Vector(0, 0.4f, 0), 4, new Color(1.4f,1.4f,1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             w.SetObjects(gt, gf);
 
             var x = 1200;
