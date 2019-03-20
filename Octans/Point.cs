@@ -24,6 +24,8 @@ namespace Octans
         {
         }
 
+        public float Magnitude() => MathF.Sqrt(X * X + Y * Y + Z * Z + W * W);
+
         public Point Add(in Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
 
         public Vector Subtract(in Point t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);

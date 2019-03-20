@@ -13,6 +13,12 @@ namespace Octans.ConsoleApp
             var pattern = new BlendedCompositePattern(s1, s2);
             pattern.SetTransform(Transforms.Scale(1f / 20f));
 
+            var checks = new UVCheckers(8, 4, new Color(0, 0.9f, 0), new Color(0, 0.5f, 0));
+            var checkMap = new TextureMap(checks, UVMapping.Cylindrical);
+
+            var testPtrn = new UVAlignTestPattern(Colors.White, Colors.Red, Colors.Yellow, Colors.Green, Colors.Blue);
+            var testMap = new TextureMap(testPtrn, UVMapping.Cylindrical);
+
             var stripe = new StripePattern(new Color(0.9f, 0, 0), new Color(0.0f, 0.0f, 0.9f));
             stripe.SetTransform(Transforms.Scale(0.25f, 0.25f, 0.25f).RotateY(MathF.PI / 4));
             var perlin = new PerlinRippleCompositePattern(stripe, 0.8f);
@@ -37,7 +43,7 @@ namespace Octans.ConsoleApp
             {
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
+                    Pattern = new TextureMap(new UVCheckers(20,10, Colors.Black, Colors.White), UVMapping.Spherical ), Diffuse = 0.7f, Specular = 0.3f,
                     Reflective = 0.2f
                 }
             };
@@ -78,7 +84,7 @@ namespace Octans.ConsoleApp
                 Minimum = 0f,
                 Maximum = 3f,
                 IsClosed = true,
-                Material = {Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.01f, Shininess = 100}
+                Material = {Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.01f, Shininess = 100, Pattern = testMap }
             };
             cylinder.SetTransform(Transforms.Translate(-3f, 0f, 3.5f));
 
@@ -125,6 +131,7 @@ namespace Octans.ConsoleApp
             gl.AddChild(left);
             gl.AddChild(cylinder);
             gl.AddChild(s);
+            gl.AddChild(right);
 
 
             gl.AddChild(cube);
@@ -140,8 +147,8 @@ namespace Octans.ConsoleApp
                                       new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             w.SetObjects(gl);
 
-            var x = 1200;
-            var y = 800;
+            var x = 600;
+            var y = 400;
             var c = new Camera(x, y, MathF.PI / 3f);
             c.SetTransform(Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0)));
 

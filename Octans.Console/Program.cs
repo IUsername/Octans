@@ -4,10 +4,10 @@
     {
         private static void Main(string[] args)
         {
-            //TestScenes.TestRender();
+            TestScenes.TestRender();
             //TestScenes.TeapotTest();
             //TestScenes.SolidTestRender();
-            TestScenes.LowPolyTeapotTest();
+            //TestScenes.LowPolyTeapotTest();
             System.Console.ReadKey();
         }
     }
