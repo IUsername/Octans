@@ -89,7 +89,6 @@ namespace Octans.ConsoleApp
             return s;
         }
 
-
         private static Solid CutPips(Solid solid, Material material)
         {
             Sphere PipSphere(Point point, Material mat)
@@ -137,6 +136,18 @@ namespace Octans.ConsoleApp
             solid = Diff(solid, PipSphere(new Point(-0.4f, -0.4f, offset), material));
 
             return solid;
+        }
+
+        private static CubeMap CreateTestCubeMap()
+        {
+            var orange = new Color(1f, 0.5f, 0f);
+            var left = new UVAlignTestPattern(Colors.Yellow, Colors.Cyan, Colors.Red, Colors.Blue, orange);
+            var front = new UVAlignTestPattern(Colors.Cyan, Colors.Red, Colors.Yellow, orange, Colors.Green);
+            var right = new UVAlignTestPattern(Colors.Red, Colors.Yellow, Colors.Magenta, Colors.Green, Colors.White);
+            var back = new UVAlignTestPattern(Colors.Green, Colors.Magenta, Colors.Cyan, Colors.White, Colors.Blue);
+            var top = new UVAlignTestPattern(orange, Colors.Cyan, Colors.Magenta, Colors.Red, Colors.Yellow);
+            var bottom = new UVAlignTestPattern(Colors.Magenta, orange, Colors.Green, Colors.Blue, Colors.White);
+            return new CubeMap(left, front, right, back, top, bottom);
         }
 
         private static void ApplyMaterialToChildren(Group group, Material material)
