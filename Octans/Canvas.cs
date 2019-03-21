@@ -15,14 +15,14 @@
 
         public int Height { get; }
 
-        public void WritePixel(Color c, int x, int y)
+        public void WritePixel(in Color c, int x, int y)
         {
             _data[x, y] = c;
         }
 
         public Color PixelAt(int x, int y) => _data[x, y];
 
-        public void SetAllPixels(Color c)
+        public void SetAllPixels(in Color c)
         {
             for (var j = 0; j < Height; j++)
             {

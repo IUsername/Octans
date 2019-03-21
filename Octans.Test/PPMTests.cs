@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using FluentAssertions;
 using Xunit;
 
@@ -73,6 +74,80 @@ namespace Octans.Test
             }
 
             PPM.ToFile(c, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "projectile");
+        }
+
+        [Fact]
+        public void MustBePPMTypeThreeToImport()
+        {
+            var ppm = @"P32
+1 1
+255
+0 0 0";
+            var action = new Action(() => PPM.Parse(ppm));
+            action.Should().Throw<FileLoadException>();
+        }
+
+        [Fact]
+        public void CreatesCanvasWithProperDimensions()
+        {
+            var ppm = @"P3
+10 2
+255
+0 0 0  0 0 0  0 0 0  0 0 0  0 0 0
+0 0 0  0 0 0  0 0 0  0 0 0  0 0 0
+0 0 0  0 0 0  0 0 0  0 0 0  0 0 0
+0 0 0  0 0 0  0 0 0  0 0 0  0 0 0";
+            var canvas = PPM.Parse(ppm);
+            canvas.Width.Should().Be(10);
+            canvas.Height.Should().Be(2);
+        }
+
+        [Fact]
+        public void ProperlyScalesPixelColor()
+        {
+            var ppm = @"P3
+4 3
+255
+255 127 0  0 127 255  127 255 0  255 255 255
+0 0 0  255 0 0  0 255 0  0 0 255
+255 255 0  0 255 255  255 0 255  127 127 127";
+            var canvas = PPM.Parse(ppm);
+            canvas.PixelAt(0, 0).Should().Be(new Color(1, 0.498f, 0));
+            canvas.PixelAt(3, 0).Should().Be(new Color(1, 1, 1));
+            canvas.PixelAt(2, 1).Should().Be(new Color(0, 1, 0));
+            canvas.PixelAt(0, 2).Should().Be(new Color(1, 1, 0));
+            canvas.PixelAt(3, 2).Should().Be(new Color(0.498f, 0.498f, 0.498f));
+        }
+
+        [Fact]
+        public void HandlesComments()
+        {
+            var ppm = @"P3
+# this is a comment
+2 1
+# this, too
+255
+# another comment
+255 255 255
+# oh, no, comments in the pixel data!
+255 0 255";
+            var canvas = PPM.Parse(ppm);
+            canvas.PixelAt(0, 0).Should().Be(new Color(1, 1, 1));
+            canvas.PixelAt(1, 0).Should().Be(new Color(1, 0, 1));
+        }
+
+        [Fact]
+        public void HandlesColorDataOnDifferentLines()
+        {
+            var ppm = @"P3
+1 1
+255
+51
+153
+
+204";
+            var canvas = PPM.Parse(ppm);
+            canvas.PixelAt(0, 0).Should().Be(new Color(0.2f, 0.6f, 0.8f));
         }
     }
 }

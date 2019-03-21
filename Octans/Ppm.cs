@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using Pidgin;
 
 namespace Octans
 {
-    public static class PPM
+    public static partial class PPM
     {
         private const int MaxValue = 255;
         private const int MaxLineWidth = 70;
@@ -74,6 +75,7 @@ namespace Octans
 
         public static void ToFile(Canvas c, string folderPath, string fileName)
         {
+            // TODO: File streaming
             File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), CanvasToPPM(c));
         }
     }

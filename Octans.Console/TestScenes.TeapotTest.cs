@@ -9,15 +9,8 @@ namespace Octans.ConsoleApp
     {
         public static void TeapotTest()
         {
-            var path = AppDomain.CurrentDomain.BaseDirectory;
-            var pathItems = path.Split(Path.DirectorySeparatorChar);
-            var pos = pathItems.Reverse().ToList().FindIndex(d => string.Equals("bin", d));
-            var projectPath = string.Join(Path.DirectorySeparatorChar.ToString(),
-                                          pathItems.Take(pathItems.Length - pos - 1));
-
-
             //path = Path.Combine(projectPath, "teapot-low.obj");
-            path = Path.Combine(projectPath, "teapot.obj");
+            var path = Path.Combine(GetExecutionPath(), "teapot.obj");
 
 
             Console.WriteLine("Loading file {0}...", path);
@@ -81,13 +74,7 @@ namespace Octans.ConsoleApp
 
         public static void LowPolyTeapotTest()
         {
-            var path = AppDomain.CurrentDomain.BaseDirectory;
-            var pathItems = path.Split(Path.DirectorySeparatorChar);
-            var pos = pathItems.Reverse().ToList().FindIndex(p => string.Equals("bin", p));
-            var projectPath = string.Join(Path.DirectorySeparatorChar.ToString(),
-                                          pathItems.Take(pathItems.Length - pos - 1));
-
-            path = Path.Combine(projectPath, "teapot-low.obj");
+            var path = Path.Combine(GetExecutionPath(), "teapot-low.obj");
             var data = ObjFile.ParseFile(path);
             var tris = data.Groups[0];
             tris.SetTransform(Transforms.Scale(0.1f).RotateX(-MathF.PI / 2f));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace Octans.ConsoleApp
 {
@@ -13,16 +14,18 @@ namespace Octans.ConsoleApp
             var pattern = new BlendedCompositePattern(s1, s2);
             pattern.SetTransform(Transforms.Scale(1f / 20f));
 
-            var checks = new UVCheckers(8, 4, new Color(0, 0.9f, 0), new Color(0, 0.5f, 0));
-            var checkMap = new TextureMap(checks, UVMapping.Cylindrical);
-
             var testPattern = new UVAlignTestPattern(Colors.White, Colors.Red, Colors.Yellow, Colors.Green, Colors.Blue);
             var testMap = new TextureMap(testPattern, UVMapping.Cylindrical);
 
-            var stripe = new StripePattern(new Color(0.9f, 0, 0), new Color(0.0f, 0.0f, 0.9f));
-            stripe.SetTransform(Transforms.Scale(0.25f, 0.25f, 0.25f).RotateY(MathF.PI / 4));
-            var perlin = new PerlinRippleCompositePattern(stripe, 0.8f);
-            perlin.SetTransform(Transforms.Scale(0.1f, 0.1f, 0.1f));
+            //var stripe = new StripePattern(new Color(0.9f, 0, 0), new Color(0.0f, 0.0f, 0.9f));
+            //stripe.SetTransform(Transforms.Scale(0.25f, 0.25f, 0.25f).RotateY(MathF.PI / 4));
+            //var perlin = new PerlinRippleCompositePattern(stripe, 0.8f);
+            //perlin.SetTransform(Transforms.Scale(0.1f, 0.1f, 0.1f));
+
+            var worldFilePath = Path.Combine(GetExecutionPath(), "world.ppm");
+            var worldCanvas = PPM.ParseFile(worldFilePath);
+            var worldTexture = new UVImage(worldCanvas);
+            var worldPattern = new TextureMap(worldTexture, UVMapping.Spherical);
 
             var floor = new Cube
             {
@@ -36,8 +39,8 @@ namespace Octans.ConsoleApp
             floor.SetTransform(Transforms.TranslateY(-1).Scale(20f));
 
             var middle = new Sphere
-                {Material = {Pattern = perlin, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600}};
-            middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.1f));
+                {Material = {Pattern = worldPattern, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600}};
+            middle.SetTransform(Transforms.RotateY(1.5f).Translate(-0.5f, 1f, 0.1f));
 
             var right = new Sphere
             {
@@ -48,7 +51,7 @@ namespace Octans.ConsoleApp
                     Reflective = 0.2f
                 }
             };
-            right.SetTransform(Transforms.Translate(1.5f, 0.5f, -0.5f) * Transforms.Scale(0.5f, 0.5f, 0.5f));
+            right.SetTransform(Transforms.Translate(0.25f, 0.25f, -0.75f) * Transforms.Scale(0.25f));
 
             var left = new Sphere
             {
@@ -137,12 +140,9 @@ namespace Octans.ConsoleApp
             gl.AddChild(cylinder);
             gl.AddChild(s);
             gl.AddChild(right);
-
-
             gl.AddChild(cube);
             gl.AddChild(cone);
             gl.AddChild(t);
-
             gl.AddChild(floor);
 
             gl.Divide(1);
