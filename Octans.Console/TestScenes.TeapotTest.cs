@@ -66,7 +66,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("Rendering at {0}x{1}...", x, y);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.Render(w);
+            var canvas = c.RenderAAA2(w);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
