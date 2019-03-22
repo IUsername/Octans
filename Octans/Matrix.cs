@@ -175,12 +175,6 @@ namespace Octans
         }
 
         [Pure]
-        private static Matrix ToMatrix(in Point t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
-
-        [Pure]
-        private static Matrix ToMatrix(in Vector t) => new Matrix(new[] {t.X}, new[] {t.Y}, new[] {t.Z}, new[] {t.W});
-
-        [Pure]
         private static Point ToPoint(in Matrix m) => new Point(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
 
         [Pure]
@@ -221,6 +215,7 @@ namespace Octans
 
             return m;
         }
+        
 
         [Pure]
         public static float Determinant(in Matrix m)
@@ -318,11 +313,82 @@ namespace Octans
 
         public Matrix Inverse() => Inverse(this);
 
-        private static Point OpMultiplyPoint(in Matrix left, in Point right) =>
-            left._isIdentity ? right : ToPoint(Multiply(in left, ToMatrix(in right)));
+        private static readonly ObjectPool<Matrix> ColMatPool = new ObjectPool<Matrix>(() => new Matrix(new[] { 0f }, new[] { 0f }, new[] { 0f }, new[] { 0f }));
+        private static readonly ObjectPool<Matrix> TransformMatPool = new ObjectPool<Matrix>(() => new Matrix(4, 4));
 
-        private static Vector OpMultiplyVector(in Matrix left, in Vector right) =>
-            left._isIdentity ? right : ToVector(Multiply(in left, ToMatrix(in right)));
+        private static Matrix ColMatFromPool(float x, float y, float z, float w)
+        {
+            var m = ColMatPool.GetObject();
+            m._data[0, 0] = x;
+            m._data[1, 0] = y;
+            m._data[2, 0] = z;
+            m._data[3, 0] = w;
+            return m;
+        }
+
+        private static void ReturnColMat(Matrix m)
+        {
+            ColMatPool.PutObject(m);
+        }
+
+        private static void ReturnTransformMatPool(Matrix m)
+        {
+            TransformMatPool.PutObject(m);
+        }
+
+        [Pure]
+        private static Matrix MultiplyTransformPool(in Matrix a, in Matrix b)
+        {
+            if (a.Columns != 4 && a.Rows != 4)
+            {
+                throw new InvalidOperationException("Pool only holds 4x4 matrices");
+            }
+            if (a.Columns != b.Rows)
+            {
+                throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
+            }
+
+            var m = TransformMatPool.GetObject();
+            for (var r = 0; r < a.Rows; r++)
+            {
+                for (var c = 0; c < b.Columns; c++)
+                {
+                    var temp = 0.0f;
+                    for (var k = 0; k < a.Columns; k++)
+                    {
+                        temp += a[r, k] * b[k, c];
+                    }
+
+                    m._data[r, c] = temp;
+                }
+            }
+
+            return m;
+        }
+
+        [Pure]
+        private static Point OpMultiplyPoint(in Matrix left, in Point right)
+        {
+            if (left._isIdentity) return right;
+            var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
+            var m = MultiplyTransformPool(in left, in rMat);
+            var p = ToPoint(in m);
+            ReturnColMat(rMat);
+            ReturnTransformMatPool(m);
+            return p;
+        }
+
+        [Pure]
+        private static Vector OpMultiplyVector(in Matrix left, in Vector right)
+        {
+            if (left._isIdentity) return right;
+            var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
+            var m = MultiplyTransformPool(in left, in rMat);
+            var v = ToVector(in m);
+            ReturnColMat(rMat);
+            ReturnTransformMatPool(m);
+            return v;
+        }
 
         [Pure]
         public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);
