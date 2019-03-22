@@ -11,7 +11,7 @@
         public Color A { get; }
         public Color B { get; }
 
-        public override Color LocalColorAt(Point localPoint)
+        public override Color LocalColorAt(in Point localPoint)
         {
             // Normalize from 0 to 1.
             var noise = (Perlin.Noise(localPoint.X, localPoint.Y, localPoint.Z) + 1f) / 2f;

@@ -1,17 +1,15 @@
-﻿using System.Collections.Generic;
-
-namespace Octans
+﻿namespace Octans
 {
     public readonly struct IntersectionInfo
     {
-        public IntersectionInfo(Intersection intersection, Ray ray) : this(intersection, ray, new[] {intersection})
+        public IntersectionInfo(Intersection intersection, Ray ray) : this(intersection, ray, Intersections.Create(intersection))
         {
         }
 
         public IntersectionInfo(
             Intersection intersection,
             Ray ray,
-            IEnumerable<Intersection> intersections)
+            IIntersections intersections)
         {
             T = intersection.T;
             Shape = intersection.Shape;
@@ -33,37 +31,7 @@ namespace Octans
             UnderPoint = Point - offset;
             Reflect = Vector.Reflect(in ray.Direction, in Normal);
 
-            N1 = 1.0f;
-            N2 = 1.0f;
-
-            // TODO: Optimize
-            var containers = new List<Intersection>();
-            foreach (var current in intersections)
-            {
-                var isCurrent = current == intersection;
-                if (isCurrent && containers.Count > 0)
-                {
-                    N1 = containers[containers.Count - 1].Shape.Material.RefractiveIndex;
-                }
-
-                var removed = containers.RemoveAll(i => ReferenceEquals(current.Shape, i.Shape));
-                if (removed == 0)
-                {
-                    containers.Add(current);
-                }
-
-                if (!isCurrent)
-                {
-                    continue;
-                }
-
-                if (containers.Count > 0)
-                {
-                    N2 = containers[containers.Count - 1].Shape.Material.RefractiveIndex;
-                }
-
-                break;
-            }
+            (N1, N2) = IntersectionCalculations.DetermineN1N2(in intersection, in intersections);
         }
 
         public readonly float T;

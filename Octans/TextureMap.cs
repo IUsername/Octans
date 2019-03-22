@@ -11,13 +11,13 @@
         public ITextureSource Texture { get; }
         public PointToUV Map { get; }
 
-        public Color PatternAt(Point point)
+        public Color PatternAt(in Point point)
         {
-            var (u, v) = Map(point);
+            var (u, v) = Map(in point);
             return Texture.PatternAt(u, v);
         }
 
 
-        public override Color LocalColorAt(Point localPoint) => PatternAt(localPoint);
+        public override Color LocalColorAt(in Point localPoint) => PatternAt(in localPoint);
     }
 }

@@ -36,7 +36,7 @@ namespace Octans.Test
             var g = new Group();
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var xs = g.LocalIntersects(r);
-            xs.Should().BeEmpty();
+            xs.Count.Should().Be(0);
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Octans.Test
             g.AddChild(s);
             var r = new Ray(new Point(10, 0, -10), new Vector(0, 0, 1));
             var xs = g.Intersects(r);
-            xs.Should().HaveCount(2);
+            xs.Count.Should().Be(2);
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace Octans.Test
             g.AddChild(c);
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var intersects = g.Intersects(r);
-            intersects.Should().HaveCount(0);
+            intersects.Count.Should().Be(0);
         }
 
         [Fact]

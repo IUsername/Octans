@@ -34,7 +34,9 @@ namespace Octans
             var intersections = Intersections.Builder();
             foreach (var child in _children)
             {
-                intersections.AddRange(child.Intersects(in localRay));
+                var xs = child.Intersects(in localRay);
+                intersections.AddRange(in xs);
+                xs.Return();
             }
 
             return intersections.ToIntersections();

@@ -11,7 +11,7 @@
         public IPattern BasePattern { get; }
         public float Perturbation { get; }
 
-        public override Color LocalColorAt(Point localPoint)
+        public override Color LocalColorAt(in Point localPoint)
         {
             var x = Perlin.Noise(localPoint.X, localPoint.Y, localPoint.Z);
             var y = Perlin.Noise(localPoint.Z, localPoint.X, localPoint.Y);
@@ -20,7 +20,7 @@
 
             var global = Transform * (localPoint + offset);
             var baseLocal = BasePattern.TransformInverse() * global;
-            return BasePattern.LocalColorAt(baseLocal);
+            return BasePattern.LocalColorAt(in baseLocal);
         }
     }
 }

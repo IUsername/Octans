@@ -13,7 +13,7 @@ namespace Octans
         public Color A { get; }
         public Color B { get; }
 
-        public override Color LocalColorAt(Point localPoint)
+        public override Color LocalColorAt(in Point localPoint)
         {
             var distance = B - A;
             var fraction = localPoint.X - MathF.Floor(localPoint.X);

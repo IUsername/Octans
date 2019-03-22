@@ -11,13 +11,13 @@
         public IPattern A { get; }
         public IPattern B { get; }
 
-        public override Color LocalColorAt(Point localPoint)
+        public override Color LocalColorAt(in Point localPoint)
         {
             var aLocal = A.TransformInverse() * localPoint;
-            var a = A.LocalColorAt(aLocal);
+            var a = A.LocalColorAt(in aLocal);
 
             var bLocal = B.TransformInverse() * localPoint;
-            var b = B.LocalColorAt(bLocal);
+            var b = B.LocalColorAt(in bLocal);
 
             return (a + b) / 2f;
         }

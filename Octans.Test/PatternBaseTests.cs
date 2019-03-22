@@ -51,6 +51,6 @@ namespace Octans.Test
 
     internal class TestPattern : PatternBase
     {
-        public override Color LocalColorAt(Point localPoint) => new Color(localPoint.X, localPoint.Y, localPoint.Z);
+        public override Color LocalColorAt(in Point localPoint) => new Color(localPoint.X, localPoint.Y, localPoint.Z);
     }
 }

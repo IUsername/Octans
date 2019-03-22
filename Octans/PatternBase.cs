@@ -23,7 +23,7 @@
 
         public Matrix TransformInverse() => _inverse;
 
-        public abstract Color LocalColorAt(Point localPoint);
+        public abstract Color LocalColorAt(in Point localPoint);
 
         public void SetTransform(Matrix transform)
         {

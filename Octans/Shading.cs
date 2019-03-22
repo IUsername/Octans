@@ -6,21 +6,20 @@ namespace Octans
     {
         public static bool IsShadowed(World w, Point p, Point lightPoint)
         {
-            // TODO: Only supports one light.
-            //var light = w.Lights[0];
             var v = lightPoint - p;
             var distance = v.Magnitude();
             var direction = v.Normalize();
             var r = new Ray(p, direction);
-            var xs = w.Intersect(r);
+            var xs = w.Intersect(in r);
             var h = xs.Hit(true);
+            xs.Return();
             return h.HasValue && h.Value.T < distance;
         }
 
         public static Color ShapeColor(this IPattern pattern, IShape shape, Point worldPoint)
         {
             var local = worldPoint.ToLocal(shape, pattern);
-            return pattern.LocalColorAt(local);
+            return pattern.LocalColorAt(in local);
         }
 
         public static Color Lighting(Material m,
@@ -116,8 +115,9 @@ namespace Octans
 
         public static Color ColorAt(World world, in Ray ray, int remaining = 5)
         {
-            var xs = world.Intersect(ray);
+            var xs = world.Intersect(in ray);
             var hit = xs.Hit();
+            xs.Return();
             if (!hit.HasValue)
             {
                 return Colors.Black;

@@ -19,7 +19,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.LocalIntersects(r);
-            xs.Should().HaveCount(2);
+            xs.Count.Should().Be(2);
             xs[0].T.Should().Be(4.0f);
             xs[1].T.Should().Be(6.0f);
             xs[0].Shape.Should().Be(s);
@@ -32,7 +32,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 2, -5), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.LocalIntersects(r);
-            xs.Should().HaveCount(0);
+            xs.Count.Should().Be(0);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.LocalIntersects(r);
-            xs.Should().HaveCount(2);
+            xs.Count.Should().Be(2);
             xs[0].T.Should().Be(-1.0f);
             xs[1].T.Should().Be(1.0f);
         }
@@ -52,7 +52,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, 5), new Vector(0, 0, 1));
             var s = new Sphere();
             var xs = s.LocalIntersects(r);
-            xs.Should().HaveCount(2);
+            xs.Count.Should().Be(2);
             xs[0].T.Should().Be(-6.0f);
             xs[1].T.Should().Be(-4.0f);
         }

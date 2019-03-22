@@ -90,9 +90,9 @@ namespace Octans.Test
             );
 
             var comps = new List<IntersectionInfo>();
-            foreach (var intersection in xs)
+            for(var i=0; i<xs.Count; i++)
             {
-                comps.Add(new IntersectionInfo(intersection, r, xs));
+                comps.Add(new IntersectionInfo(xs[i], r, xs));
             }
 
             comps[0].N1.Should().Be(1.0f);

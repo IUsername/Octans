@@ -51,7 +51,7 @@ namespace Octans.Test
             var n = new Vector(0, 1, 1).Normalize();
             var r = new Ray(new Point(0, 0, -1), n);
             var xs = c.LocalIntersects(r);
-            xs.Should().HaveCount(1);
+            xs.Count.Should().Be(1);
             xs[0].T.Should().BeApproximately(0.35355f, 0.0001f);
         }
 

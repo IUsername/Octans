@@ -9,6 +9,6 @@
 
         public Color Color { get; }
 
-        public override Color LocalColorAt(Point localPoint) => Color;
+        public override Color LocalColorAt(in Point localPoint) => Color;
     }
 }

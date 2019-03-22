@@ -29,9 +29,16 @@ namespace Octans
             }
 
             var builder = Intersections.Builder();
-            builder.AddRange(Left.Intersects(in localRay));
-            builder.AddRange(Right.Intersects(in localRay));
-            return FilterIntersections(builder.ToIntersections());
+            var left = Left.Intersects(in localRay);
+            var right = Right.Intersects(in localRay);
+            builder.AddRange(in left);
+            builder.AddRange(in right);
+            var xs = builder.ToIntersections();
+            var result = FilterIntersections(in xs);
+            left.Return();
+            right.Return();
+            xs.Return();
+            return result;
         }
 
         public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>

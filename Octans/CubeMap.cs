@@ -24,7 +24,7 @@
         public ITextureSource Top { get; }
         public ITextureSource Bottom { get; }
 
-        public override Color LocalColorAt(Point localPoint)
+        public override Color LocalColorAt(in Point localPoint)
         {
             var face = UVMapping.PointToCubeFace(in localPoint);
             float u, v;

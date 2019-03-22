@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace Octans.ConsoleApp
 {
@@ -9,9 +8,7 @@ namespace Octans.ConsoleApp
     {
         public static void TeapotTest()
         {
-            //path = Path.Combine(projectPath, "teapot-low.obj");
             var path = Path.Combine(GetExecutionPath(), "teapot.obj");
-
 
             Console.WriteLine("Loading file {0}...", path);
 
@@ -21,10 +18,10 @@ namespace Octans.ConsoleApp
             var triangulated = data.Groups[0];
             triangulated.SetTransform(Transforms.Scale(0.10f).RotateX(-MathF.PI / 2f).RotateY(MathF.PI / 8f));
 
-            var chrome = new Material
+            var glass = new Material
             {
-                Pattern = new SolidColor(new Color(0.8f, 0.8f, 0.9f)),
-                Reflective = 0.95f,
+                Pattern = new SolidColor(new Color(0.8f, 0.8f, 0.8f)),
+                Reflective = 0.98f,
                 RefractiveIndex = 0.86f,
                 Transparency = 0.93f,
                 Ambient = 0.02f,
@@ -33,8 +30,7 @@ namespace Octans.ConsoleApp
                 Specular = 0.9f
             };
 
-            ApplyMaterialToChildren(triangulated, chrome);
-
+            ApplyMaterialToChildren(triangulated, glass);
 
             var checkerboard = new Material
             {
@@ -66,7 +62,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("Rendering at {0}x{1}...", x, y);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.RenderAAA2(w);
+            var canvas = c.Render(w,4);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -76,8 +72,8 @@ namespace Octans.ConsoleApp
         {
             var path = Path.Combine(GetExecutionPath(), "teapot-low.obj");
             var data = ObjFile.ParseFile(path);
-            var tris = data.Groups[0];
-            tris.SetTransform(Transforms.Scale(0.1f).RotateX(-MathF.PI / 2f));
+            var triangulated = data.Groups[0];
+            triangulated.SetTransform(Transforms.Scale(0.1f).RotateX(-MathF.PI / 2f));
 
             var material = new Material
             {
@@ -93,7 +89,7 @@ namespace Octans.ConsoleApp
             fg.AddChild(floor);
             fg.SetTransform(Transforms.TranslateY(-1).Scale(1f));
 
-            var g = new Group(fg, tris);
+            var g = new Group(fg, triangulated);
             g.Divide(1);
 
             var w = new World();

@@ -13,7 +13,7 @@ namespace Octans
         public Color A { get; }
         public Color B { get; }
 
-        public override Color LocalColorAt(Point localPoint) =>
+        public override Color LocalColorAt(in Point localPoint) =>
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             (MathF.Floor(localPoint.X) + MathF.Floor(localPoint.Y) + MathF.Floor(localPoint.Z)) % 2f == 0f ? A : B;
     }

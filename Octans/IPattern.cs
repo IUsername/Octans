@@ -4,7 +4,7 @@
     {
         Matrix Transform { get; }
         Matrix TransformInverse();
-        Color LocalColorAt(Point localPoint);
+        Color LocalColorAt(in Point localPoint);
         void SetTransform(Matrix transform);
     }
 }

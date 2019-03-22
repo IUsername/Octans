@@ -41,7 +41,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("Rendering at {0}x{1}...", x, y);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.RenderAAA2(w);
+            var canvas = c.Render(w,0);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "mapping");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);

@@ -72,6 +72,23 @@ namespace Octans.Test
         }
 
         [Fact]
+        public void RenderToCanvasWithAdaptiveAntiAliasing()
+        {
+            var w = World.Default();
+            var c = new Camera(11, 11, MathF.PI / 2f);
+            var from = new Point(0, 0, -5);
+            var to = Point.Zero;
+            var up = new Vector(0, 1, 0);
+            c.SetTransform(Transforms.View(from, to, up));
+            var image = c.Render(w, 2, 0.03f);
+            var p = image.PixelAt(5, 5);
+            p.Should().NotBe(new Color(0.38066f, 0.47583f, 0.2855f));
+            p.Red.Should().BeApproximately(0.3429f, 0.005f);
+            p.Green.Should().BeApproximately(0.4287f, 0.005f);
+            p.Blue.Should().BeApproximately(0.2572f, 0.005f);
+        }
+
+        [Fact]
         public void SubPixelAlignToLowestDivisions()
         {
             var sp = Camera.SubPixel.Create(1, 1, 1, 1, 1);

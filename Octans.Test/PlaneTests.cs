@@ -23,7 +23,7 @@ namespace Octans.Test
             var p = new Plane();
             var r = new Ray(new Point(0, 10, 0), new Vector(0, 0, 1));
             var xs = p.LocalIntersects(r);
-            xs.Should().BeEmpty();
+            xs.Count.Should().Be(0);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Octans.Test
             var p = new Plane();
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var xs = p.LocalIntersects(r);
-            xs.Should().BeEmpty();
+            xs.Count.Should().Be(0);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Octans.Test
             var p = new Plane();
             var r = new Ray(new Point(0, 1, 0), new Vector(0, -1, 0));
             var xs = p.LocalIntersects(r);
-            xs.Should().HaveCount(1);
+            xs.Count.Should().Be(1);
             xs[0].Shape.Should().Be(p);
         }
 
@@ -51,7 +51,7 @@ namespace Octans.Test
             var p = new Plane();
             var r = new Ray(new Point(0, -1, 0), new Vector(0, 1, 0));
             var xs = p.LocalIntersects(r);
-            xs.Should().HaveCount(1);
+            xs.Count.Should().Be(1);
             xs[0].Shape.Should().Be(p);
         }
 

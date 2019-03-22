@@ -61,19 +61,19 @@ namespace Octans.Test
                                           new Intersection(4, s2));
             var c = new Solid(SolidOp.Union, s1, s2);
             var result = c.FilterIntersections(xs);
-            result.Should().HaveCount(2);
+            result.Count.Should().Be(2);
             result[0].Should().Be(xs[0]);
             result[1].Should().Be(xs[3]);
 
             c = new Solid(SolidOp.Intersection, s1, s2);
             result = c.FilterIntersections(xs);
-            result.Should().HaveCount(2);
+            result.Count.Should().Be(2);
             result[0].Should().Be(xs[1]);
             result[1].Should().Be(xs[2]);
 
             c = new Solid(SolidOp.Difference, s1, s2);
             result = c.FilterIntersections(xs);
-            result.Should().HaveCount(2);
+            result.Count.Should().Be(2);
             result[0].Should().Be(xs[0]);
             result[1].Should().Be(xs[1]);
         }
@@ -84,7 +84,7 @@ namespace Octans.Test
             var c = new Solid(SolidOp.Union, new Sphere(), new Cube());
             var r = new Ray(new Point(0, 2, -5), new Vector(0, 0, 1));
             var xs = c.LocalIntersects(in r);
-            xs.Should().BeEmpty();
+            xs.Count.Should().Be(0);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace Octans.Test
             var c = new Solid(SolidOp.Union, s1, s2);
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = c.LocalIntersects(in r);
-            xs.Should().HaveCount(2);
+            xs.Count.Should().Be(2);
             xs[0].T.Should().Be(4f);
             xs[0].Shape.Should().Be(s1);
             xs[1].T.Should().Be(6.5f);
