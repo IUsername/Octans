@@ -161,7 +161,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("Rendering at {0}x{1}...", x, y);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.Render(w, 4, 0.03f);
+            var canvas = c.Render(w, 3);
             //var canvas = c.Render(w);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene");
             stopwatch.Stop();

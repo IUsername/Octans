@@ -4,7 +4,7 @@ namespace Octans
 {
     public static class Shading
     {
-        public static bool IsShadowed(World w, Point p, Point lightPoint)
+        public static bool IsShadowed(World w, in Point p, in Point lightPoint)
         {
             var v = lightPoint - p;
             var distance = v.Magnitude();
@@ -61,27 +61,6 @@ namespace Octans
             }
 
             return ambient + sum / light.Samples * intensity;
-
-            //var lightV = (light.Position - worldPoint).Normalize();
-            //var lightDotNormal = lightV % normalVector;
-
-            //if (!(lightDotNormal >= 0f))
-            //{
-            //    return ambient;
-            //}
-
-            //var diffuse = effectiveColor * m.Diffuse * lightDotNormal;
-
-            //var reflectV = -lightV.Reflect(normalVector);
-            //var reflectDotEye = reflectV % eyeVector;
-            //if (!(reflectDotEye > 0f))
-            //{
-            //    return ambient + diffuse * intensity;
-            //}
-
-            //var factor = MathF.Pow(reflectDotEye, m.Shininess);
-            //var specular = light.Intensity * m.Specular * factor;
-            //return ambient + (diffuse + specular) * intensity;
         }
 
         public static Color HitColor(World world, in IntersectionInfo info, int remaining = 5)
@@ -106,7 +85,7 @@ namespace Octans
             var material = info.Shape.Material;
             if (material.Reflective > 0f && material.Transparency > 0f)
             {
-                var reflectance = Schlick(info);
+                var reflectance = Schlick(in info);
                 return surface + reflected * reflectance + refracted * (1f - reflectance);
             }
 
@@ -141,7 +120,7 @@ namespace Octans
             }
 
             var reflectedRay = new Ray(info.OverPoint, info.Reflect);
-            var color = ColorAt(world, reflectedRay, --remaining);
+            var color = ColorAt(world, in reflectedRay, --remaining);
             return color * reflective;
         }
 
@@ -169,7 +148,7 @@ namespace Octans
             var cosT = MathF.Sqrt(1f - sin2T);
             var direction = info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
             var refractedRay = new Ray(info.UnderPoint, direction);
-            return ColorAt(world, refractedRay, --remaining) * info.Shape.Material.Transparency;
+            return ColorAt(world, in refractedRay, --remaining) * info.Shape.Material.Transparency;
         }
 
         public static float Schlick(in IntersectionInfo info)
@@ -202,7 +181,7 @@ namespace Octans
             switch (light)
             {
                 case PointLight _:
-                    return IsShadowed(world, point, light.Position) ? 0.0f : 1.0f;
+                    return IsShadowed(world, in point, light.Position) ? 0.0f : 1.0f;
                 case AreaLight area:
                 {
                     var total = 0.0f;
@@ -210,7 +189,7 @@ namespace Octans
                     {
                         for (var u = 0; u < area.USteps; u++)
                         {
-                            if (!IsShadowed(world, point, area.UVPoint(u, v)))
+                            if (!IsShadowed(world, in point, area.UVPoint(u, v)))
                             {
                                 total += 1.0f;
                             }
