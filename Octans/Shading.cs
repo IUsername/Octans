@@ -171,6 +171,7 @@ namespace Octans
                 cos = cosT;
             }
 
+            // r0 == F0 - equivalent refractive index
             var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
             r0 *= r0;
             return r0 + (1f - r0) * MathF.Pow(1 - cos, 5);

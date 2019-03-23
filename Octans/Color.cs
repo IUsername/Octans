@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Octans
 {
@@ -17,17 +18,23 @@ namespace Octans
             Blue = blue;
         }
 
-        public Color Add(Color c) => new Color(Red + c.Red, Green + c.Green, Blue + c.Blue);
+        [Pure]
+        public Color Add(in Color c) => new Color(Red + c.Red, Green + c.Green, Blue + c.Blue);
 
-        public Color Subtract(Color c) => new Color(Red - c.Red, Green - c.Green, Blue - c.Blue);
+        [Pure]
+        public Color Subtract(in Color c) => new Color(Red - c.Red, Green - c.Green, Blue - c.Blue);
 
+        [Pure]
         public Color Scale(float scalar) => new Color(Red * scalar, Green * scalar, Blue * scalar);
 
+        [Pure]
         public Color Divide(float scalar) => new Color(Red / scalar, Green / scalar, Blue / scalar);
 
+        [Pure]
         public Color Negate() => new Color(-Red, -Blue, -Green);
 
-        public static Color HadamardProduct(Color c1, Color c2) =>
+        [Pure]
+        public static Color HadamardProduct(in Color c1, in Color c2) =>
             new Color(c1.Red * c2.Red, c1.Green * c2.Green, c1.Blue * c2.Blue);
 
         public bool Equals(Color other) =>
@@ -35,15 +42,15 @@ namespace Octans
             && Check.Within(Green, other.Green, Epsilon)
             && Check.Within(Blue, other.Blue, Epsilon);
 
-        public static Color operator +(Color left, Color right) => left.Add(right);
+        public static Color operator +(Color left, Color right) => left.Add(in right);
 
-        public static Color operator -(Color left, Color right) => left.Subtract(right);
+        public static Color operator -(Color left, Color right) => left.Subtract(in right);
 
         public static Color operator *(Color c, float scalar) => c.Scale(scalar);
 
         public static Color operator *(float scalar, Color c) => c.Scale(scalar);
 
-        public static Color operator *(Color c1, Color c2) => HadamardProduct(c1, c2);
+        public static Color operator *(Color c1, Color c2) => HadamardProduct(in c1, in c2);
 
         public static Color operator /(Color c, float scalar) => c.Divide(scalar);
 
@@ -72,6 +79,13 @@ namespace Octans
                 hashCode = (hashCode * 397) ^ Blue.GetHashCode();
                 return hashCode;
             }
+        }
+
+        [Pure]
+        internal static bool IsWithinTolerance(in Color a, in Color b, float tolerance)
+        {
+            var diff = a - b;
+            return MathF.Abs(diff.Red) < tolerance && MathF.Abs(diff.Green) < tolerance && MathF.Abs(diff.Blue) < tolerance;
         }
     }
 }
