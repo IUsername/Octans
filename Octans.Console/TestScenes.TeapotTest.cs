@@ -106,7 +106,7 @@ namespace Octans.ConsoleApp
             var scene = new Scene(c, new RaytracedWorld(1, w));
             var canvas = new Canvas(width, height);
 
-            Console.WriteLine("Rendering at {0}x{1}...", w, height);
+            Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             RenderContext.Render(canvas, scene);

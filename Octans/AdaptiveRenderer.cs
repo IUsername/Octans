@@ -1,4 +1,6 @@
-﻿namespace Octans
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Octans
 {
     public sealed class AdaptiveRenderer : IPixelRenderer
     {
@@ -6,21 +8,21 @@
 
         private readonly PixelSamples _samples;
 
-        public AdaptiveRenderer(int maxPasses, float tolerance, IPixelRenderer renderer)
+        public AdaptiveRenderer(int maxPasses, float maxDelta, IPixelRenderer renderer)
         {
             _renderer = renderer;
             MaxPasses = maxPasses;
-            Tolerance = tolerance;
+            MaxDelta = maxDelta;
             _samples = new PixelSamples();
         }
 
         public int MaxPasses { get; }
-        public float Tolerance { get; }
+        public float MaxDelta { get; }
 
-        public Color Render(in SubPixel sp) => RenderSubPixel(MaxPasses, Tolerance, _samples, _renderer, in sp);
+        public Color Render(in SubPixel sp) => RenderSubPixel(MaxPasses, MaxDelta, _samples, _renderer, in sp);
 
         private static Color RenderSubPixel(int remaining,
-                                            float tolerance,
+                                            float maxDelta,
                                             IPixelSamples samples,
                                             IPixelRenderer renderer,
                                             in SubPixel sp)
@@ -44,10 +46,10 @@
                 return avg;
             }
 
-            var tlc = Color.IsWithinDelta(in ctl, in avg, tolerance);
-            var trc = Color.IsWithinDelta(in ctr, in avg, tolerance);
-            var blc = Color.IsWithinDelta(in cbl, in avg, tolerance);
-            var brc = Color.IsWithinDelta(in cbr, in avg, tolerance);
+            var tlc = Color.IsWithinDelta(in ctl, in avg, maxDelta);
+            var trc = Color.IsWithinDelta(in ctr, in avg, maxDelta);
+            var blc = Color.IsWithinDelta(in cbl, in avg, maxDelta);
+            var brc = Color.IsWithinDelta(in cbr, in avg, maxDelta);
 
             if (tlc & trc & blc & brc)
             {
@@ -57,8 +59,8 @@
             var c = SubPixel.Center(in tl, in br);
             var r = remaining - 1;
 
-            // Increase the tolerance to sample further.
-            var t = tolerance;// * 1.2f;
+            //// Increase the tolerance to sample further?
+            //var t = tolerance;// * 1.2f;
 
             var shared = samples as ISharedPixelSamples;
             if (shared != null)
@@ -68,24 +70,39 @@
                 samples = shared.CreateLocalScope();
             }
 
+            var cc = samples.GetOrAdd(c, renderer);
+            var cwa = (ctl + ctr + cbl + cbr + cc) / 5f;
+
             if (!brc)
             {
-                cbr = RenderSubPixel(r, t, samples, renderer, SubPixel.Center(in br, in c));
+                if (!Color.IsWithinDelta(in cbr, in cwa, maxDelta))
+                {
+                    cbr = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in br, in c));
+                }
             }
 
             if (!blc)
             {
-                cbl = RenderSubPixel(r, t, samples, renderer, SubPixel.Center(in bl, in c));
+                if (!Color.IsWithinDelta(in cbl, in cwa, maxDelta))
+                {
+                    cbl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in bl, in c));
+                }
             }
 
             if (!trc)
             {
-                ctr = RenderSubPixel(r, t, samples, renderer, SubPixel.Center(in tr, in c));
+                if (!Color.IsWithinDelta(in ctr, in cwa, maxDelta))
+                {
+                    ctr = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tr, in c));
+                }
             }
 
             if (!tlc)
             {
-                ctl = RenderSubPixel(r, t, samples, renderer, SubPixel.Center(in tl, in c));
+                if (!Color.IsWithinDelta(in ctl, in cwa, maxDelta))
+                {
+                    ctl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tl, in c));
+                }
             }
 
             shared?.CloseLocalScope(samples);

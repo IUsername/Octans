@@ -157,8 +157,8 @@ namespace Octans.ConsoleApp
             var height = 600;
             var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var scene = new Scene(c, new RaytracedWorld(2, w));
-            var aaa = new AdaptiveRenderer(3, 0.1f, scene);
+            var scene = new Scene(c, new RaytracedWorld(3, w));
+            var aaa = new AdaptiveRenderer(3, 0.06f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);

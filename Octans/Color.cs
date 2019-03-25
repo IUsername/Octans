@@ -89,9 +89,9 @@ namespace Octans
         }
 
         [Pure]
-        internal static float ColorDelta(in Color a, in Color b)
+        public static float ColorDelta(in Color a, in Color b)
         {
-            return MathF.Sqrt(ColorDeltaSqr(in a, in b));
+            return MathF.Sqrt(ColorDeltaSqr(in a, in b)) / 3f;
         }
 
         [Pure]
@@ -107,10 +107,21 @@ namespace Octans
         }
 
         [Pure]
-        internal static bool IsWithinDelta(in Color a, in Color b, float delta)
+        public static bool IsWithinDelta(in Color a, in Color b, float delta)
         {
             var cD = ColorDeltaSqr(in a, in b);
-            return cD < delta * delta;
+            return cD < delta * delta * 9f;
         }
+
+        //[Pure]
+        //public static (float y, float u, float v) ToYUV(in Color color)
+        //{
+        //    var v = new Vector(color.Red,color.Green, color.Blue);
+        //    var r = YUVTransform * v;
+        //    return (r.X, r.Y, r.Z);
+        //}
+
+        //private static Matrix YUVTransform =
+        //    Matrix.Square(0.299f, 0.587f, 0.114f, 0f, -0.14713f, -0.28886f, 0.436f, 0f, 0.615f, -0.51499f, -0.10001f, 0f, 0f, 0f, 0f, 1f);
     }
 }
