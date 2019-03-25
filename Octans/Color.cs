@@ -87,5 +87,30 @@ namespace Octans
             var diff = a - b;
             return MathF.Abs(diff.Red) < tolerance && MathF.Abs(diff.Green) < tolerance && MathF.Abs(diff.Blue) < tolerance;
         }
+
+        [Pure]
+        internal static float ColorDelta(in Color a, in Color b)
+        {
+            return MathF.Sqrt(ColorDeltaSqr(in a, in b));
+        }
+
+        [Pure]
+        internal static float ColorDeltaSqr(in Color a, in Color b)
+        {
+            var rAvg = (a.Red + b.Red) / 2f;
+            var dR = a.Red - b.Red;
+            var dG = a.Green - b.Green;
+            var dB = a.Blue - b.Blue;
+            var rFac = (2f + rAvg / 1f);
+            var bFac = (2 + (1f - rAvg) / 1f);
+            return (rFac * dR * dR) + (4f * dG * dG) + (bFac * dB * dB);
+        }
+
+        [Pure]
+        internal static bool IsWithinDelta(in Color a, in Color b, float delta)
+        {
+            var cD = ColorDeltaSqr(in a, in b);
+            return cD < delta * delta;
+        }
     }
 }

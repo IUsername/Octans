@@ -150,7 +150,7 @@ namespace Octans.ConsoleApp
             var w = new World();
             //w.SetLights(new AreaLight(new Point(-3f, 4, -5), new Vector(1f, 0, 0), 6, new Vector(0, 0.01f, 0), 3,
             //                          new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
-            w.SetLights(new PointLight(new Point(-3.5f,4f,-5f), new Color(1.4f, 1.4f, 1.4f)));
+            w.SetLights(new PointLight(new Point(-3.5f, 4f, -5f), new Color(1.4f, 1.4f, 1.4f)));
             w.SetObjects(gl);
 
             var x = 600;
@@ -161,7 +161,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("Rendering at {0}x{1}...", x, y);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.Render(w, 3);
+            var canvas = c.Render(w, 0, 0.1f);
             //var canvas = c.Render(w);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene");
             stopwatch.Stop();

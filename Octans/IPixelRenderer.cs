@@ -17,14 +17,7 @@
 
     public interface IScene
     {
-        ICameraPosition CameraPosition { get; }
         IWorldShading World { get; }
-    }
-
-    public interface ICameraPosition
-    {
-        Matrix Transform { get; }
-        Matrix TransformInverse { get; }
     }
 
     public class RaytracedWorld : IWorldShading

@@ -44,10 +44,10 @@
                 return avg;
             }
 
-            var tlc = Color.IsWithinTolerance(in ctl, in avg, tolerance);
-            var trc = Color.IsWithinTolerance(in ctr, in avg, tolerance);
-            var blc = Color.IsWithinTolerance(in cbl, in avg, tolerance);
-            var brc = Color.IsWithinTolerance(in cbr, in avg, tolerance);
+            var tlc = Color.IsWithinDelta(in ctl, in avg, tolerance);
+            var trc = Color.IsWithinDelta(in ctr, in avg, tolerance);
+            var blc = Color.IsWithinDelta(in cbl, in avg, tolerance);
+            var brc = Color.IsWithinDelta(in cbr, in avg, tolerance);
 
             if (tlc & trc & blc & brc)
             {
@@ -58,7 +58,7 @@
             var r = remaining - 1;
 
             // Increase the tolerance to sample further.
-            var t = tolerance * 1.2f;
+            var t = tolerance;// * 1.2f;
 
             var shared = samples as ISharedPixelSamples;
             if (shared != null)

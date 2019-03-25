@@ -74,10 +74,10 @@ namespace Octans
             }
 
             var canvas = new Canvas(HSize, VSize);
-            var raytracer = new RaytracedWorld(4, world);
-            var camera = new PinholeCamera(FieldOfView, HSize, VSize);
-            var position = new CameraPosition(Transform);
-            var scene = new Scene(camera, position, raytracer);
+            var worldShading = new RaytracedWorld(4, world);
+            //var camera = new PinholeCamera(Transform, FieldOfView, HSize, VSize);
+            var camera = new ApertureCamera(FieldOfView, HSize, VSize, 0.05f, new Point(0, 1.25f, -4f), new Point(0, 1, 0), 3.5f);
+            var scene = new Scene(camera, worldShading);
             var adaptive = new AdaptiveRenderer(maxPasses, tolerance, scene);
             Parallel.ForEach(queue, p => RenderToCanvas(p.x, p.y, canvas, adaptive));
             return canvas;

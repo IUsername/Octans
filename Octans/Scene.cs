@@ -4,10 +4,9 @@
     {
         private readonly ICamera _camera;
 
-        public Scene(ICamera camera, ICameraPosition cameraPosition, IWorldShading worldShading)
+        public Scene(ICamera camera, IWorldShading worldShading)
         {
             _camera = camera;
-            CameraPosition = cameraPosition;
             World = worldShading;
         }
 
@@ -16,7 +15,6 @@
             return _camera.Render(this, in sp);
         }
 
-        public ICameraPosition CameraPosition { get; }
         public IWorldShading World { get; }
     }
 }

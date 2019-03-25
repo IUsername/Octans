@@ -38,7 +38,9 @@ namespace Octans
 
         public Vector Fraction(float scalar) => new Vector(scalar / X, scalar / Y, scalar / Z, scalar / W);
 
-        public float Magnitude() => MathF.Sqrt(X * X + Y * Y + Z * Z + W * W);
+        public float Magnitude() => MathF.Sqrt(MagSqr());
+
+        public float MagSqr() => X * X + Y * Y + Z * Z + W * W;
 
         public Vector Normalize()
         {
