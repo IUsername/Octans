@@ -5,9 +5,9 @@
         private static void Main(string[] args)
         {
             //TestScenes.MappingTestRender();
-            TestScenes.TestRender();
+            //TestScenes.TestRender();
             //TestScenes.TeapotTest();
-            //TestScenes.SolidTestRender();
+            TestScenes.SolidTestRender();
             //TestScenes.LowPolyTeapotTest();
             System.Console.ReadKey();
         }

@@ -55,16 +55,18 @@ namespace Octans.ConsoleApp
             //w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1,0,0), 4, new Vector(0,1,0), 3, Colors.White));
             w.SetObjects(g);
 
-            var x = 600;
-            var y = 400;
-            var c = new Camera(x, y, MathF.PI / 3f);
-            c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
+            var width = 600;
+            var height = 400;
+            var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
+            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
+            var scene = new Scene(c, new RaytracedWorld(2, w));
+            var aaa = new AdaptiveRenderer(4, 0.2f, scene);
+            var canvas = new Canvas(width, height);
 
-            Console.WriteLine("Rendering at {0}x{1}...", x, y);
+            Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.Render(w,3,0.2f);
-            //var canvas = c.Render(w);
+            RenderContext.Render(canvas, aaa);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "solid");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);

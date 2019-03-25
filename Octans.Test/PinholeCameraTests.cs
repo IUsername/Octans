@@ -4,12 +4,12 @@ using Xunit;
 
 namespace Octans.Test
 {
-    public class CameraTests
+    public class PinholeCameraTests
     {
         [Fact]
         public void ConstructingCamera()
         {
-            var c = new Camera(160, 120, MathF.PI / 2f);
+            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, 160, 120);
             c.HSize.Should().Be(160);
             c.VSize.Should().Be(120);
             c.FieldOfView.Should().Be(MathF.PI / 2f);
@@ -19,22 +19,22 @@ namespace Octans.Test
         [Fact]
         public void HorizontalCanvasPixelSize()
         {
-            var c = new Camera(200, 125, MathF.PI / 2f);
+            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, 200, 125);
             c.PixelSize.Should().Be(0.01f);
         }
 
         [Fact]
         public void VerticalCanvasPixelSize()
         {
-            var c = new Camera(125, 200, MathF.PI / 2f);
+            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, 125, 200);
             c.PixelSize.Should().Be(0.01f);
         }
 
         [Fact]
         public void RayThroughCenterOfCanvas()
         {
-            var c = new Camera(201, 101, MathF.PI / 2f);
-            var r = c.RayForPixel(100, 50);
+            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, 201, 101);
+            var r = c.PixelToRay(SubPixel.ForPixelCenter(100, 50));
             r.Origin.Should().Be(Point.Zero);
             r.Direction.Should().Be(new Vector(0, 0, -1));
         }
@@ -42,8 +42,8 @@ namespace Octans.Test
         [Fact]
         public void RayThroughCornerOfCanvas()
         {
-            var c = new Camera(201, 101, MathF.PI / 2f);
-            var r = c.RayForPixel(0, 0);
+            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, 201, 101);
+            var r = c.PixelToRay(SubPixel.ForPixelCenter(0, 0));
             r.Origin.Should().Be(Point.Zero);
             r.Direction.Should().Be(new Vector(0.66519f, 0.33259f, -0.66851f));
         }
@@ -51,9 +51,9 @@ namespace Octans.Test
         [Fact]
         public void RayAfterCameraTransform()
         {
-            var c = new Camera(201, 101, MathF.PI / 2f);
-            c.SetTransform(Transforms.RotateY(MathF.PI / 4f) * Transforms.Translate(0, -2, 5));
-            var r = c.RayForPixel(100, 50);
+            var transform = Transforms.RotateY(MathF.PI / 4f) * Transforms.Translate(0, -2, 5);
+            var c = new PinholeCamera(transform, MathF.PI / 2f, 201, 101);
+            var r = c.PixelToRay(SubPixel.ForPixelCenter(100, 50));
             r.Origin.Should().Be(new Point(0, 2, -5));
             r.Direction.Should().Be(new Vector(MathF.Sqrt(2f) / 2f, 0.0f, -MathF.Sqrt(2f) / 2f));
         }
@@ -61,33 +61,40 @@ namespace Octans.Test
         [Fact]
         public void RenderToCanvas()
         {
-            var w = World.Default();
-            var c = new Camera(11, 11, MathF.PI / 2f);
             var from = new Point(0, 0, -5);
             var to = Point.Zero;
             var up = new Vector(0, 1, 0);
-            c.SetTransform(Transforms.View(from, to, up));
-            var image = c.Render(w);
-            image.PixelAt(5, 5).Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
+            var transform = Transforms.View(from, to, up);
+            var w = World.Default();
+            var width = 11;
+            var height = 11;
+            var c = new PinholeCamera(transform, MathF.PI / 2f, width, height);
+            var s = new Scene(c, new RaytracedWorld(1,w));
+            var canvas = new Canvas(width,height);
+            RenderContext.Render(canvas, s);
+            canvas.PixelAt(5, 5).Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
         }
 
         [Fact]
         public void RenderToCanvasWithAdaptiveAntiAliasing()
         {
-            var w = World.Default();
-            var c = new Camera(11, 11, MathF.PI / 2f);
             var from = new Point(0, 0, -5);
             var to = Point.Zero;
             var up = new Vector(0, 1, 0);
-            c.SetTransform(Transforms.View(from, to, up));
-            var image = c.Render(w, 2, 0.03f);
-            var p = image.PixelAt(5, 5);
+            var transform = Transforms.View(from, to, up);
+            var w = World.Default();
+            var width = 11;
+            var height = 11;
+            var c = new PinholeCamera(transform, MathF.PI / 2f, width, height);
+            var s = new Scene(c, new RaytracedWorld(1, w));
+            var aaa = new AdaptiveRenderer(2, 0.03f, s);
+            var canvas = new Canvas(width, height);
+            RenderContext.Render(canvas, aaa);
+            var p = canvas.PixelAt(5, 5);
             p.Should().NotBe(new Color(0.38066f, 0.47583f, 0.2855f));
             p.Red.Should().BeApproximately(0.3429f, 0.005f);
             p.Green.Should().BeApproximately(0.4287f, 0.005f);
             p.Blue.Should().BeApproximately(0.2572f, 0.005f);
         }
-
-       
     }
 }

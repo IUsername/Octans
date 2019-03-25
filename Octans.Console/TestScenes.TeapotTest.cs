@@ -54,15 +54,18 @@ namespace Octans.ConsoleApp
             w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.4f, 1.4f, 1.4f)));
             w.SetObjects(group);
 
-            var x = 600;
-            var y = 400;
-            var c = new Camera(x, y, MathF.PI / 3f);
-            c.SetTransform(Transforms.View(new Point(0, 3.0f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
+            var width = 600;
+            var height = 400;
+            var transform = Transforms.View(new Point(0, 3.0f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
+            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
+            var scene = new Scene(c, new RaytracedWorld(5, w));
+            var aaa = new AdaptiveRenderer(2, 0.1f, scene);
+            var canvas = new Canvas(width, height);
 
-            Console.WriteLine("Rendering at {0}x{1}...", x, y);
+            Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.Render(w,4);
+            RenderContext.Render(canvas, aaa);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -96,15 +99,17 @@ namespace Octans.ConsoleApp
             w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
             w.SetObjects(g);
 
-            var x = 300;
-            var y = 200;
-            var c = new Camera(x, y, MathF.PI / 3f);
-            c.SetTransform(Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0)));
+            var width = 300;
+            var height = 200;
+            var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
+            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
+            var scene = new Scene(c, new RaytracedWorld(1, w));
+            var canvas = new Canvas(width, height);
 
-            Console.WriteLine("Rendering at {0}x{1}...", x, y);
+            Console.WriteLine("Rendering at {0}x{1}...", w, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.Render(w);
+            RenderContext.Render(canvas, scene);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);

@@ -33,15 +33,18 @@ namespace Octans.ConsoleApp
             w.SetLights(new PointLight(new Point(0, 2, -100), Colors.White));
             w.SetObjects(g);
 
-            var x = 800;
-            var y = 400;
-            var c = new Camera(x, y, 0.8f);
-            c.SetTransform(Transforms.View(new Point(0, 0, -20f), new Point(0, 0, 0), new Vector(0, 1, 0)));
+            var width = 800;
+            var height = 400;
+            var transform = Transforms.View(new Point(0, 0, -20f), new Point(0, 0, 0), new Vector(0, 1, 0));
+            var c = new PinholeCamera(transform, 0.8f, width, height);
+            var scene = new Scene(c, new RaytracedWorld(1, w));
+            var aaa = new AdaptiveRenderer(3, 0.1f, scene);
+            var canvas = new Canvas(width, height);
 
-            Console.WriteLine("Rendering at {0}x{1}...", x, y);
+            Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var canvas = c.Render(w,0);
+            RenderContext.Render(canvas, aaa);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "mapping");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
