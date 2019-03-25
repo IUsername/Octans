@@ -8,6 +8,47 @@ namespace Octans.ConsoleApp
     {
         public static void TestRender()
         {
+            var w = BuildWorld();
+
+            var width = 600;
+            var height = 400;
+            var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
+            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
+            var scene = new Scene(c, new RaytracedWorld(3, w));
+            var aaa = new AdaptiveRenderer(3, 0.05f, scene);
+            var canvas = new Canvas(width, height);
+
+            Console.WriteLine("Rendering at {0}x{1}...", width, height);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            RenderContext.Render(canvas, aaa);
+            PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene");
+            stopwatch.Stop();
+            Console.WriteLine("Done ({0})", stopwatch.Elapsed);
+        }
+
+        public static void TestRenderDOF()
+        {
+            var w = BuildWorld();
+
+            var width = 400;
+            var height = 300;
+            var c = new ApertureCamera( MathF.PI / 3f, width, height, 0.04f, new Point(0, 1.25f, -4f), new Point(0, 1, 0), 3.5f );
+            var scene = new Scene(c, new RaytracedWorld(3, w));
+            var aaa = new AdaptiveRenderer(4, 0.1f, scene);
+            var canvas = new Canvas(width, height);
+
+            Console.WriteLine("Rendering at {0}x{1}...", width, height);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            RenderContext.Render(canvas, aaa);
+            PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene_dof");
+            stopwatch.Stop();
+            Console.WriteLine("Done ({0})", stopwatch.Elapsed);
+        }
+
+        private static World BuildWorld()
+        {
             var s1 = new StripePattern(Colors.White, Colors.Black);
             var s2 = new StripePattern(Colors.White, Colors.Black);
             s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
@@ -152,22 +193,7 @@ namespace Octans.ConsoleApp
             //                          new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             w.SetLights(new PointLight(new Point(-3.5f, 4f, -5f), new Color(1.4f, 1.4f, 1.4f)));
             w.SetObjects(gl);
-
-            var width = 800;
-            var height = 600;
-            var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var scene = new Scene(c, new RaytracedWorld(3, w));
-            var aaa = new AdaptiveRenderer(3, 0.06f, scene);
-            var canvas = new Canvas(width, height);
-
-            Console.WriteLine("Rendering at {0}x{1}...", width, height);
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
-            PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene");
-            stopwatch.Stop();
-            Console.WriteLine("Done ({0})", stopwatch.Elapsed);
+            return w;
         }
     }
 }

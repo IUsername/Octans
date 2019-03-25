@@ -52,10 +52,10 @@ namespace Octans
             var aimed = FocalPlanePoint(in sp);
             var total = Colors.Black;
             var prior = total;
-            int minRays = 1;
-            int incrementRays = 2;
-            int maxRays = 3;
-            var delta = 1f / maxRays;
+            int minRays = 4;
+            int incrementRays = 4;
+            int maxRays = 32;
+            var delta = 0.01f;
             int count = 1;
             for (; count <= maxRays; count++)
             {

@@ -55,9 +55,9 @@ namespace Octans.Test
             RenderContext.Render(canvas, aaa);
             var p = canvas.PixelAt(5, 5);
             p.Should().NotBe(new Color(0.38066f, 0.47583f, 0.2855f));
-            p.Red.Should().BeApproximately(0.3429f, 0.005f);
-            p.Green.Should().BeApproximately(0.4287f, 0.005f);
-            p.Blue.Should().BeApproximately(0.2572f, 0.005f);
+            p.Red.Should().BeApproximately(0.3571f, 0.005f);
+            p.Green.Should().BeApproximately(0.4464f, 0.005f);
+            p.Blue.Should().BeApproximately(0.2678f, 0.005f);
         }
 
         private class TestRenderer : IPixelRenderer

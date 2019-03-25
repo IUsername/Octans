@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Octans
+﻿namespace Octans
 {
     public sealed class AdaptiveRenderer : IPixelRenderer
     {
@@ -59,9 +57,6 @@ namespace Octans
             var c = SubPixel.Center(in tl, in br);
             var r = remaining - 1;
 
-            //// Increase the tolerance to sample further?
-            //var t = tolerance;// * 1.2f;
-
             var shared = samples as ISharedPixelSamples;
             if (shared != null)
             {
@@ -70,43 +65,36 @@ namespace Octans
                 samples = shared.CreateLocalScope();
             }
 
-            var cc = samples.GetOrAdd(c, renderer);
-            var cwa = (ctl + ctr + cbl + cbr + cc) / 5f;
-
+            var changed = false;
             if (!brc)
             {
-                if (!Color.IsWithinDelta(in cbr, in cwa, maxDelta))
-                {
-                    cbr = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in br, in c));
-                }
+                cbr = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in br, in c));
+                avg = (ctl + ctr + cbl + cbr) / 4f;
+                changed = true;
             }
 
-            if (!blc)
+            if (!changed && !blc || !Color.IsWithinDelta(in cbl, in avg, maxDelta))
             {
-                if (!Color.IsWithinDelta(in cbl, in cwa, maxDelta))
-                {
-                    cbl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in bl, in c));
-                }
+                cbl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in bl, in c));
+                avg = (ctl + ctr + cbl + cbr) / 4f;
+                changed = true;
             }
 
-            if (!trc)
+            if (!changed && !trc || !Color.IsWithinDelta(in ctr, in avg, maxDelta))
             {
-                if (!Color.IsWithinDelta(in ctr, in cwa, maxDelta))
-                {
-                    ctr = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tr, in c));
-                }
+                ctr = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tr, in c));
+                avg = (ctl + ctr + cbl + cbr) / 4f;
+                changed = true;
             }
 
-            if (!tlc)
+            if (changed || !Color.IsWithinDelta(in ctl, in avg, maxDelta))
             {
-                if (!Color.IsWithinDelta(in ctl, in cwa, maxDelta))
-                {
-                    ctl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tl, in c));
-                }
+                ctl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tl, in c));
+                avg = (ctl + ctr + cbl + cbr) / 4f;
             }
 
             shared?.CloseLocalScope(samples);
-            return (ctl + ctr + cbl + cbr) / 4f;
+            return avg;
         }
     }
 }
