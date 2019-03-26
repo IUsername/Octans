@@ -2,7 +2,8 @@
 {
     public readonly struct IntersectionInfo
     {
-        public IntersectionInfo(Intersection intersection, Ray ray) : this(intersection, ray, Intersections.Create(intersection))
+        public IntersectionInfo(Intersection intersection, Ray ray) : this(
+            intersection, ray, Intersections.Create(intersection))
         {
         }
 

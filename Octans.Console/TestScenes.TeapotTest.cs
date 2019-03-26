@@ -20,11 +20,14 @@ namespace Octans.ConsoleApp
 
             var glass = new Material
             {
-                Pattern = new SolidColor(new Color(0.8f, 0.8f, 0.8f)),
-                Reflective = 0.98f,
-                RefractiveIndex = 0.86f,
-                Transparency = 0.93f,
-                Ambient = 0.02f,
+                Pattern = new SolidColor(new Color(0.2f, 0.6f, 0.3f)),
+                Reflective = 0.78f,
+                Roughness = 0.05f,
+                Metallic = 0f,
+                SpecularColor = new Color(0.3f,1f,0.5f),
+                RefractiveIndex = 0.89f,
+                Transparency = 0.83f,
+                Ambient = 0.0f,
                 Diffuse = 0.2f,
                 Shininess = 200f,
                 Specular = 0.9f
@@ -35,8 +38,9 @@ namespace Octans.ConsoleApp
             var checkerboard = new Material
             {
                 Pattern = new CheckerPattern(new Color(1f, 1f, 0.5f), new Color(0.55f, 0.55f, 1f)),
-                Reflective = 0.2f,
-                Ambient = 0.1f,
+                Reflective = 0.5f,
+                Roughness = 0.2f,
+                Ambient = 0.4f,
                 Diffuse = 0.3f
             };
 
@@ -51,7 +55,7 @@ namespace Octans.ConsoleApp
             group.Divide(1);
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.4f, 1.4f, 1.4f)));
+            w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.0f, 1.0f, 1.0f)));
             w.SetObjects(group);
 
             var width = 600;

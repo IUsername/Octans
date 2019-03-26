@@ -123,5 +123,12 @@ namespace Octans
 
         //private static Matrix YUVTransform =
         //    Matrix.Square(0.299f, 0.587f, 0.114f, 0f, -0.14713f, -0.28886f, 0.436f, 0f, 0.615f, -0.51499f, -0.10001f, 0f, 0f, 0f, 0f, 1f);
+
+        [Pure]
+        public static Color Lerp(in Color a, in Color b, float t)
+        {
+            t = MathFunction.ClampF(0f, 1f, t);
+            return (1 - t) * a + t * b;
+        }
     }
 }

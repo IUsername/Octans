@@ -106,5 +106,13 @@ namespace Octans.Test
             Color.IsWithinDelta(new Color(0.9f,0.9f,0.9f), Colors.White, 0.2f).Should().BeTrue();
             Color.IsWithinDelta(new Color(0.1f,0.1f,1f), Colors.Blue, 0.2f).Should().BeTrue();
         }
+
+        [Fact]
+        public void LerpBetweenColors()
+        {
+            Color.Lerp(Colors.White, Colors.Black, 0.5f).Should().Be(new Color(0.5f, 0.5f, 0.5f));
+            Color.Lerp(Colors.White, Colors.Black, 0.0f).Should().Be(Colors.White);
+            Color.Lerp(Colors.White, Colors.Black, 1.0f).Should().Be(Colors.Black);
+        }
     }
 }

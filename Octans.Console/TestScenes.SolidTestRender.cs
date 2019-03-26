@@ -8,10 +8,10 @@ namespace Octans.ConsoleApp
         public static void SolidTestRender()
         {
             var radius = 0.25f;
-            var red = new Material {Pattern = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f};
-            var blue = new Material {Pattern = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f};
-            var yellow = new Material {Pattern = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f};
-            var white = new Material {Pattern = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f};
+            var red = new Material {Pattern = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f};
+            var blue = new Material {Pattern = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
+            var yellow = new Material {Pattern = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
+            var white = new Material {Pattern = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
             var blackPip = new Material {Pattern = new SolidColor(new Color(0.1f, 0.1f, 0.1f))};
             var whitePip = new Material {CastsShadows = true};
 
@@ -25,8 +25,8 @@ namespace Octans.ConsoleApp
             d3.SetTransform(Transforms.RotateY(0.5f).TranslateY(1f).TranslateX(-4f).TranslateZ(1f).Scale(0.5f));
             d4.SetTransform(Transforms.RotateY(-0.2f).TranslateY(3f).TranslateX(0.2f).TranslateZ(1.25f).Scale(0.5f));
 
-            var lightGray = new Color(0.6f, 0.6f, 0.6f);
-            var darkGray = new Color(0.4f, 0.4f, 0.4f);
+            var lightGray = new Color(0.3f, 0.3f, 0.3f);
+            var darkGray = new Color(0.2f, 0.2f, 0.2f);
             var s1 = new StripePattern(lightGray, darkGray);
             var s2 = new StripePattern(lightGray, darkGray);
             s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
@@ -38,6 +38,7 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Pattern = pattern,
+                    Roughness = 0.2f,
                     Specular = 0.1f,
                     Diffuse = 0.3f,
                     Reflective = 0.15f,
@@ -49,7 +50,7 @@ namespace Octans.ConsoleApp
             g.Divide(1);
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(-8, 10, -10), new Color(1.2f, 1.2f, 1.2f)));
+            w.SetLights(new PointLight(new Point(-8, 10, -10), new Color(0.7f, 0.7f, 0.7f)));
             //w.SetLights(new AreaLight(new Point(-3, 6, -4), new Vector(1f, 0, 0), 3, new Vector(0, 1f, 0), 3,
             //                          new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
             //w.SetLights(new AreaLight(new Point(-10, 10, -10), new Vector(1,0,0), 4, new Vector(0,1,0), 3, Colors.White));

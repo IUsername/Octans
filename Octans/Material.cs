@@ -12,6 +12,9 @@
             Reflective = 0f;
             Transparency = 0f;
             RefractiveIndex = 1f;
+            Roughness = 1f;
+            Metallic = 0f;
+            SpecularColor = Colors.White;
             CastsShadows = true;
         }
 
@@ -29,5 +32,10 @@
         public float Reflective { get; set; }
         public float Transparency { get; set; }
         public float RefractiveIndex { get; set; }
+        public float Roughness { get;  set; }
+
+        public float Metallic { get; set; }
+
+        public Color SpecularColor { get; set; }
     }
 }

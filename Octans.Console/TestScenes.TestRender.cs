@@ -14,8 +14,10 @@ namespace Octans.ConsoleApp
             var height = 400;
             var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var scene = new Scene(c, new RaytracedWorld(3, w));
-            var aaa = new AdaptiveRenderer(3, 0.05f, scene);
+            var ws = new WorldShadingContext(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            //var ws = new RaytracedWorld(3, w);
+            var scene = new Scene(c, ws);
+            var aaa = new AdaptiveRenderer(4, 0.05f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -74,13 +76,14 @@ namespace Octans.ConsoleApp
                 {
                     Pattern = pattern,
                     Specular = 0.1f,
-                    Reflective = 0.1f
+                    Reflective = 0.1f,
+                    Roughness = 0.2f,
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1).Scale(20f));
 
             var middle = new Sphere
-                {Material = {Pattern = worldPattern, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600}};
+                {Material = {Pattern = worldPattern, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600, Roughness = 0.2f, Metallic = 0.3f, SpecularColor = new Color(0.2f, 0.3f, 0.7f), Ambient = 0f}};
             middle.SetTransform(Transforms.RotateY(1.5f).Translate(-0.5f, 1f, 0.1f));
 
             var right = new Sphere
@@ -88,6 +91,7 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Pattern = new TextureMap(new UVCheckers(20, 10, Colors.Black, Colors.White), UVMapping.Spherical),
+                    Roughness = 0.2f,
                     Diffuse = 0.7f, Specular = 0.3f,
                     Reflective = 0.2f
                 }
@@ -98,15 +102,15 @@ namespace Octans.ConsoleApp
             {
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.9f, 0.9f, 1f)), Diffuse = 0.05f, Specular = 0.9f,
-                    Transparency = 0.9f, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.11f, Shininess = 300
+                    Pattern = new SolidColor(new Color(0.1f, 0.1f, 0.12f)), Diffuse = 0.05f, Specular = 0.9f, Roughness = 0.015f, Metallic = 0.9f,
+                    Transparency = 0.9f, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.01f, Shininess = 300
                 }
             };
             left.SetTransform(Transforms.Translate(-2.1f, 0.33f, 0.5f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
 
             var cube = new Cube
             {
-                Material = {Pattern = new GradientPattern(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f))}
+                Material = {Pattern = new GradientPattern(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f)), Roughness = 0.5f}
             };
             cube.Material.Pattern.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
             cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
@@ -118,7 +122,8 @@ namespace Octans.ConsoleApp
                 Maximum = 0f,
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
+                    Pattern = new SolidColor(new Color(0.4f, 0.8f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f, Ambient = 0f,
+                    Roughness = 0.3f,
                     Reflective = 0.2f
                 }
             };
@@ -131,7 +136,7 @@ namespace Octans.ConsoleApp
                 IsClosed = true,
                 Material =
                 {
-                    Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.01f, Shininess = 100,
+                    Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.0f, Shininess = 100, Metallic = 0.9f, SpecularColor = new Color(0.8f,0.8f,0.6f), Roughness = 0.01f,
                     Pattern = testMap
                 }
             };
@@ -148,6 +153,9 @@ namespace Octans.ConsoleApp
                 Pattern = new SolidColor(new Color(1f, 0.8f, 0f)),
                 Reflective = 0.4f,
                 RefractiveIndex = 0.95f,
+                Roughness = 0.12f,
+                Metallic = 1f,
+                SpecularColor = new Color(0.9f, 0.7f, 0f),
                 //Transparency = 0.95f,
                 Shininess = 300,
                 Specular = 0.9f,
@@ -191,7 +199,8 @@ namespace Octans.ConsoleApp
             var w = new World();
             //w.SetLights(new AreaLight(new Point(-3f, 4, -5), new Vector(1f, 0, 0), 6, new Vector(0, 0.01f, 0), 3,
             //                          new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
-            w.SetLights(new PointLight(new Point(-3.5f, 4f, -5f), new Color(1.4f, 1.4f, 1.4f)));
+            
+            w.SetLights(new PointLight(new Point(-3.5f, 4f, -5f), new Color(1.1f, 1.1f, 1.1f)));
             w.SetObjects(gl);
             return w;
         }
