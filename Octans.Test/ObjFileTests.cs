@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using Octans.Geometry;
 using Octans.Shading;
+using Octans.Texture;
 using Xunit;
 
 namespace Octans.Test
@@ -176,7 +177,7 @@ f 1 3 4
 
             var material = new Material
             {
-                Pattern = new SolidColor(new Color(0.3f, 0.3f, 1f)),
+                Texture = new SolidColor(new Color(0.3f, 0.3f, 1f)),
                 Reflective = 0.4f,
                 Ambient = 0.2f,
                 Diffuse = 0.3f

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Octans.Geometry;
+using Octans.Texture;
 
 namespace Octans.ConsoleApp
 {
@@ -28,15 +29,15 @@ namespace Octans.ConsoleApp
                 var cX = new Cube();
                 cX.SetTransform(Transforms.Scale(1f, 1f - r, 1f - r));
                 cX.SetMaterial(mat);
-                var su = new ConstructiveSolid(SolidOp.Union, cY, cX);
+                var su = new ConstructiveSolid(ConstructiveOp.Union, cY, cX);
 
                 var cZ = new Cube();
                 cZ.SetTransform(Transforms.Scale(1f - r, 1f - r, 1f));
                 cZ.SetMaterial(mat);
-                return new ConstructiveSolid(SolidOp.Union, su, cZ);
+                return new ConstructiveSolid(ConstructiveOp.Union, su, cZ);
             }
 
-            ConstructiveSolid Union(IGeometry a, IGeometry b) => new ConstructiveSolid(SolidOp.Union, a, b);
+            ConstructiveSolid Union(IGeometry a, IGeometry b) => new ConstructiveSolid(ConstructiveOp.Union, a, b);
 
             Cylinder CreateCylinder(float r, Point from, Material material, Matrix rotation)
             {
@@ -112,7 +113,7 @@ namespace Octans.ConsoleApp
                 return sphere;
             }
 
-            ConstructiveSolid Diff(IGeometry s, IGeometry child) => new ConstructiveSolid(SolidOp.Difference, s, child);
+            ConstructiveSolid Diff(IGeometry s, IGeometry child) => new ConstructiveSolid(ConstructiveOp.Difference, s, child);
 
             var offset = 1.15f;
 

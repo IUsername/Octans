@@ -34,7 +34,7 @@ namespace Octans
 
             // TODO: Albedo??
             var color =
-                intersection.Geometry.Material.Pattern.ShapeColor(intersection.Geometry, intersection.OverPoint);
+                intersection.Geometry.Material.Texture.ShapeColor(intersection.Geometry, intersection.OverPoint);
             DiffuseColor = (1f - Metallic) * color; // * F0; // F0? Should self-shadow already account for this?
 
             SpecularColor = Color.Lerp(color, material.SpecularColor, Metallic * 0.5f);

@@ -2,6 +2,6 @@
 {
     public interface ITextureSource
     {
-        Color PatternAt(float u, float v);
+        Color ColorAt(float u, float v);
     }
 }

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Octans.Geometry;
 using Octans.Shading;
+using Octans.Texture;
 
 namespace Octans.ConsoleApp
 {
@@ -53,10 +54,10 @@ namespace Octans.ConsoleApp
 
         private static World BuildWorld()
         {
-            var s1 = new StripePattern(Colors.White, Colors.Black);
-            var s2 = new StripePattern(Colors.White, Colors.Black);
+            var s1 = new StripeTexture(Colors.White, Colors.Black);
+            var s2 = new StripeTexture(Colors.White, Colors.Black);
             s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
-            var pattern = new BlendedCompositePattern(s1, s2);
+            var pattern = new BlendedCompositeTexture(s1, s2);
             pattern.SetTransform(Transforms.Scale(1f / 20f));
 
             var testPattern = new UVAlignTestPattern(Colors.White, Colors.Red, Colors.Yellow, Colors.Green, Colors.Blue);
@@ -76,7 +77,7 @@ namespace Octans.ConsoleApp
             {
                 Material =
                 {
-                    Pattern = pattern,
+                    Texture = pattern,
                     Specular = 0.1f,
                     Reflective = 0.1f,
                     Roughness = 0.2f,
@@ -85,14 +86,14 @@ namespace Octans.ConsoleApp
             floor.SetTransform(Transforms.TranslateY(-1).Scale(20f));
 
             var middle = new Sphere
-                {Material = {Pattern = worldPattern, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600, Roughness = 0.2f, Metallic = 0.3f, SpecularColor = new Color(0.2f, 0.3f, 0.7f), Ambient = 0f}};
+                {Material = {Texture = worldPattern, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600, Roughness = 0.2f, Metallic = 0.3f, SpecularColor = new Color(0.2f, 0.3f, 0.7f), Ambient = 0f}};
             middle.SetTransform(Transforms.RotateY(1.5f).Translate(-0.5f, 1f, 0.1f));
 
             var right = new Sphere
             {
                 Material =
                 {
-                    Pattern = new TextureMap(new UVCheckers(20, 10, Colors.Black, Colors.White), UVMapping.Spherical),
+                    Texture = new TextureMap(new UVCheckers(20, 10, Colors.Black, Colors.White), UVMapping.Spherical),
                     Roughness = 0.2f,
                     Diffuse = 0.7f, Specular = 0.3f,
                     Reflective = 0.2f
@@ -104,7 +105,7 @@ namespace Octans.ConsoleApp
             {
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.1f, 0.1f, 0.12f)), Diffuse = 0.05f, Specular = 0.9f, Roughness = 0.015f, Metallic = 0.9f,
+                    Texture = new SolidColor(new Color(0.1f, 0.1f, 0.12f)), Diffuse = 0.05f, Specular = 0.9f, Roughness = 0.015f, Metallic = 0.9f,
                     Transparency = 0.9f, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.01f, Shininess = 300
                 }
             };
@@ -112,9 +113,9 @@ namespace Octans.ConsoleApp
 
             var cube = new Cube
             {
-                Material = {Pattern = new GradientPattern(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f)), Roughness = 0.5f}
+                Material = {Texture = new GradientTexture(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f)), Roughness = 0.5f}
             };
-            cube.Material.Pattern.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
+            cube.Material.Texture.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
             cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
 
             var cone = new Cone
@@ -124,7 +125,7 @@ namespace Octans.ConsoleApp
                 Maximum = 0f,
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.4f, 0.8f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f, Ambient = 0f,
+                    Texture = new SolidColor(new Color(0.4f, 0.8f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f, Ambient = 0f,
                     Roughness = 0.3f,
                     Reflective = 0.2f
                 }
@@ -139,20 +140,20 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.0f, Shininess = 100, Metallic = 0.9f, SpecularColor = new Color(0.8f,0.8f,0.6f), Roughness = 0.01f,
-                    Pattern = testMap
+                    Texture = testMap
                 }
             };
             cylinder.SetTransform(Transforms.Translate(-3f, 0f, 3.5f));
 
             var t = new Triangle(new Point(0, 0, 0), new Point(1, 0.5f, 0), new Point(0.5f, 1f, 1f))
             {
-                Material = {Pattern = new GradientPattern(new Color(0f, 1, 0), new Color(0f, 0f, 1f))}
+                Material = {Texture = new GradientTexture(new Color(0f, 1, 0), new Color(0f, 0f, 1f))}
             };
             t.SetTransform(Transforms.Translate(1f, 2f, 1f));
 
             var yellowGlass = new Material
             {
-                Pattern = new SolidColor(new Color(1f, 0.8f, 0f)),
+                Texture = new SolidColor(new Color(1f, 0.8f, 0f)),
                 Reflective = 0.4f,
                 RefractiveIndex = 0.95f,
                 Roughness = 0.12f,
@@ -182,7 +183,7 @@ namespace Octans.ConsoleApp
             ci.SetTransform(Transforms.Scale(1.2f, 1f, 1.2f));
             ci.SetMaterial(yellowGlass);
 
-            var s = new ConstructiveSolid(SolidOp.Difference, co, ci);
+            var s = new ConstructiveSolid(ConstructiveOp.Difference, co, ci);
             s.SetTransform(Transforms.RotateZ(-0.2f).RotateX(-0.1f).Translate(-0.5f, 1f, 0.1f));
 
             var gl = new Group();

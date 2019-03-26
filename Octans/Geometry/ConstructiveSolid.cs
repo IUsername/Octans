@@ -6,7 +6,7 @@ namespace Octans.Geometry
     {
         private readonly Bounds _bounds;
 
-        public ConstructiveSolid(SolidOp op, IGeometry left, IGeometry right)
+        public ConstructiveSolid(ConstructiveOp op, IGeometry left, IGeometry right)
         {
             Op = op;
             left.Parent = this;
@@ -16,7 +16,7 @@ namespace Octans.Geometry
             _bounds = Left.ParentSpaceBounds() + Right.ParentSpaceBounds();
         }
 
-        public SolidOp Op { get; }
+        public ConstructiveOp Op { get; }
         public IGeometry Left { get; }
         public IGeometry Right { get; }
 
@@ -45,15 +45,15 @@ namespace Octans.Geometry
 
         public override Bounds LocalBounds() => _bounds;
 
-        public static bool IntersectionAllowed(SolidOp op, bool lHit, bool inL, bool inR)
+        public static bool IntersectionAllowed(ConstructiveOp op, bool lHit, bool inL, bool inR)
         {
             switch (op)
             {
-                case SolidOp.Union:
+                case ConstructiveOp.Union:
                     return (lHit & !inR) | (!lHit & !inL);
-                case SolidOp.Intersection:
+                case ConstructiveOp.Intersection:
                     return (lHit & inR) | (!lHit & inL);
-                case SolidOp.Difference:
+                case ConstructiveOp.Difference:
                     return (lHit & !inR) | (!lHit & inL);
                 default:
                     return false;

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Octans.Geometry;
 using Octans.Shading;
+using Octans.Texture;
 
 namespace Octans.ConsoleApp
 {
@@ -10,11 +11,11 @@ namespace Octans.ConsoleApp
         public static void SolidTestRender()
         {
             var radius = 0.25f;
-            var red = new Material {Pattern = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f};
-            var blue = new Material {Pattern = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
-            var yellow = new Material {Pattern = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
-            var white = new Material {Pattern = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
-            var blackPip = new Material {Pattern = new SolidColor(new Color(0.1f, 0.1f, 0.1f))};
+            var red = new Material {Texture = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f};
+            var blue = new Material {Texture = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
+            var yellow = new Material {Texture = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
+            var white = new Material {Texture = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f, Roughness = 0.1f, Ambient = 0.3f };
+            var blackPip = new Material {Texture = new SolidColor(new Color(0.1f, 0.1f, 0.1f))};
             var whitePip = new Material {CastsShadows = true};
 
             var d1 = CutPips(RoundedCube(radius, blue), whitePip);
@@ -29,17 +30,17 @@ namespace Octans.ConsoleApp
 
             var lightGray = new Color(0.3f, 0.3f, 0.3f);
             var darkGray = new Color(0.2f, 0.2f, 0.2f);
-            var s1 = new StripePattern(lightGray, darkGray);
-            var s2 = new StripePattern(lightGray, darkGray);
+            var s1 = new StripeTexture(lightGray, darkGray);
+            var s2 = new StripeTexture(lightGray, darkGray);
             s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
-            var pattern = new BlendedCompositePattern(s1, s2);
+            var pattern = new BlendedCompositeTexture(s1, s2);
             pattern.SetTransform(Transforms.Scale(1f / 20f));
 
             var floor = new Cube
             {
                 Material =
                 {
-                    Pattern = pattern,
+                    Texture = pattern,
                     Roughness = 0.2f,
                     Specular = 0.1f,
                     Diffuse = 0.3f,

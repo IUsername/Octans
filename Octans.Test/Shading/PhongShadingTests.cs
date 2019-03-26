@@ -3,6 +3,8 @@ using FluentAssertions;
 using Octans.Geometry;
 using Octans.Shading;
 using Octans.Test.Geometry;
+using Octans.Test.Texture;
+using Octans.Texture;
 using Xunit;
 
 namespace Octans.Test.Shading
@@ -151,7 +153,7 @@ namespace Octans.Test.Shading
             w.Objects[1].Material.Ambient = 1f;
             var r = new Ray(new Point(0, 0, 0.75f), new Vector(0, 0, -1));
             var c = PhongShading.ColorAt(w, r);
-            c.Should().Be(w.Objects[1].Material.Pattern.LocalColorAt(Point.Zero));
+            c.Should().Be(w.Objects[1].Material.Texture.LocalColorAt(Point.Zero));
         }
 
         [Fact]
@@ -296,7 +298,7 @@ namespace Octans.Test.Shading
             var w = World.Default();
             var a = w.Objects[0];
             a.Material.Ambient = 1.0f;
-            a.Material.Pattern = new TestPattern();
+            a.Material.Texture = new TestTexture();
             var b = w.Objects[1];
             b.Material.Transparency = 1.0f;
             b.Material.RefractiveIndex = 1.5f;
@@ -318,7 +320,7 @@ namespace Octans.Test.Shading
             floor.SetTransform(Transforms.Translate(0, -1, 0));
             w.AddObject(floor);
 
-            var ball = new Sphere {Material = {Pattern = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
+            var ball = new Sphere {Material = {Texture = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
             ball.SetTransform(Transforms.Translate(0, -3.5f, -0.5f));
             w.AddObject(ball);
 
@@ -372,7 +374,7 @@ namespace Octans.Test.Shading
             floor.SetTransform(Transforms.Translate(0, -1, 0));
             w.AddObject(floor);
 
-            var ball = new Sphere {Material = {Pattern = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
+            var ball = new Sphere {Material = {Texture = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
             ball.SetTransform(Transforms.Translate(0, -3.5f, -0.5f));
             w.AddObject(ball);
 
@@ -437,7 +439,7 @@ namespace Octans.Test.Shading
             var light = new AreaLight(corner, v1, 2, v2, 2, Colors.White);
             var s = new Sphere
             {
-                Material = {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0f, Pattern = new SolidColor(Colors.White)}
+                Material = {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0f, Texture = new SolidColor(Colors.White)}
             };
             var eye = new Point(0, 0, -5);
             var pt = new Point(0, 0, -1);

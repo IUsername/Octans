@@ -28,7 +28,7 @@ namespace Octans
         }
 
         [Pure]
-        public static Point ToLocal(in this Point worldPoint, IGeometry geometry, IPattern pattern)
+        public static Point ToLocal(in this Point worldPoint, IGeometry geometry, ITexture texture)
         {
             var world = worldPoint;
             if (geometry.Parent != null)
@@ -37,7 +37,7 @@ namespace Octans
             }
 
             var localPoint = geometry.ToLocal(in world);
-            return pattern.TransformInverse() * localPoint;
+            return texture.TransformInverse() * localPoint;
         }
 
         [Pure]

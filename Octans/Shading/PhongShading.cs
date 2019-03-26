@@ -16,10 +16,10 @@ namespace Octans.Shading
             return h.HasValue && h.Value.T < distance;
         }
 
-        public static Color ShapeColor(this IPattern pattern, IGeometry geometry, Point worldPoint)
+        public static Color ShapeColor(this ITexture texture, IGeometry geometry, Point worldPoint)
         {
-            var local = worldPoint.ToLocal(geometry, pattern);
-            return pattern.LocalColorAt(in local);
+            var local = worldPoint.ToLocal(geometry, texture);
+            return texture.LocalColorAt(in local);
         }
 
         public static Color Lighting(Material m,
@@ -30,7 +30,7 @@ namespace Octans.Shading
                                      Vector normalVector,
                                      float intensity)
         {
-            var effectiveColor = m.Pattern.ShapeColor(geometry, worldPoint) * light.Intensity;
+            var effectiveColor = m.Texture.ShapeColor(geometry, worldPoint) * light.Intensity;
             var ambient = effectiveColor * m.Ambient;
 
             if (intensity == 0.0f)

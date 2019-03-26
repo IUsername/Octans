@@ -13,7 +13,7 @@ namespace Octans.ConsoleApp
             {
                 var cube1 = new Cube
                 {
-                    Material = {Pattern = CreateTestCubeMap()}
+                    Material = {Texture = CreateTestCubeMap()}
                 };
                 cube1.SetTransform(Transforms.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
                 return cube1;

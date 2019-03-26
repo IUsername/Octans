@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Octans.Geometry;
 using Octans.Shading;
+using Octans.Texture;
 
 namespace Octans.ConsoleApp
 {
@@ -22,7 +23,7 @@ namespace Octans.ConsoleApp
 
             var glass = new Material
             {
-                Pattern = new SolidColor(new Color(0.2f, 0.6f, 0.3f)),
+                Texture = new SolidColor(new Color(0.2f, 0.6f, 0.3f)),
                 Reflective = 0.78f,
                 Roughness = 0.05f,
                 Metallic = 0f,
@@ -39,14 +40,14 @@ namespace Octans.ConsoleApp
 
             var checkerboard = new Material
             {
-                Pattern = new CheckerPattern(new Color(1f, 1f, 0.5f), new Color(0.55f, 0.55f, 1f)),
+                Texture = new CheckerTexture(new Color(1f, 1f, 0.5f), new Color(0.55f, 0.55f, 1f)),
                 Reflective = 0.5f,
                 Roughness = 0.2f,
                 Ambient = 0.4f,
                 Diffuse = 0.3f
             };
 
-            checkerboard.Pattern.SetTransform(Transforms.Scale(0.125f));
+            checkerboard.Texture.SetTransform(Transforms.Scale(0.125f));
 
             var group = new Group();
             var floor = new Cube();
@@ -86,7 +87,7 @@ namespace Octans.ConsoleApp
 
             var material = new Material
             {
-                Pattern = new SolidColor(new Color(0.3f, 0.3f, 1f)),
+                Texture = new SolidColor(new Color(0.3f, 0.3f, 1f)),
                 Reflective = 0.4f,
                 Ambient = 0.2f,
                 Diffuse = 0.3f

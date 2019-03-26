@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Octans.Geometry;
 using Octans.Shading;
+using Octans.Texture;
 using Xunit;
 
 namespace Octans.Test
@@ -32,28 +33,28 @@ namespace Octans.Test
         [Fact(Skip = "Slow")]
         public void TestRender()
         {
-            var s1 = new StripePattern(Colors.White, Colors.Black);
-            var s2 = new StripePattern(Colors.White, Colors.Black);
+            var s1 = new StripeTexture(Colors.White, Colors.Black);
+            var s2 = new StripeTexture(Colors.White, Colors.Black);
             s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
-            var pattern = new BlendedCompositePattern(s1, s2);
+            var pattern = new BlendedCompositeTexture(s1, s2);
             pattern.SetTransform(Transforms.Scale(1f / 20f));
 
-            var stripe = new StripePattern(new Color(0.9f, 0, 0), new Color(0.0f, 0.0f, 0.9f));
+            var stripe = new StripeTexture(new Color(0.9f, 0, 0), new Color(0.0f, 0.0f, 0.9f));
             stripe.SetTransform(Transforms.Scale(0.25f, 0.25f, 0.25f).RotateY(MathF.PI / 4));
-            var perlin = new PerlinRippleCompositePattern(stripe, 0.8f);
+            var perlin = new PerlinRippleCompositeTexture(stripe, 0.8f);
             perlin.SetTransform(Transforms.Scale(0.1f, 0.1f, 0.1f));
 
             var floor = new Cube
             {
                 Material =
                 {
-                    Pattern = pattern, // new CheckerPattern(new Color(0.75f, 0.75f, 0.75f), Colors.White),
+                    Texture = pattern, // new CheckerPattern(new Color(0.75f, 0.75f, 0.75f), Colors.White),
                     Specular = 0f
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1).Scale(20f));
 
-            var middle = new Sphere {Material = {Pattern = perlin, Diffuse = 0.7f, Specular = 0.3f, Reflective = 0.4f}};
+            var middle = new Sphere {Material = {Texture = perlin, Diffuse = 0.7f, Specular = 0.3f, Reflective = 0.4f}};
             middle.SetTransform(Transforms.Translate(-0.5f, 1f, 0.1f));
             //middle.SetTransform(Transforms.Translate(-0.5f, 0.5f, 0.5f));
 
@@ -61,7 +62,7 @@ namespace Octans.Test
             {
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
+                    Texture = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
                     Reflective = 0.2f
                 }
             };
@@ -71,7 +72,7 @@ namespace Octans.Test
             {
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.9f, 0.9f, 1f)), Diffuse = 0.05f, Specular = 0.9f,
+                    Texture = new SolidColor(new Color(0.9f, 0.9f, 1f)), Diffuse = 0.05f, Specular = 0.9f,
                     Transparency = 0.9f, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.11f, Shininess = 300
                 }
             };
@@ -79,9 +80,9 @@ namespace Octans.Test
 
             var cube = new Cube
             {
-                Material = {Pattern = new GradientPattern(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f))}
+                Material = {Texture = new GradientTexture(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f))}
             };
-            cube.Material.Pattern.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
+            cube.Material.Texture.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
             cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
 
             var cone = new Cone
@@ -89,7 +90,7 @@ namespace Octans.Test
                 IsClosed = true, Minimum = -1f, Maximum = 0f,
                 Material =
                 {
-                    Pattern = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
+                    Texture = new SolidColor(new Color(0.5f, 1f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f,
                     Reflective = 0.2f
                 }
             };
@@ -107,7 +108,7 @@ namespace Octans.Test
 
             var t = new Triangle(new Point(0, 0, 0), new Point(1, 0.5f, 0), new Point(0.5f, 1f, 1f))
             {
-                Material = {Pattern = new GradientPattern(new Color(0f, 1, 0), new Color(0f, 0f, 1f))}
+                Material = {Texture = new GradientTexture(new Color(0f, 1, 0), new Color(0f, 0f, 1f))}
             };
             t.SetTransform(Transforms.Translate(1f, 2f, 1f));
 

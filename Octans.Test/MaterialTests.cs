@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Octans.Geometry;
 using Octans.Shading;
+using Octans.Texture;
 using Xunit;
 
 namespace Octans.Test
@@ -11,7 +12,7 @@ namespace Octans.Test
         public void ContainsPatternAmbientDiffuseSpecularAndShininess()
         {
             var m = new Material();
-            m.Pattern.Should().BeAssignableTo<IPattern>();
+            m.Texture.Should().BeAssignableTo<ITexture>();
             m.Ambient.Should().Be(0.1f);
             m.Diffuse.Should().Be(0.9f);
             m.Specular.Should().Be(0.9f);
@@ -24,7 +25,7 @@ namespace Octans.Test
             var s = new Sphere();
             var m = new Material
             {
-                Pattern = new StripePattern(Colors.White, Colors.Black),
+                Texture = new StripeTexture(Colors.White, Colors.Black),
                 Ambient = 1f,
                 Diffuse = 0f,
                 Specular = 0f
