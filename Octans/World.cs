@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Octans.Geometry;
+using Octans.Light;
 using Octans.Texture;
 
 namespace Octans

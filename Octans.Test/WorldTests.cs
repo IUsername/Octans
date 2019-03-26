@@ -1,6 +1,10 @@
 ﻿using System;
 using FluentAssertions;
+using Octans.Camera;
 using Octans.Geometry;
+using Octans.IO;
+using Octans.Light;
+using Octans.Pipeline;
 using Octans.Shading;
 using Octans.Texture;
 using Xunit;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace Octans
+namespace Octans.Pipeline
 {
     public static class RenderContext
     {

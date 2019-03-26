@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using Octans.Camera;
 using Octans.Geometry;
+using Octans.IO;
+using Octans.Light;
+using Octans.Pipeline;
 using Octans.Shading;
 
 namespace Octans.ConsoleApp

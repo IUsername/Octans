@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Octans
+namespace Octans.Light
 {
     public class AreaLight : ILight
     {

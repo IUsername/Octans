@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Pidgin;
 
-namespace Octans
+namespace Octans.IO
 {
     public static partial class PPM
     {
@@ -40,10 +40,10 @@ namespace Octans
         private static Parser<char, IPPMPart> Scale =>
             Tok(Parser.Num).Select(s => (IPPMPart) new ScalePart(s)).Labelled("Scale");
 
-        private static Parser<char, Tuple<int, int, int>> Color =>
-            Parser.Map((r, g, b) => new Tuple<int, int, int>(r, g, b), Tok(Parser.Num), Tok(Parser.Num),
-                       Tok(Parser.Num))
-                  .Labelled("Color RGB");
+        //private static Parser<char, Tuple<int, int, int>> Color =>
+        //    Parser.Map((r, g, b) => new Tuple<int, int, int>(r, g, b), Tok(Parser.Num), Tok(Parser.Num),
+        //               Tok(Parser.Num))
+        //          .Labelled("Color RGB");
 
         private static Parser<char, int> ColorFragment => Tok(Parser.Num).Labelled("Color fragment");
 

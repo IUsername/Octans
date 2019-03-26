@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Octans.Camera;
 using Octans.Geometry;
+using Octans.IO;
+using Octans.Light;
+using Octans.Pipeline;
 using Octans.Shading;
 using Octans.Texture;
 

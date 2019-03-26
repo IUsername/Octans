@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Octans
+namespace Octans.Camera
 {
     public class ApertureCamera : ICamera
     {

@@ -1,4 +1,4 @@
-﻿namespace Octans
+﻿namespace Octans.Pipeline
 {
     public sealed class Scene : IPixelRenderer, IScene
     {
@@ -10,10 +10,7 @@
             World = worldShading;
         }
 
-        public Color Render(in SubPixel sp)
-        {
-            return _camera.Render(this, in sp);
-        }
+        public Color Render(in SubPixel sp) => _camera.Render(this, in sp);
 
         public IWorldShading World { get; }
     }

@@ -1,4 +1,4 @@
-﻿namespace Octans
+﻿namespace Octans.Light
 {
     public class PointLight : ILight
     {

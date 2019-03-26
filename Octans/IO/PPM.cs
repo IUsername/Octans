@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace Octans
+namespace Octans.IO
 {
     public static partial class PPM
     {

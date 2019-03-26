@@ -1,9 +1,11 @@
 ﻿using System;
 using FluentAssertions;
+using Octans.Camera;
+using Octans.Pipeline;
 using Octans.Shading;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Camera
 {
     public class PinholeCameraTests
     {

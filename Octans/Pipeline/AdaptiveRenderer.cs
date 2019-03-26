@@ -1,4 +1,4 @@
-﻿namespace Octans
+﻿namespace Octans.Pipeline
 {
     public sealed class AdaptiveRenderer : IPixelRenderer
     {

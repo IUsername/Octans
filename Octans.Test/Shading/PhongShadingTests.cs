@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using Octans.Geometry;
+using Octans.Light;
 using Octans.Shading;
 using Octans.Test.Geometry;
 using Octans.Test.Texture;

@@ -1,6 +1,4 @@
-﻿using Octans.Shading;
-
-namespace Octans
+﻿namespace Octans.Shading
 {
     public readonly struct ShadingInfo
     {

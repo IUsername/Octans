@@ -1,9 +1,10 @@
 using System;
 using System.IO;
 using FluentAssertions;
+using Octans.IO;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.IO
 {
     public class PPMTests
     {

@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
+using Octans.Light;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Light
 {
     public class PointLightTests
     {

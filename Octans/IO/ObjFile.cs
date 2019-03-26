@@ -5,7 +5,7 @@ using System.Text;
 using Octans.Geometry;
 using Pidgin;
 
-namespace Octans
+namespace Octans.IO
 {
     public class ObjFile
     {
@@ -256,25 +256,5 @@ namespace Octans
                 Vector = vector;
             }
         }
-    }
-
-    public class ParsedObjData
-    {
-        public ParsedObjData(Point[] vertices, Vector[] normals, Group[] groups)
-        {
-            Vertices = vertices;
-            Normals = normals;
-            Groups = groups;
-        }
-
-        public Point[] Vertices { get; }
-
-        public Vector[] Normals { get; }
-
-        public Group DefaultGroup => Groups[0];
-
-        public Group[] Groups { get; }
-
-        public int VertexCount() => Vertices.Length - 1;
     }
 }
