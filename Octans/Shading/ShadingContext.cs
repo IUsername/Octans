@@ -1,116 +1,7 @@
 ﻿using System;
 
-namespace Octans
+namespace Octans.Shading
 {
-    public interface INormalDistribution
-    {
-        float Factor(in ShadingInfo info);
-    }
-
-    public interface IGeometricShadow
-    {
-        float Factor(in ShadingInfo info);
-    }
-
-    public interface IFresnelFunction
-    {
-        float Factor(in ShadingInfo info);
-    }
-
-    public class GGXNormalDistribution : INormalDistribution
-    {
-        public static INormalDistribution Instance = new GGXNormalDistribution();
-
-        private GGXNormalDistribution()
-        {
-        }
-
-        public float Factor(in ShadingInfo info) => GGXNormalDist(info.Alpha, info.Roughness, info.NdotH);
-
-        private static float GGXNormalDist(float alpha, float roughness, float NdotH)
-        {
-            const float oneOverPi = 1f / MathF.PI;
-            var NdotHSqr = NdotH * NdotH;
-            var tanNdotHSqr = (1 - NdotHSqr) / NdotHSqr;
-            var s = roughness / (NdotHSqr * (alpha + tanNdotHSqr));
-            if (s > 0)
-            {
-                return oneOverPi * MathF.Sqrt(s);
-            }
-
-            return 0f;
-        }
-    }
-
-    public class SchlickBeckmanGeometricShadow : IGeometricShadow
-    {
-        public static IGeometricShadow Instance = new SchlickBeckmanGeometricShadow();
-
-        private SchlickBeckmanGeometricShadow()
-        {
-        }
-
-        public float Factor(in ShadingInfo info) => SchlickBeckmanGSF(info.Alpha, info.NdotL, info.NdotV);
-
-        private static float SchlickBeckmanGSF(float alpha, float NdotL, float NdotV)
-        {
-            const float sqrtTwoOverPi = 0.797884560802865f;
-            var k = alpha * sqrtTwoOverPi;
-
-            var smithL = NdotL / (NdotL * (1f - k) + k);
-            var smithV = NdotV / (NdotV * (1f - k) + k);
-            var gsf = smithL + smithV;
-            return gsf;
-        }
-    }
-
-    public class SchlickFresnelFunction : IFresnelFunction
-    {
-        public static IFresnelFunction Instance = new SchlickFresnelFunction();
-
-        private SchlickFresnelFunction()
-        {
-        }
-
-        //private static float SchlickFresnelFunc(float i)
-        //{
-        //    var x = MathFunction.ClampF(0f, 1f, 1f - i);
-        //    var x2 = x * x;
-        //    return x2 * x2 * x;
-        //}
-
-        //private static Color Calc(in Color specularColor, float LdotH)
-        //{
-        //    return specularColor + (Colors.White - specularColor) * SchlickFresnelFunc(LdotH);
-        //}
-
-        public float Factor(in ShadingInfo info) => info.F0 + (1f - info.F0) * MathF.Pow(1f - info.LdotH, 5);
-    }
-
-    public class SchlickIORFresnelFunction : IFresnelFunction
-    {
-        public static IFresnelFunction Instance = new SchlickIORFresnelFunction();
-
-        private SchlickIORFresnelFunction()
-        {
-        }
-
-        public float Factor(in ShadingInfo info) => Calc(info.IoR, info.LdotH);
-
-        private static float SchlickFresnelFunc(float i)
-        {
-            var x = MathFunction.ClampF(0f, 1f, 1f - i);
-            var x2 = x * x;
-            return x2 * x2 * x;
-        }
-
-        private static float Calc(float ior, float LdotH)
-        {
-            var f0 = MathF.Pow(ior - 1f, 2f) / MathF.Pow(ior + 1f, 2f);
-            return f0 + (1 - f0) * SchlickFresnelFunc(LdotH);
-        }
-    }
-
     public class ShadingContext
     {
         private readonly IFresnelFunction _ff;
@@ -162,7 +53,7 @@ namespace Octans
                     // ReSharper restore InconsistentNaming
                 }
 
-                var ambient = si.DiffuseColor * info.Shape.Material.Ambient * light.Intensity;
+                var ambient = si.DiffuseColor * info.Geometry.Material.Ambient * light.Intensity;
                 var direct = (specular * si.SpecularColor + si.DiffuseColor) * si.NdotL * si.AttenuationColor;
                 surface += direct + ambient;
             }
@@ -170,7 +61,7 @@ namespace Octans
             var reflected = ReflectedColor(world, info, remaining);
             var refracted = RefractedColor(world, info, remaining);
 
-            var material = info.Shape.Material;
+            var material = info.Geometry.Material;
             if (material.Reflective > 0f && material.Transparency > 0f)
             {
                 var reflectance = Schlick(in info);
@@ -201,7 +92,7 @@ namespace Octans
                 return Colors.Black;
             }
 
-            var roughness = info.Shape.Material.Roughness * 2f;
+            var roughness = info.Geometry.Material.Roughness * 2f;
             var reflective = 1f - MathF.Pow(roughness, 0.2f);
             if (reflective <= 0f)
             {
@@ -220,7 +111,7 @@ namespace Octans
                 return Colors.Black;
             }
 
-            if (info.Shape.Material.Transparency <= 0f)
+            if (info.Geometry.Material.Transparency <= 0f)
             {
                 return Colors.Black;
             }
@@ -237,7 +128,7 @@ namespace Octans
             var cosT = MathF.Sqrt(1f - sin2T);
             var direction = info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
             var refractedRay = new Ray(info.UnderPoint, direction);
-            return ColorAt(world, in refractedRay, --remaining) * info.Shape.Material.Transparency;
+            return ColorAt(world, in refractedRay, --remaining) * info.Geometry.Material.Transparency;
         }
 
         public static float Schlick(in IntersectionInfo info)

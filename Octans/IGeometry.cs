@@ -1,11 +1,11 @@
 ﻿namespace Octans
 {
-    public interface IShape
+    public interface IGeometry
     {
         Material Material { get; }
         Matrix Transform { get; }
 
-        IShape Parent { get; set; }
+        IGeometry Parent { get; set; }
         IIntersections LocalIntersects(in Ray localRay);
 
         Matrix TransformInverse();

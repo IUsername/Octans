@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Linq;
 
-namespace Octans
+namespace Octans.Geometry
 {
-    public class Solid : ShapeBase
+    public class ConstructiveSolid : GeometryBase
     {
         private readonly Bounds _bounds;
 
-        public Solid(SolidOp op, IShape left, IShape right)
+        public ConstructiveSolid(SolidOp op, IGeometry left, IGeometry right)
         {
             Op = op;
             left.Parent = this;
@@ -18,8 +17,8 @@ namespace Octans
         }
 
         public SolidOp Op { get; }
-        public IShape Left { get; }
-        public IShape Right { get; }
+        public IGeometry Left { get; }
+        public IGeometry Right { get; }
 
         public override IIntersections LocalIntersects(in Ray localRay)
         {
@@ -75,7 +74,7 @@ namespace Octans
             var sorted = intersections.ToSorted();
             foreach (var i in sorted)
             {
-                var lHit = Left.Includes(i.Shape);
+                var lHit = Left.Includes(i.Geometry);
                 if (IntersectionAllowed(Op, lHit, inL, inR))
                 {
                     result.Add(i);
@@ -99,28 +98,5 @@ namespace Octans
             Left.Divide(threshold);
             Right.Divide(threshold);
         }
-    }
-
-    internal static class SolidExtensions
-    {
-        public static bool Includes(this IShape a, IShape b)
-        {
-            switch (a)
-            {
-                case Group g when g.Children.Any(c => ReferenceEquals(a, c) || c.Includes(b)):
-                    return true;
-                case Solid s:
-                    return s.Left.Includes(b) || s.Right.Includes(b);
-                default:
-                    return ReferenceEquals(a, b);
-            }
-        }
-    }
-
-    public enum SolidOp
-    {
-        Union,
-        Intersection,
-        Difference
     }
 }

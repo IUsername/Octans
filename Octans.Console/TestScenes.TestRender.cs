@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Octans.Geometry;
+using Octans.Shading;
 
 namespace Octans.ConsoleApp
 {
@@ -14,7 +16,7 @@ namespace Octans.ConsoleApp
             var height = 400;
             var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var ws = new WorldShadingContext(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new RaytracedWorld(3, w);
             var scene = new Scene(c, ws);
             var aaa = new AdaptiveRenderer(4, 0.05f, scene);
@@ -36,7 +38,7 @@ namespace Octans.ConsoleApp
             var width = 400;
             var height = 300;
             var c = new ApertureCamera( MathF.PI / 3f, width, height, 0.04f, new Point(0, 1.25f, -4f), new Point(0, 1, 0), 3.5f );
-            var scene = new Scene(c, new RaytracedWorld(3, w));
+            var scene = new Scene(c, new PhongWorldShading(3, w));
             var aaa = new AdaptiveRenderer(4, 0.1f, scene);
             var canvas = new Canvas(width, height);
 
@@ -180,7 +182,7 @@ namespace Octans.ConsoleApp
             ci.SetTransform(Transforms.Scale(1.2f, 1f, 1.2f));
             ci.SetMaterial(yellowGlass);
 
-            var s = new Solid(SolidOp.Difference, co, ci);
+            var s = new ConstructiveSolid(SolidOp.Difference, co, ci);
             s.SetTransform(Transforms.RotateZ(-0.2f).RotateX(-0.1f).Translate(-0.5f, 1f, 0.1f));
 
             var gl = new Group();

@@ -1,8 +1,10 @@
 ﻿using System;
 using FluentAssertions;
+using Octans.Geometry;
+using Octans.Shading;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
     public class SphereTests
     {
@@ -10,7 +12,7 @@ namespace Octans.Test
         public void IsShape()
         {
             var s = new Sphere();
-            s.Should().BeAssignableTo<IShape>();
+            s.Should().BeAssignableTo<IGeometry>();
         }
 
         [Fact]
@@ -22,8 +24,8 @@ namespace Octans.Test
             xs.Count.Should().Be(2);
             xs[0].T.Should().Be(4.0f);
             xs[1].T.Should().Be(6.0f);
-            xs[0].Shape.Should().Be(s);
-            xs[1].Shape.Should().Be(s);
+            xs[0].Geometry.Should().Be(s);
+            xs[1].Geometry.Should().Be(s);
         }
 
         [Fact]
@@ -130,24 +132,15 @@ namespace Octans.Test
                     }
 
                     var point = r.Position(hit.Value.T);
-                    var shape = hit.Value.Shape;
+                    var shape = hit.Value.Geometry;
                     var normal = shape.NormalAt(point, hit.Value);
                     var eye = -r.Direction;
-                    var color = Shading.Lighting(shape.Material, shape, light, point, eye, normal, 1);
+                    var color = PhongShading.Lighting(shape.Material, shape, light, point, eye, normal, 1);
                     canvas.WritePixel(color, x, y);
                 }
             }
 
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "raycast");
-        }
-    }
-
-    public static class Spheres
-    {
-        public static Sphere GlassSphere()
-        {
-            var s = new Sphere {Material = {Transparency = 1.0f, RefractiveIndex = 1.5f}};
-            return s;
         }
     }
 }

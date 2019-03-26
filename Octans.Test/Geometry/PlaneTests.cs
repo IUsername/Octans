@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
     public class PlaneTests
     {
@@ -42,7 +43,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 1, 0), new Vector(0, -1, 0));
             var xs = p.LocalIntersects(r);
             xs.Count.Should().Be(1);
-            xs[0].Shape.Should().Be(p);
+            xs[0].Geometry.Should().Be(p);
         }
 
         [Fact]
@@ -52,7 +53,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, -1, 0), new Vector(0, 1, 0));
             var xs = p.LocalIntersects(r);
             xs.Count.Should().Be(1);
-            xs[0].Shape.Should().Be(p);
+            xs[0].Geometry.Should().Be(p);
         }
 
         [Fact]

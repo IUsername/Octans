@@ -76,7 +76,7 @@ namespace Octans
 
                 if (!min.HasValue || min.Value.T > _list[i].T)
                 {
-                    if (!isInShadow || _list[i].Shape.Material.CastsShadows)
+                    if (!isInShadow || _list[i].Geometry.Material.CastsShadows)
                     {
                         min = _list[i];
                     }

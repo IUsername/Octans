@@ -1,8 +1,9 @@
 ﻿using System;
 using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
     public class GroupTests
     {
@@ -24,7 +25,7 @@ namespace Octans.Test
         public void AddingChildToGroupAssignsGroupAsParent()
         {
             var g = new Group();
-            var s = new TestShape();
+            var s = new TestGeometry();
             g.AddChild(s);
             s.Parent.Should().Be(g);
             g.Children.Should().OnlyContain(c => c == s);
@@ -54,10 +55,10 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = g.LocalIntersects(r).ToSorted();
             xs.Should().HaveCount(4);
-            xs[0].Shape.Should().Be(s2);
-            xs[1].Shape.Should().Be(s2);
-            xs[2].Shape.Should().Be(s1);
-            xs[3].Shape.Should().Be(s1);
+            xs[0].Geometry.Should().Be(s2);
+            xs[1].Geometry.Should().Be(s2);
+            xs[2].Geometry.Should().Be(s1);
+            xs[3].Geometry.Should().Be(s1);
         }
 
         [Fact]
@@ -115,7 +116,7 @@ namespace Octans.Test
         [Fact]
         public void IntersectDoesNotTestChildrenIfRayMissesBounds()
         {
-            var c = new TestShape();
+            var c = new TestGeometry();
             var g = new Group();
             g.AddChild(c);
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
@@ -127,7 +128,7 @@ namespace Octans.Test
         [Fact]
         public void IntersectTestChildrenIfRayHitsBounds()
         {
-            var c = new TestShape();
+            var c = new TestGeometry();
             var g = new Group();
             g.AddChild(c);
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
@@ -157,7 +158,7 @@ namespace Octans.Test
             var s1 = new Sphere();
             var s2 = new Sphere();
             var g = new Group();
-            g.AddSubgroup(new IShape[] {s1, s2});
+            g.AddSubgroup(new IGeometry[] {s1, s2});
             g.Children.Should().HaveCount(1);
             g.Children[0].Should().BeAssignableTo<Group>();
             var sg = (Group) g.Children[0];

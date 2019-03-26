@@ -5,63 +5,63 @@ namespace Octans
     public static class SpaceExtensions
     {
         [Pure]
-        public static Ray ToLocal(in this Ray worldRay, in IShape shape) =>
-            worldRay.Transform(shape.TransformInverse());
+        public static Ray ToLocal(in this Ray worldRay, in IGeometry geometry) =>
+            worldRay.Transform(geometry.TransformInverse());
 
         [Pure]
-        public static IIntersections Intersects(this IShape shape, in Ray worldRay)
+        public static IIntersections Intersects(this IGeometry geometry, in Ray worldRay)
         {
-            var localRay = worldRay.ToLocal(in shape);
-            return shape.LocalIntersects(in localRay);
+            var localRay = worldRay.ToLocal(in geometry);
+            return geometry.LocalIntersects(in localRay);
         }
 
         [Pure]
-        public static Point ToLocal(this IShape shape, in Point worldPoint)
+        public static Point ToLocal(this IGeometry geometry, in Point worldPoint)
         {
             var world = worldPoint;
-            if (shape.Parent != null)
+            if (geometry.Parent != null)
             {
-                world = shape.Parent.ToLocal(in worldPoint);
+                world = geometry.Parent.ToLocal(in worldPoint);
             }
 
-            return shape.TransformInverse() * world;
+            return geometry.TransformInverse() * world;
         }
 
         [Pure]
-        public static Point ToLocal(in this Point worldPoint, IShape shape, IPattern pattern)
+        public static Point ToLocal(in this Point worldPoint, IGeometry geometry, IPattern pattern)
         {
             var world = worldPoint;
-            if (shape.Parent != null)
+            if (geometry.Parent != null)
             {
-                world = shape.Parent.ToLocal(in worldPoint);
+                world = geometry.Parent.ToLocal(in worldPoint);
             }
 
-            var localPoint = shape.ToLocal(in world);
+            var localPoint = geometry.ToLocal(in world);
             return pattern.TransformInverse() * localPoint;
         }
 
         [Pure]
-        public static Vector NormalAt(this IShape shape, in Point worldPoint, in Intersection intersection)
+        public static Vector NormalAt(this IGeometry geometry, in Point worldPoint, in Intersection intersection)
         {
-            var localPoint = shape.ToLocal(in worldPoint);
-            var localNormal = shape.LocalNormalAt(localPoint, in intersection);
-            return shape.NormalToWorld(in localNormal);
+            var localPoint = geometry.ToLocal(in worldPoint);
+            var localNormal = geometry.LocalNormalAt(localPoint, in intersection);
+            return geometry.NormalToWorld(in localNormal);
         }
 
         [Pure]
-        public static Vector NormalToWorld(this IShape shape, in Vector localNormal)
+        public static Vector NormalToWorld(this IGeometry geometry, in Vector localNormal)
         {
-            var normal = shape.TransformInverse().Transpose() * localNormal;
+            var normal = geometry.TransformInverse().Transpose() * localNormal;
             normal = normal.ZeroW().Normalize();
-            if (shape.Parent != null)
+            if (geometry.Parent != null)
             {
-                normal = NormalToWorld(shape.Parent, normal);
+                normal = NormalToWorld(geometry.Parent, normal);
             }
 
             return normal;
         }
 
         [Pure]
-        public static Bounds ParentSpaceBounds(this IShape shape) => shape.LocalBounds().Transform(shape.Transform);
+        public static Bounds ParentSpaceBounds(this IGeometry geometry) => geometry.LocalBounds().Transform(geometry.Transform);
     }
 }

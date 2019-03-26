@@ -1,6 +1,8 @@
-﻿namespace Octans.Test
+﻿using Octans.Geometry;
+
+namespace Octans.Test.Geometry
 {
-    internal class TestShape : ShapeBase
+    internal class TestGeometry : GeometryBase
     {
         public Ray SavedRay { get; private set; }
 

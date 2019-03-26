@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using Octans.Geometry;
+using Octans.Shading;
 
 namespace Octans.ConsoleApp
 {
@@ -60,7 +62,7 @@ namespace Octans.ConsoleApp
             var height = 400;
             var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var scene = new Scene(c, new RaytracedWorld(2, w));
+            var scene = new Scene(c, new PhongWorldShading(2, w));
             var aaa = new AdaptiveRenderer(4, 0.1f, scene);
             var canvas = new Canvas(width, height);
 

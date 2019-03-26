@@ -2,26 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Octans
+namespace Octans.Geometry
 {
-    public class Group : ShapeBase
+    public class Group : GeometryBase
     {
         private readonly Lazy<Bounds> _bounds;
-        private readonly List<IShape> _children;
+        private readonly List<IGeometry> _children;
 
         public Group()
         {
-            _children = new List<IShape>();
+            _children = new List<IGeometry>();
             _bounds = new Lazy<Bounds>(BoundsFactory);
         }
 
-        public Group(params IShape[] shapes)
+        public Group(params IGeometry[] geometries)
         {
-            _children = new List<IShape>(shapes);
+            _children = new List<IGeometry>(geometries);
             _bounds = new Lazy<Bounds>(BoundsFactory);
         }
 
-        public IReadOnlyList<IShape> Children => _children;
+        public IReadOnlyList<IGeometry> Children => _children;
 
         public override IIntersections LocalIntersects(in Ray localRay)
         {
@@ -49,21 +49,21 @@ namespace Octans
 
         private Bounds BoundsFactory()
         {
-            return Children.Aggregate(Bounds.Empty, (current, child) => current + child.ParentSpaceBounds());
+            return Children.Aggregate(Bounds.Empty, (current, child) => current + SpaceExtensions.ParentSpaceBounds(child));
         }
 
-        public void AddChild(IShape shape)
+        public void AddChild(IGeometry geometry)
         {
-            _children.Add(shape);
-            shape.Parent = this;
+            _children.Add(geometry);
+            geometry.Parent = this;
         }
 
-        public (IShape[] left, IShape[] right) PartitionChildren()
+        public (IGeometry[] left, IGeometry[] right) PartitionChildren()
         {
             var (l, r) = LocalBounds().Split();
-            var left = new List<IShape>();
-            var right = new List<IShape>();
-            var remaining = new List<IShape>();
+            var left = new List<IGeometry>();
+            var right = new List<IGeometry>();
+            var remaining = new List<IGeometry>();
             foreach (var child in _children)
             {
                 var cb = child.ParentSpaceBounds();
@@ -86,9 +86,9 @@ namespace Octans
             return (left.ToArray(), right.ToArray());
         }
 
-        public Group AddSubgroup(IShape[] shapes)
+        public Group AddSubgroup(IGeometry[] geometries)
         {
-            var g = new Group(shapes);
+            var g = new Group(geometries);
             AddChild(g);
             return g;
         }

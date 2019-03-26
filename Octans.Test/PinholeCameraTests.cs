@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using Octans.Shading;
 using Xunit;
 
 namespace Octans.Test
@@ -69,7 +70,7 @@ namespace Octans.Test
             var width = 11;
             var height = 11;
             var c = new PinholeCamera(transform, MathF.PI / 2f, width, height);
-            var s = new Scene(c, new RaytracedWorld(1,w));
+            var s = new Scene(c, new PhongWorldShading(1,w));
             var canvas = new Canvas(width,height);
             RenderContext.Render(canvas, s);
             canvas.PixelAt(5, 5).Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Octans.Geometry;
+using Octans.Test.Geometry;
 using Xunit;
 
 namespace Octans.Test
@@ -15,7 +17,7 @@ namespace Octans.Test
             var i = new Intersection(4, shape);
             var comps = new IntersectionInfo(i, r);
             comps.T.Should().Be(4f);
-            comps.Shape.Should().Be(shape);
+            comps.Geometry.Should().Be(shape);
             comps.Point.Should().Be(new Point(0, 0, -1));
             comps.Eye.Should().Be(new Vector(0, 0, -1));
             comps.Normal.Should().Be(new Vector(0, 0, -1));

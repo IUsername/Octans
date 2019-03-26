@@ -1,11 +1,11 @@
-﻿namespace Octans
+﻿namespace Octans.Geometry
 {
-    public abstract class ShapeBase : IShape
+    public abstract class GeometryBase : IGeometry
     {
         private Matrix _inverse;
         private Matrix _transform;
 
-        protected ShapeBase()
+        protected GeometryBase()
         {
             Transform = Matrix.Identity;
             _inverse = Matrix.Identity;
@@ -41,7 +41,7 @@
             Material = material;
         }
 
-        public IShape Parent { get; set; }
+        public IGeometry Parent { get; set; }
         public abstract Bounds LocalBounds();
 
         public virtual void Divide(int threshold)

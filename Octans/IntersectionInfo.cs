@@ -13,10 +13,10 @@
             IIntersections intersections)
         {
             T = intersection.T;
-            Shape = intersection.Shape;
+            Geometry = intersection.Geometry;
             Point = ray.Position(T);
             Eye = -ray.Direction;
-            Normal = Shape.NormalAt(in Point, in intersection);
+            Normal = Geometry.NormalAt(in Point, in intersection);
             if (Normal % Eye < 0f)
             {
                 IsInside = true;
@@ -36,7 +36,7 @@
         }
 
         public readonly float T;
-        public readonly IShape Shape;
+        public readonly IGeometry Geometry;
         public readonly Point Point;
         public readonly Point OverPoint;
         public readonly Point UnderPoint;

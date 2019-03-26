@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using Octans.Geometry;
 using Pidgin;
 
 namespace Octans
@@ -222,7 +223,7 @@ namespace Octans
                         var p1 = vertices[f.Indices[0]];
                         var p2 = vertices[f.Indices[i]];
                         var p3 = vertices[f.Indices[i + 1]];
-                        IShape t;
+                        IGeometry t;
                         if (f.Normals[0].HasValue && f.Normals[i].HasValue && f.Normals[i + 1].HasValue)
                         {
                             var n1 = normals[f.Normals[0].Value];

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Octans
+namespace Octans.Geometry
 {
-    public class Plane : ShapeBase
+    public class Plane : GeometryBase
     {
         private const float Epsilon = 0.0001f;
 

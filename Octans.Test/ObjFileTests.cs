@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using Octans.Geometry;
+using Octans.Shading;
 using Xunit;
 
 namespace Octans.Test
@@ -194,7 +196,7 @@ f 1 3 4
             var height = 200;
             var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 32f, width, height);
-            var s = new Scene(c, new RaytracedWorld(1, w));
+            var s = new Scene(c, new PhongWorldShading(1, w));
             var canvas = new Canvas(width, height);
             RenderContext.Render(canvas, s);
 

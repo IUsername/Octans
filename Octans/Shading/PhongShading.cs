@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Octans
+namespace Octans.Shading
 {
-    public static class Shading
+    public static class PhongShading
     {
         public static bool IsShadowed(World w, in Point p, in Point lightPoint)
         {
@@ -16,21 +16,21 @@ namespace Octans
             return h.HasValue && h.Value.T < distance;
         }
 
-        public static Color ShapeColor(this IPattern pattern, IShape shape, Point worldPoint)
+        public static Color ShapeColor(this IPattern pattern, IGeometry geometry, Point worldPoint)
         {
-            var local = worldPoint.ToLocal(shape, pattern);
+            var local = worldPoint.ToLocal(geometry, pattern);
             return pattern.LocalColorAt(in local);
         }
 
         public static Color Lighting(Material m,
-                                     IShape shape,
+                                     IGeometry geometry,
                                      ILight light,
                                      Point worldPoint,
                                      Vector eyeVector,
                                      Vector normalVector,
                                      float intensity)
         {
-            var effectiveColor = m.Pattern.ShapeColor(shape, worldPoint) * light.Intensity;
+            var effectiveColor = m.Pattern.ShapeColor(geometry, worldPoint) * light.Intensity;
             var ambient = effectiveColor * m.Ambient;
 
             if (intensity == 0.0f)
@@ -70,8 +70,8 @@ namespace Octans
             {
                 var intensity = IntensityAt(world, info.OverPoint, light);
                 // TODO: Use OverPoint here?
-                surface += Lighting(info.Shape.Material,
-                                    info.Shape,
+                surface += Lighting(info.Geometry.Material,
+                                    info.Geometry,
                                     light,
                                     info.OverPoint,
                                     info.Eye,
@@ -82,7 +82,7 @@ namespace Octans
             var reflected = ReflectedColor(world, info, remaining);
             var refracted = RefractedColor(world, info, remaining);
 
-            var material = info.Shape.Material;
+            var material = info.Geometry.Material;
             if (material.Reflective > 0f && material.Transparency > 0f)
             {
                 var reflectance = Schlick(in info);
@@ -113,7 +113,7 @@ namespace Octans
                 return Colors.Black;
             }
 
-            var reflective = info.Shape.Material.Reflective;
+            var reflective = info.Geometry.Material.Reflective;
             if (reflective <= 0f)
             {
                 return Colors.Black;
@@ -131,7 +131,7 @@ namespace Octans
                 return Colors.Black;
             }
 
-            if (info.Shape.Material.Transparency <= 0f)
+            if (info.Geometry.Material.Transparency <= 0f)
             {
                 return Colors.Black;
             }
@@ -148,7 +148,7 @@ namespace Octans
             var cosT = MathF.Sqrt(1f - sin2T);
             var direction = info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
             var refractedRay = new Ray(info.UnderPoint, direction);
-            return ColorAt(world, in refractedRay, --remaining) * info.Shape.Material.Transparency;
+            return ColorAt(world, in refractedRay, --remaining) * info.Geometry.Material.Transparency;
         }
 
         public static float Schlick(in IntersectionInfo info)

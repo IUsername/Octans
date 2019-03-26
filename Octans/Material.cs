@@ -32,7 +32,7 @@
         public float Reflective { get; set; }
         public float Transparency { get; set; }
         public float RefractiveIndex { get; set; }
-        public float Roughness { get;  set; }
+        public float Roughness { get; set; }
 
         public float Metallic { get; set; }
 

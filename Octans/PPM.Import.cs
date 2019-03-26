@@ -47,9 +47,6 @@ namespace Octans
 
         private static Parser<char, int> ColorFragment => Tok(Parser.Num).Labelled("Color fragment");
 
-        //private static Parser<char, IPPMPart> PixelData =>
-        //    Tok(Color).Many().Select(c => (IPPMPart) new PixelDataPart(c)).Labelled("Pixel data");
-
         private static Parser<char, IPPMPart> PixelData =>
             Tok(ColorFragment).Many().Select(c => (IPPMPart)new PixelDataPart(c)).Labelled("Pixel data");
 

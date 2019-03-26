@@ -1,18 +1,19 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
     public class CubeTests
     {
-        private static (float t1, float t2) ExtractT1T2(IShape c, Point origin, Vector direction)
+        private static (float t1, float t2) ExtractT1T2(IGeometry c, Point origin, Vector direction)
         {
             var r = new Ray(origin, direction);
             var xs = c.LocalIntersects(r);
             return (t1: xs[0].T, t2: xs[1].T);
         }
 
-        private static int IntersectCount(IShape c, Point origin, Vector direction)
+        private static int IntersectCount(IGeometry c, Point origin, Vector direction)
         {
             var r = new Ray(origin, direction);
             var xs = c.LocalIntersects(r);

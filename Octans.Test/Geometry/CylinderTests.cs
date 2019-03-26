@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
     public class CylinderTests
     {
-        private static (float t1, float t2) ExtractT1T2(IShape c, Point origin, Vector direction)
+        private static (float t1, float t2) ExtractT1T2(IGeometry c, Point origin, Vector direction)
         {
             var n = direction.Normalize();
             var r = new Ray(origin, n);
@@ -13,7 +14,7 @@ namespace Octans.Test
             return (t1: xs[0].T, t2: xs[1].T);
         }
 
-        private static int IntersectCount(IShape c, Point origin, Vector direction)
+        private static int IntersectCount(IGeometry c, Point origin, Vector direction)
         {
             var n = direction.Normalize();
             var r = new Ray(origin, n);

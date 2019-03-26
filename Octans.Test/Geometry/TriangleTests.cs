@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
     public class TriangleTests
     {

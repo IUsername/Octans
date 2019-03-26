@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Pidgin;
 
 namespace Octans
 {
@@ -71,6 +70,7 @@ namespace Octans
             }
         }
 
+        // TODO: Move to MathFunctions
         private static int Clamp(int v, int min, int max) => Math.Min(max, Math.Max(min, v));
 
         public static void ToFile(Canvas c, string folderPath, string fileName)

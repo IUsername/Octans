@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Octans
+namespace Octans.Geometry
 {
-    public class Sphere : ShapeBase
+    public class Sphere : GeometryBase
     {
         public override IIntersections LocalIntersects(in Ray localRay)
         {

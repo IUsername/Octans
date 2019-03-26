@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
 namespace Octans.Test
@@ -11,7 +12,7 @@ namespace Octans.Test
             var s = new Sphere();
             var i = new Intersection(3.5f, s);
             i.T.Should().Be(3.5f);
-            i.Shape.Should().Be(s);
+            i.Geometry.Should().Be(s);
         }
 
         [Fact]

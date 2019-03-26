@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
+using Octans.Shading;
 using Xunit;
 
 namespace Octans.Test
@@ -30,8 +32,8 @@ namespace Octans.Test
             var eye = new Vector(0, 0, -1);
             var normal = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), Colors.White);
-            var c1 = Shading.Lighting(m, s, light, new Point(0.9f, 0, 0), eye, normal, 1);
-            var c2 = Shading.Lighting(m, s, light, new Point(1.1f, 0, 0), eye, normal, 1);
+            var c1 = PhongShading.Lighting(m, s, light, new Point(0.9f, 0, 0), eye, normal, 1);
+            var c2 = PhongShading.Lighting(m, s, light, new Point(1.1f, 0, 0), eye, normal, 1);
             c1.Should().Be(Colors.White);
             c2.Should().Be(Colors.Black);
         }

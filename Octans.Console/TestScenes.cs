@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Octans.Geometry;
 
 namespace Octans.ConsoleApp
 {
@@ -16,9 +17,9 @@ namespace Octans.ConsoleApp
                                pathItems.Take(pathItems.Length - pos - 1));
         }
 
-        private static Solid RoundedCube(float radius, Material mat)
+        private static ConstructiveSolid RoundedCube(float radius, Material mat)
         {
-            Solid SolidFaces(float r)
+            ConstructiveSolid SolidFaces(float r)
             {
                 var cY = new Cube();
                 cY.SetTransform(Transforms.Scale(1f - r, 1f, 1f - r));
@@ -27,15 +28,15 @@ namespace Octans.ConsoleApp
                 var cX = new Cube();
                 cX.SetTransform(Transforms.Scale(1f, 1f - r, 1f - r));
                 cX.SetMaterial(mat);
-                var su = new Solid(SolidOp.Union, cY, cX);
+                var su = new ConstructiveSolid(SolidOp.Union, cY, cX);
 
                 var cZ = new Cube();
                 cZ.SetTransform(Transforms.Scale(1f - r, 1f - r, 1f));
                 cZ.SetMaterial(mat);
-                return new Solid(SolidOp.Union, su, cZ);
+                return new ConstructiveSolid(SolidOp.Union, su, cZ);
             }
 
-            Solid Union(IShape a, IShape b) => new Solid(SolidOp.Union, a, b);
+            ConstructiveSolid Union(IGeometry a, IGeometry b) => new ConstructiveSolid(SolidOp.Union, a, b);
 
             Cylinder CreateCylinder(float r, Point from, Material material, Matrix rotation)
             {
@@ -101,7 +102,7 @@ namespace Octans.ConsoleApp
             return s;
         }
 
-        private static Solid CutPips(Solid solid, Material material)
+        private static ConstructiveSolid CutPips(ConstructiveSolid csg, Material material)
         {
             Sphere PipSphere(Point point, Material mat)
             {
@@ -111,43 +112,43 @@ namespace Octans.ConsoleApp
                 return sphere;
             }
 
-            Solid Diff(IShape s, IShape child) => new Solid(SolidOp.Difference, s, child);
+            ConstructiveSolid Diff(IGeometry s, IGeometry child) => new ConstructiveSolid(SolidOp.Difference, s, child);
 
             var offset = 1.15f;
 
             // 1
-            solid = Diff(solid, PipSphere(new Point(0, 0, -offset), material));
+            csg = Diff(csg, PipSphere(new Point(0, 0, -offset), material));
 
             //2
-            solid = Diff(solid, PipSphere(new Point(0.4f, offset, 0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(-0.4f, offset, -0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(0.4f, offset, 0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(-0.4f, offset, -0.4f), material));
 
             //3
-            solid = Diff(solid, PipSphere(new Point(-offset, 0.4f, 0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(-offset, -0.4f, -0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(-offset, 0.0f, 0.0f), material));
+            csg = Diff(csg, PipSphere(new Point(-offset, 0.4f, 0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(-offset, -0.4f, -0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(-offset, 0.0f, 0.0f), material));
 
             //4        
-            solid = Diff(solid, PipSphere(new Point(offset, 0.4f, 0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(offset, -0.4f, -0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(offset, -0.4f, 0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(offset, 0.4f, -0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(offset, 0.4f, 0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(offset, -0.4f, -0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(offset, -0.4f, 0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(offset, 0.4f, -0.4f), material));
 
             //5       
-            solid = Diff(solid, PipSphere(new Point(0.4f, -offset, 0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(-0.4f, -offset, -0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(-0.4f, -offset, 0.4f), material));
-            solid = Diff(solid, PipSphere(new Point(0.4f, -offset, -0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(0.4f, -offset, 0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(-0.4f, -offset, -0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(-0.4f, -offset, 0.4f), material));
+            csg = Diff(csg, PipSphere(new Point(0.4f, -offset, -0.4f), material));
 
             //6       
-            solid = Diff(solid, PipSphere(new Point(0.4f, 0.4f, offset), material));
-            solid = Diff(solid, PipSphere(new Point(0.0f, 0.4f, offset), material));
-            solid = Diff(solid, PipSphere(new Point(-0.4f, 0.4f, offset), material));
-            solid = Diff(solid, PipSphere(new Point(0.4f, -0.4f, offset), material));
-            solid = Diff(solid, PipSphere(new Point(0.0f, -0.4f, offset), material));
-            solid = Diff(solid, PipSphere(new Point(-0.4f, -0.4f, offset), material));
+            csg = Diff(csg, PipSphere(new Point(0.4f, 0.4f, offset), material));
+            csg = Diff(csg, PipSphere(new Point(0.0f, 0.4f, offset), material));
+            csg = Diff(csg, PipSphere(new Point(-0.4f, 0.4f, offset), material));
+            csg = Diff(csg, PipSphere(new Point(0.4f, -0.4f, offset), material));
+            csg = Diff(csg, PipSphere(new Point(0.0f, -0.4f, offset), material));
+            csg = Diff(csg, PipSphere(new Point(-0.4f, -0.4f, offset), material));
 
-            return solid;
+            return csg;
         }
 
         private static CubeMap CreateTestCubeMap()

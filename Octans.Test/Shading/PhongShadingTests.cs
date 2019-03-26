@@ -1,10 +1,13 @@
 ﻿using System;
 using FluentAssertions;
+using Octans.Geometry;
+using Octans.Shading;
+using Octans.Test.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Shading
 {
-    public class ShadingTests
+    public class PhongShadingTests
     {
         [Fact]
         public void EyeBetweenLightAndSurface()
@@ -15,7 +18,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(1.9f, 1.9f, 1.9f));
         }
 
@@ -28,7 +31,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(1.0f, 1.0f, 1.0f));
         }
 
@@ -41,7 +44,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(0.7364f, 0.7364f, 0.7364f));
         }
 
@@ -54,7 +57,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, -MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(1.6364f, 1.6364f, 1.6364f));
         }
 
@@ -67,7 +70,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, 10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
             result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
         }
 
@@ -80,7 +83,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 0);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 0);
             result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
         }
 
@@ -93,7 +96,7 @@ namespace Octans.Test
             var eyeV = new Vector(0, 0, -1f);
             var normalV = new Vector(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = Shading.Lighting(m, s, light, position, eyeV, normalV, 0.5f);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 0.5f);
             result.Should().BeEquivalentTo(new Color(0.55f, 0.55f, 0.55f));
         }
 
@@ -105,7 +108,7 @@ namespace Octans.Test
             var shape = w.Objects[0];
             var i = new Intersection(4f, shape);
             var comps = new IntersectionInfo(i, r);
-            var c = Shading.HitColor(w, comps);
+            var c = PhongShading.HitColor(w, comps);
             c.Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
         }
 
@@ -118,7 +121,7 @@ namespace Octans.Test
             var shape = w.Objects[1];
             var i = new Intersection(0.5f, shape);
             var comps = new IntersectionInfo(i, r);
-            var c = Shading.HitColor(w, comps);
+            var c = PhongShading.HitColor(w, comps);
             c.Should().Be(new Color(0.90498f, 0.90498f, 0.90498f));
         }
 
@@ -127,7 +130,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
-            var c = Shading.ColorAt(w, r);
+            var c = PhongShading.ColorAt(w, r);
             c.Should().Be(new Color(0, 0, 0));
         }
 
@@ -136,7 +139,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var c = Shading.ColorAt(w, r);
+            var c = PhongShading.ColorAt(w, r);
             c.Should().Be(new Color(0.38066f, 0.47583f, 0.2855f));
         }
 
@@ -147,7 +150,7 @@ namespace Octans.Test
             w.Objects[0].Material.Ambient = 1f;
             w.Objects[1].Material.Ambient = 1f;
             var r = new Ray(new Point(0, 0, 0.75f), new Vector(0, 0, -1));
-            var c = Shading.ColorAt(w, r);
+            var c = PhongShading.ColorAt(w, r);
             c.Should().Be(w.Objects[1].Material.Pattern.LocalColorAt(Point.Zero));
         }
 
@@ -156,7 +159,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var p = new Point(0, 10, 0);
-            Shading.IsShadowed(w, p, w.Lights[0].Position).Should().BeFalse();
+            PhongShading.IsShadowed(w, p, w.Lights[0].Position).Should().BeFalse();
         }
 
         [Fact]
@@ -164,7 +167,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var p = new Point(10, -10, 10);
-            Shading.IsShadowed(w, p, w.Lights[0].Position).Should().BeTrue();
+            PhongShading.IsShadowed(w, p, w.Lights[0].Position).Should().BeTrue();
         }
 
         [Fact]
@@ -172,7 +175,7 @@ namespace Octans.Test
         {
             var w = World.Default();
             var p = new Point(-2, 2, -2);
-            Shading.IsShadowed(w, p, w.Lights[0].Position).Should().BeFalse();
+            PhongShading.IsShadowed(w, p, w.Lights[0].Position).Should().BeFalse();
         }
 
         [Fact]
@@ -184,7 +187,7 @@ namespace Octans.Test
             shape.Material.Ambient = 1f;
             var i = new Intersection(1, shape);
             var comps = new IntersectionInfo(i, r);
-            Shading.ReflectedColor(w, comps).Should().Be(Colors.Black);
+            PhongShading.ReflectedColor(w, comps).Should().Be(Colors.Black);
         }
 
         [Fact]
@@ -198,7 +201,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
-            Shading.ReflectedColor(w, comps).Should().Be(new Color(0.19032f, 0.2379f, 0.14274f));
+            PhongShading.ReflectedColor(w, comps).Should().Be(new Color(0.19032f, 0.2379f, 0.14274f));
         }
 
         [Fact]
@@ -212,7 +215,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
-            Shading.HitColor(w, comps).Should().Be(new Color(0.87677f, 0.92436f, 0.82918f));
+            PhongShading.HitColor(w, comps).Should().Be(new Color(0.87677f, 0.92436f, 0.82918f));
         }
 
         [Fact]
@@ -226,7 +229,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
-            Shading.ReflectedColor(w, comps, 0).Should().Be(Colors.Black);
+            PhongShading.ReflectedColor(w, comps, 0).Should().Be(Colors.Black);
         }
 
         [Fact]
@@ -243,7 +246,7 @@ namespace Octans.Test
             w.SetObjects(lower, upper);
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 1, 0));
             // Test to ensure an infinite loop is not hit.
-            Shading.ColorAt(w, r).Should().NotBe(new Color(1, 0, 0));
+            PhongShading.ColorAt(w, r).Should().NotBe(new Color(1, 0, 0));
         }
 
         [Fact]
@@ -254,7 +257,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = Intersections.Create(new Intersection(4f, s), new Intersection(6f, s));
             var comps = new IntersectionInfo(xs[0], r, xs);
-            Shading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
+            PhongShading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
         }
 
 
@@ -268,7 +271,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = Intersections.Create(new Intersection(4f, s), new Intersection(6f, s));
             var comps = new IntersectionInfo(xs[0], r, xs);
-            Shading.RefractedColor(w, comps, 0).Should().Be(Colors.Black);
+            PhongShading.RefractedColor(w, comps, 0).Should().Be(Colors.Black);
         }
 
         [Fact]
@@ -284,7 +287,7 @@ namespace Octans.Test
                 new Intersection(MathF.Sqrt(2f) / 2f, s));
             // Inside sphere so look at second intersection.
             var comps = new IntersectionInfo(xs[1], r, xs);
-            Shading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
+            PhongShading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
         }
 
         [Fact]
@@ -304,7 +307,7 @@ namespace Octans.Test
                 new Intersection(0.4899f, b),
                 new Intersection(0.9899f, a));
             var comps = new IntersectionInfo(xs[2], r, xs);
-            Shading.RefractedColor(w, comps, 5).Should().Be(new Color(0, 0.99888f, 0.04725f));
+            PhongShading.RefractedColor(w, comps, 5).Should().Be(new Color(0, 0.99888f, 0.04725f));
         }
 
         [Fact]
@@ -323,7 +326,7 @@ namespace Octans.Test
             var i = new Intersection(MathF.Sqrt(2f), floor);
             var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(xs[0], r, xs);
-            Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93642f, 0.68642f, 0.68642f));
+            PhongShading.HitColor(w, comps, 5).Should().Be(new Color(0.93642f, 0.68642f, 0.68642f));
         }
 
         [Fact]
@@ -334,7 +337,7 @@ namespace Octans.Test
             var xs = Intersections.Create(new Intersection(-MathF.Sqrt(2f) / 2f, s),
                                           new Intersection(MathF.Sqrt(2f) / 2f, s));
             var comps = new IntersectionInfo(xs[1], r, xs);
-            var reflectance = Shading.Schlick(comps);
+            var reflectance = PhongShading.Schlick(comps);
             reflectance.Should().Be(1f);
         }
 
@@ -346,7 +349,7 @@ namespace Octans.Test
             var xs = Intersections.Create(new Intersection(-1f, s),
                                           new Intersection(1f, s));
             var comps = new IntersectionInfo(xs[1], r, xs);
-            var reflectance = Shading.Schlick(comps);
+            var reflectance = PhongShading.Schlick(comps);
             reflectance.Should().BeApproximately(0.04f, 0.0001f);
         }
 
@@ -357,7 +360,7 @@ namespace Octans.Test
             var r = new Ray(new Point(0, 0.99f, -2f), new Vector(0, 0, 1));
             var xs = Intersections.Create(new Intersection(1.8589f, s));
             var comps = new IntersectionInfo(xs[0], r, xs);
-            var reflectance = Shading.Schlick(comps);
+            var reflectance = PhongShading.Schlick(comps);
             reflectance.Should().BeApproximately(0.48873f, 0.0001f);
         }
 
@@ -377,7 +380,7 @@ namespace Octans.Test
             var i = new Intersection(MathF.Sqrt(2f), floor);
             var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(xs[0], r, xs);
-            Shading.HitColor(w, comps, 5).Should().Be(new Color(0.93391f, 0.69643f, 0.69243f));
+            PhongShading.HitColor(w, comps, 5).Should().Be(new Color(0.93391f, 0.69643f, 0.69243f));
         }
 
         [Fact]
@@ -385,13 +388,13 @@ namespace Octans.Test
         {
             var w = World.Default();
             var light = w.Lights[0];
-            Shading.IntensityAt(w, new Point(0, 1.0001f, 0), light).Should().BeApproximately(1.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(-1.0001f, 0, 0), light).Should().BeApproximately(1.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0, 0, -1.0001f), light).Should().BeApproximately(1.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0, 0, 1.0001f), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1.0001f, 0, 0), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0, -1.0001f, 0), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0, 0, 0), light).Should().BeApproximately(0.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0, 1.0001f, 0), light).Should().BeApproximately(1.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(-1.0001f, 0, 0), light).Should().BeApproximately(1.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0, 0, -1.0001f), light).Should().BeApproximately(1.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0, 0, 1.0001f), light).Should().BeApproximately(0.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(1.0001f, 0, 0), light).Should().BeApproximately(0.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0, -1.0001f, 0), light).Should().BeApproximately(0.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0, 0, 0), light).Should().BeApproximately(0.0f, 0.0001f);
         }
 
         [Fact]
@@ -402,11 +405,11 @@ namespace Octans.Test
             var v1 = new Vector(1, 0, 0);
             var v2 = new Vector(0, 1, 0);
             var light = new AreaLight(corner, v1, 2, v2, 2, Colors.White);
-            Shading.IntensityAt(w, new Point(0, 0, 2), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1, -1, 2), light).Should().BeApproximately(0.25f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1.5f, 0, 2), light).Should().BeApproximately(0.5f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0, 0, 2), light).Should().BeApproximately(0.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(1, -1, 2), light).Should().BeApproximately(0.25f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(1.5f, 0, 2), light).Should().BeApproximately(0.5f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
         }
 
 
@@ -418,11 +421,11 @@ namespace Octans.Test
             var v1 = new Vector(1, 0, 0);
             var v2 = new Vector(0, 1, 0);
             var light = new AreaLight(corner, v1, 2, v2, 2, Colors.White, new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f));
-            Shading.IntensityAt(w, new Point(0, 0, 2), light).Should().BeApproximately(0.0f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1, -1, 2), light).Should().BeApproximately(0.75f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1.5f, 0, 2), light).Should().BeApproximately(0.75f, 0.0001f);
-            Shading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
-            Shading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0, 0, 2), light).Should().BeApproximately(0.0f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(1, -1, 2), light).Should().BeApproximately(0.75f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(1.5f, 0, 2), light).Should().BeApproximately(0.75f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(1.25f, 1.25f, 3), light).Should().BeApproximately(0.75f, 0.0001f);
+            PhongShading.IntensityAt(w, new Point(0f, 0f, -2), light).Should().BeApproximately(1.0f, 0.0001f);
         }
 
         [Fact]
@@ -440,13 +443,13 @@ namespace Octans.Test
             var pt = new Point(0, 0, -1);
             var eyeV = (eye - pt).Normalize();
             var normal = new Vector(pt.X, pt.Y, pt.Z);
-            var r = Shading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
+            var r = PhongShading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
             r.Should().Be(new Color(0.9965f, 0.9965f, 0.9965f));
 
             pt = new Point(0, 0.7071f, -0.7071f);
             eyeV = (eye - pt).Normalize();
             normal = new Vector(pt.X, pt.Y, pt.Z);
-            r = Shading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
+            r = PhongShading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
             r.Should().Be(new Color(0.6232f, 0.6232f, 0.6232f));
         }
     }

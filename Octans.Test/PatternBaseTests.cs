@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
+using Octans.Shading;
 using Xunit;
 
 namespace Octans.Test

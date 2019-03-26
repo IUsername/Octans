@@ -7,16 +7,16 @@ namespace Octans
         public readonly float U;
         public readonly float V;
         public readonly float T;
-        public readonly IShape Shape;
+        public readonly IGeometry Geometry;
 
-        public Intersection(float t, IShape shape) : this(t, shape, 0.0f, 0.0f)
+        public Intersection(float t, IGeometry geometry) : this(t, geometry, 0.0f, 0.0f)
         {
         }
 
-        public Intersection(float t, IShape shape, float u, float v)
+        public Intersection(float t, IGeometry geometry, float u, float v)
         {
             T = t;
-            Shape = shape;
+            Geometry = geometry;
             U = u;
             V = v;
         }
@@ -24,7 +24,7 @@ namespace Octans
         public bool Equals(Intersection other) => T.Equals(other.T)
                                                   && U.Equals(other.U)
                                                   && V.Equals(other.V)
-                                                  && ReferenceEquals(Shape, other.Shape);
+                                                  && ReferenceEquals(Geometry, other.Geometry);
 
         public override bool Equals(object obj)
         {
@@ -43,7 +43,7 @@ namespace Octans
                 var hashCode = U.GetHashCode();
                 hashCode = (hashCode * 397) ^ V.GetHashCode();
                 hashCode = (hashCode * 397) ^ T.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Shape != null ? Shape.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Geometry != null ? Geometry.GetHashCode() : 0);
                 return hashCode;
             }
         }

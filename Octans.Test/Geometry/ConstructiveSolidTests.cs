@@ -1,16 +1,17 @@
 ﻿using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
-    public class SolidTests
+    public class ConstructiveSolidTests
     {
         [Fact]
         public void ContainsOperationAndTwoShapes()
         {
             var s1 = new Sphere();
             var s2 = new Cube();
-            var c = new Solid(SolidOp.Union, s1, s2);
+            var c = new ConstructiveSolid(SolidOp.Union, s1, s2);
             c.Left.Should().Be(s1);
             c.Right.Should().Be(s2);
             s1.Parent.Should().Be(c);
@@ -21,32 +22,32 @@ namespace Octans.Test
         public void OperationsRules()
         {
             // ReSharper disable ArgumentsStyleLiteral
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: true, inR: true).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: true, inR: false).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: false, inR: true).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: false, inR: false).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: true, inR: true).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: true, inR: false).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: false, inR: true).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: false, inR: false).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: true, inR: true).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: true, inR: false).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: false, inR: true).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: true, inL: false, inR: false).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: true, inR: true).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: true, inR: false).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: false, inR: true).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Union, lHit: false, inL: false, inR: false).Should().BeTrue();
 
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: true, inR: true).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: true, inR: false).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: false, inR: true).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: false, inR: false).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: true, inR: true).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: true, inR: false).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: false, inR: true).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: false, inR: false).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: true, inR: true).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: true, inR: false).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: false, inR: true).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: true, inL: false, inR: false).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: true, inR: true).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: true, inR: false).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: false, inR: true).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Intersection, lHit: false, inL: false, inR: false).Should().BeFalse();
 
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: true, inR: true).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: true, inR: false).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: false, inR: true).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: false, inR: false).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: true, inR: true).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: true, inR: false).Should().BeTrue();
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: false, inR: true).Should().BeFalse();
-            Solid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: false, inR: false).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: true, inR: true).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: true, inR: false).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: false, inR: true).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: true, inL: false, inR: false).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: true, inR: true).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: true, inR: false).Should().BeTrue();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: false, inR: true).Should().BeFalse();
+            ConstructiveSolid.IntersectionAllowed(SolidOp.Difference, lHit: false, inL: false, inR: false).Should().BeFalse();
             // ReSharper restore ArgumentsStyleLiteral
         }
 
@@ -59,19 +60,19 @@ namespace Octans.Test
                                           new Intersection(2, s2),
                                           new Intersection(3, s1),
                                           new Intersection(4, s2));
-            var c = new Solid(SolidOp.Union, s1, s2);
+            var c = new ConstructiveSolid(SolidOp.Union, s1, s2);
             var result = c.FilterIntersections(xs);
             result.Count.Should().Be(2);
             result[0].Should().Be(xs[0]);
             result[1].Should().Be(xs[3]);
 
-            c = new Solid(SolidOp.Intersection, s1, s2);
+            c = new ConstructiveSolid(SolidOp.Intersection, s1, s2);
             result = c.FilterIntersections(xs);
             result.Count.Should().Be(2);
             result[0].Should().Be(xs[1]);
             result[1].Should().Be(xs[2]);
 
-            c = new Solid(SolidOp.Difference, s1, s2);
+            c = new ConstructiveSolid(SolidOp.Difference, s1, s2);
             result = c.FilterIntersections(xs);
             result.Count.Should().Be(2);
             result[0].Should().Be(xs[0]);
@@ -81,7 +82,7 @@ namespace Octans.Test
         [Fact]
         public void RayMissesSolid()
         {
-            var c = new Solid(SolidOp.Union, new Sphere(), new Cube());
+            var c = new ConstructiveSolid(SolidOp.Union, new Sphere(), new Cube());
             var r = new Ray(new Point(0, 2, -5), new Vector(0, 0, 1));
             var xs = c.LocalIntersects(in r);
             xs.Count.Should().Be(0);
@@ -93,14 +94,14 @@ namespace Octans.Test
             var s1 = new Sphere();
             var s2 = new Sphere();
             s2.SetTransform(Transforms.TranslateZ(0.5f));
-            var c = new Solid(SolidOp.Union, s1, s2);
+            var c = new ConstructiveSolid(SolidOp.Union, s1, s2);
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = c.LocalIntersects(in r);
             xs.Count.Should().Be(2);
             xs[0].T.Should().Be(4f);
-            xs[0].Shape.Should().Be(s1);
+            xs[0].Geometry.Should().Be(s1);
             xs[1].T.Should().Be(6.5f);
-            xs[1].Shape.Should().Be(s2);
+            xs[1].Geometry.Should().Be(s2);
         }
 
         [Fact]
@@ -109,7 +110,7 @@ namespace Octans.Test
             var l = new Sphere();
             var r = new Sphere();
             r.SetTransform(Transforms.Translate(2, 3, 4));
-            var s = new Solid(SolidOp.Difference, l, r);
+            var s = new ConstructiveSolid(SolidOp.Difference, l, r);
             var b = s.LocalBounds();
             b.Min.Should().Be(new Point(-1, -1, -1));
             b.Max.Should().Be(new Point(3, 4, 5));
@@ -118,9 +119,9 @@ namespace Octans.Test
         [Fact]
         public void IntersectDoesNotTestChildrenIfRayMissesBounds()
         {
-            var l = new TestShape();
-            var r = new TestShape();
-            var s = new Solid(SolidOp.Difference, l, r);
+            var l = new TestGeometry();
+            var r = new TestGeometry();
+            var s = new ConstructiveSolid(SolidOp.Difference, l, r);
             var ray = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
             var xs = s.Intersects(ray);
             // Child not tested so SavedRay remains default.
@@ -131,9 +132,9 @@ namespace Octans.Test
         [Fact]
         public void IntersectTestChildrenIfRayHitsBounds()
         {
-            var l = new TestShape();
-            var r = new TestShape();
-            var s = new Solid(SolidOp.Difference, l, r);
+            var l = new TestGeometry();
+            var r = new TestGeometry();
+            var s = new ConstructiveSolid(SolidOp.Difference, l, r);
             var ray = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = s.Intersects(ray);
             // Child tested so SavedRay in not default.
@@ -154,7 +155,7 @@ namespace Octans.Test
             var s4 = new Sphere();
             s4.SetTransform(Transforms.Translate(0, 0, 1.5f));
             var right = new Group(s3, s4);
-            var s = new Solid(SolidOp.Difference, left, right);
+            var s = new ConstructiveSolid(SolidOp.Difference, left, right);
             s.Divide(1);
             var lg = (Group) s.Left;
             var rg = (Group) s.Right;

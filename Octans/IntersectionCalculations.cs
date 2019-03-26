@@ -29,10 +29,10 @@ namespace Octans
                     var isCurrent = current == intersection;
                     if (isCurrent && _containers.Count > 0)
                     {
-                        n1 = _containers[_containers.Count - 1].Shape.Material.RefractiveIndex;
+                        n1 = _containers[_containers.Count - 1].Geometry.Material.RefractiveIndex;
                     }
 
-                    var removed = _containers.RemoveAll(c => ReferenceEquals(current.Shape, c.Shape));
+                    var removed = _containers.RemoveAll(c => ReferenceEquals(current.Geometry, c.Geometry));
                     if (removed == 0)
                     {
                         _containers.Add(current);
@@ -45,7 +45,7 @@ namespace Octans
 
                     if (_containers.Count > 0)
                     {
-                        n2 = _containers[_containers.Count - 1].Shape.Material.RefractiveIndex;
+                        n2 = _containers[_containers.Count - 1].Geometry.Material.RefractiveIndex;
                     }
 
                     break;

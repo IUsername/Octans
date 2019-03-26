@@ -1,4 +1,6 @@
-﻿namespace Octans
+﻿using Octans.Shading;
+
+namespace Octans
 {
     public readonly struct ShadingInfo
     {
@@ -22,7 +24,7 @@
             // TODO: Attenuation properties
             AttenuationColor = lightIntensity * light.Intensity;
 
-            var material = intersection.Shape.Material;
+            var material = intersection.Geometry.Material;
 
             Roughness = material.Roughness;
 
@@ -31,8 +33,9 @@
             F0 = FZero(NdotL, NdotV, LdotH, Roughness);
 
             // TODO: Albedo??
-            var color = intersection.Shape.Material.Pattern.ShapeColor(intersection.Shape, intersection.OverPoint);
-            DiffuseColor = (1f - Metallic) * color;// * F0; // F0? Should self-shadow already account for this?
+            var color =
+                intersection.Geometry.Material.Pattern.ShapeColor(intersection.Geometry, intersection.OverPoint);
+            DiffuseColor = (1f - Metallic) * color; // * F0; // F0? Should self-shadow already account for this?
 
             SpecularColor = Color.Lerp(color, material.SpecularColor, Metallic * 0.5f);
 
@@ -48,7 +51,7 @@
 
         private static float SchlickFresnel(float i)
         {
-            var x = MathFunction.ClampF(0f, 1f, 1f - i);
+            var x = MathFunction.Saturate(1f - i);
             var x2 = x * x;
             return x2 * x2 * x;
         }

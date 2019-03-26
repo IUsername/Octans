@@ -1,29 +1,30 @@
 ﻿using System;
 using FluentAssertions;
+using Octans.Geometry;
 using Xunit;
 
-namespace Octans.Test
+namespace Octans.Test.Geometry
 {
-    public class ShapeBaseTests
+    public class GeometryBaseTests
     {
         [Fact]
         public void IsShape()
         {
-            var s = new TestShape();
-            s.Should().BeAssignableTo<IShape>();
+            var s = new TestGeometry();
+            s.Should().BeAssignableTo<IGeometry>();
         }
 
         [Fact]
         public void DefaultTransformIsIdentity()
         {
-            var s = new TestShape();
+            var s = new TestGeometry();
             s.Transform.Should().Be(Matrix.Identity);
         }
 
         [Fact]
         public void CanChangeTransform()
         {
-            var s = new TestShape();
+            var s = new TestGeometry();
             var t = Transforms.Translate(2, 3, 4);
             s.SetTransform(t);
             s.Transform.Should().Be(t);
@@ -33,7 +34,7 @@ namespace Octans.Test
         public void IntersectingScaledShapeWithRay()
         {
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var s = new TestShape();
+            var s = new TestGeometry();
             var t = Transforms.Scale(2, 2, 2);
             s.SetTransform(t);
             // ReSharper disable once UnusedVariable
@@ -46,7 +47,7 @@ namespace Octans.Test
         public void IntersectingTranslatedShapeWithRay()
         {
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
-            var s = new TestShape();
+            var s = new TestGeometry();
             var t = Transforms.Translate(5, 0, 0);
             s.SetTransform(t);
             // ReSharper disable once UnusedVariable
@@ -58,7 +59,7 @@ namespace Octans.Test
         [Fact]
         public void NormalsAreNormalized()
         {
-            var s = new TestShape();
+            var s = new TestGeometry();
             var n = s.NormalAt(new Point(MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f),
                                new Intersection(1f, s));
             (n == n.Normalize()).Should().BeTrue();
@@ -67,7 +68,7 @@ namespace Octans.Test
         [Fact]
         public void NormalOnTranslatedShape()
         {
-            var s = new TestShape();
+            var s = new TestGeometry();
             s.SetTransform(Transforms.Translate(0, 1, 0));
             var n = s.NormalAt(new Point(0, 1.70711f, -0.70711f), new Intersection(1f, s));
             n.Should().Be(new Vector(0, 0.70711f, -0.70711f));
@@ -76,7 +77,7 @@ namespace Octans.Test
         [Fact]
         public void NormalOnTransformedShape()
         {
-            var s = new TestShape();
+            var s = new TestGeometry();
             s.SetTransform(Transforms.Scale(1f, 0.5f, 1f) * Transforms.RotateZ(MathF.PI / 5f));
             var n = s.NormalAt(new Point(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f), new Intersection(1f, s));
             n.Should().Be(new Vector(0, 0.97014f, -0.24254f));
@@ -101,7 +102,7 @@ namespace Octans.Test
         [Fact]
         public void HasNoParentByDefault()
         {
-            var s = new TestShape();
+            var s = new TestGeometry();
             s.Parent.Should().BeNull();
         }
 
