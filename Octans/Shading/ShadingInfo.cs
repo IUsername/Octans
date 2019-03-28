@@ -6,6 +6,7 @@
                            in ILight light,
                            in IntersectionInfo intersection)
         {
+            Eye = intersection.Eye;
             NormalDirection = intersection.Normal;
             LightDirection = (light.Position - intersection.OverPoint).Normalize();
             LightReflectDirection = -LightDirection.Reflect(NormalDirection);
@@ -33,9 +34,9 @@
             // TODO: Albedo??
             var color =
                 intersection.Geometry.Material.Texture.ShapeColor(intersection.Geometry, intersection.OverPoint);
-            DiffuseColor = (1f - Metallic) * color; // * F0; // F0? Should self-shadow already account for this?
+            DiffuseColor = (1f - Metallic) * color;// * F0; // F0? Should self-shadow already account for this?
 
-            SpecularColor = Color.Lerp(color, material.SpecularColor, Metallic * 0.5f);
+            SpecularColor = material.SpecularColor;// Color.Lerp(color, material.SpecularColor, Metallic * 0.5f);
 
             // TODO: How to determine this?
             IoR = 2f;
@@ -98,5 +99,6 @@
         public Vector LightDirection { get; }
 
         public Vector NormalDirection { get; }
+        public Vector Eye { get;  }
     }
 }

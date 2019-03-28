@@ -49,6 +49,19 @@ namespace Octans
 
             return new Sequence(keys);
         }
+
+        public static Sequence LargeRandomZeroOne()
+        {
+            var random = new Random();
+            var count = 1024;
+            var keys = new float[count];
+            for (var i = 0; i < count; i++)
+            {
+                keys[i] = (float) random.NextDouble();
+            }
+
+            return new Sequence(keys);
+        }
     }
 
     public class Sequence<T>

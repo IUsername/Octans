@@ -49,11 +49,27 @@ namespace Octans.Geometry
 
         private Bounds BoundsFactory()
         {
-            return Children.Aggregate(Bounds.Empty, (current, child) => current + SpaceExtensions.ParentSpaceBounds(child));
+            Bounds result = Bounds.Empty;
+            foreach (var child in Children)
+            {
+                result = result + child.ParentSpaceBounds();
+            }
+
+            return result;
         }
 
         public void AddChild(IGeometry geometry)
         {
+            if (geometry == null)
+            {
+                throw new ArgumentNullException(nameof(geometry));
+            }
+
+            if (ReferenceEquals(geometry, this))
+            {
+                throw new InvalidOperationException("Cannot add self to group");
+            }
+
             _children.Add(geometry);
             geometry.Parent = this;
         }

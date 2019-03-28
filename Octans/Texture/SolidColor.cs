@@ -14,7 +14,12 @@
         public static SolidColor Create(float r, float g, float b)
         {
             // TODO: Flyweight pattern helpful here?
-            return new SolidColor(new Color(r,g,b));
+            return SolidColor.Create(new Color(r,g,b));
+        }
+
+        public static SolidColor Create(in Color color)
+        {
+            return new SolidColor(color);
         }
     }
 }

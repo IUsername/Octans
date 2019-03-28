@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using Octans.Light;
 
 namespace Octans.Shading
@@ -8,6 +9,8 @@ namespace Octans.Shading
         private readonly IFresnelFunction _ff;
         private readonly IGeometricShadow _gsf;
         private readonly INormalDistribution _ndf;
+
+        private static Sequence _uns = Sequence.LargeRandomZeroOne();
 
         public ShadingContext(INormalDistribution ndf, IGeometricShadow gsf, in IFresnelFunction ff)
         {
@@ -31,11 +34,17 @@ namespace Octans.Shading
         public Color HitColor(World world, in IntersectionInfo info, int remaining = 5)
         {
             var surface = Colors.Black;
+            float f0 = 0f;
+            Vector wi = new Vector(0,0,0);
+            ShadingInfo si = default;
+            bool set = false;
+            var f = Colors.Black;
+
             foreach (var light in world.Lights)
             {
                 var intensity = IntensityAt(world, info.OverPoint, light);
-                var si = new ShadingInfo(intensity, in light, in info);
-
+                si = new ShadingInfo(intensity, in light, in info);
+                set = true;
                 var specular = 0f;
                 var denominator = 4f * si.NdotL * si.NdotV;
                 if (denominator > 0.0005f)
@@ -57,19 +66,61 @@ namespace Octans.Shading
                 var ambient = si.DiffuseColor * info.Geometry.Material.Ambient * light.Intensity;
                 var direct = (specular * si.SpecularColor + si.DiffuseColor) * si.NdotL * si.AttenuationColor;
                 surface += direct + ambient;
+              // surface += ambient;
+
+                f0 = si.F0;
+
+                
             }
 
-            var reflected = ReflectedColor(world, info, remaining);
-            var refracted = RefractedColor(world, info, remaining);
-
-            var material = info.Geometry.Material;
-            if (material.Reflective > 0f && material.Transparency > 0f)
+            var next = remaining - 1;
+            if (next > 1)
             {
-                var reflectance = Schlick(in info);
-                return surface + reflected * reflectance + refracted * (1f - reflectance);
+                //if (si.Roughness == 0f)
+                //{
+                //   surface += ReflectedColor(world, info, remaining);
+                //}
+                //else
+                //{
+                    if (set)
+                    {
+                        var reflected = Colors.Black;
+                        int count = 0;
+                        for (int i = 0; i < 12; i++)
+                        {
+                            (wi, f) = _ndf.Sample(in si, _uns.Next(), _uns.Next());
+                            count++;
+                     
+
+                        var reflectedRay = new Ray(info.OverPoint, wi);
+                            var color = ColorAt(world, in reflectedRay, next);
+                            reflected +=  (color * f);
+                           
+
+                        }
+
+                        surface += reflected / count;
+                    }
+                //}
+
+
             }
 
-            return surface + reflected + refracted;
+            return surface;
+
+
+
+            //var reflected = ReflectedColor(world, info, remaining);
+            //var refracted = RefractedColor(world, info, remaining);
+
+            //var material = info.Geometry.Material;
+            //if (material.Reflective > 0f && material.Transparency > 0f)
+            //{
+            //    var reflectance = Schlick(in info);
+            //    return surface + reflected * reflectance + refracted * (1f - reflectance);
+            //}
+
+            //return surface + reflected + refracted;
         }
 
         public Color ColorAt(World world, in Ray ray, int remaining = 5)
@@ -93,8 +144,10 @@ namespace Octans.Shading
                 return Colors.Black;
             }
 
-            var roughness = info.Geometry.Material.Roughness * 2f;
-            var reflective = 1f - MathF.Pow(roughness, 0.2f);
+            var roughness = info.Geometry.Material.Roughness;
+            var reflective = 1f - MathF.Pow(roughness, 0.14f);
+
+            //var reflective = info.Geometry.Material.Reflective;
             if (reflective <= 0f)
             {
                 return Colors.Black;
