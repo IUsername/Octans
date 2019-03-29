@@ -1,7 +1,4 @@
-﻿using System;
-using FluentAssertions;
-using Octans.Geometry;
-using Octans.Light;
+﻿using FluentAssertions;
 using Octans.Shading;
 using Xunit;
 
@@ -12,32 +9,43 @@ namespace Octans.Test.Shading
         [Fact]
         public void CenterNormalIsStraightUpWhenRoughnessIsZero()
         {
-            var v = new Vector(1, 1, 0).Normalize();
-            var r = GGXNormalDistribution.GGXVndf(v, 0f, 0, 0);
-            r.Should().Be(new Vector(0,1,0));
+            var v = new Vector(1, 1, 1).Normalize();
+            var n = GGXNormalDistribution.GGXVndf(v, 0f, 0f, 0, 0);
+            n.Should().Be(new Vector(0, 0, 1));
 
-            var sn = new Vector(0,1,0);
-            var bn = new Vector(2f,2f,2f).Normalize();
-            var iv = new Vector(0,-1,0);
-
-            var (b1, b2) = MathFunction.OrthonormalVectorsPosZ(in bn);
-
+            v = new Vector(1, 2, 3).Normalize();
+            n = GGXNormalDistribution.GGXVndf(v, 0f, 0f, 0, 0);
+            n.Should().Be(new Vector(0, 0, 1));
         }
 
         [Fact]
         public void ShouldHaveLowOffsetWhenNearZero()
         {
-            var v = new Vector(-1, 1, 0).Normalize();
-            var r = GGXNormalDistribution.GGXVndf(v, 0.001f, 0f, 0f);
-            var vp = v.Reflect(r);
-            vp = new Vector(vp.X, -vp.Y, vp.Z);
-            vp.Should().Be(v);
+            var v = new Vector(0, 1, 1).Normalize();
+            var n = GGXNormalDistribution.GGXVndf(v, 0.001f, 0.001f, 0f, 0f);
+            n.Should().Be(new Vector(0, 0, 1));
 
-            v = new Vector(-1, 1, 1).Normalize();
-            r = GGXNormalDistribution.GGXVndf(v, 0.001f, 0f, 0f);
-            vp = v.Reflect(r);
-            vp = new Vector(vp.X, -vp.Y, vp.Z);
-            vp.Should().Be(v);
+            v = new Vector(1, 2, 1).Normalize();
+            n = GGXNormalDistribution.GGXVndf(v, 0.001f, 0.001f, 0f, 0f);
+            n.Should().Be(new Vector(0, 0, 1));
+        }
+
+        [Fact]
+        public void RotatesNormalProportionalToAlphaXY()
+        {
+            var v = new Vector(1, 1, 1).Normalize();
+            var n = GGXNormalDistribution.GGXVndf(v, 0f, 0f, 0, 0);
+            n.Should().Be(new Vector(0, 0, 1));
+
+            v = new Vector(1, 1, 1).Normalize();
+            n = GGXNormalDistribution.GGXVndf(v, 1f, 0f, 0, 0);
+            n.X.Should().BeGreaterThan(0f);
+            n.Y.Should().Be(0f);
+
+            v = new Vector(1, 1, 1).Normalize();
+            n = GGXNormalDistribution.GGXVndf(v, 0f, 1f, 0, 0);
+            n.Y.Should().BeGreaterThan(0f);
+            n.X.Should().Be(0f);
         }
     }
 }

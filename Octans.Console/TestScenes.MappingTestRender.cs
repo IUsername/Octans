@@ -67,7 +67,7 @@ namespace Octans.ConsoleApp
             var nZ = 1;
             var delta = 1f / (nX * nZ);
             int n = 0;
-            bool metallic = false;
+            bool metallic = true;
             for (var z = 0; z < nZ; z++)
             {
                 for (var x = 0; x < nX; x++)
@@ -76,7 +76,7 @@ namespace Octans.ConsoleApp
                     s.SetTransform(Transforms.Translate(x * dx, y, z * dz));
                     var color = x % 2 == 0 ? new Color(0.8f, 0.8f, 0.9f) : new Color(1f, 0.1f, 0.1f);
                     s.Material.Texture = SolidColor.Create(color);
-                    s.Material.SpecularColor = metallic ? color : new Color(0.6f,0.6f,0.6f);
+                    s.Material.SpecularColor = metallic ? (color + Colors.White) / 2f : new Color(0.6f,0.6f,0.6f);
                     s.Material.Roughness =  MathFunction.Saturate(n * delta + 0.01f);
                     s.Material.Metallic = metallic ? 1f : 0f;
                     s.Material.Ambient = 0f;
