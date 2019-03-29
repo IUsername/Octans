@@ -33,6 +33,10 @@
             Reflect = Vector.Reflect(in ray.Direction, in Normal);
 
             (N1, N2) = IntersectionCalculations.DetermineN1N2(in intersection, in intersections);
+
+            var r = intersection.Geometry.Material.Roughness;
+            Roughness = r*r;
+            Alpha = Roughness * Roughness;
         }
 
         public readonly float T;
@@ -46,6 +50,8 @@
         public readonly Vector Reflect;
         public readonly float N1;
         public readonly float N2;
+        public readonly float Roughness;
+        public readonly float Alpha;
 
         public const float Epsilon = 0.0001f;
     }

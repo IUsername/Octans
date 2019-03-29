@@ -67,17 +67,18 @@ namespace Octans.ConsoleApp
             var nZ = 1;
             var delta = 1f / (nX * nZ);
             int n = 0;
+            bool metallic = false;
             for (var z = 0; z < nZ; z++)
             {
                 for (var x = 0; x < nX; x++)
                 {
                     var s = new Sphere();
                     s.SetTransform(Transforms.Translate(x * dx, y, z * dz));
-                    var color = x % 2 == 0 ? new Color(0.8f, 0.8f, 0.8f) : new Color(1f, 0.3f, 0.3f);
+                    var color = x % 2 == 0 ? new Color(0.8f, 0.8f, 0.9f) : new Color(1f, 0.1f, 0.1f);
                     s.Material.Texture = SolidColor.Create(color);
-                    s.Material.SpecularColor = new Color(0.5f,0.5f,0.5f);
+                    s.Material.SpecularColor = metallic ? color : new Color(0.6f,0.6f,0.6f);
                     s.Material.Roughness =  MathFunction.Saturate(n * delta + 0.01f);
-                    s.Material.Metallic = 0f;
+                    s.Material.Metallic = metallic ? 1f : 0f;
                     s.Material.Ambient = 0f;
                     s.Material.Reflective = 0.9f;
                     g.AddChild(s);
@@ -101,9 +102,10 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Texture = text,
-                    SpecularColor = new Color(0.1f,0.1f,0.1f),
-                    Roughness = 1f,
-                    Ambient = 0.3f
+                    SpecularColor = new Color(0.3f,0.3f,0.3f),
+                    Metallic = 0f,
+                    Roughness = 0.7f,
+                    Ambient = 0.0f
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1f).Scale(40f));
@@ -128,10 +130,10 @@ namespace Octans.ConsoleApp
             var height = 140;
             var transform = Transforms.View(new Point(mid.X, 6f, -32f), mid, new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 4f, width, height);
-            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            var ws = new ComposableWorldShading(2, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(3, 0.01f, scene);
+            var aaa = new AdaptiveRenderer(2, 0.01f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);

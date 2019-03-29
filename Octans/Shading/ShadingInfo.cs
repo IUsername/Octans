@@ -25,10 +25,11 @@
 
             var material = intersection.Geometry.Material;
 
-            Roughness = material.Roughness;
+            Roughness = intersection.Roughness;
 
             Metallic = material.Metallic;
 
+            // Necessary?
             F0 = FZero(NdotL, NdotV, LdotH, Roughness);
 
             // TODO: Albedo??
@@ -36,17 +37,15 @@
                 intersection.Geometry.Material.Texture.ShapeColor(intersection.Geometry, intersection.OverPoint);
             DiffuseColor = (1f - Metallic) * color;// * F0; // F0? Should self-shadow already account for this?
 
-            SpecularColor = material.SpecularColor;// Color.Lerp(color, material.SpecularColor, Metallic * 0.5f);
+            //// TODO: Is this a good assumption?
+            //SpecularColor = Color.Lerp(color, material.SpecularColor, Metallic * 0.5f);
+            SpecularColor = material.SpecularColor;
 
             // TODO: How to determine this?
             IoR = 2f;
 
-            Alpha = Roughness * Roughness;
-
-            
+            Alpha = intersection.Alpha;
         }
-
-        
 
         public float Alpha { get; }
 

@@ -24,7 +24,7 @@ namespace Octans.ConsoleApp
             var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new RaytracedWorld(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(4, 0.05f, scene);
+            var aaa = new AdaptiveRenderer(3, 0.01f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -43,8 +43,10 @@ namespace Octans.ConsoleApp
             var width = 400;
             var height = 300;
             var c = new ApertureCamera( MathF.PI / 3f, width, height, 0.04f, new Point(0, 1.25f, -4f), new Point(0, 1, 0), 3.5f );
-            var scene = new Scene(c, new PhongWorldShading(3, w));
-            var aaa = new AdaptiveRenderer(4, 0.1f, scene);
+            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            //var ws = new PhongWorldShading(3, w);
+            var scene = new Scene(c, ws);
+            var aaa = new AdaptiveRenderer(2, 0.01f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -85,6 +87,7 @@ namespace Octans.ConsoleApp
                     Specular = 0.1f,
                     Reflective = 0.1f,
                     Roughness = 0.2f,
+                    Ambient = 0f,
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1).Scale(20f));
@@ -98,9 +101,10 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Texture = new TextureMap(new UVCheckers(20, 10, Colors.Black, Colors.White), UVMapping.Spherical),
-                    Roughness = 0.2f,
+                    Roughness = 0.8f,
                     Diffuse = 0.7f, Specular = 0.3f,
-                    Reflective = 0.2f
+                    Reflective = 0.2f,
+                    Ambient = 0f,
                 }
             };
             right.SetTransform(Transforms.Translate(0.25f, 0.25f, -0.75f) * Transforms.Scale(0.25f));
@@ -110,14 +114,14 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Texture = new SolidColor(new Color(0.1f, 0.1f, 0.12f)), Diffuse = 0.05f, Specular = 0.9f, Roughness = 0.015f, Metallic = 0.9f,
-                    Transparency = 0.9f, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.01f, Shininess = 300
+                    Transparency = 0.9f, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.0f, Shininess = 300
                 }
             };
             left.SetTransform(Transforms.Translate(-2.1f, 0.33f, 0.5f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
 
             var cube = new Cube
             {
-                Material = {Texture = new GradientTexture(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f)), Roughness = 0.5f}
+                Material = {Texture = new GradientTexture(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f)), Roughness = 0.5f, Ambient = 0f, }
             };
             cube.Material.Texture.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
             cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
@@ -143,7 +147,7 @@ namespace Octans.ConsoleApp
                 IsClosed = true,
                 Material =
                 {
-                    Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.0f, Shininess = 100, Metallic = 0.9f, SpecularColor = new Color(0.8f,0.8f,0.6f), Roughness = 0.01f,
+                    Reflective = 0.33f, Specular = 0.9f, Diffuse = 0.1f, Ambient = 0.0f, Shininess = 100, Metallic = 0.76f, SpecularColor = new Color(0.7f,0.7f,0.8f), Roughness = 0.015f,
                     Texture = testMap
                 }
             };
@@ -155,7 +159,7 @@ namespace Octans.ConsoleApp
             };
             t.SetTransform(Transforms.Translate(1f, 2f, 1f));
 
-            var yellowGlass = new Material
+            var ringMaterial = new Material
             {
                 Texture = new SolidColor(new Color(1f, 0.8f, 0f)),
                 Reflective = 0.4f,
@@ -166,7 +170,7 @@ namespace Octans.ConsoleApp
                 //Transparency = 0.95f,
                 Shininess = 300,
                 Specular = 0.9f,
-                Ambient = 0.1f,
+                Ambient = 0.0f,
                 Diffuse = 0.3f
             };
             var co = new Cylinder
@@ -176,7 +180,7 @@ namespace Octans.ConsoleApp
                 IsClosed = true
             };
             co.SetTransform(Transforms.Scale(1.5f, 1f, 1.5f));
-            co.SetMaterial(yellowGlass);
+            co.SetMaterial(ringMaterial);
 
             var ci = new Cylinder
             {
@@ -185,7 +189,7 @@ namespace Octans.ConsoleApp
                 IsClosed = true
             };
             ci.SetTransform(Transforms.Scale(1.2f, 1f, 1.2f));
-            ci.SetMaterial(yellowGlass);
+            ci.SetMaterial(ringMaterial);
 
             var s = new ConstructiveSolid(ConstructiveOp.Difference, co, ci);
             s.SetTransform(Transforms.RotateZ(-0.2f).RotateX(-0.1f).Translate(-0.5f, 1f, 0.1f));
@@ -204,9 +208,9 @@ namespace Octans.ConsoleApp
             gl.Divide(1);
 
             var w = new World();
-            //w.SetLights(new AreaLight(new Point(-3f, 4, -5), new Vector(1f, 0, 0), 6, new Vector(0, 0.01f, 0), 3,
-            //                          new Color(1.4f, 1.4f, 1.4f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
-            
+            //w.SetLights(new AreaLight(new Point(-3f, 4, -5), new Vector(2f, 0, 0), 6, new Vector(0, 0.01f, 0), 3,
+            //                          new Color(0.9f, 0.9f, 0.9f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
+
             w.SetLights(new PointLight(new Point(-3.5f, 4f, -5f), new Color(1.1f, 1.1f, 1.1f)));
             w.SetObjects(gl);
             return w;

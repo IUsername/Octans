@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Octans.Shading
 {
     public class GGXNormalDistribution : INormalDistribution
@@ -20,37 +21,30 @@ namespace Octans.Shading
             return oneOverPi * MathF.Sqrt(s);
         }
 
-        public (Vector wi, Color reflectance) Sample(in ShadingInfo info, in LocalFrame localFrame, float e0, float e1)
+        public (Vector wi, Color reflectance) Sample(in IntersectionInfo info,
+                                                     in LocalFrame localFrame,
+                                                     float e0,
+                                                     float e1)
         {
-          //  var wo = localFrame.ToLocal(info.ViewReflectDirection);
-            var wo = localFrame.ToLocal(info.ViewDirection);
-
-           // var wo = info.ViewReflectDirection;
-            var wm = GGXVndf(wo, info.Alpha, e0, e1);
+            var wo = localFrame.ToLocal(info.Eye);
+            var wm = GGXVndf(wo, info.Roughness, info.Roughness, e0, e1);
             var wi = -wo.Reflect(wm);
-       //       var wi = 2f * (wm % wo) * wm - wo;
-        //    var wi = wo.Reflect(wm);
-       //     wi = new Vector(wi.X, -wi.Y, wi.Z);
-
-
-
 
             // The following is always going to check is wi.Z > 0 since local frame Z is (0,0,+1)
-            var n = localFrame.ToLocal(info.NormalDirection);
-            var NdotWi = MathFunction.Saturate(n % wi);
+            var n = localFrame.ToLocal(info.Normal);
+            //var NdotWi = MathFunction.Saturate(n % wi);
             //if (NdotWi > 0)
-            if (NdotWi > 0)
+            if (!(wi.Z > 0))
             {
-
-                var F =  SchlickFresnel(info.SpecularColor, wi%wm);
-                var G1 = SmithGGXMasking(in n, in wi,  in wo, info.Alpha);
-                var G2 = SmithGGXMaskingShadowing(in n, in wi, in wo, info.Alpha);
-                var reflectance =  F * (G2 / G1);
-                return (wi, reflectance);
+                // Below surface.
+                return (wi, Colors.Black);
             }
 
-            return (wi, Colors.Black);
-
+            var F =  SchlickFresnel(info.Geometry.Material.SpecularColor, wi%wm);
+            var G1 = SmithGGXMasking(in n, in wi,  in wo, info.Alpha);
+            var G2 = SmithGGXMaskingShadowing(in n, in wi, in wo, info.Alpha);
+            var reflectance =  F * (G2 / G1);
+            return (wi, reflectance);
         }
 
         private float SmithGGXMaskingShadowing(in Vector normal, in Vector wi, in Vector wo, float alpha)
@@ -71,10 +65,10 @@ namespace Octans.Shading
             return 2f * NdotV / denomC;
         }
 
-        public static Vector GGXVndf(Vector ve, float roughness, float e0, float e1)
+        public static Vector GGXVndf(Vector ve, float alphaX, float alphaY, float e0, float e1)
         {
             // Stretch to sample with roughness of 1
-            var v = new Vector(roughness * ve.X, roughness * ve.Y, ve.Z).Normalize();
+            var v = new Vector(alphaX * ve.X, alphaY * ve.Y, ve.Z).Normalize();
             var T1 = (v.Z < 0.9999f) ? Vector.Cross(new Vector(0, 0, 1),v).Normalize() : new Vector(1, 0, 0);
             var T2 = Vector.Cross(v,T1);
 
@@ -86,7 +80,7 @@ namespace Octans.Shading
             var s = 0.5f * (1f + v.Z);
             t2 = (1f - s) * MathF.Sqrt(1f - t1 * t1) + s * t2;
             var Nh = t1 * T1 + t2 * T2 + MathF.Sqrt(MathF.Max(0f, 1f - t1 * t1 - t2 * t2)) * v;
-            var Ne = new Vector(Nh.X * roughness, Nh.Y * roughness, MathF.Max(0f, Nh.Z)).Normalize();
+            var Ne = new Vector(Nh.X * alphaX, Nh.Y * alphaY, MathF.Max(0f, Nh.Z)).Normalize();
             return Ne;
         }
 
