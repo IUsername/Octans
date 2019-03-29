@@ -52,7 +52,7 @@ namespace Octans
 
         public static Sequence LargeRandomZeroOne()
         {
-            var random = new Random();
+            var random = new Random(17);
             var count = 1024;
             var keys = new float[count];
             for (var i = 0; i < count; i++)

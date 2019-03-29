@@ -10,7 +10,8 @@ namespace Octans.Shading
         private readonly IGeometricShadow _gsf;
         private readonly INormalDistribution _ndf;
 
-        private static Sequence _uns = Sequence.LargeRandomZeroOne();
+        //private static readonly Sequence _uns = Sequence.LargeRandomZeroOne();
+      
 
         public ShadingContext(INormalDistribution ndf, IGeometricShadow gsf, in IFresnelFunction ff)
         {
@@ -82,17 +83,23 @@ namespace Octans.Shading
                 //}
                 //else
                 //{
-                    if (set)
+             
+                if (set)
                     {
-                        var reflected = Colors.Black;
-                        int count = 0;
-                        for (int i = 0; i < 12; i++)
-                        {
-                            (wi, f) = _ndf.Sample(in si, _uns.Next(), _uns.Next());
-                            count++;
-                     
+                    var localFrame = new LocalFrame(si.NormalDirection);
 
-                        var reflectedRay = new Ray(info.OverPoint, wi);
+                    var reflected = Colors.Black;
+                        int count = 0;
+                        for (int i = 0; i <16; i++)
+                        {
+                            var e0 = (float) MersenneTwister.Randoms.FastestDouble.NextDouble();
+                            var e1 = (float) MersenneTwister.Randoms.FastestDouble.NextDouble();
+                            (wi, f) = _ndf.Sample(in si, in localFrame,e0,e1);
+                            count++;
+
+                            var wWi = localFrame.ToWorld(in wi);
+
+                        var reflectedRay = new Ray(info.OverPoint, wWi);
                             var color = ColorAt(world, in reflectedRay, next);
                             reflected +=  (color * f);
                            

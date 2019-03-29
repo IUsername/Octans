@@ -42,7 +42,11 @@
             IoR = 2f;
 
             Alpha = Roughness * Roughness;
+
+            
         }
+
+        
 
         public float Alpha { get; }
 
