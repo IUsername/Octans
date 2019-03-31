@@ -53,6 +53,6 @@
         public readonly float Roughness;
         public readonly float Alpha;
 
-        public const float Epsilon = 0.0001f;
+        public const float Epsilon = 0.0002f;
     }
 }

@@ -310,7 +310,10 @@ namespace Octans.Test.Shading
                 new Intersection(0.4899f, b),
                 new Intersection(0.9899f, a));
             var comps = new IntersectionInfo(xs[2], r, xs);
-            PhongShading.RefractedColor(w, comps, 5).Should().Be(new Color(0, 0.99888f, 0.04725f));
+            var c = PhongShading.RefractedColor(w, comps, 5);
+            c.Red.Should().BeApproximately(0f, 0.001f);
+            c.Green.Should().BeApproximately(0.99888f, 0.001f);
+            c.Blue.Should().BeApproximately(0.04725f, 0.001f);
         }
 
         [Fact]

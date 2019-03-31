@@ -30,32 +30,55 @@ namespace Octans.Shading
 
         public Color HitColor(World world, in IntersectionInfo info, int remaining = 5)
         {
-            var surface = Colors.Black;
+            var ambient = info.Geometry.Material.Ambient;
+            var surfaceColor = info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
+
+            // Illumination Equation
+            // I = k_a*I_a + I_i(k_d(L%N) + k_s(V%R)^n) + k_t*I_t + k_r*I_r;
+            // Ambient + Direct Diffuse + Direct Specular + Indirect (Specular & Diffuse)
+
+            var surface = ambient * surfaceColor;
+            // TODO: This is a hack/assumption to jump out for quick shading of environment map.
+            if (ambient >= 1f)
+            {
+                return surface;
+            }
+
+            // Direct lighting
             foreach (var light in world.Lights)
             {
+                // ReSharper disable InconsistentNaming
                 var intensity = IntensityAt(world, info.OverPoint, light);
+                var specularIntensity = 0f;
+                var k_d = Colors.Black;
+                var k_s = Colors.Black;
                 var si = new ShadingInfo(intensity, in light, in info);
-                var specular = 0f;
-                var denominator = 4f * si.NdotL * si.NdotV;
-                if (denominator > 0.0005f)
+                if (intensity > 0f)
                 {
-                    // ReSharper disable InconsistentNaming
-                    var D = 1f;
-                    D *= _ndf.Factor(in si);
+                    var denominator = 4f * si.NdotL * si.NdotV;
+                    if (denominator > 0f)
+                    {
+                        var D = 1f;
+                        D *= _ndf.Factor(in si);
 
-                    var G = 1f;
-                    G *= _gsf.Factor(in si);
+                        var G = 1f;
+                        G *= _gsf.Factor(in si);
 
-                    var F = 1f;
-                    F *= _ff.Factor(in si);
+                        var F = 1f;
+                        F *= _ff.Factor(in si);
 
-                    specular = D * F * G / denominator;
-                    // ReSharper restore InconsistentNaming
+                        specularIntensity = D * F * G / denominator;
+                    }
+
+                    // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
+                    k_d = si.DiffuseColor;
+                    k_s = si.SpecularColor * specularIntensity;
                 }
+                // ReSharper restore InconsistentNaming
 
-                var ambient = si.DiffuseColor * info.Geometry.Material.Ambient;
-                var direct = (specular * si.SpecularColor + si.DiffuseColor) * si.NdotL * si.AttenuationColor;
-                surface += direct + ambient;
+                var c = k_d + k_s;
+                // Lambert's cosine law.
+                surface += si.LightIntensity * c * si.NdotL;
             }
 
             if (remaining-- < 1)
@@ -63,16 +86,19 @@ namespace Octans.Shading
                 return surface;
             }
 
+            // Indirect lighting
             var localFrame = new LocalFrame(info.Normal);
             var indirect = Colors.Black;
-            var rayCount = 8;
 
-            for (var i = 0; i < rayCount; i++)
+            // TODO: Make parameter for ray count.
+            var rayCount = 8;
+            var captured = 0;
+            while (captured < rayCount)
             {
-                var e0 = (float) Randoms.NextDouble();
-                var e1 = (float) Randoms.NextDouble();
+                var e0 = (float)Randoms.NextDouble();
+                var e1 = (float)Randoms.NextDouble();
                 var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
-                if (f == Colors.Black)
+                if (!(wi.Z > 0f))
                 {
                     continue;
                 }
@@ -81,9 +107,11 @@ namespace Octans.Shading
                 var reflectedRay = new Ray(info.OverPoint, direction);
                 var color = ColorAt(world, in reflectedRay, remaining);
                 indirect += color * f;
+                captured++;
             }
 
-            surface += indirect / rayCount;
+            indirect /= captured;
+            surface += indirect;
             return surface;
         }
 

@@ -118,7 +118,7 @@ namespace Octans.Test.Geometry
         {
             var c = new Cone {Minimum = 1f, Maximum = 2f, IsClosed = true};
             var b = c.LocalBounds();
-            b.Min.Should().Be(new Point(1, 1, 1));
+            b.Min.Should().Be(new Point(-2, 1, -2));
             b.Max.Should().Be(new Point(2, 2, 2));
         }
 

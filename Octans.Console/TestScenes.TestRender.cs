@@ -21,10 +21,10 @@ namespace Octans.ConsoleApp
             var height = 400;
             var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            var ws = new ComposableWorldShading(1, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new RaytracedWorld(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(3, 0.01f, scene);
+            var aaa = new AdaptiveRenderer(0, 0.01f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -105,6 +105,7 @@ namespace Octans.ConsoleApp
                     Diffuse = 0.7f, Specular = 0.3f,
                     Reflective = 0.2f,
                     Ambient = 0f,
+                    SpecularColor = new Color(0.2f,0.2f,0.2f)
                 }
             };
             right.SetTransform(Transforms.Translate(0.25f, 0.25f, -0.75f) * Transforms.Scale(0.25f));
@@ -121,7 +122,7 @@ namespace Octans.ConsoleApp
 
             var cube = new Cube
             {
-                Material = {Texture = new GradientTexture(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f)), Roughness = 0.5f, Ambient = 0f, }
+                Material = {Texture = new GradientTexture(new Color(1f, 0, 0), new Color(1f, 0.8f, 0f)), Roughness = 0.5f, Ambient = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f) }
             };
             cube.Material.Texture.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
             cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
@@ -134,6 +135,7 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Texture = new SolidColor(new Color(0.4f, 0.8f, 0.1f)), Diffuse = 0.7f, Specular = 0.3f, Ambient = 0f,
+                    SpecularColor = new Color(0.2f,0.2f,0.2f),
                     Roughness = 0.3f,
                     Reflective = 0.2f
                 }
@@ -153,11 +155,11 @@ namespace Octans.ConsoleApp
             };
             cylinder.SetTransform(Transforms.Translate(-3f, 0f, 3.5f));
 
-            var t = new Triangle(new Point(0, 0, 0), new Point(1, 0.5f, 0), new Point(0.5f, 1f, 1f))
-            {
-                Material = {Texture = new GradientTexture(new Color(0f, 1, 0), new Color(0f, 0f, 1f))}
-            };
-            t.SetTransform(Transforms.Translate(1f, 2f, 1f));
+            //var t = new Triangle(new Point(0, 0, 0), new Point(1, 0.5f, 0), new Point(0.5f, 1f, 1f))
+            //{
+            //    Material = {Texture = new GradientTexture(new Color(0f, 1, 0), new Color(0f, 0f, 1f))}
+            //};
+            //t.SetTransform(Transforms.Translate(1f, 2f, 1f));
 
             var ringMaterial = new Material
             {
@@ -202,7 +204,7 @@ namespace Octans.ConsoleApp
             gl.AddChild(right);
             gl.AddChild(cube);
             gl.AddChild(cone);
-            gl.AddChild(t);
+            //gl.AddChild(t);
             gl.AddChild(floor);
 
             gl.Divide(1);

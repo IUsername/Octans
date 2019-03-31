@@ -151,8 +151,17 @@ namespace Octans.Geometry
             return new Vector(localPoint.X, y, localPoint.Z);
         }
 
-        public override Bounds LocalBounds() => IsClosed
-            ? new Bounds(new Point(Minimum, Minimum, Minimum), new Point(Maximum, Maximum, Maximum))
-            : Bounds.Infinite;
+        public override Bounds LocalBounds()
+        {
+            if (IsClosed)
+            {
+                var xz = MathF.Max(MathF.Acos(Minimum), Maximum);
+                return new Bounds(new Point(-xz, Minimum, -xz), new Point(xz, Maximum, xz));
+            }
+            else
+            {
+                return Bounds.Infinite;
+            }
+        }
     }
 }

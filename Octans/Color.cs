@@ -127,7 +127,7 @@ namespace Octans
         [Pure]
         public static Color Lerp(in Color a, in Color b, float t)
         {
-            t = MathFunction.Saturate(t);
+            //t = MathFunction.Saturate(t);
             return (1 - t) * a + t * b;
         }
     }

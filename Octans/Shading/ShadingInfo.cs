@@ -21,7 +21,7 @@
             RdotV = MathFunction.Saturate(LightReflectDirection % ViewDirection);
 
             // TODO: Attenuation properties
-            AttenuationColor = lightIntensity * light.Intensity;
+            LightIntensity = lightIntensity * light.Intensity;
 
             var material = intersection.Geometry.Material;
 
@@ -29,17 +29,17 @@
 
             Metallic = material.Metallic;
 
-            // Necessary?
+            // Disney approach to Lambertian diffuse
             F0 = FZero(NdotL, NdotV, LdotH, Roughness);
 
             // TODO: Albedo??
             var color =
                 intersection.Geometry.Material.Texture.ShapeColor(intersection.Geometry, intersection.OverPoint);
-            DiffuseColor = (1f - Metallic) * color;// * F0; // F0? Should self-shadow already account for this?
+            DiffuseColor = (1f - Metallic) * color * F0;
 
             //// TODO: Is this a good assumption?
-            //SpecularColor = Color.Lerp(color, material.SpecularColor, Metallic * 0.5f);
-            SpecularColor = material.SpecularColor;
+            SpecularColor = Color.Lerp(material.SpecularColor, color, Metallic * 0.5f);
+            //SpecularColor = material.SpecularColor;
 
             // TODO: How to determine this?
             IoR = 2f;
@@ -77,7 +77,7 @@
 
         public float Roughness { get; }
 
-        public Color AttenuationColor { get; }
+        public Color LightIntensity { get; }
 
         public float RdotV { get; }
 
@@ -102,6 +102,6 @@
         public Vector LightDirection { get; }
 
         public Vector NormalDirection { get; }
-        public Vector Eye { get;  }
+        public Vector Eye { get; }
     }
 }

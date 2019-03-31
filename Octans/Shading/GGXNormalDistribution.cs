@@ -41,7 +41,7 @@ namespace Octans.Shading
             }
 
             var F =  SchlickFresnel(info.Geometry.Material.SpecularColor, wi%wm);
-            var G1 = SmithGGXMasking(in n, in wi,  in wo, info.Alpha);
+            var G1 = SmithGGXMasking(in n, in wi,  in wo, info.Roughness);
             var G2 = SmithGGXMaskingShadowing(in n, in wi, in wo, info.Alpha);
             var reflectance =  F * (G2 / G1);
             return (wi, reflectance);
@@ -64,6 +64,12 @@ namespace Octans.Shading
             var denomC = MathF.Sqrt(alpha + (1f - alpha) * NdotV * NdotV) + NdotV;
             return 2f * NdotV / denomC;
         }
+
+        //private static float GGX(float alpha, float NdotX)
+        //{
+        //    var t = MathF.Sqrt(alpha + (1f - alpha) * (NdotX * NdotX));
+        //    return 2 * NdotX / ((NdotX) + t);
+        //}
 
         public static Vector GGXVndf(Vector ve, float alphaX, float alphaY, float e0, float e1)
         {

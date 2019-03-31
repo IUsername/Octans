@@ -5,6 +5,9 @@
         private static void Main(string[] args)
         {
             TestScenes.ColRowTestRender();
+            //TestScenes.SkyBoxMappingTestRender();
+            //TestScenes.SphereMappingTestRender();
+            //TestScenes.InsideSphere();
             //TestScenes.MappingTestRender();
             //TestScenes.TestRender();
             //TestScenes.TestRenderDOF();

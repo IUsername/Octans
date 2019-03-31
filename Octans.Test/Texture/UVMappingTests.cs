@@ -81,5 +81,52 @@ namespace Octans.Test.Texture
             UVMapping.Cubical(new Point(-0.5f, -1f, 0.5f)).Should().Be((0.25f, 0.75f));
             UVMapping.Cubical(new Point(0.5f, -1f, -0.5f)).Should().Be((0.75f, 0.25f));
         }
+
+        [Fact]
+        public void SkyBoxMap()
+        {
+            // Front
+            var (u, v) = UVMapping.SkyBox(new Point(-0.5f, 0.5f, 1));
+            u.Should().BeApproximately(5f / 16f, 0.0001f);
+            v.Should().BeApproximately(7f / 12f, 0.0001f);
+            (u, v) = UVMapping.SkyBox(new Point(0.5f, -0.5f, 1));
+            u.Should().BeApproximately(7f / 16f, 0.0001f);
+            v.Should().BeApproximately(5f / 12f, 0.0001f);
+            // Back
+            (u, v) = UVMapping.SkyBox(new Point(0.5f, 0.5f, -1));
+            u.Should().BeApproximately(13f / 16f, 0.0001f);
+            v.Should().BeApproximately(7f / 12f, 0.0001f);
+            (u, v) = UVMapping.SkyBox(new Point(-0.5f, -0.5f, -1));
+            u.Should().BeApproximately(15f / 16f, 0.0001f);
+            v.Should().BeApproximately(5f / 12f, 0.0001f);
+            // Left
+            (u, v) = UVMapping.SkyBox(new Point(-1f, 0.5f, -0.5f));
+            u.Should().BeApproximately(1f / 16f, 0.0001f);
+            v.Should().BeApproximately(7f / 12f, 0.0001f);
+            (u, v) = UVMapping.SkyBox(new Point(-1f, -0.5f, 0.5f));
+            u.Should().BeApproximately(3f / 16f, 0.0001f);
+            v.Should().BeApproximately(5f / 12f, 0.0001f);
+            // Right
+            (u, v) = UVMapping.SkyBox(new Point(1f, 0.5f, 0.5f));
+            u.Should().BeApproximately(9f / 16f, 0.0001f);
+            v.Should().BeApproximately(7f / 12f, 0.0001f);
+            (u, v) = UVMapping.SkyBox(new Point(1f, -0.5f, -0.5f));
+            u.Should().BeApproximately(11f / 16f, 0.0001f);
+            v.Should().BeApproximately(5f / 12f, 0.0001f);
+            // Top
+            (u, v) = UVMapping.SkyBox(new Point(-0.5f, 1f, -0.5f));
+            u.Should().BeApproximately(5f / 16f, 0.0001f);
+            v.Should().BeApproximately(11f / 12f, 0.0001f);
+            (u, v) = UVMapping.SkyBox(new Point(0.5f, 1f, 0.5f));
+            u.Should().BeApproximately(7f / 16f, 0.0001f);
+            v.Should().BeApproximately(9f / 12f, 0.0001f);
+            // Bottom
+            (u, v) = UVMapping.SkyBox(new Point(-0.5f, -1f, 0.5f));
+            u.Should().BeApproximately(5f / 16f, 0.0001f);
+            v.Should().BeApproximately(3f / 12f, 0.0001f);
+            (u, v) = UVMapping.SkyBox(new Point(0.5f, -1f, -0.5f));
+            u.Should().BeApproximately(7f / 16f, 0.0001f);
+            v.Should().BeApproximately(1f / 12f, 0.0001f);
+        }
     }
 }

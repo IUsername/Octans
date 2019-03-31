@@ -124,6 +124,41 @@ namespace Octans.Texture
         }
 
         [Pure]
+        public static (float u, float v) SkyBox(in Point point)
+        {
+            const float du = 0.25f;
+            const float du2 = 0.5f;
+            const float du3 = 0.75f;
+            const float dv = 1 / 3f;
+            const float dv2 = 2 / 3f;
+            var face = PointToCubeFace(in point);
+            switch (face)
+            {
+                // TODO: These may all be flipped vertically. Find better source.
+                case CubeFace.Front:
+                    var (fu,fv) = CubeUVFrontFace(in point);
+                    return (fu *du + du, fv *dv + dv);
+                case CubeFace.Back:
+                    var (bu, bv) = CubeUVBackFace(in point);
+                    return (bu*du + du3, bv*dv + dv);
+                case CubeFace.Left:
+                    var (lu, lv) = CubeUVLeftFace(in point);
+                    return (lu*du, lv*dv + dv);
+                case CubeFace.Right:
+                    var (ru, rv) = CubeUVRightFace(in point);
+                    return (ru *du + du2, rv*dv + dv);
+                case CubeFace.Top:
+                    var (tu, tv) = CubeUVTopFace(in point);
+                    return (tu*du + du, tv* dv + dv2);
+                case CubeFace.Bottom:
+                    var (bou, bov) = CubeUVBottomFace(in point);
+                    return (bou*du + du, bov*dv);
+                default:
+                    return (0f, 0f);
+            }
+        }
+
+        [Pure]
         public static (float u, float v) CubeUVFrontFace(in Point point)
         {
             var u = (point.X + 1f) % 2.0f / 2.0f;
