@@ -16,8 +16,10 @@ namespace Octans.Geometry
                 return Intersections.Empty();
             }
 
-            var t1 = (-b - MathF.Sqrt(discriminant)) / (2f * a);
-            var t2 = (-b + MathF.Sqrt(discriminant)) / (2f * a);
+            discriminant = MathF.Sqrt(discriminant);
+            var denominator = 2f * a;
+            var t1 = (-b - discriminant) / denominator;
+            var t2 = (-b + discriminant) / denominator;
             return Intersections.Create(
                 new Intersection(t1, this),
                 new Intersection(t2, this));

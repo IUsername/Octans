@@ -52,10 +52,11 @@ namespace Octans.Camera
             var aimed = FocalPlanePoint(in sp);
             var total = Colors.Black;
             var prior = total;
+            // TODO: Parameterize
             int minRays = 4;
             int incrementRays = 4;
             int maxRays = 32;
-            var delta = 0.01f;
+            var delta = 0.005f;
             int count = 1;
             for (; count <= maxRays; count++)
             {
@@ -81,7 +82,7 @@ namespace Octans.Camera
                 }
 
                 var current = total / count;
-                if (Color.IsWithinDelta(in current, in prior, delta))
+                if (Color.IsWithinPerceptiveDelta(in current, in prior, delta))
                 {
                     break;
                 }
@@ -92,28 +93,48 @@ namespace Octans.Camera
             return total / count; 
         }
 
+        //private static Sequence<Vector> BuildJitter(in Matrix transformInv, float apertureRadius)
+        //{
+        //    var uRadius = transformInv * new Vector(1, 0, 0) * apertureRadius;
+        //    var vRadius = transformInv * new Vector(0, 1, 0) * apertureRadius;
+        //    var rSqr = vRadius.MagSqr();
+
+        //    // TODO: +X,+Y to theta,phi to avoid radius checks
+        //    var unitSeq = Sequence.LargeRandomUnit();
+        //    var count = 127;
+        //    var jitter = new Vector[count];
+        //    for (var i = 0; i < count;)
+        //    {
+        //        var u = uRadius * unitSeq.Next();
+        //        var v = vRadius * unitSeq.Next();
+        //        var offset = u + v;
+        //        if (offset.MagSqr() > rSqr)
+        //        {
+        //            continue;
+        //        }
+
+        //        jitter[i++] = offset;
+        //    }
+
+        //    return new Sequence<Vector>(jitter);
+        //}
+
         private static Sequence<Vector> BuildJitter(in Matrix transformInv, float apertureRadius)
         {
             var uRadius = transformInv * new Vector(1, 0, 0) * apertureRadius;
             var vRadius = transformInv * new Vector(0, 1, 0) * apertureRadius;
-            var rSqr = vRadius.MagSqr();
-
-            var unitSeq = Sequence.LargeRandomUnit();
             var count = 127;
             var jitter = new Vector[count];
             for (var i = 0; i < count;)
             {
-                var u = uRadius * unitSeq.Next();
-                var v = vRadius * unitSeq.Next();
+                var (u1, u2) = QuasiRandom.Next(i);
+                var r = MathF.Sqrt(1f - u1 * u1);
+                var phi = 2 * MathF.PI * u2;
+                var u = uRadius * MathF.Cos(phi) * r;
+                var v = vRadius * MathF.Sin(phi) * r;
                 var offset = u + v;
-                if (offset.MagSqr() > rSqr)
-                {
-                    continue;
-                }
-
                 jitter[i++] = offset;
             }
-
             return new Sequence<Vector>(jitter);
         }
 

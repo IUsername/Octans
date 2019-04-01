@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 
 namespace Octans
 {
     public readonly struct Color : IEquatable<Color>
     {
-        private const float Epsilon = 0.0001f;
+        private const float Epsilon = 0.001f;
 
         public readonly float Red;
         public readonly float Green;
@@ -29,6 +30,9 @@ namespace Octans
 
         [Pure]
         public Color Divide(float scalar) => new Color(Red / scalar, Green / scalar, Blue / scalar);
+
+        [Pure]
+        public Color Pow(float exp) => new Color(MathF.Pow(Red, exp), MathF.Pow(Green, exp), MathF.Pow(Blue, exp));
 
         [Pure]
         public Color Negate() => new Color(-Red, -Blue, -Green);
@@ -56,6 +60,8 @@ namespace Octans
 
         public static Color operator -(Color c) => c.Negate();
 
+        public static Color operator ^(Color c, float exp) => c.Pow(exp);
+
         public static bool operator ==(Color left, Color right) => left.Equals(right);
 
         public static bool operator !=(Color left, Color right) => !left.Equals(right);
@@ -81,35 +87,39 @@ namespace Octans
             }
         }
 
+        //[Pure]
+        //internal static bool IsWithinTolerance(in Color a, in Color b, float tolerance)
+        //{
+        //    var diff = a - b;
+        //    return MathF.Abs(diff.Red) < tolerance && MathF.Abs(diff.Green) < tolerance && MathF.Abs(diff.Blue) < tolerance;
+        //}
+
         [Pure]
-        internal static bool IsWithinTolerance(in Color a, in Color b, float tolerance)
+        public static float PerceptiveColorDelta(in Color a, in Color b) =>
+            MathF.Sqrt(PerceptiveColorDeltaSqr(in a, in b)) / 3f;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static float PerceptiveColorDeltaSqr(in Color a, in Color b)
         {
-            var diff = a - b;
-            return MathF.Abs(diff.Red) < tolerance && MathF.Abs(diff.Green) < tolerance && MathF.Abs(diff.Blue) < tolerance;
+            const float invGamma = 1 / 2.2f;
+            var aS = a ^ invGamma;
+            var bS = b ^ invGamma;
+            //var aS = a;
+            //var bS = b;
+            var rAvg = (aS.Red + bS.Red) / 2f;
+            var dR = aS.Red - bS.Red;
+            var dG = aS.Green - bS.Green;
+            var dB = aS.Blue - bS.Blue;
+            var rFac = 2f + rAvg / 1f;
+            var bFac = 2 + (1f - rAvg) / 1f;
+            return rFac * dR * dR + 4f * dG * dG + bFac * dB * dB;
         }
 
         [Pure]
-        public static float ColorDelta(in Color a, in Color b)
+        public static bool IsWithinPerceptiveDelta(in Color a, in Color b, float delta)
         {
-            return MathF.Sqrt(ColorDeltaSqr(in a, in b)) / 3f;
-        }
-
-        [Pure]
-        internal static float ColorDeltaSqr(in Color a, in Color b)
-        {
-            var rAvg = (a.Red + b.Red) / 2f;
-            var dR = a.Red - b.Red;
-            var dG = a.Green - b.Green;
-            var dB = a.Blue - b.Blue;
-            var rFac = (2f + rAvg / 1f);
-            var bFac = (2 + (1f - rAvg) / 1f);
-            return (rFac * dR * dR) + (4f * dG * dG) + (bFac * dB * dB);
-        }
-
-        [Pure]
-        public static bool IsWithinDelta(in Color a, in Color b, float delta)
-        {
-            var cD = ColorDeltaSqr(in a, in b);
+            var cD = PerceptiveColorDeltaSqr(in a, in b);
             return cD < delta * delta * 9f;
         }
 
@@ -125,10 +135,6 @@ namespace Octans
         //    Matrix.Square(0.299f, 0.587f, 0.114f, 0f, -0.14713f, -0.28886f, 0.436f, 0f, 0.615f, -0.51499f, -0.10001f, 0f, 0f, 0f, 0f, 1f);
 
         [Pure]
-        public static Color Lerp(in Color a, in Color b, float t)
-        {
-            //t = MathFunction.Saturate(t);
-            return (1 - t) * a + t * b;
-        }
+        public static Color Lerp(in Color a, in Color b, float t) => (1 - t) * a + t * b;
     }
 }

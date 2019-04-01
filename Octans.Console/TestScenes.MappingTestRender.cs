@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using Octans.Camera;
 using Octans.Geometry;
 using Octans.IO;
@@ -206,7 +205,7 @@ namespace Octans.ConsoleApp
             var c = new PinholeCamera(transform, 0.8f, width, height);
             var ws = new ComposableWorldShading(1, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(2, 0.01f, scene);
+            var aaa = new AdaptiveRenderer(3, 0.005f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -222,8 +221,8 @@ namespace Octans.ConsoleApp
         {
 
             Console.WriteLine("Loading file...");
-            var filePath = Path.Combine(GetExecutionPath(), "indoor_env.ppm");
-            //var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");
+            //var filePath = Path.Combine(GetExecutionPath(), "indoor_env.ppm");
+            var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");
             Console.WriteLine("Parsing file...");
             var textureCanvas = PPM.ParseFile(filePath);
             var image = new UVImage(textureCanvas);
@@ -244,7 +243,7 @@ namespace Octans.ConsoleApp
             var nZ = 1;
             var delta = 1f / (nX * nZ);
             int n = 0;
-            bool metallic = false;
+            bool metallic = true;
             for (var z = 0; z < nZ; z++)
             {
                 for (var x = 0; x < nX; x++)
@@ -286,9 +285,6 @@ namespace Octans.ConsoleApp
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1f).Scale(40f));
-           
-
-           // g.Divide(1);
 
             var min = g.LocalBounds().Min;
             var max = g.LocalBounds().Max;
@@ -310,7 +306,7 @@ namespace Octans.ConsoleApp
             var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, GGXSmithGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(2, 0.1f, scene);
+            var aaa = new AdaptiveRenderer(3, 0.1f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);

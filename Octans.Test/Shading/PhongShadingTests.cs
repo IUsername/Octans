@@ -125,7 +125,7 @@ namespace Octans.Test.Shading
             var i = new Intersection(0.5f, shape);
             var comps = new IntersectionInfo(i, r);
             var c = PhongShading.HitColor(w, comps);
-            c.Should().Be(new Color(0.90498f, 0.90498f, 0.90498f));
+            c.Should().Be(new Color(0.90482f, 0.90482f, 0.90482f));
         }
 
         [Fact]
@@ -204,7 +204,7 @@ namespace Octans.Test.Shading
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
-            PhongShading.ReflectedColor(w, comps).Should().Be(new Color(0.19032f, 0.2379f, 0.14274f));
+            PhongShading.ReflectedColor(w, comps).Should().Be(new Color(0.19041f, 0.2380f, 0.14281f));
         }
 
         [Fact]

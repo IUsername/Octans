@@ -44,10 +44,10 @@
                 return avg;
             }
 
-            var tlc = Color.IsWithinDelta(in ctl, in avg, maxDelta);
-            var trc = Color.IsWithinDelta(in ctr, in avg, maxDelta);
-            var blc = Color.IsWithinDelta(in cbl, in avg, maxDelta);
-            var brc = Color.IsWithinDelta(in cbr, in avg, maxDelta);
+            var tlc = Color.IsWithinPerceptiveDelta(in ctl, in avg, maxDelta);
+            var trc = Color.IsWithinPerceptiveDelta(in ctr, in avg, maxDelta);
+            var blc = Color.IsWithinPerceptiveDelta(in cbl, in avg, maxDelta);
+            var brc = Color.IsWithinPerceptiveDelta(in cbr, in avg, maxDelta);
 
             if (tlc & trc & blc & brc)
             {
@@ -73,21 +73,21 @@
                 changed = true;
             }
 
-            if (!changed && !blc || !Color.IsWithinDelta(in cbl, in avg, maxDelta))
+            if (!changed && !blc || !Color.IsWithinPerceptiveDelta(in cbl, in avg, maxDelta))
             {
                 cbl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in bl, in c));
                 avg = (ctl + ctr + cbl + cbr) / 4f;
                 changed = true;
             }
 
-            if (!changed && !trc || !Color.IsWithinDelta(in ctr, in avg, maxDelta))
+            if (!changed && !trc || !Color.IsWithinPerceptiveDelta(in ctr, in avg, maxDelta))
             {
                 ctr = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tr, in c));
                 avg = (ctl + ctr + cbl + cbr) / 4f;
                 changed = true;
             }
 
-            if (changed || !Color.IsWithinDelta(in ctl, in avg, maxDelta))
+            if (changed || !Color.IsWithinPerceptiveDelta(in ctl, in avg, maxDelta))
             {
                 ctl = RenderSubPixel(r, maxDelta, samples, renderer, SubPixel.Center(in tl, in c));
                 avg = (ctl + ctr + cbl + cbr) / 4f;

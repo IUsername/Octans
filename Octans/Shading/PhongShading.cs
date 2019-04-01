@@ -172,10 +172,11 @@ namespace Octans.Shading
                 cos = cosT;
             }
 
-            // R0 is probability of reflection.
             var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
             r0 *= r0;
-            return r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
+            // Probability of reflection
+            var rProb = r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
+            return rProb;
         }
 
         public static float IntensityAt(World world, in Point point, ILight light)

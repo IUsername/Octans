@@ -1,4 +1,4 @@
-﻿using MersenneTwister;
+﻿using System.Threading;
 using Octans.Light;
 
 namespace Octans.Shading
@@ -8,6 +8,9 @@ namespace Octans.Shading
         private readonly IFresnelFunction _ff;
         private readonly IGeometricShadow _gsf;
         private readonly INormalDistribution _ndf;
+
+        private readonly ThreadLocal<long> _index =
+            new ThreadLocal<long>(() => Thread.CurrentThread.ManagedThreadId * 10);
 
         public ShadingContext(INormalDistribution ndf, IGeometricShadow gsf, in IFresnelFunction ff)
         {
@@ -30,6 +33,7 @@ namespace Octans.Shading
 
         public Color HitColor(World world, in IntersectionInfo info, int remaining = 5)
         {
+            // TODO: Forward propagate the quasi-random sampling instead of thread local tracking.
             var ambient = info.Geometry.Material.Ambient;
             var surfaceColor = info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
 
@@ -91,12 +95,15 @@ namespace Octans.Shading
             var indirect = Colors.Black;
 
             // TODO: Make parameter for ray count.
-            var rayCount = 8;
+            var rayCount = 3;
             var captured = 0;
+
+            var di = _index.Value;
             while (captured < rayCount)
             {
-                var e0 = (float)Randoms.NextDouble();
-                var e1 = (float)Randoms.NextDouble();
+                //var e0 = (float)Randoms.WellBalanced.NextDouble();
+                //var e1 = (float)Randoms.WellBalanced.NextDouble();
+                var (e0, e1) = QuasiRandom.Next(di++);
                 var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
                 if (!(wi.Z > 0f))
                 {
@@ -110,6 +117,7 @@ namespace Octans.Shading
                 captured++;
             }
 
+            _index.Value = di;
             indirect /= captured;
             surface += indirect;
             return surface;
@@ -117,6 +125,20 @@ namespace Octans.Shading
 
         public Color ColorAt(World world, in Ray ray, int remaining = 5)
         {
+            //// TODO: Russian roulette path termination
+            //// Need to count up ray depth
+            //var rrFactor = 1f;
+            //if (depth >= 5)
+            //{
+            //    const float stopProbability = MathF.Min(1f, 0.0625f * depth);
+            //    if (rnd <= stopProbability)
+            //    {
+            //        return;
+            //    }
+
+            //    rrFactor = 1f / (1f - stopProbability);
+            //}
+
             var xs = world.Intersect(in ray);
             var hit = xs.Hit();
             xs.Return();

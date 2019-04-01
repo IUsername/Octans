@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Octans.Geometry
 {
@@ -49,10 +48,10 @@ namespace Octans.Geometry
 
         private Bounds BoundsFactory()
         {
-            Bounds result = Bounds.Empty;
+            var result = Bounds.Empty;
             foreach (var child in Children)
             {
-                result = result + child.ParentSpaceBounds();
+                result += child.ParentSpaceBounds();
             }
 
             return result;

@@ -50,9 +50,9 @@ namespace Octans.Test
         {
             var white = Colors.White;
             var black = Colors.Black;
-            var d = Color.ColorDelta(in black, in black);
+            var d = Color.PerceptiveColorDelta(in black, in black);
             d.Should().Be(0f);
-            d = Color.ColorDelta(in white, in black);
+            d = Color.PerceptiveColorDelta(in white, in black);
             d.Should().Be(1f);
         }
 
@@ -61,11 +61,11 @@ namespace Octans.Test
         {
            var b1 = new Color(0f,0f,1f);
            var b2 = new Color(0f,0f,0.9f);
-            var dB = Color.ColorDelta(in b1, in b2);
+            var dB = Color.PerceptiveColorDelta(in b1, in b2);
           
             var g1 = new Color(0f, 1f, 0f);
             var g2 = new Color(0f, 0.9f, 0f);
-            var dG = Color.ColorDelta(in g1, in g2);
+            var dG = Color.PerceptiveColorDelta(in g1, in g2);
 
             dG.Should().BeGreaterThan(dB);
         }
@@ -75,11 +75,11 @@ namespace Octans.Test
         {
             var r1 = new Color(1f, 0f, 0f);
             var r2 = new Color(0.9f, 0f, 0f);
-            var dR = Color.ColorDelta(in r1, in r2);
+            var dR = Color.PerceptiveColorDelta(in r1, in r2);
 
             var g1 = new Color(0f, 1f, 0f);
             var g2 = new Color(0f, 0.9f, 0f);
-            var dG = Color.ColorDelta(in g1, in g2);
+            var dG = Color.PerceptiveColorDelta(in g1, in g2);
 
             dG.Should().BeGreaterThan(dR);
         }
@@ -89,11 +89,11 @@ namespace Octans.Test
         {
             var r1 = new Color(1f, 0f, 0f);
             var r2 = new Color(0.9f, 0f, 0f);
-            var dR = Color.ColorDelta(in r1, in r2);
+            var dR = Color.PerceptiveColorDelta(in r1, in r2);
 
             var b1 = new Color(0f, 0f, 1f);
             var b2 = new Color(0f, 0f, 0.9f);
-            var dB = Color.ColorDelta(in b1, in b2);
+            var dB = Color.PerceptiveColorDelta(in b1, in b2);
 
             dB.Should().BeGreaterThan(dR);
         }
@@ -101,10 +101,16 @@ namespace Octans.Test
         [Fact]
         public void ColorDeltaWithinLimit()
         {
-            Color.IsWithinDelta(Colors.Black, Colors.White, 1f).Should().BeFalse();
-            Color.IsWithinDelta(Colors.Black, Colors.White, 1.1f).Should().BeTrue();
-            Color.IsWithinDelta(new Color(0.9f,0.9f,0.9f), Colors.White, 0.2f).Should().BeTrue();
-            Color.IsWithinDelta(new Color(0.1f,0.1f,1f), Colors.Blue, 0.2f).Should().BeTrue();
+            Color.IsWithinPerceptiveDelta(Colors.Black, Colors.White, 1f).Should().BeFalse();
+            Color.IsWithinPerceptiveDelta(Colors.Black, Colors.White, 1.1f).Should().BeTrue();
+        }
+
+        [Fact]
+        public void DeltaGreaterForDarkerColors()
+        {
+            Color.IsWithinPerceptiveDelta(new Color(0.9f, 0.9f, 0.9f), Colors.White, 0.2f).Should().BeTrue();
+            Color.IsWithinPerceptiveDelta(new Color(0.1f, 0.1f, 1f), Colors.Blue, 0.2f).Should().BeFalse();
+            Color.IsWithinPerceptiveDelta(new Color(0.1f, 0.1f, 0.1f), Colors.Black, 0.2f).Should().BeFalse();
         }
 
         [Fact]

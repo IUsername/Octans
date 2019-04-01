@@ -33,12 +33,12 @@ namespace Octans.Test.Pipeline
             tester.AddSample(new SubPixel(0, 0, 2, 1, 0), new Color(0.01f,0.01f,0.01f));
             tester.AddSample(new SubPixel(0, 0, 1, 0, 0), new Color(0.02f,0.02f,0.02f));
             var delta = 0.1f;
-            var aaa = new AdaptiveRenderer(10, 0.01f, tester);
+            var aaa = new AdaptiveRenderer(10, 0.08f, tester);
             var c = aaa.Render(SubPixel.ForPixelCenter(0, 0));
             c.Red.Should().BeApproximately(0.0f, delta);
             c.Blue.Should().BeApproximately(0.0f, delta);
             c.Green.Should().BeApproximately(0.0f, delta);
-            tester.ProbeCount().Should().Be(7);
+            tester.ProbeCount().Should().BeInRange(14, 100);
         }
 
         [Fact]

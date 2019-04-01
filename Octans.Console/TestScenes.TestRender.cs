@@ -21,10 +21,10 @@ namespace Octans.ConsoleApp
             var height = 400;
             var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var ws = new ComposableWorldShading(1, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new RaytracedWorld(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(0, 0.01f, scene);
+            var aaa = new AdaptiveRenderer(2, 0.01f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -43,10 +43,10 @@ namespace Octans.ConsoleApp
             var width = 400;
             var height = 300;
             var c = new ApertureCamera( MathF.PI / 3f, width, height, 0.04f, new Point(0, 1.25f, -4f), new Point(0, 1, 0), 3.5f );
-            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            var ws = new ComposableWorldShading(1, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(2, 0.01f, scene);
+            var aaa = new AdaptiveRenderer(1, 0.01f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
