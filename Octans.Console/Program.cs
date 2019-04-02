@@ -4,7 +4,8 @@
     {
         private static void Main(string[] args)
         {
-            TestScenes.ColRowTestRender();
+            CornellBox.TestRender();
+            //TestScenes.ColRowTestRender();
             //TestScenes.SkyBoxMappingTestRender();
             //TestScenes.SphereMappingTestRender();
             //TestScenes.InsideSphere();

@@ -95,7 +95,7 @@ namespace Octans.Shading
             var indirect = Colors.Black;
 
             // TODO: Make parameter for ray count.
-            var rayCount = 3;
+            var rayCount = 1;
             var captured = 0;
 
             var di = _index.Value;
