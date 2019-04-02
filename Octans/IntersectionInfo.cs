@@ -35,6 +35,7 @@
             (N1, N2) = IntersectionCalculations.DetermineN1N2(in intersection, in intersections);
 
             var r = intersection.Geometry.Material.Roughness;
+            // Scaling to get better spread from [0..1]
             Roughness = r*r;
             Alpha = Roughness * Roughness;
         }

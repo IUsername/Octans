@@ -10,7 +10,7 @@ namespace Octans.Shading
         {
         }
 
-        public float Factor(in ShadingInfo info) => GGXNormalDist(info.Alpha, info.Roughness, info.NdotH);
+        public float Factor(in ShadingInfo info) => GGXNormalDist2(info.Alpha, info.NdotH);
 
         private static float GGXNormalDist(float alpha, float roughness, float NdotH)
         {
@@ -19,6 +19,12 @@ namespace Octans.Shading
             var tanNdotHSqr = (1 - NdotHSqr) / NdotHSqr;
             var s = roughness / (NdotHSqr * (alpha + tanNdotHSqr));
             return oneOverPi * MathF.Sqrt(s);
+        }
+
+        private static float GGXNormalDist2(float alpha,float NdotH)
+        {
+            var denom = NdotH * NdotH * (alpha - 1f) + 1f;
+            return alpha / (MathF.PI * denom * denom);
         }
 
         public (Vector wi, Color reflectance) Sample(in IntersectionInfo info,
@@ -41,10 +47,66 @@ namespace Octans.Shading
             }
 
             var F =  SchlickFresnel(info.Geometry.Material.SpecularColor, wi%wm);
-            var G1 = SmithGGXMasking(in n, in wi,  in wo, info.Roughness);
-            var G2 = SmithGGXMaskingShadowing(in n, in wi, in wo, info.Alpha);
+            //var G1 = SmithGGXMasking(in wm, in wi, in wo, info.Alpha);
+            //var G2 = SmithGGXMaskingShadowing(in wm, in wi, in wo, info.Alpha);
+            var G1 = G1SmithApprox(in wm, in wo, info.Alpha);
+            var G2 = G2SmithApprox(in wm, in wi, in wo, info.Alpha);
             var reflectance =  F * (G2 / G1);
             return (wi, reflectance);
+        }
+
+        public Color Transmission(in ShadingInfo si, in IntersectionInfo info, in Vector wo, in Vector wm, in Vector wi)
+        {
+            return EvalTransmission(si.DiffuseColor, in info, in wo, in wm, in wi);
+        }
+
+        public Color EvalTransmission(Color baseColor, in IntersectionInfo info, in Vector wo, in Vector wm, in Vector wi)
+        {
+            var relativeIor = info.N1 / info.N2;
+            var n2 = relativeIor * relativeIor;
+            var norm = new Vector(0, 0, 1f);
+
+            var HdotL = wm % wi;
+            var HdotV = wm % wo;
+            var absNdotL = MathF.Abs(norm % wi);
+            var absNdotV = MathF.Abs(norm % wo);
+            var absHdotL = MathF.Abs(HdotL);
+            var absHdotV = MathF.Abs(HdotV);
+
+            var d = GGXNormalDist2(info.Alpha, norm%wm);
+            var gl = G1SmithApprox(in wm, in wi, info.Alpha);
+            var gv = G1SmithApprox(in wm, in wo, info.Alpha);
+            var f = DielectricFresnel(HdotV, 1f, 1f / relativeIor);
+
+            // TODO: Handle thin surfaces
+
+            var c = (absHdotL * absHdotV) / (absNdotL * absNdotV);
+            var p = HdotL  + relativeIor * HdotV;
+            var t = n2 / (p * p);
+
+            return baseColor * c * t * (1f - f) * gl * gv * d;
+        }
+
+        private static float DielectricFresnel(float cosThetaI, float etaI, float etaT)
+        {
+            cosThetaI = MathFunction.ClampF(-1, 1, cosThetaI);
+            bool entering = cosThetaI > 0f;
+            if (!entering)
+            {
+                (etaI, etaT) = (etaT, etaI);
+                cosThetaI = MathF.Abs(cosThetaI);
+            }
+
+            var sinThetaI = MathF.Sqrt(MathF.Max(0f, 1f - cosThetaI * cosThetaI));
+            var sinThetaT = etaI / etaT * sinThetaI;
+
+            if (sinThetaT >= 1) return 1f;
+
+            var cosThetaT = MathF.Sqrt(MathF.Max(0f, 1f - sinThetaT * sinThetaT));
+            var Rparl = ((etaT * cosThetaI) - (etaI * cosThetaT)) / ((etaT * cosThetaI) + (etaI * cosThetaT));
+            var Rperp = ((etaI * cosThetaI) - (etaT * cosThetaT)) / ((etaI * cosThetaI) + (etaT * cosThetaT));
+            return (Rparl * Rparl + Rperp * Rperp) / 2f;
+
         }
 
         private float SmithGGXMaskingShadowing(in Vector normal, in Vector wi, in Vector wo, float alpha)
@@ -59,10 +121,27 @@ namespace Octans.Shading
 
         private float SmithGGXMasking(in Vector normal, in Vector wi, in Vector wo, float alpha)
         {
-            var NdotL =MathFunction.Saturate(normal % wi);
+            //var NdotL =MathFunction.Saturate(normal % wi);
             var NdotV = MathFunction.Saturate(normal % wo);
             var denomC = MathF.Sqrt(alpha + (1f - alpha) * NdotV * NdotV) + NdotV;
             return 2f * NdotV / denomC;
+        }
+
+        private static float G1SmithApprox(in Vector normal, in Vector wo, float alpha)
+        {
+            var NdotV =normal % wo;
+            return (2f * NdotV) / (NdotV * (2f - alpha) + alpha);
+        }
+
+        private static float G2SmithApprox(in Vector normal, in Vector wi, in Vector wo, float alpha)
+        {
+            var NdotL = MathF.Abs(normal % wi);
+            var NdotV = MathF.Abs(normal % wo);
+
+            var a = 2f * NdotL * NdotV;
+            var denom = MathFunction.MixF(a, NdotL + NdotV, alpha);
+            return a / denom;
+
         }
 
         //private static float GGX(float alpha, float NdotX)

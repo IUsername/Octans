@@ -187,8 +187,6 @@ namespace Octans.ConsoleApp
             s.Material.Metallic = 0f;
             s.Material.Ambient = 0f;
 
-            
-
             var g = new Group();
             g.AddChild(skySphere);
             g.AddChild(s);
@@ -249,7 +247,7 @@ namespace Octans.ConsoleApp
                 for (var x = 0; x < nX; x++)
                 {
                     var s = new Sphere();
-                    s.SetTransform(Transforms.Translate(x * dx, y, z * dz));
+                    s.SetTransform(Transforms.Scale(1.1f).Translate(x * dx, y, z * dz));
                     var color = x % 2 == 0 ? new Color(0.8f, 0.8f, 0.9f) : new Color(1f, 0.3f, 0.3f);
                     s.Material.Texture = SolidColor.Create(color);
                     s.Material.SpecularColor = metallic ? color : new Color(0.2f,0.2f,0.2f);
@@ -306,7 +304,7 @@ namespace Octans.ConsoleApp
             var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, GGXSmithGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(3, 0.1f, scene);
+            var aaa = new AdaptiveRenderer(3, 0.01f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
