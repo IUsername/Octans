@@ -45,6 +45,6 @@ namespace Octans
         private static (float, float) Gen(int p1, int p2, long i) =>
             (VanDerCorput(100 + i, p1), VanDerCorput(100 + i, p2));
 
-        public static (float, float) Next(long index) => Gen(7, 11, index);
+        public static (float, float) Next(long index) => Gen(2, 3, index);
     }
 }

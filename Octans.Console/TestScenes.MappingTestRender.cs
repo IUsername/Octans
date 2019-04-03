@@ -247,7 +247,7 @@ namespace Octans.ConsoleApp
                 for (var x = 0; x < nX; x++)
                 {
                     var s = new Sphere();
-                    s.SetTransform(Transforms.Scale(1.1f).Translate(x * dx, y, z * dz));
+                    s.SetTransform(Transforms.TranslateY(1f).Scale(1.2f).Translate(x * dx, 0, z * dz));
                     var color = x % 2 == 0 ? new Color(0.8f, 0.8f, 0.9f) : new Color(1f, 0.3f, 0.3f);
                     s.Material.Texture = SolidColor.Create(color);
                     s.Material.SpecularColor = metallic ? color : new Color(0.2f,0.2f,0.2f);
@@ -278,8 +278,8 @@ namespace Octans.ConsoleApp
                     Texture = text,
                     SpecularColor = new Color(0.3f,0.3f,0.3f),
                     Metallic = 0f,
-                    Roughness = 0.5f,
-                    Ambient = 0.0f
+                    Roughness = 0.45f,
+                    Ambient = 0.15f
                 }
             };
             floor.SetTransform(Transforms.TranslateY(-1f).Scale(40f));
@@ -301,10 +301,11 @@ namespace Octans.ConsoleApp
             var height = 140;
             var transform = Transforms.View(new Point(mid.X, 6f, -32f), mid, new Vector(0, 1, 0));
             var c = new PinholeCamera(transform, MathF.PI / 4f, width, height);
+            //var c = new ApertureCamera(MathF.PI / 4f, width, height, 0.04f, new Point(mid.X, 6f, -32f), mid);
             var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, GGXSmithGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(3, 0.01f, scene);
+            var aaa = new AdaptiveRenderer(4, 0.001f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);

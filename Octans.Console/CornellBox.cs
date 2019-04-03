@@ -89,10 +89,10 @@ namespace Octans.ConsoleApp
             //var transform = Transforms.View(new Point(278, 278, -800f), new Point(278, 278, 0), new Vector(0, 1, 0));
             //var c = new PinholeCamera(transform, 278f /400f, width, height);
             var c = new ApertureCamera(278f / 400f, width, height, 0.1f, new Point(278, 278, -800f), new Point(278, 278, 0), 850f);
-            var ws = new ComposableWorldShading(5, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(2, 0.01f, scene);
+            var aaa = new AdaptiveRenderer(2, 0.05f, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -110,7 +110,7 @@ namespace Octans.ConsoleApp
             var greenMaterial = new Material
             {
                 Texture = SolidColor.Create(green),
-                Roughness = 0.9f,
+                Roughness = 1f,
                 SpecularColor = green,
                 Ambient = 0
             };
@@ -119,7 +119,7 @@ namespace Octans.ConsoleApp
             var redMaterial = new Material
             {
                 Texture = SolidColor.Create(red),
-                Roughness =0.9f,
+                Roughness =1f,
                 Ambient = 0,
                 SpecularColor = red
             };
@@ -138,7 +138,7 @@ namespace Octans.ConsoleApp
             var whiteMaterial = new Material
             {
                 Texture = SolidColor.Create(white),
-                Roughness = 0.9f,
+                Roughness = 1f,
                 Ambient = 0,
                 SpecularColor = white
             };

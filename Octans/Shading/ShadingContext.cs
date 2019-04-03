@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Octans.Light;
 
 namespace Octans.Shading
@@ -11,6 +12,16 @@ namespace Octans.Shading
 
         private readonly ThreadLocal<long> _index =
             new ThreadLocal<long>(() => Thread.CurrentThread.ManagedThreadId * 10);
+
+        static int seed = Environment.TickCount;
+
+        static readonly ThreadLocal<Random> random =
+            new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed)));
+
+        public static float Rand()
+        {
+            return (float) random.Value.NextDouble();
+        }
 
         public ShadingContext(INormalDistribution ndf, IGeometricShadow gsf, in IFresnelFunction ff)
         {
@@ -31,124 +42,235 @@ namespace Octans.Shading
             return h.HasValue && h.Value.T < distance;
         }
 
-        public Color HitColor(World world, in IntersectionInfo info, int remaining = 5)
+        //private Color HitColor(World world, in IntersectionInfo info, int depth)
+        //{
+        //    // TODO: Forward propagate the quasi-random sampling instead of thread local tracking.
+        //    var ambient = info.Geometry.Material.Ambient;
+        //    var surfaceColor = info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
+
+        //    // Illumination Equation
+        //    // I = k_a*I_a + I_i(k_d(L%N) + k_s(V%R)^n) + k_t*I_t + k_r*I_r;
+        //    // Ambient + Direct Diffuse + Direct Specular + Indirect (Specular & Diffuse)
+
+        //    var surface = ambient * surfaceColor;
+        //    // TODO: This is a hack/assumption to jump out for quick shading of environment map.
+        //    if (ambient >= 1f)
+        //    {
+        //        return surface;
+        //    }
+
+        //    // Direct lighting
+        //    foreach (var light in world.Lights)
+        //    {
+        //        // ReSharper disable InconsistentNaming
+        //        var intensity = IntensityAt(world, info.OverPoint, light);
+        //        var specularIntensity = 0f;
+        //        var k_d = Colors.Black;
+        //        var k_s = Colors.Black;
+        //        var si = new ShadingInfo(intensity, in light, in info);
+        //        if (intensity > 0f)
+        //        {
+        //            var denominator = 4f * si.NdotL * si.NdotV;
+        //            if (denominator > 0f)
+        //            {
+        //                var D = 1f;
+        //                D *= _ndf.Factor(in si);
+
+        //                var G = 1f;
+        //                G *= _gsf.Factor(in si);
+
+        //                var F = 1f;
+        //                F *= _ff.Factor(in si);
+
+        //                specularIntensity = D * F * G / denominator;
+        //            }
+
+        //            // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
+        //            k_d = si.DiffuseColor;
+        //            k_s = si.SpecularColor * specularIntensity;
+        //        }
+        //        // ReSharper restore InconsistentNaming
+
+        //        var c = k_d + k_s;
+        //        // Lambert's cosine law.
+        //        surface += si.LightIntensity * c * si.NdotL;
+        //    }
+
+        //    // Russian roulette
+        //    var rrFactor = 1f;
+        //    if (depth >= 2)
+        //    {
+        //        var continueProbability = MathF.Min(1f - 0.0625f * depth, MathF.Max(surface.Red, MathF.Max(surface.Green, surface.Blue))  );
+        //        if (Rand() > continueProbability)
+        //        {
+        //            return surface;
+        //        }
+        //        rrFactor = 1f / continueProbability;
+
+        //        //float stopProbability = MathF.Min(1f, 0.0625f * depth);
+        //        //if (Rand() <= stopProbability)
+        //        //{
+        //        //    return surface;
+        //        //}
+        //        //rrFactor = 1f / (1f - stopProbability);
+        //    }
+
+
+
+        //    // Indirect lighting
+        //    var localFrame = new LocalFrame(info.Normal);
+        //    var indirect = Colors.Black;
+
+        //    // TODO: Make parameter for ray count.
+        //    var rayCount = 1;
+        //    var captured = 0;
+
+        //    var di = _index.Value;
+        //    while (captured < rayCount)
+        //    {
+        //        //var e0 = (float)Randoms.WellBalanced.NextDouble();
+        //        //var e1 = (float)Randoms.WellBalanced.NextDouble();
+        //        var (e0, e1) = QuasiRandom.Next(di++);
+        //        var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
+        //        if (!(wi.Z > 0f))
+        //        {
+        //            continue;
+        //        }
+
+        //        var direction = localFrame.ToWorld(in wi);
+        //        var reflectedRay = new Ray(info.OverPoint, direction);
+        //        var color = ColorAt(world, in reflectedRay, depth + 1, 0);
+        //        indirect += color * f;
+        //        captured++;
+        //    }
+
+        //    _index.Value = di;
+        //    indirect /= captured;
+        //    surface += indirect;
+
+        //    return surface * rrFactor;
+        //}
+
+        public Color ColorAt(World world, in Ray ray, int minDepth, long index)
         {
-            // TODO: Forward propagate the quasi-random sampling instead of thread local tracking.
-            var ambient = info.Geometry.Material.Ambient;
-            var surfaceColor = info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
-
-            // Illumination Equation
-            // I = k_a*I_a + I_i(k_d(L%N) + k_s(V%R)^n) + k_t*I_t + k_r*I_r;
-            // Ambient + Direct Diffuse + Direct Specular + Indirect (Specular & Diffuse)
-
-            var surface = ambient * surfaceColor;
-            // TODO: This is a hack/assumption to jump out for quick shading of environment map.
-            if (ambient >= 1f)
+            var currentRay = ray;
+            var throughPut = Colors.White;
+            Color color = Colors.Black;
+            var maxDepth = 16;
+            var depthFactor = 1 / maxDepth;
+         
+            for (var depth = 0; depth < maxDepth; depth++)
             {
-                return surface;
-            }
-
-            // Direct lighting
-            foreach (var light in world.Lights)
-            {
-                // ReSharper disable InconsistentNaming
-                var intensity = IntensityAt(world, info.OverPoint, light);
-                var specularIntensity = 0f;
-                var k_d = Colors.Black;
-                var k_s = Colors.Black;
-                var si = new ShadingInfo(intensity, in light, in info);
-                if (intensity > 0f)
+                var xs = world.Intersect(in currentRay);
+                var hit = xs.Hit();
+                xs.Return();
+                if (!hit.HasValue)
                 {
-                    var denominator = 4f * si.NdotL * si.NdotV;
-                    if (denominator > 0f)
+                    break;
+                }
+
+                var info = new IntersectionInfo(hit.Value, currentRay);
+                var ambient = info.Geometry.Material.Ambient;
+                var surfaceColor = info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
+
+                // Illumination Equation
+                // I = k_a*I_a + I_i(k_d(L%N) + k_s(V%R)^n) + k_t*I_t + k_r*I_r;
+                // Ambient + Direct Diffuse + Direct Specular + Indirect (Specular & Diffuse)
+
+                var surface = ambient * surfaceColor;
+                // TODO: This is a hack/assumption to jump out for quick shading of environment map.
+                if (ambient >= 1f)
+                {
+                    color += surface*throughPut;
+                    break;
+                }
+
+                // Direct lighting
+                foreach (var light in world.Lights)
+                {
+                    // ReSharper disable InconsistentNaming
+                    var intensity = IntensityAt(world, info.OverPoint, light);
+                    var specularIntensity = 0f;
+                    var k_d = Colors.Black;
+                    var k_s = Colors.Black;
+                    var si = new ShadingInfo(intensity, in light, in info);
+                    if (intensity > 0f)
                     {
-                        var D = 1f;
-                        D *= _ndf.Factor(in si);
+                        var denominator = 4f * si.NdotL * si.NdotV;
+                        if (denominator > 0f)
+                        {
+                            var D = 1f;
+                            D *= _ndf.Factor(in si);
 
-                        var G = 1f;
-                        G *= _gsf.Factor(in si);
+                            var G = 1f;
+                            G *= _gsf.Factor(in si);
 
-                        var F = 1f;
-                        F *= _ff.Factor(in si);
+                            var F = 1f;
+                            F *= _ff.Factor(in si);
 
-                        specularIntensity = D * F * G / denominator;
+                            specularIntensity = D * F * G / denominator;
+                        }
+
+                        // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
+                        k_d = si.DiffuseColor;
+                        k_s = si.SpecularColor * specularIntensity;
+                    }
+                    // ReSharper restore InconsistentNaming
+
+                    var c = k_d + k_s;
+                    // Lambert's cosine law.
+                    surface += si.LightIntensity * c * si.NdotL;
+
+                   
+                }
+                color += surface * throughPut;
+
+                // Indirect lighting
+                var localFrame = new LocalFrame(info.Normal);
+              
+                var captured = false;
+                while (!captured)
+                {
+                    var (e0, e1) = QuasiRandom.Next(index++);
+                    var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
+                    if (!(wi.Z > 0f))
+                    {
+                        continue;
                     }
 
-                    // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
-                    k_d = si.DiffuseColor;
-                    k_s = si.SpecularColor * specularIntensity;
+                    captured = true;
+                    var direction = localFrame.ToWorld(in wi);
+                    currentRay = new Ray(info.OverPoint, direction);
+                    throughPut *= f;
                 }
-                // ReSharper restore InconsistentNaming
 
-                var c = k_d + k_s;
-                // Lambert's cosine law.
-                surface += si.LightIntensity * c * si.NdotL;
-            }
-
-            if (remaining-- < 1)
-            {
-                return surface;
-            }
-
-            // Indirect lighting
-            var localFrame = new LocalFrame(info.Normal);
-            var indirect = Colors.Black;
-
-            // TODO: Make parameter for ray count.
-            var rayCount = 1;
-            var captured = 0;
-
-            var di = _index.Value;
-            while (captured < rayCount)
-            {
-                //var e0 = (float)Randoms.WellBalanced.NextDouble();
-                //var e1 = (float)Randoms.WellBalanced.NextDouble();
-                var (e0, e1) = QuasiRandom.Next(di++);
-                var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
-                if (!(wi.Z > 0f))
+                // Russian roulette
+                if (depth >= minDepth)
                 {
-                    continue;
+                    //var continueProbability = MathF.Min(0.95f,
+                    //                                    MathF.Max(throughPut.Red, MathF.Max(throughPut.Green, throughPut.Blue)));
+                    //if (Rand() > continueProbability)
+                    //{
+                    //    break;
+                    //}
+
+                    //throughPut *= 1f / continueProbability;
+
+                    float stopProbability = MathF.Min(1f, depthFactor * (depth+1));
+                    if (Rand() <= stopProbability)
+                    {
+                        break;
+                    }
+                    throughPut *= 1f / (1f - stopProbability);
                 }
 
-                var direction = localFrame.ToWorld(in wi);
-                var reflectedRay = new Ray(info.OverPoint, direction);
-                var color = ColorAt(world, in reflectedRay, remaining);
-                indirect += color * f;
-                captured++;
+             
             }
+           // _index.Value = index;
+            return color;
 
-            _index.Value = di;
-            indirect /= captured;
-            surface += indirect;
-            return surface;
-        }
 
-        public Color ColorAt(World world, in Ray ray, int remaining = 5)
-        {
-            //// TODO: Russian roulette path termination
-            //// Need to count up ray depth
-            //var rrFactor = 1f;
-            //if (depth >= 5)
-            //{
-            //    const float stopProbability = MathF.Min(1f, 0.0625f * depth);
-            //    if (rnd <= stopProbability)
-            //    {
-            //        return;
-            //    }
 
-            //    rrFactor = 1f / (1f - stopProbability);
-            //}
-
-            var xs = world.Intersect(in ray);
-            var hit = xs.Hit();
-            xs.Return();
-            if (!hit.HasValue)
-            {
-                return Colors.Black;
-            }
-
-            var info = new IntersectionInfo(hit.Value, ray);
-            return HitColor(world, info, remaining);
         }
 
         //public Color ReflectedColor(World world, in IntersectionInfo info, int remaining = 5)
