@@ -6,22 +6,18 @@ namespace Octans.Shading
 {
     public class ShadingContext
     {
+        private static int seed = Environment.TickCount;
+
+        private static readonly ThreadLocal<Random> random =
+            new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed)));
+
         private readonly IFresnelFunction _ff;
         private readonly IGeometricShadow _gsf;
-        private readonly INormalDistribution _ndf;
 
         private readonly ThreadLocal<long> _index =
             new ThreadLocal<long>(() => Thread.CurrentThread.ManagedThreadId * 10);
 
-        static int seed = Environment.TickCount;
-
-        static readonly ThreadLocal<Random> random =
-            new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed)));
-
-        public static float Rand()
-        {
-            return (float) random.Value.NextDouble();
-        }
+        private readonly INormalDistribution _ndf;
 
         public ShadingContext(INormalDistribution ndf, IGeometricShadow gsf, in IFresnelFunction ff)
         {
@@ -29,6 +25,8 @@ namespace Octans.Shading
             _gsf = gsf;
             _ff = ff;
         }
+
+        public static float Rand() => (float) random.Value.NextDouble();
 
         public static bool IsShadowed(World w, in Point p, in Point lightPoint)
         {
@@ -116,7 +114,6 @@ namespace Octans.Shading
         //    }
 
 
-
         //    // Indirect lighting
         //    var localFrame = new LocalFrame(info.Normal);
         //    var indirect = Colors.Black;
@@ -155,10 +152,10 @@ namespace Octans.Shading
         {
             var currentRay = ray;
             var throughPut = Colors.White;
-            Color color = Colors.Black;
+            var color = Colors.Black;
             var maxDepth = 16;
             var depthFactor = 1 / maxDepth;
-         
+
             for (var depth = 0; depth < maxDepth; depth++)
             {
                 var xs = world.Intersect(in currentRay);
@@ -177,57 +174,20 @@ namespace Octans.Shading
                 // I = k_a*I_a + I_i(k_d(L%N) + k_s(V%R)^n) + k_t*I_t + k_r*I_r;
                 // Ambient + Direct Diffuse + Direct Specular + Indirect (Specular & Diffuse)
 
-                var surface = ambient * surfaceColor;
+                color += ambient * surfaceColor * throughPut;
                 // TODO: This is a hack/assumption to jump out for quick shading of environment map.
                 if (ambient >= 1f)
                 {
-                    color += surface*throughPut;
                     break;
                 }
 
-                // Direct lighting
-                foreach (var light in world.Lights)
-                {
-                    // ReSharper disable InconsistentNaming
-                    var intensity = IntensityAt(world, info.OverPoint, light);
-                    var specularIntensity = 0f;
-                    var k_d = Colors.Black;
-                    var k_s = Colors.Black;
-                    var si = new ShadingInfo(intensity, in light, in info);
-                    if (intensity > 0f)
-                    {
-                        var denominator = 4f * si.NdotL * si.NdotV;
-                        if (denominator > 0f)
-                        {
-                            var D = 1f;
-                            D *= _ndf.Factor(in si);
+                var direct = DirectLighting(world, info);
 
-                            var G = 1f;
-                            G *= _gsf.Factor(in si);
-
-                            var F = 1f;
-                            F *= _ff.Factor(in si);
-
-                            specularIntensity = D * F * G / denominator;
-                        }
-
-                        // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
-                        k_d = si.DiffuseColor;
-                        k_s = si.SpecularColor * specularIntensity;
-                    }
-                    // ReSharper restore InconsistentNaming
-
-                    var c = k_d + k_s;
-                    // Lambert's cosine law.
-                    surface += si.LightIntensity * c * si.NdotL;
-
-                   
-                }
-                color += surface * throughPut;
+                color += direct * throughPut;
 
                 // Indirect lighting
                 var localFrame = new LocalFrame(info.Normal);
-              
+
                 var captured = false;
                 while (!captured)
                 {
@@ -256,21 +216,62 @@ namespace Octans.Shading
 
                     //throughPut *= 1f / continueProbability;
 
-                    float stopProbability = MathF.Min(1f, depthFactor * (depth+1));
+                    var stopProbability = MathF.Min(1f, depthFactor * (depth + 1));
                     if (Rand() <= stopProbability)
                     {
                         break;
                     }
+
                     throughPut *= 1f / (1f - stopProbability);
                 }
-
-             
             }
-           // _index.Value = index;
+
+            // _index.Value = index;
             return color;
+        }
 
+        private Color DirectLighting(World world, IntersectionInfo info)
+        {
+            var surface = Colors.Black;
+            // Direct lighting
+            for (var i = 0; i < world.Lights.Count; i++)
+            {
+                var light = world.Lights[i];
+                // ReSharper disable InconsistentNaming
+                var intensity = IntensityAt(world, info.OverPoint, light);
+                var specularIntensity = 0f;
+                var k_d = Colors.Black;
+                var k_s = Colors.Black;
+                var si = new ShadingInfo(intensity, in light, in info);
+                if (intensity > 0f)
+                {
+                    var denominator = 4f * si.NdotL * si.NdotV;
+                    if (denominator > 0f)
+                    {
+                        var D = 1f;
+                        D *= _ndf.Factor(in si);
 
+                        var G = 1f;
+                        G *= _gsf.Factor(in si);
 
+                        var F = 1f;
+                        F *= _ff.Factor(in si);
+
+                        specularIntensity = D * F * G / denominator;
+                    }
+
+                    // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
+                    k_d = si.DiffuseColor;
+                    k_s = si.SpecularColor * specularIntensity;
+                }
+                // ReSharper restore InconsistentNaming
+
+                var c = k_d + k_s;
+                // Lambert's cosine law.
+                surface += si.LightIntensity * c * si.NdotL;
+            }
+
+            return surface;
         }
 
         //public Color ReflectedColor(World world, in IntersectionInfo info, int remaining = 5)

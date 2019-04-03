@@ -5,19 +5,19 @@ namespace Octans.Geometry
 {
     public class Group : GeometryBase
     {
-        private readonly Lazy<Bounds> _bounds;
+        private Bounds _bounds;
         private readonly List<IGeometry> _children;
 
         public Group()
         {
             _children = new List<IGeometry>();
-            _bounds = new Lazy<Bounds>(BoundsFactory);
+            _bounds = Bounds.Empty;
         }
 
         public Group(params IGeometry[] geometries)
         {
             _children = new List<IGeometry>(geometries);
-            _bounds = new Lazy<Bounds>(BoundsFactory);
+            _bounds = BoundsFactory();
         }
 
         public IReadOnlyList<IGeometry> Children => _children;
@@ -31,8 +31,9 @@ namespace Octans.Geometry
             }
 
             var intersections = Intersections.Builder();
-            foreach (var child in _children)
+            for (var index = 0; index < _children.Count; index++)
             {
+                var child = _children[index];
                 var xs = child.Intersects(in localRay);
                 intersections.AddRange(in xs);
                 xs.Return();
@@ -44,13 +45,14 @@ namespace Octans.Geometry
         public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
             throw new NotImplementedException();
 
-        public override Bounds LocalBounds() => _bounds.Value;
+        public override Bounds LocalBounds() => _bounds;
 
         private Bounds BoundsFactory()
         {
             var result = Bounds.Empty;
-            foreach (var child in Children)
+            for (var index = 0; index < Children.Count; index++)
             {
+                var child = Children[index];
                 result += child.ParentSpaceBounds();
             }
 
@@ -71,6 +73,7 @@ namespace Octans.Geometry
 
             _children.Add(geometry);
             geometry.Parent = this;
+            _bounds = BoundsFactory();
         }
 
         public (IGeometry[] left, IGeometry[] right) PartitionChildren()

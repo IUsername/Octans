@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 
 namespace Octans
 {
@@ -215,7 +217,37 @@ namespace Octans
 
             return m;
         }
-        
+
+        //[Pure]
+        //private static Point MultiplyPoint(in Matrix a, in Point b)
+        //{
+        //    if (a._isIdentity)
+        //    {
+        //        return b;
+        //    }
+
+        //    if (a.Columns != 4)
+        //    {
+        //        throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
+        //    }
+
+        //    var m = new Matrix(a.Rows, b.Columns);
+        //    for (var r = 0; r < a.Rows; r++)
+        //    {
+        //        for (var c = 0; c < 4; c++)
+        //        {
+        //            var temp = 0.0f;
+        //            for (var k = 0; k < a.Columns; k++)
+        //            {
+        //                temp += a[r, k] * b[k, c];
+        //            }
+
+        //            m._data[r, c] = temp;
+        //        }
+        //    }
+        //    return new Point(x,y,z,w);
+        //}
+
 
         [Pure]
         public static float Determinant(in Matrix m)
@@ -349,17 +381,15 @@ namespace Octans
             }
 
             var m = TransformMatPool.GetObject();
-            for (var r = 0; r < a.Rows; r++)
+            for (var i = 0; i < 4; i++)
             {
-                for (var c = 0; c < b.Columns; c++)
+                for (var j = 0; j < b.Columns; j++)
                 {
-                    var temp = 0.0f;
-                    for (var k = 0; k < a.Columns; k++)
-                    {
-                        temp += a[r, k] * b[k, c];
-                    }
-
-                    m._data[r, c] = temp;
+                    m._data[i, j] = 0f;
+                    m._data[i, j] += a[i, 0] * b[0, j];
+                    m._data[i, j] += a[i, 1] * b[1, j];
+                    m._data[i, j] += a[i, 2] * b[2, j];
+                    m._data[i, j] += a[i, 3] * b[3, j];
                 }
             }
 
@@ -367,27 +397,66 @@ namespace Octans
         }
 
         [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Point Multiply4x4Point(in Matrix a, in Point b)
+        {
+
+            //if (a.Columns != 4 && a.Rows != 4)
+            //{
+            //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
+            //}
+
+            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z + a[0, 3] * b.W;
+            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z + a[1, 3] * b.W;
+            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z + a[2, 3] * b.W;
+            var w = a[3, 0] * b.X + a[3, 1] * b.Y + a[3, 2] * b.Z + a[3, 3] * b.W;
+
+            return new Point(x, y, z, w);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector Multiply4x4Vector(in Matrix a, in Vector b)
+        {
+
+            //if (a.Columns != 4 && a.Rows != 4)
+            //{
+            //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
+            //}
+
+            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z + a[0, 3] * b.W;
+            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z + a[1, 3] * b.W;
+            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z + a[2, 3] * b.W;
+
+            return new Vector(x, y, z);
+        }
+
+        [Pure]
         private static Point OpMultiplyPoint(in Matrix left, in Point right)
         {
-            if (left._isIdentity) return right;
-            var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
-            var m = MultiplyTransformPool(in left, in rMat);
-            var p = ToPoint(in m);
-            ReturnColMat(rMat);
-            ReturnTransformMatPool(m);
-            return p;
+                return Multiply4x4Point(in left, in right);
+
+            //if (left._isIdentity) return right;
+            //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
+            //var m = MultiplyTransformPool(in left, in rMat);
+            //var p = ToPoint(in m);
+            //ReturnColMat(rMat);
+            //ReturnTransformMatPool(m);
+            //return p;
         }
 
         [Pure]
         private static Vector OpMultiplyVector(in Matrix left, in Vector right)
         {
-            if (left._isIdentity) return right;
-            var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
-            var m = MultiplyTransformPool(in left, in rMat);
-            var v = ToVector(in m);
-            ReturnColMat(rMat);
-            ReturnTransformMatPool(m);
-            return v;
+            return Multiply4x4Vector(in left, in right);
+
+            //if (left._isIdentity) return right;
+            //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
+            //var m = MultiplyTransformPool(in left, in rMat);
+            //var v = ToVector(in m);
+            //ReturnColMat(rMat);
+            //ReturnTransformMatPool(m);
+            //return v;
         }
 
         [Pure]
