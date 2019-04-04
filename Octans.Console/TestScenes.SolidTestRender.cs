@@ -71,7 +71,8 @@ namespace Octans.ConsoleApp
             var ws = new ComposableWorldShading(2, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(2, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(2, 0.01f, scene);
+            //var aaa = new AdaptiveRenderer(2, 0.01f, scene);
+            var aaa = new SamplesPerPixelRenderer(24, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);

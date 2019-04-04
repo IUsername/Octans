@@ -31,13 +31,13 @@ namespace Octans.Shading
         public static bool IsShadowed(World w, in Point p, in Point lightPoint)
         {
             var v = lightPoint - p;
-            var distance = v.Magnitude();
+         //   var distance = v.Magnitude();
             var direction = v.Normalize();
             var r = new Ray(p, direction);
             var xs = w.Intersect(in r);
             var h = xs.Hit(true);
             xs.Return();
-            return h.HasValue && h.Value.T < distance;
+            return h.HasValue && h.Value.T < v.Magnitude();
         }
 
         //private Color HitColor(World world, in IntersectionInfo info, int depth)
@@ -153,8 +153,8 @@ namespace Octans.Shading
             var currentRay = ray;
             var throughPut = Colors.White;
             var color = Colors.Black;
-            var maxDepth = 16;
-            var depthFactor = 1 / maxDepth;
+            var maxDepth = 10;
+           // var depthFactor = 1 / (maxDepth-1f);
 
             for (var depth = 0; depth < maxDepth; depth++)
             {
@@ -167,8 +167,10 @@ namespace Octans.Shading
                 }
 
                 var info = new IntersectionInfo(hit.Value, currentRay);
-                var ambient = info.Geometry.Material.Ambient;
-                var surfaceColor = info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
+                var material = info.Geometry.Material;
+                var a = material.Ambient;
+                var ambient = a > 0 ? a : 0.01f;
+                var surfaceColor = material.Texture.ShapeColor(info.Geometry, info.OverPoint);
 
                 // Illumination Equation
                 // I = k_a*I_a + I_i(k_d(L%N) + k_s(V%R)^n) + k_t*I_t + k_r*I_r;
@@ -181,56 +183,68 @@ namespace Octans.Shading
                     break;
                 }
 
-                var direct = DirectLighting(world, info);
+                var directProbability = MathFunction.MixF(0.10f, 0.50f, material.Roughness );
+                if (Rand() <= directProbability)
+                {
+                    var direct = DirectLighting(world, info, index);
+                    color += direct * throughPut * (1 / directProbability);
+                    break;
+                }
 
-                color += direct * throughPut;
+                throughPut *= 1f / (1f - directProbability);
 
                 // Indirect lighting
-                var localFrame = new LocalFrame(info.Normal);
+                (currentRay, throughPut) = IndirectLighting(index, info, in throughPut);
 
-                var captured = false;
-                while (!captured)
+
+                if (depth < minDepth)
                 {
-                    var (e0, e1) = QuasiRandom.Next(index++);
-                    var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
-                    if (!(wi.Z > 0f))
-                    {
-                        continue;
-                    }
-
-                    captured = true;
-                    var direction = localFrame.ToWorld(in wi);
-                    currentRay = new Ray(info.OverPoint, direction);
-                    throughPut *= f;
+                    continue;
                 }
 
                 // Russian roulette
-                if (depth >= minDepth)
+                var continueProbability = MathF.Min(1f,
+                                                    MathF.Max(throughPut.Red, MathF.Max(throughPut.Green, throughPut.Blue)));
+                if (Rand() > continueProbability)
                 {
-                    //var continueProbability = MathF.Min(0.95f,
-                    //                                    MathF.Max(throughPut.Red, MathF.Max(throughPut.Green, throughPut.Blue)));
-                    //if (Rand() > continueProbability)
-                    //{
-                    //    break;
-                    //}
-
-                    //throughPut *= 1f / continueProbability;
-
-                    var stopProbability = MathF.Min(1f, depthFactor * (depth + 1));
-                    if (Rand() <= stopProbability)
-                    {
-                        break;
-                    }
-
-                    throughPut *= 1f / (1f - stopProbability);
+                    break;
                 }
+
+                throughPut *= 1f / continueProbability;
+
+                //var stopProbability = MathF.Min(1f, depthFactor * (depth + 1));
+                //if (Rand() <= stopProbability)
+                //{
+                //    break;
+                //}
+
+                //throughPut *= 1f / (1f - stopProbability);
             }
 
             // _index.Value = index;
             return color;
         }
 
-        private Color DirectLighting(World world, IntersectionInfo info)
+        private (Ray bounce, Color throughPut) IndirectLighting(long index, IntersectionInfo info, in Color throughPut)
+        {
+            var i = index;
+            var localFrame = new LocalFrame(info.Normal);
+            while (true)
+            {
+                var (e0, e1) = QuasiRandom.Next(i++);
+                var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
+                if (!(wi.Z > 0f))
+                {
+                    continue;
+                }
+
+                var direction = localFrame.ToWorld(in wi);
+                var currentRay = new Ray(info.OverPoint, direction);
+                return(currentRay, throughPut * f);
+            }
+        }
+
+        private Color DirectLighting(World world, IntersectionInfo info, long index)
         {
             var surface = Colors.Black;
             // Direct lighting
@@ -238,37 +252,39 @@ namespace Octans.Shading
             {
                 var light = world.Lights[i];
                 // ReSharper disable InconsistentNaming
-                var intensity = IntensityAt(world, info.OverPoint, light);
-                var specularIntensity = 0f;
-                var k_d = Colors.Black;
-                var k_s = Colors.Black;
-                var si = new ShadingInfo(intensity, in light, in info);
-                if (intensity > 0f)
+                var (intensity, sampled) = IntensityAt(world, info.OverPoint, light, index);
+
+
+                if (!(intensity > 0f))
                 {
-                    var denominator = 4f * si.NdotL * si.NdotV;
-                    if (denominator > 0f)
-                    {
-                        var D = 1f;
-                        D *= _ndf.Factor(in si);
-
-                        var G = 1f;
-                        G *= _gsf.Factor(in si);
-
-                        var F = 1f;
-                        F *= _ff.Factor(in si);
-
-                        specularIntensity = D * F * G / denominator;
-                    }
-
-                    // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
-                    k_d = si.DiffuseColor;
-                    k_s = si.SpecularColor * specularIntensity;
+                    continue;
                 }
-                // ReSharper restore InconsistentNaming
+
+                var si = new ShadingInfo(intensity, in light, in info, in sampled);
+                var specularIntensity = 0f;
+                var denominator = 4f * si.NdotL * si.NdotV;
+                if (denominator > 0.001f)
+                {
+                    var D = 1f;
+                    D *= _ndf.Factor(in si);
+
+                    var G = 1f;
+                    G *= _gsf.Factor(in si);
+
+                    var F = 1f;
+                    F *= _ff.Factor(in si);
+
+                    specularIntensity = D * F * G  / denominator;
+                }
+
+                // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
+                var k_d = si.DiffuseColor;
+                var k_s = si.SpecularColor * specularIntensity;
 
                 var c = k_d + k_s;
                 // Lambert's cosine law.
                 surface += si.LightIntensity * c * si.NdotL;
+                // ReSharper restore InconsistentNaming
             }
 
             return surface;
@@ -348,30 +364,35 @@ namespace Octans.Shading
         //    return r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
         //}
 
-        public static float IntensityAt(World world, in Point point, ILight light)
+        public static (float intensity, Point sampledPoint) IntensityAt(World world, in Point point, ILight light, long index)
         {
             switch (light)
             {
                 case PointLight _:
-                    return IsShadowed(world, in point, light.Position) ? 0.0f : 1.0f;
+                    return (IsShadowed(world, in point, light.Position) ? 0.0f : 1.0f, light.Position);
                 case AreaLight area:
                 {
-                    var total = 0.0f;
-                    for (var v = 0; v < area.VSteps; v++)
-                    {
-                        for (var u = 0; u < area.USteps; u++)
-                        {
-                            if (!IsShadowed(world, in point, area.UVPoint(u, v)))
-                            {
-                                total += 1.0f;
-                            }
-                        }
-                    }
+                    var (lu, lv) = QuasiRandom.Next(index);
+                    var lPoint = area.GetPoint(lu, lv);
+                    return (!IsShadowed(world, in point, lPoint) ? 1f : 0f, lPoint);
 
-                    return total / area.Samples;
+
+                    //    var total = 0.0f;
+                    //for (var v = 0; v < area.VSteps; v++)
+                    //{
+                    //    for (var u = 0; u < area.USteps; u++)
+                    //    {
+                    //        if (!IsShadowed(world, in point, area.UVPoint(u, v)))
+                    //        {
+                    //            total += 1.0f;
+                    //        }
+                    //    }
+                    //}
+
+                    //return total / area.Samples;
                 }
                 default:
-                    return 0f;
+                    return (0f, new Point(0,0,0));
             }
         }
     }

@@ -2,6 +2,8 @@
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Octans
 {
@@ -118,8 +120,8 @@ namespace Octans
 
         public class IntersectionsBuilder : IIntersectionsBuilder
         {
-            private static readonly ObjectPool<IntersectionsBuilder> ObjectPool =
-                new ObjectPool<IntersectionsBuilder>(() => new IntersectionsBuilder());
+            private static readonly PerThreadObjectPool<IntersectionsBuilder> ObjectPool =
+                new PerThreadObjectPool<IntersectionsBuilder>(() => new IntersectionsBuilder());
 
             private readonly List<Intersection> _list;
 
@@ -178,6 +180,25 @@ namespace Octans
         public void PutObject(T item)
         {
             _objects.Add(item);
+        }
+    }
+
+    public class PerThreadObjectPool<T>
+    {
+        private readonly ThreadLocal<Queue<T>> _objects;
+        private readonly Func<T> _generator;
+
+        public PerThreadObjectPool(Func<T> generator)
+        {
+            _generator = generator ?? throw new ArgumentNullException(nameof(generator));
+            _objects = new ThreadLocal<Queue<T>>(() => new Queue<T>());
+        }
+
+        public T GetObject() => _objects.Value.TryDequeue(out var item) ? item : _generator();
+
+        public void PutObject(T item)
+        {
+            _objects.Value.Enqueue(item);
         }
     }
 }

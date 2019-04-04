@@ -4,7 +4,7 @@ namespace Octans
 {
     internal static class IntersectionCalculations
     {
-        private static readonly ObjectPool<RefractiveIndexOrderer> OrdererPool = new ObjectPool<RefractiveIndexOrderer>(() => new RefractiveIndexOrderer());
+        private static readonly PerThreadObjectPool<RefractiveIndexOrderer> OrdererPool = new PerThreadObjectPool<RefractiveIndexOrderer>(() => new RefractiveIndexOrderer());
 
         public static (float N1, float N2) DetermineN1N2(in Intersection intersection, in IIntersections intersections)
         {

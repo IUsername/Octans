@@ -84,15 +84,15 @@ namespace Octans.ConsoleApp
         {
             var w = BuildBox();
 
-            var width = 200;
-            var height = 200;
-            //var transform = Transforms.View(new Point(278, 278, -800f), new Point(278, 278, 0), new Vector(0, 1, 0));
-            //var c = new PinholeCamera(transform, 278f /400f, width, height);
-            var c = new ApertureCamera(278f / 400f, width, height, 0.1f, new Point(278, 278, -800f), new Point(278, 278, 0), 850f);
-            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            var width = 400;
+            var height = 400;
+            var transform = Transforms.View(new Point(278, 278, -800f), new Point(278, 278, 0), new Vector(0, 1, 0));
+            var c = new PinholeCamera(transform, 278f /400f, width, height);
+            //var c = new ApertureCamera(278f / 400f, width, height, 0.1f, new Point(278, 278, -800f), new Point(278, 278, 0), 850f);
+            var ws = new ComposableWorldShading(5, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(0, 0.05f, scene);
+            var aaa = new SamplesPerPixelRenderer(400, scene);
             var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
@@ -168,7 +168,7 @@ namespace Octans.ConsoleApp
 
             var world = new World();
             world.SetObjects(g);
-            world.SetLights(new AreaLight(new Point(213f, 554f, 227f), new Vector(130f,0,0), 4, new Vector(0,0,105f), 4, new Color(0.6f, 0.6f, 0.6f)));
+            world.SetLights(new AreaLight(new Point(213f, 554f, 227f), new Vector(130f,0,0), 4, new Vector(0,0,105f), 4, new Color(0.7f, 0.7f, 0.7f)));
 
             return world;
         }

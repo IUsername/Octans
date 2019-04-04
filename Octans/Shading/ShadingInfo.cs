@@ -4,11 +4,12 @@
     {
         public ShadingInfo(float lightIntensity,
                            in ILight light,
-                           in IntersectionInfo intersection)
+                           in IntersectionInfo intersection,
+                           in Point sampled)
         {
             Eye = intersection.Eye;
             NormalDirection = intersection.Normal;
-            LightDirection = (light.Position - intersection.OverPoint).Normalize();
+            LightDirection = (sampled - intersection.OverPoint).Normalize();
             LightReflectDirection = -LightDirection.Reflect(NormalDirection);
             ViewDirection = intersection.Eye;
             ViewReflectDirection = -ViewDirection.Reflect(NormalDirection);

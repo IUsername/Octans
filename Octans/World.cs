@@ -23,7 +23,7 @@ namespace Octans
             for (var index = 0; index < Objects.Count; index++)
             {
                 var shape = Objects[index];
-                var xs = shape.Intersects(ray);
+                var xs = shape.Intersects(in ray);
                 builder.AddRange(in xs);
                 xs.Return();
             }

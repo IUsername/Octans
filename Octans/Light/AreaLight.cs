@@ -63,5 +63,10 @@ namespace Octans.Light
 
             return points.ToArray();
         }
+
+        public Point GetPoint(float u, float v)
+        {
+            return Corner + (U * u * USteps) + (V * v * VSteps);
+        }
     }
 }
