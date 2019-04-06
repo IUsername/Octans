@@ -28,7 +28,7 @@ namespace Octans.Shading
                                      ILight light,
                                      Point worldPoint,
                                      Vector eyeVector,
-                                     Vector normalVector,
+                                     Normal normalVector,
                                      float intensity)
         {
             var effectiveColor = m.Texture.ShapeColor(geometry, worldPoint) * light.Intensity;
@@ -147,7 +147,7 @@ namespace Octans.Shading
             }
 
             var cosT = MathF.Sqrt(1f - sin2T);
-            var direction = info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
+            var direction = (Vector)info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
             var refractedRay = new Ray(info.UnderPoint, direction);
             return ColorAt(world, in refractedRay, --remaining) * info.Geometry.Material.Transparency;
         }

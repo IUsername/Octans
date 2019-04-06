@@ -56,5 +56,42 @@ namespace Octans
                 return (b1, b2);
             }
         }
+
+        /// <summary>
+        /// Returns two vectors that when combined with the input normal can be used to transform to and from a
+        /// Z-positive normal orthonormal space.
+        /// </summary>
+        /// <param name="n">Normal vector.</param>
+        /// <returns>Orthonormal vectors from input normal.</returns>
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (Vector b1, Vector b2) OrthonormalPosZ(in Normal n)
+        {
+            // https://graphics.pixar.com/library/OrthonormalB/paper.pdf
+            //var sign = n.Z >= 0f ? 1f : -1f;
+            //var a = -1f / (sign + n.Z);
+            //var b = n.X * n.Y * a;
+            //var b1 = new Vector(1f+sign*n.X*n.X+a, sign*b, -sign*n.X);
+            //var b2 = new Vector(b,sign+n.Y*n.Y*a, -n.Y);
+            //return (b1, b2);
+
+
+            if (n.Z < 0f)
+            {
+                var a = 1f / (1f - n.Z);
+                var b = n.X * n.Y * a;
+                var b1 = new Vector(1f - n.X * n.X * a, -b, n.X);
+                var b2 = new Vector(b, n.Y * n.Y * a - 1f, -n.Y);
+                return (b1, b2);
+            }
+            else
+            {
+                var a = 1f / (1f + n.Z);
+                var b = -n.X * n.Y * a;
+                var b1 = new Vector(1f - n.X * n.X * a, b, -n.X);
+                var b2 = new Vector(b, 1f - n.Y * n.Y * a, -n.Y);
+                return (b1, b2);
+            }
+        }
     }
 }

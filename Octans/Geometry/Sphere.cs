@@ -25,8 +25,8 @@ namespace Octans.Geometry
                 new Intersection(t2, this));
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
-            localPoint - Point.Zero;
+        public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection) =>
+            (Normal)(localPoint - Point.Zero);
 
         public override Bounds LocalBounds() => Bounds.Unit;
     }

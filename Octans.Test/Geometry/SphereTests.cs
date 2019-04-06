@@ -67,7 +67,7 @@ namespace Octans.Test.Geometry
         {
             var s = new Sphere();
             var n = s.LocalNormalAt(new Point(1, 0, 0), new Intersection(1, s));
-            n.Should().Be(new Vector(1, 0, 0));
+            n.Should().Be(new Normal(1, 0, 0));
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Octans.Test.Geometry
         {
             var s = new Sphere();
             var n = s.LocalNormalAt(new Point(0, 1, 0), new Intersection(1, s));
-            n.Should().Be(new Vector(0, 1, 0));
+            n.Should().Be(new Normal(0, 1, 0));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace Octans.Test.Geometry
         {
             var s = new Sphere();
             var n = s.LocalNormalAt(new Point(0, 0, 1), new Intersection(1, s));
-            n.Should().Be(new Vector(0, 0, 1));
+            n.Should().Be(new Normal(0, 0, 1));
         }
 
         [Fact]

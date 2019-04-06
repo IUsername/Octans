@@ -91,23 +91,23 @@ namespace Octans.Geometry
             }
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
+        public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
             var dist = localPoint.X * localPoint.X + localPoint.Z * localPoint.Z;
             if (dist < 1f)
             {
                 if (localPoint.Y >= Maximum - Epsilon)
                 {
-                    return new Vector(0, 1, 0);
+                    return new Normal(0, 1, 0);
                 }
 
                 if (localPoint.Y <= Minimum + Epsilon)
                 {
-                    return new Vector(0, -1, 0);
+                    return new Normal(0, -1, 0);
                 }
             }
 
-            return new Vector(localPoint.X, 0, localPoint.Z);
+            return new Normal(localPoint.X, 0, localPoint.Z);
         }
 
         public override Bounds LocalBounds() => new Bounds(new Point(-1, Minimum, -1), new Point(1, Maximum, 1));

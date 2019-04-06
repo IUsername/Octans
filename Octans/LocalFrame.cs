@@ -6,10 +6,18 @@
         private readonly Vector _t;
         private readonly Vector _n;
 
-        public LocalFrame(in Vector worldN)
+        public LocalFrame(in Normal worldN)
         {
-            _n = worldN;
-            (_s, _t) = MathFunction.OrthonormalVectorsPosZ(in worldN);
+            _n = (Vector)worldN;
+            (_s, _t) = MathFunction.OrthonormalPosZ(in worldN);
+        }
+
+        public Normal ToLocal(in Normal n)
+        {
+            var x = _s % n;
+            var y = _t % n;
+            var z = _n % n;
+            return new Normal(x, y, z);
         }
 
         public Vector ToLocal(in Vector v)
@@ -18,6 +26,11 @@
             var y = _t % v;
             var z = _n % v;
             return new Vector(x, y, z);
+        }
+
+        public Normal ToWorld(in Normal v)
+        {
+            return (Normal)( _s * v.X + _t * v.Y + _n * v.Z);
         }
 
         public Vector ToWorld(in Vector v)

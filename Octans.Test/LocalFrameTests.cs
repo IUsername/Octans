@@ -8,7 +8,7 @@ namespace Octans.Test
         [Fact]
         public void CanRoundtripLocalFrame()
         {
-            var brdfN = new Vector(0, 1, 0);
+            var brdfN = new Normal(0, 1, 0);
             var frame = new LocalFrame(in brdfN);
             var localV = new Vector(0, 0, 1).Normalize();
             var worldV = frame.ToWorld(in localV);
@@ -23,7 +23,7 @@ namespace Octans.Test
         [Fact]
         public void NoImpactIfWorldAndLocalNormalsMatch()
         {
-            var brdfN = new Vector(0, 0, 1);
+            var brdfN = new Normal(0, 0, 1);
             var frame = new LocalFrame(in brdfN);
             var localV = new Vector(0, 0, 1).Normalize();
             var worldV = frame.ToWorld(in localV);
@@ -36,7 +36,7 @@ namespace Octans.Test
         [Fact]
         public void CanHandleNegativeZValues()
         {
-            var brdfN = new Vector(0, 3, -1).Normalize();
+            var brdfN = new Normal(0, 3, -1).Normalize();
             var frame = new LocalFrame(in brdfN);
             var localV = new Vector(1, 0, 2).Normalize();
             var worldV = frame.ToWorld(in localV);

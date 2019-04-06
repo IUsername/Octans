@@ -122,7 +122,7 @@ namespace Octans.Geometry
             return dist < r;
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
+        public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
             if (IsClosed)
             {
@@ -130,14 +130,14 @@ namespace Octans.Geometry
                 {
                     if (WithinRadius(in localPoint))
                     {
-                        return new Vector(0, 1, 0);
+                        return new Normal(0, 1, 0);
                     }
                 }
                 else if (localPoint.Y <= Minimum + Epsilon)
                 {
                     if (WithinRadius(in localPoint))
                     {
-                        return new Vector(0, -1, 0);
+                        return new Normal(0, -1, 0);
                     }
                 }
             }
@@ -148,7 +148,7 @@ namespace Octans.Geometry
                 y = -y;
             }
 
-            return new Vector(localPoint.X, y, localPoint.Z);
+            return new Normal(localPoint.X, y, localPoint.Z);
         }
 
         public override Bounds LocalBounds()

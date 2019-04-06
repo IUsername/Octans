@@ -46,7 +46,9 @@ namespace Octans
             return Divide(m);
         }
 
-        public Vector Reflect(in Vector normal) => Reflect(in this, in normal);
+        public Vector Reflect(in Vector normal) => Reflect(in this, (Normal)normal);
+
+        public Vector Reflect(in Normal normal) => Reflect(in this, in normal);
 
         public bool Equals(Vector other) =>
             Check.Within(X, other.X, Epsilon)
@@ -113,7 +115,7 @@ namespace Octans
         }
 
         [Pure]
-        public static Vector Reflect(in Vector @in, in Vector normal) => @in - normal * 2f * Dot(in @in, in normal);
+        public static Vector Reflect(in Vector @in, in Normal normal) => @in - (Vector)normal * 2f * (@in % normal);
 
         [Pure]
         public static Vector Abs(in Vector t) =>

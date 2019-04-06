@@ -8,7 +8,7 @@
                            in Point sampled)
         {
             Eye = intersection.Eye;
-            NormalDirection = intersection.Normal;
+            NormalDirection = (Vector) intersection.Normal;
             LightDirection = (sampled - intersection.OverPoint).Normalize();
             LightReflectDirection = -LightDirection.Reflect(NormalDirection);
             ViewDirection = intersection.Eye;

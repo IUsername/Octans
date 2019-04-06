@@ -39,17 +39,17 @@ namespace Octans.Geometry
             return tMin > tMax ? (tmin: tMax, tmax: tMin) : (tmin: tMin, tmax: tMax);
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
+        public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
             var abs = Point.Abs(in localPoint);
             var maxC = Point.Max(in abs);
 
             // ReSharper disable CompareOfFloatsByEqualityOperator
             return maxC == abs.X
-                ? new Vector(localPoint.X, 0, 0)
+                ? new Normal(localPoint.X, 0, 0)
                 : maxC == abs.Y
-                    ? new Vector(0, localPoint.Y, 0)
-                    : new Vector(0, 0, localPoint.Z);
+                    ? new Normal(0, localPoint.Y, 0)
+                    : new Normal(0, 0, localPoint.Z);
             // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 

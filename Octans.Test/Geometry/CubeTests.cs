@@ -20,7 +20,7 @@ namespace Octans.Test.Geometry
             return xs.Count;
         }
 
-        private static Vector NormalAtPoint(Cube cube, Point point) =>
+        private static Normal NormalAtPoint(Cube cube, Point point) =>
             cube.LocalNormalAt(point, new Intersection(1, cube));
 
         [Fact]
@@ -80,14 +80,14 @@ namespace Octans.Test.Geometry
         public void ReturnProperNormalVectors()
         {
             var c = new Cube();
-            NormalAtPoint(c, new Point(1, 0.5f, -0.8f)).Should().Be(new Vector(1, 0, 0));
-            NormalAtPoint(c, new Point(-1, -0.2f, 0.9f)).Should().Be(new Vector(-1, 0, 0));
-            NormalAtPoint(c, new Point(-0.4f, 1f, -0.1f)).Should().Be(new Vector(0, 1, 0));
-            NormalAtPoint(c, new Point(0.3f, -1f, -0.7f)).Should().Be(new Vector(0, -1, 0));
-            NormalAtPoint(c, new Point(-0.6f, 0.3f, 1f)).Should().Be(new Vector(0, 0, 1));
-            NormalAtPoint(c, new Point(0.4f, 0.4f, -1f)).Should().Be(new Vector(0, 0, -1));
-            NormalAtPoint(c, new Point(1f, 1f, 1f)).Should().Be(new Vector(1, 0, 0));
-            NormalAtPoint(c, new Point(-1f, -1f, -1f)).Should().Be(new Vector(-1, 0, 0));
+            NormalAtPoint(c, new Point(1, 0.5f, -0.8f)).Should().Be(new Normal(1, 0, 0));
+            NormalAtPoint(c, new Point(-1, -0.2f, 0.9f)).Should().Be(new Normal(-1, 0, 0));
+            NormalAtPoint(c, new Point(-0.4f, 1f, -0.1f)).Should().Be(new Normal(0, 1, 0));
+            NormalAtPoint(c, new Point(0.3f, -1f, -0.7f)).Should().Be(new Normal(0, -1, 0));
+            NormalAtPoint(c, new Point(-0.6f, 0.3f, 1f)).Should().Be(new Normal(0, 0, 1));
+            NormalAtPoint(c, new Point(0.4f, 0.4f, -1f)).Should().Be(new Normal(0, 0, -1));
+            NormalAtPoint(c, new Point(1f, 1f, 1f)).Should().Be(new Normal(1, 0, 0));
+            NormalAtPoint(c, new Point(-1f, -1f, -1f)).Should().Be(new Normal(-1, 0, 0));
         }
 
         [Fact]

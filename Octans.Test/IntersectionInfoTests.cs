@@ -20,7 +20,7 @@ namespace Octans.Test
             comps.Geometry.Should().Be(shape);
             comps.Point.Should().Be(new Point(0, 0, -1));
             comps.Eye.Should().Be(new Vector(0, 0, -1));
-            comps.Normal.Should().Be(new Vector(0, 0, -1));
+            comps.Normal.Should().Be(new Normal(0, 0, -1));
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Octans.Test
             var i = new Intersection(1, shape);
             var comps = new IntersectionInfo(i, r);
             comps.IsInside.Should().BeTrue();
-            comps.Normal.Should().Be(new Vector(0, 0, -1));
+            comps.Normal.Should().Be(new Normal(0, 0, -1));
         }
 
         [Fact]

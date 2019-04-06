@@ -18,14 +18,14 @@ namespace Octans.IO
         private static Parser<char, Point> PointXYZ =>
             Parser.Map((x, y, z) => new Point(x, y, z), Tok(FloatNum), Tok(FloatNum), FloatNum).Labelled("PointXYZ");
 
-        private static Parser<char, Vector> VectorXYZ =>
-            Parser.Map((x, y, z) => new Vector(x, y, z), Tok(FloatNum), Tok(FloatNum), FloatNum).Labelled("VectorXYZ");
+        private static Parser<char, Normal> NormalXYZ =>
+            Parser.Map((x, y, z) => new Normal(x, y, z), Tok(FloatNum), Tok(FloatNum), FloatNum).Labelled("NormalXYZ");
 
         private static Parser<char, IObjPart> Vertex =>
             Tok(Parser.String("v ")).Then(PointXYZ).Select<IObjPart>(p => new VertexPart(p)).Labelled("Vertex");
 
         private static Parser<char, IObjPart> Normal =>
-            Tok(Parser.String("vn ")).Then(VectorXYZ).Select<IObjPart>(v => new NormalPart(v)).Labelled("Normal");
+            Tok(Parser.String("vn ")).Then(NormalXYZ).Select<IObjPart>(v => new NormalPart(v)).Labelled("Normal");
 
         private static Parser<char, IEnumerable<Maybe<int>>> IndexGroup =>
             Parser.Num.Optional().Separated(Parser.Char('/'));
@@ -68,7 +68,7 @@ namespace Octans.IO
         {
             // Vertex indices are 1-based.
             var vertices = new List<Point> {new Point()};
-            var normals = new List<Vector> {new Vector()};
+            var normals = new List<Normal> {new Normal()};
             var groups = new List<ObjGroup>();
             var current = new ObjGroup("Default");
             string line;
@@ -83,7 +83,7 @@ namespace Octans.IO
                             vertices.Add(v.Point);
                             break;
                         case NormalPart n:
-                            normals.Add(n.Vector);
+                            normals.Add(n.Normal);
                             break;
                         case FacePart f:
                             current.AddFaceIndices(f);
@@ -213,7 +213,7 @@ namespace Octans.IO
                 _faces.Add(f);
             }
 
-            public Group BuildGroup(IReadOnlyList<Point> vertices, IReadOnlyList<Vector> normals)
+            public Group BuildGroup(IReadOnlyList<Point> vertices, IReadOnlyList<Normal> normals)
             {
                 var g = new Group();
                 foreach (var f in _faces)
@@ -249,11 +249,11 @@ namespace Octans.IO
 
         private class NormalPart : IObjPart
         {
-            public readonly Vector Vector;
+            public readonly Normal Normal;
 
-            public NormalPart(Vector vector)
+            public NormalPart(Normal normal)
             {
-                Vector = vector;
+                Normal = normal;
             }
         }
     }

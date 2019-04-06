@@ -434,6 +434,22 @@ namespace Octans
         }
 
         [Pure]
+        private static Normal Multiply4x4Normal(in Matrix a, in Normal b)
+        {
+
+            //if (a.Columns != 4 && a.Rows != 4)
+            //{
+            //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
+            //}
+
+            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z;
+            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z;
+            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z;
+
+            return new Normal(x, y, z);
+        }
+
+        [Pure]
         private static Point OpMultiplyPoint(in Matrix left, in Point right)
         {
                 return Multiply4x4Point(in left, in right);
@@ -475,5 +491,8 @@ namespace Octans
 
         [Pure]
         public static Vector operator *(Matrix left, Vector right) => OpMultiplyVector(in left, in right);
+
+        [Pure]
+        public static Normal operator *(Matrix left, Normal right) => Multiply4x4Normal(in left, in right);
     }
 }

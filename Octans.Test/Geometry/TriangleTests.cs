@@ -18,7 +18,7 @@ namespace Octans.Test.Geometry
             t.P3.Should().Be(p3);
             t.E1.Should().Be(new Vector(-1, -1, 0));
             t.E2.Should().Be(new Vector(1, -1, 0));
-            t.Normal.Should().Be(new Vector(0, 0, -1));
+            t.Normal.Should().Be(new Normal(0, 0, -1));
         }
 
         [Fact]

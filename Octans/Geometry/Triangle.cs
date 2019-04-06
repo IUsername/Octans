@@ -13,14 +13,14 @@ namespace Octans.Geometry
             P3 = p3;
             E1 = p2 - p1;
             E2 = p3 - p1;
-            Normal = Vector.Cross(E2, E1).Normalize();
+            Normal = (Normal) Vector.Cross(E2, E1).Normalize();
         }
 
         public Point P1 { get; }
         public Point P2 { get; }
         public Point P3 { get; }
 
-        public Vector Normal { get; }
+        public Normal Normal { get; }
 
         public Vector E2 { get; }
 
@@ -56,7 +56,7 @@ namespace Octans.Geometry
             return Intersections.Create(new Intersection(t, this));
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) => Normal;
+        public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection) => Normal;
 
         public override Bounds LocalBounds() => Bounds.FromPoints(P1, P2, P3);
     }

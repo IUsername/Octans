@@ -19,9 +19,9 @@ namespace Octans.Test.Shading
             var m = new Material();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1);
-            var normalV = new Vector(0, 0, -1);
+            var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 1);
             result.Should().BeEquivalentTo(new Color(1.9f, 1.9f, 1.9f));
         }
 
@@ -32,9 +32,9 @@ namespace Octans.Test.Shading
             var m = new Material();
             var position = Point.Zero;
             var eyeV = new Vector(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
-            var normalV = new Vector(0, 0, -1);
+            var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 1);
             result.Should().BeEquivalentTo(new Color(1.0f, 1.0f, 1.0f));
         }
 
@@ -45,9 +45,9 @@ namespace Octans.Test.Shading
             var m = new Material();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1f);
-            var normalV = new Vector(0, 0, -1);
+            var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 1);
             result.Should().BeEquivalentTo(new Color(0.7364f, 0.7364f, 0.7364f));
         }
 
@@ -58,9 +58,9 @@ namespace Octans.Test.Shading
             var m = new Material();
             var position = Point.Zero;
             var eyeV = new Vector(0, -MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
-            var normalV = new Vector(0, 0, -1);
+            var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
-            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 1);
             result.Should().BeEquivalentTo(new Color(1.6364f, 1.6364f, 1.6364f));
         }
 
@@ -71,9 +71,9 @@ namespace Octans.Test.Shading
             var m = new Material();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1f);
-            var normalV = new Vector(0, 0, -1);
+            var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 0, 10), new Color(1f, 1f, 1f));
-            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 1);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 1);
             result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
         }
 
@@ -84,9 +84,9 @@ namespace Octans.Test.Shading
             var m = new Material();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1f);
-            var normalV = new Vector(0, 0, -1);
+            var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 0);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 0);
             result.Should().BeEquivalentTo(new Color(0.1f, 0.1f, 0.1f));
         }
 
@@ -97,9 +97,9 @@ namespace Octans.Test.Shading
             var m = new Material {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0};
             var position = new Point(0, 0, -1);
             var eyeV = new Vector(0, 0, -1f);
-            var normalV = new Vector(0, 0, -1);
+            var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
-            var result = PhongShading.Lighting(m, s, light, position, eyeV, normalV, 0.5f);
+            var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 0.5f);
             result.Should().BeEquivalentTo(new Color(0.55f, 0.55f, 0.55f));
         }
 
@@ -448,13 +448,13 @@ namespace Octans.Test.Shading
             var eye = new Point(0, 0, -5);
             var pt = new Point(0, 0, -1);
             var eyeV = (eye - pt).Normalize();
-            var normal = new Vector(pt.X, pt.Y, pt.Z);
+            var normal = new Normal(pt.X, pt.Y, pt.Z);
             var r = PhongShading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
             r.Should().Be(new Color(0.9965f, 0.9965f, 0.9965f));
 
             pt = new Point(0, 0.7071f, -0.7071f);
             eyeV = (eye - pt).Normalize();
-            normal = new Vector(pt.X, pt.Y, pt.Z);
+            normal = new Normal(pt.X, pt.Y, pt.Z);
             r = PhongShading.Lighting(s.Material, s, light, pt, eyeV, normal, 1.0f);
             r.Should().Be(new Color(0.6232f, 0.6232f, 0.6232f));
         }

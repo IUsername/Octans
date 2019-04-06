@@ -27,7 +27,9 @@
                 IsInside = false;
             }
 
-            var offset = Normal * Epsilon;
+            var nV = (Vector) Normal;
+
+            var offset = nV * Epsilon;
             OverPoint = Point + offset;
             UnderPoint = Point - offset;
             Reflect = Vector.Reflect(in ray.Direction, in Normal);
@@ -46,7 +48,7 @@
         public readonly Point OverPoint;
         public readonly Point UnderPoint;
         public readonly Vector Eye;
-        public readonly Vector Normal;
+        public readonly Normal Normal;
         public readonly bool IsInside;
         public readonly Vector Reflect;
         public readonly float N1;

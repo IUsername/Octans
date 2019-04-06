@@ -4,7 +4,7 @@ namespace Octans.IO
 {
     public class ParsedObjData
     {
-        public ParsedObjData(Point[] vertices, Vector[] normals, Group[] groups)
+        public ParsedObjData(Point[] vertices, Normal[] normals, Group[] groups)
         {
             Vertices = vertices;
             Normals = normals;
@@ -13,7 +13,7 @@ namespace Octans.IO
 
         public Point[] Vertices { get; }
 
-        public Vector[] Normals { get; }
+        public Normal[] Normals { get; }
 
         public Group DefaultGroup => Groups[0];
 

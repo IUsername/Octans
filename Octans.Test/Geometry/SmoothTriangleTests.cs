@@ -11,9 +11,9 @@ namespace Octans.Test.Geometry
             var p1 = new Point(0, 1, 0);
             var p2 = new Point(-1, 0, 0);
             var p3 = new Point(1, 0, 0);
-            var n1 = new Vector(0, 1, 0);
-            var n2 = new Vector(-1, 0, 0);
-            var n3 = new Vector(1, 0, 0);
+            var n1 = new Normal(0, 1, 0);
+            var n2 = new Normal(-1, 0, 0);
+            var n3 = new Normal(1, 0, 0);
             var tri = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
             return tri;
         }
@@ -24,9 +24,9 @@ namespace Octans.Test.Geometry
             var p1 = new Point(0, 1, 0);
             var p2 = new Point(-1, 0, 0);
             var p3 = new Point(1, 0, 0);
-            var n1 = new Vector(0, 1, 0);
-            var n2 = new Vector(-1, 0, 0);
-            var n3 = new Vector(1, 0, 0);
+            var n1 = new Normal(0, 1, 0);
+            var n2 = new Normal(-1, 0, 0);
+            var n3 = new Normal(1, 0, 0);
             var tri = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
             tri.P1.Should().Be(p1);
             tri.P2.Should().Be(p2);
@@ -52,7 +52,7 @@ namespace Octans.Test.Geometry
             var tri = DefaultTriangle();
             var i = new Intersection(1, tri, 0.45f, 0.25f);
             var n = tri.NormalAt(new Point(0, 0, 0), i);
-            n.Should().Be(new Vector(-0.5547f, 0.83205f, 0));
+            n.Should().Be(new Normal(-0.5547f, 0.83205f, 0));
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Octans.Test.Geometry
             var r = new Ray(new Point(-0.2f, 0.3f, -2), new Vector(0, 0, 1));
             var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(i, r, xs);
-            comps.Normal.Should().Be(new Vector(-0.5547f, 0.83205f, 0));
+            comps.Normal.Should().Be(new Normal(-0.5547f, 0.83205f, 0));
         }
     }
 }

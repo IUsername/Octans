@@ -28,7 +28,7 @@
 
         public abstract IIntersections LocalIntersects(in Ray localRay);
 
-        public abstract Vector LocalNormalAt(in Point localPoint, in Intersection intersection);
+        public abstract Normal LocalNormalAt(in Point localPoint, in Intersection intersection);
 
         public void SetTransform(Matrix matrix)
         {

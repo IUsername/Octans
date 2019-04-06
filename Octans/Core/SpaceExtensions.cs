@@ -41,7 +41,7 @@ namespace Octans
         }
 
         [Pure]
-        public static Vector NormalAt(this IGeometry geometry, in Point worldPoint, in Intersection intersection)
+        public static Normal NormalAt(this IGeometry geometry, in Point worldPoint, in Intersection intersection)
         {
             var localPoint = geometry.ToLocal(in worldPoint);
             var localNormal = geometry.LocalNormalAt(localPoint, in intersection);
@@ -49,7 +49,7 @@ namespace Octans
         }
 
         [Pure]
-        public static Vector NormalToWorld(this IGeometry geometry, in Vector localNormal)
+        public static Normal NormalToWorld(this IGeometry geometry, in Normal localNormal)
         {
             var normal = geometry.TransformInverse().Transpose() * localNormal;
             normal = normal.Normalize();

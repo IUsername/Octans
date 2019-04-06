@@ -12,8 +12,8 @@ namespace Octans.Test.Geometry
             return Intersections.Empty();
         }
 
-        public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection) =>
-            new Vector(localPoint.X, localPoint.Y, localPoint.Z);
+        public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection) =>
+            new Normal(localPoint.X, localPoint.Y, localPoint.Z);
 
         public override Bounds LocalBounds() => Bounds.Unit;
     }

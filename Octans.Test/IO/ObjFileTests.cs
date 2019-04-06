@@ -52,9 +52,9 @@ vn 0.707 0 -0.707
 vn 1 2 3 
 ";
             var data = ObjFile.Parse(file);
-            data.Normals[1].Should().Be(new Vector(0, 0, 1));
-            data.Normals[2].Should().Be(new Vector(0.707f, 0, -0.707f));
-            data.Normals[3].Should().Be(new Vector(1, 2, 3));
+            data.Normals[1].Should().Be(new Normal(0, 0, 1));
+            data.Normals[2].Should().Be(new Normal(0.707f, 0, -0.707f));
+            data.Normals[3].Should().Be(new Normal(1, 2, 3));
         }
 
         [Fact]

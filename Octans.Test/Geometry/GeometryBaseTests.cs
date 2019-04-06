@@ -71,7 +71,7 @@ namespace Octans.Test.Geometry
             var s = new TestGeometry();
             s.SetTransform(Transforms.Translate(0, 1, 0));
             var n = s.NormalAt(new Point(0, 1.70711f, -0.70711f), new Intersection(1f, s));
-            n.Should().Be(new Vector(0, 0.70711f, -0.70711f));
+            n.Should().Be(new Normal(0, 0.70711f, -0.70711f));
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Octans.Test.Geometry
             var s = new TestGeometry();
             s.SetTransform(Transforms.Scale(1f, 0.5f, 1f) * Transforms.RotateZ(MathF.PI / 5f));
             var n = s.NormalAt(new Point(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f), new Intersection(1f, s));
-            n.Should().Be(new Vector(0, 0.97014f, -0.24254f));
+            n.Should().Be(new Normal(0, 0.97014f, -0.24254f));
         }
 
         [Fact]
@@ -132,8 +132,8 @@ namespace Octans.Test.Geometry
             var s = new Sphere();
             s.SetTransform(Transforms.TranslateX(5));
             g2.AddChild(s);
-            var n = s.NormalToWorld(new Vector(MathF.PI / 3, MathF.PI / 3, MathF.PI / 3));
-            n.Should().Be(new Vector(0.2857f, 0.4286f, -0.8571f));
+            var n = s.NormalToWorld(new Normal(MathF.PI / 3, MathF.PI / 3, MathF.PI / 3));
+            n.Should().Be(new Normal(0.2857f, 0.4286f, -0.8571f));
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace Octans.Test.Geometry
             s.SetTransform(Transforms.TranslateX(5));
             g2.AddChild(s);
             var n = s.NormalAt(new Point(1.7321f, 1.1547f, -5.5774f), new Intersection(1f, s));
-            n.Should().Be(new Vector(0.2857f, 0.4286f, -0.8571f));
+            n.Should().Be(new Normal(0.2857f, 0.4286f, -0.8571f));
         }
     }
 }

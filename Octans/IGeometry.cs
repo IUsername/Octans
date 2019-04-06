@@ -9,7 +9,7 @@
         IIntersections LocalIntersects(in Ray localRay);
 
         Matrix TransformInverse();
-        Vector LocalNormalAt(in Point localPoint, in Intersection intersection);
+        Normal LocalNormalAt(in Point localPoint, in Intersection intersection);
         void SetTransform(Matrix matrix);
         void SetMaterial(Material material);
         Bounds LocalBounds();

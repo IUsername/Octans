@@ -60,9 +60,9 @@ namespace Octans.Test.Geometry
         public void ConeNormals()
         {
             var c = new Cone();
-            c.LocalNormalAt(new Point(0, 0, 0), new Intersection(1, c)).Should().Be(new Vector(0, 0, 0));
-            c.LocalNormalAt(new Point(1, 1, 1), new Intersection(1, c)).Should().Be(new Vector(1, -MathF.Sqrt(2f), 1));
-            c.LocalNormalAt(new Point(-1, -1, 0), new Intersection(1, c)).Should().Be(new Vector(-1, 1, 0));
+            c.LocalNormalAt(new Point(0, 0, 0), new Intersection(1, c)).Should().Be(new Normal(0, 0, 0));
+            c.LocalNormalAt(new Point(1, 1, 1), new Intersection(1, c)).Should().Be(new Normal(1, -MathF.Sqrt(2f), 1));
+            c.LocalNormalAt(new Point(-1, -1, 0), new Intersection(1, c)).Should().Be(new Normal(-1, 1, 0));
         }
 
         [Fact]
@@ -105,12 +105,12 @@ namespace Octans.Test.Geometry
         public void ConeNormalsAtCaps()
         {
             var c = new Cone {Minimum = 1f, Maximum = 2f, IsClosed = true};
-            c.LocalNormalAt(new Point(0, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
-            c.LocalNormalAt(new Point(0.5f, 1, 0), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
-            c.LocalNormalAt(new Point(0, 1, 0.5f), new Intersection(1, c)).Should().Be(new Vector(0, -1, 0));
-            c.LocalNormalAt(new Point(0, 2, 0), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
-            c.LocalNormalAt(new Point(0.5f, 2, 0), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
-            c.LocalNormalAt(new Point(0, 2, 0.5f), new Intersection(1, c)).Should().Be(new Vector(0, 1, 0));
+            c.LocalNormalAt(new Point(0, 1, 0), new Intersection(1, c)).Should().Be(new Normal(0, -1, 0));
+            c.LocalNormalAt(new Point(0.5f, 1, 0), new Intersection(1, c)).Should().Be(new Normal(0, -1, 0));
+            c.LocalNormalAt(new Point(0, 1, 0.5f), new Intersection(1, c)).Should().Be(new Normal(0, -1, 0));
+            c.LocalNormalAt(new Point(0, 2, 0), new Intersection(1, c)).Should().Be(new Normal(0, 1, 0));
+            c.LocalNormalAt(new Point(0.5f, 2, 0), new Intersection(1, c)).Should().Be(new Normal(0, 1, 0));
+            c.LocalNormalAt(new Point(0, 2, 0.5f), new Intersection(1, c)).Should().Be(new Normal(0, 1, 0));
         }
 
         [Fact]
