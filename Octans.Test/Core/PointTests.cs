@@ -6,16 +6,6 @@ namespace Octans.Test
     public class PointTests
     {
         [Fact]
-        public void WOfOneIsPoint()
-        {
-            var a = new Point(4.3f, -4.2f, 3.1f);
-            a.X.Should().Be(4.3f);
-            a.Y.Should().Be(-4.2f);
-            a.Z.Should().Be(3.1f);
-            a.W.Should().Be(1.0f);
-        }
-
-        [Fact]
         public void CanAddVectorToPoint()
         {
             var a1 = new Point(3, -2, 5);
@@ -42,29 +32,29 @@ namespace Octans.Test
         [Fact]
         public void NegatePoint()
         {
-            var a = new Point(1, -2, 3, 4);
-            (-a).Should().BeEquivalentTo(new Point(-1, 2, -3, -4));
+            var a = new Point(1, -2, 3);
+            (-a).Should().BeEquivalentTo(new Point(-1, 2, -3));
         }
 
         [Fact]
         public void MultiplyingByScalar()
         {
-            var a = new Point(1, -2, 3, -4);
-            (a * 3.5f).Should().BeEquivalentTo(new Point(3.5f, -7, 10.5f, -14));
+            var a = new Point(1, -2, 3);
+            (a * 3.5f).Should().BeEquivalentTo(new Point(3.5f, -7, 10.5f));
         }
 
         [Fact]
         public void MultiplyingByFraction()
         {
-            var a = new Point(1, -2, 3, -4);
-            (a * 0.5f).Should().BeEquivalentTo(new Point(0.5f, -1, 1.5f, -2));
+            var a = new Point(1, -2, 3);
+            (a * 0.5f).Should().BeEquivalentTo(new Point(0.5f, -1, 1.5f));
         }
 
         [Fact]
         public void DividingByScalar()
         {
-            var a = new Point(1, -2, 3, -4);
-            (a / 2).Should().BeEquivalentTo(new Point(0.5f, -1, 1.5f, -2));
+            var a = new Point(1, -2, 3);
+            (a / 2).Should().BeEquivalentTo(new Point(0.5f, -1, 1.5f));
         }
 
         [Fact]

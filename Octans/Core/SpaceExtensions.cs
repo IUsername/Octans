@@ -52,7 +52,7 @@ namespace Octans
         public static Vector NormalToWorld(this IGeometry geometry, in Vector localNormal)
         {
             var normal = geometry.TransformInverse().Transpose() * localNormal;
-            normal = normal.ZeroW().Normalize();
+            normal = normal.Normalize();
             if (geometry.Parent != null)
             {
                 normal = NormalToWorld(geometry.Parent, normal);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
 namespace Octans
@@ -10,33 +11,26 @@ namespace Octans
         public readonly float X;
         public readonly float Y;
         public readonly float Z;
-        public readonly float W;
 
-        public Point(float x, float y, float z, float w)
+        public Point(float x, float y, float z)
         {
+            Debug.Assert(!float.IsNaN(x) && !float.IsNaN(y) && !float.IsNaN(z));
             X = x;
             Y = y;
             Z = z;
-            W = w;
         }
 
-        public Point(float x, float y, float z) : this(x, y, z, 1.0f)
-        {
-        }
-
-        public float Magnitude() => MathF.Sqrt(X * X + Y * Y + Z * Z + W * W);
-
-        public Point Add(in Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z, W + t.W);
+        public Point Add(in Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z);
 
         public Vector Subtract(in Point t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);
 
-        public Point Subtract(in Vector t) => new Point(X - t.X, Y - t.Y, Z - t.Z, W);
+        public Point Subtract(in Vector t) => new Point(X - t.X, Y - t.Y, Z - t.Z);
 
         private Vector Multiply(in Vector vector) => new Vector(X * vector.X, Y * vector.Y, Z * vector.Z);
 
-        public Point Negate() => new Point(-X, -Y, -Z, -W);
+        public Point Negate() => new Point(-X, -Y, -Z);
 
-        public Point Scale(float scalar) => new Point(X * scalar, Y * scalar, Z * scalar, W * scalar);
+        public Point Scale(float scalar) => new Point(X * scalar, Y * scalar, Z * scalar);
 
         public Point Divide(float scalar)
         {
@@ -47,8 +41,7 @@ namespace Octans
         public bool Equals(Point other) =>
             Check.Within(X, other.X, Epsilon)
             && Check.Within(Y, other.Y, Epsilon)
-            && Check.Within(Z, other.Z, Epsilon)
-            && Check.Within(W, other.W, Epsilon);
+            && Check.Within(Z, other.Z, Epsilon);
 
         public override bool Equals(object obj) => !(obj is null) && obj is Point other && Equals(other);
 
@@ -59,7 +52,6 @@ namespace Octans
                 var hashCode = X.GetHashCode();
                 hashCode = (hashCode * 397) ^ Y.GetHashCode();
                 hashCode = (hashCode * 397) ^ Z.GetHashCode();
-                hashCode = (hashCode * 397) ^ W.GetHashCode();
                 return hashCode;
             }
         }
@@ -99,7 +91,7 @@ namespace Octans
         [Pure]
         public static Point Abs(in Point t)
         {
-            return new Point(MathF.Abs(t.X), MathF.Abs(t.Y), MathF.Abs(t.Z), MathF.Abs(t.W));
+            return new Point(MathF.Abs(t.X), MathF.Abs(t.Y), MathF.Abs(t.Z));
         }
 
         [Pure]

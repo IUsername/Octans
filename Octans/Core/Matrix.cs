@@ -408,12 +408,13 @@ namespace Octans
             //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
             //}
 
-            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z + a[0, 3] * b.W;
-            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z + a[1, 3] * b.W;
-            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z + a[2, 3] * b.W;
-            var w = a[3, 0] * b.X + a[3, 1] * b.Y + a[3, 2] * b.Z + a[3, 3] * b.W;
+            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z + a[0, 3];
+            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z + a[1, 3];
+            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z + a[2, 3];
+            var w = a[3, 0] * b.X + a[3, 1] * b.Y + a[3, 2] * b.Z + a[3, 3];
 
-            return new Point(x, y, z, w);
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            return w != 1f ? new Point(x/w, y/w, z/w) : new Point(x, y, z);
         }
 
         [Pure]
@@ -425,9 +426,9 @@ namespace Octans
             //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
             //}
 
-            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z + a[0, 3] * b.W;
-            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z + a[1, 3] * b.W;
-            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z + a[2, 3] * b.W;
+            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z;
+            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z;
+            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z;
 
             return new Vector(x, y, z);
         }

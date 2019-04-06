@@ -7,16 +7,6 @@ namespace Octans.Test
     public class VectorTests
     {
         [Fact]
-        public void WOfZeroIsVector()
-        {
-            var a = new Vector(4.3f, -4.2f, 3.1f);
-            a.X.Should().Be(4.3f);
-            a.Y.Should().Be(-4.2f);
-            a.Z.Should().Be(3.1f);
-            a.W.Should().Be(0.0f);
-        }
-
-        [Fact]
         public void SubtractingTwoVectors()
         {
             var v1 = new Vector(3, 2, 1);
