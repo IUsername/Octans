@@ -34,7 +34,11 @@ namespace Octans
 
         public Vector Scale(float scalar) => new Vector(X * scalar, Y * scalar, Z * scalar, W * scalar);
 
-        public Vector Divide(float scalar) => new Vector(X / scalar, Y / scalar, Z / scalar, W / scalar);
+        public Vector Divide(float scalar)
+        {
+            var inv = 1f / scalar;
+            return Scale(inv);
+        }
 
         public Vector Fraction(float scalar) => new Vector(scalar / X, scalar / Y, scalar / Z, scalar / W);
 
@@ -45,7 +49,7 @@ namespace Octans
         public Vector Normalize()
         {
             var m = Magnitude();
-            return new Vector(X / m, Y / m, Z / m, W / m);
+            return Divide(m);
         }
 
         public Vector Reflect(in Vector normal) => Reflect(in this, in normal);
@@ -104,12 +108,26 @@ namespace Octans
         public static float Dot(in Vector a, in Vector b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
 
         [Pure]
-        public static Vector Cross(in Vector a, in Vector b) =>
-            new Vector(a.Y * b.Z - a.Z * b.Y,
-                       a.Z * b.X - a.X * b.Z,
-                       a.X * b.Y - a.Y * b.X);
+        public static float AbsDot(in Vector a, in Vector b) => MathF.Abs(Dot(in a, in b));
+
+        [Pure]
+        public static Vector Cross(in Vector a, in Vector b)
+        {
+            double aX = a.X, aY = a.Y, aZ = a.Z;
+            double bX = b.X, bY = b.Y, bZ = b.Z;
+            return new Vector((float) (aY * bZ - aZ * bY),
+                              (float) (aZ * bX - aX * bZ),
+                              (float) (aX * bY - aY * bX));
+        }
 
         [Pure]
         public static Vector Reflect(in Vector @in, in Vector normal) => @in - normal * 2f * Dot(in @in, in normal);
+
+        [Pure]
+        public static Vector Abs(in Vector t) =>
+            new Vector(MathF.Abs(t.X), MathF.Abs(t.Y), MathF.Abs(t.Z), MathF.Abs(t.W));
+
+        [Pure]
+        public static float Max(in Vector t) => MathF.Max(t.X, MathF.Max(t.Y, t.Z));
     }
 }

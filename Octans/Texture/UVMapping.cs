@@ -66,10 +66,7 @@ namespace Octans.Texture
         [Pure]
         public static CubeFace PointToCubeFace(in Point point)
         {
-            var absX = MathF.Abs(point.X);
-            var absY = MathF.Abs(point.Y);
-            var absZ = MathF.Abs(point.Z);
-            var max = MathF.Max(absX, MathF.Max(absY, absZ));
+            var max = Point.Max(Point.Abs(in point));
             // ReSharper disable CompareOfFloatsByEqualityOperator
             if (max == point.X)
             {

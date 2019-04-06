@@ -2,6 +2,58 @@ using System;
 
 namespace Octans
 {
+    public readonly struct PixelCoordinate
+    {
+        public int X { get; }
+        public int Y { get; }
+
+        public PixelCoordinate(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+    }
+
+    public readonly struct FilmArea
+    {
+        public PixelCoordinate Min { get; }
+        public PixelCoordinate Max { get; }
+
+        public FilmArea(PixelCoordinate min, PixelCoordinate max)
+        {
+            Min = min;
+            Max = max;
+        }
+    }
+
+    public readonly struct PixelInformation
+    {
+        public PixelCoordinate Coordinate { get; }
+        public int Width { get; }
+        public int Height { get; }
+
+        public PixelInformation(PixelCoordinate coordinate, int width, int height)
+        {
+            Coordinate = coordinate;
+            Width = width;
+            Height = height;
+        }
+    }
+
+    public readonly struct PixelSample
+    {
+        public PixelCoordinate Coordinate { get; }
+        public double U { get; }
+        public double V { get; }
+
+        public PixelSample(in PixelCoordinate coordinate, double u, double v)
+        {
+            Coordinate = coordinate;
+            U = u;
+            V = v;
+        }
+    }
+
     public readonly struct SubPixel : IEquatable<SubPixel>
     {
         public int X { get; }

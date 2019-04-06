@@ -38,7 +38,11 @@ namespace Octans
 
         public Point Scale(float scalar) => new Point(X * scalar, Y * scalar, Z * scalar, W * scalar);
 
-        public Point Divide(float scalar) => new Point(X / scalar, Y / scalar, Z / scalar, W / scalar);
+        public Point Divide(float scalar)
+        {
+            var inv = 1f / scalar;
+            return Scale(inv);
+        }
 
         public bool Equals(Point other) =>
             Check.Within(X, other.X, Epsilon)
@@ -91,5 +95,17 @@ namespace Octans
         public static bool operator !=(Point left, Point right) => !left.Equals(right);
 
         public static Point Zero = new Point(0f, 0f, 0f);
+
+        [Pure]
+        public static Point Abs(in Point t)
+        {
+            return new Point(MathF.Abs(t.X), MathF.Abs(t.Y), MathF.Abs(t.Z), MathF.Abs(t.W));
+        }
+
+        [Pure]
+        public static float Max(in Point t)
+        {
+            return MathF.Max(t.X, MathF.Max(t.Y, t.Z));
+        }
     }
 }

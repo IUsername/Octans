@@ -41,16 +41,13 @@ namespace Octans.Geometry
 
         public override Vector LocalNormalAt(in Point localPoint, in Intersection intersection)
         {
-            var xAbs = MathF.Abs(localPoint.X);
-            var yAbs = MathF.Abs(localPoint.Y);
-            var zAbs = MathF.Abs(localPoint.Z);
-
-            var maxC = MathF.Max(MathF.Max(xAbs, yAbs), zAbs);
+            var abs = Point.Abs(in localPoint);
+            var maxC = Point.Max(in abs);
 
             // ReSharper disable CompareOfFloatsByEqualityOperator
-            return maxC == xAbs
+            return maxC == abs.X
                 ? new Vector(localPoint.X, 0, 0)
-                : maxC == yAbs
+                : maxC == abs.Y
                     ? new Vector(0, localPoint.Y, 0)
                     : new Vector(0, 0, localPoint.Z);
             // ReSharper restore CompareOfFloatsByEqualityOperator

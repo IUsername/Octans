@@ -68,8 +68,8 @@ namespace Octans.Shading
 
             var HdotL = wm % wi;
             var HdotV = wm % wo;
-            var absNdotL = MathF.Abs(norm % wi);
-            var absNdotV = MathF.Abs(norm % wo);
+            var absNdotL = Vector.AbsDot(norm, wi);
+            var absNdotV = Vector.AbsDot(norm, wo);
             var absHdotL = MathF.Abs(HdotL);
             var absHdotV = MathF.Abs(HdotV);
 
@@ -135,8 +135,8 @@ namespace Octans.Shading
 
         private static float G2SmithApprox(in Vector normal, in Vector wi, in Vector wo, float alpha)
         {
-            var NdotL = MathF.Abs(normal % wi);
-            var NdotV = MathF.Abs(normal % wo);
+            var NdotL = Vector.AbsDot(normal, wi);
+            var NdotV = Vector.AbsDot(normal, wo);
 
             var a = 2f * NdotL * NdotV;
             var denom = MathFunction.MixF(a, NdotL + NdotV, alpha);

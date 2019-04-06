@@ -97,6 +97,17 @@ namespace Octans.Test
         }
 
         [Fact]
+        public void AbsDotProduct()
+        {
+            var a = new Vector(1, 2, 3);
+            var b = new Vector(2, 3, 4);
+            Vector.AbsDot(a, b).Should().BeApproximately(20f, 0.00001f);
+            b = new Vector(-2, 3, -4);
+            Vector.Dot(a, b).Should().BeApproximately(-8f, 0.00001f);
+            Vector.AbsDot(a, b).Should().BeApproximately(8f, 0.00001f);
+        }
+
+        [Fact]
         public void CrossProduct()
         {
             var a = new Vector(1, 2, 3);
@@ -121,6 +132,25 @@ namespace Octans.Test
             var n = new Vector(MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f, 0);
             var r = v.Reflect(n);
             r.Should().BeEquivalentTo(new Vector(1, 0, 0));
+        }
+
+        [Fact]
+        public void AbsReturnsAbsoluteValuesInXYZ()
+        {
+            var v = new Vector(0, -1, -2);
+            var abs = Vector.Abs(in v);
+            abs.X.Should().Be(0f);
+            abs.Y.Should().Be(1f);
+            abs.Z.Should().Be(2f);
+        }
+
+        [Fact]
+        public void MaxReturnGreatestValueInXYOrZ()
+        {
+            var v = new Vector(0, 3, -2);
+            Vector.Max(v).Should().Be(3);
+            v = new Vector(-1, -3, -2);
+            Vector.Max(v).Should().Be(-1);
         }
     }
 }

@@ -66,5 +66,19 @@ namespace Octans.Test
             var a = new Point(1, -2, 3, -4);
             (a / 2).Should().BeEquivalentTo(new Point(0.5f, -1, 1.5f, -2));
         }
+
+        [Fact]
+        public void Abs()
+        {
+            var a = new Point(1, -2, 3);
+            Point.Abs(a).Should().Be(new Point(1, 2, 3));
+        }
+
+        [Fact]
+        public void MaxReturnsMaxOfXYOrZ()
+        {
+            var a = new Point(1,-2,3);
+            Point.Max(a).Should().Be(3);
+        }
     }
 }

@@ -84,21 +84,40 @@ namespace Octans.ConsoleApp
         {
             var w = BuildBox();
 
-            var width = 400;
-            var height = 400;
+            var width = 800;
+            var height = 800;
             var transform = Transforms.View(new Point(278, 278, -800f), new Point(278, 278, 0), new Vector(0, 1, 0));
+
+
+            var canvas = new Canvas(width, height);
+
+            var pps = new PerPixelSampler(100);
+            var camera = new ApertureCamera2(278f / 400f, 1f, 0.01f,
+                                             new Point(278, 278, -800f),
+                                             new Point(278, 278, 0));
+            var cws = new ComposableWorldSampler(2,
+                                                 8,
+                                                 GGXNormalDistribution.Instance,
+                                                 SchlickBeckmanGeometricShadow.Instance,
+                                                 SchlickFresnelFunction.Instance,
+                                                 w);
+
+            var ctx = new RenderContext2(canvas, new RenderPipeline(cws, camera, pps));
+
+
             var c = new PinholeCamera(transform, 278f /400f, width, height);
             //var c = new ApertureCamera(278f / 400f, width, height, 0.1f, new Point(278, 278, -800f), new Point(278, 278, 0), 850f);
             var ws = new ComposableWorldShading(5, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
             var aaa = new SamplesPerPixelRenderer(400, scene);
-            var canvas = new Canvas(width, height);
+           // var canvas = new Canvas(width, height);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+            //RenderContext.Render(canvas, aaa);
+            ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "cornell");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -119,16 +138,16 @@ namespace Octans.ConsoleApp
             var redMaterial = new Material
             {
                 Texture = SolidColor.Create(red),
-                Roughness =1f,
+                Roughness = 1f,
                 Ambient = 0,
                 SpecularColor = red
             };
 
-            var blue = new Color(0.15f,0.15f, 0.75f);
+            var blue = new Color(0.15f,0.15f, 0.85f);
             var blueMetallic = new Material
             {
                 Texture = SolidColor.Create(blue),
-                Roughness = 0.3f,
+                Roughness = 0.2f,
                 Ambient = 0,
                 SpecularColor = blue,
                 Metallic = 1f

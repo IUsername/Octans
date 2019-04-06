@@ -154,5 +154,7 @@ namespace Octans.Camera
             var r = new Ray(origin, direction);
             return r.Position(_focalDist);
         }
+
+
     }
 }

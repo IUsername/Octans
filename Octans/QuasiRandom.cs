@@ -10,7 +10,6 @@ namespace Octans
         /// <param name="n">Index in sequence.</param>
         /// <param name="b">Number base.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float VanDerCorput(long n, int b)
         {
             long p = 0, q = 1;
@@ -35,6 +34,30 @@ namespace Octans
             return numerator / (float) denominator;
         }
 
+        private static double VanDerCorputDouble(long n, int b)
+        {
+            long p = 0, q = 1;
+            while (n != 0)
+            {
+                p = p * b + n % b;
+                q *= b;
+                n /= b;
+            }
+
+            var numerator = p;
+            var denominator = q;
+            while (p != 0)
+            {
+                n = p;
+                p = q % p;
+                q = n;
+            }
+
+            numerator /= q;
+            denominator /= q;
+            return numerator / (double)denominator;
+        }
+
         /// <summary>
         /// Generates Halton sequence pair using the given bases and index number.
         /// </summary>
@@ -46,5 +69,12 @@ namespace Octans
             (VanDerCorput(100 + i, p1), VanDerCorput(100 + i, p2));
 
         public static (float, float) Next(long index) => Gen(2, 3, index);
+
+        private static (double, double) GenD(int p1, int p2, long i) =>
+            (VanDerCorputDouble(100 + i, p1), VanDerCorputDouble(100 + i, p2));
+
+        public static (double, double) NextD(long index) => GenD(2, 3, index);
+
+        public static float Rand(long index) => VanDerCorput(100 + index, 5);
     }
 }

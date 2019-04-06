@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Buffers;
+//using System.Buffers;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
@@ -176,13 +176,14 @@ namespace Octans
             return new Matrix(arr);
         }
 
-        [Pure]
-        private static Point ToPoint(in Matrix m) => new Point(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
+        //[Pure]
+        //private static Point ToPoint(in Matrix m) => new Point(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
+
+        //[Pure]
+        //private static Vector ToVector(in Matrix m) => new Vector(m[0, 0], m[1, 0], m[2, 0]);
 
         [Pure]
-        private static Vector ToVector(in Matrix m) => new Vector(m[0, 0], m[1, 0], m[2, 0]);
-
-        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Matrix Multiply(in Matrix a, in Matrix b)
         {
             if (a._isIdentity)
@@ -205,13 +206,11 @@ namespace Octans
             {
                 for (var c = 0; c < b.Columns; c++)
                 {
-                    var temp = 0.0f;
+                    m._data[r, c] = 0.0f;
                     for (var k = 0; k < a.Columns; k++)
                     {
-                        temp += a[r, k] * b[k, c];
+                        m._data[r, c] += a[r, k] * b[k, c];
                     }
-
-                    m._data[r, c] = temp;
                 }
             }
 
@@ -250,6 +249,7 @@ namespace Octans
 
 
         [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Determinant(in Matrix m)
         {
             if (m.Columns == 2 && m.Rows == 2)
@@ -267,6 +267,7 @@ namespace Octans
         }
 
         [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix Submatrix(in Matrix m, int row, int column)
         {
             var arr = new float[m.Rows - 1][];
@@ -315,6 +316,7 @@ namespace Octans
         public static bool IsInvertible(in Matrix m) => Determinant(m) != 0.0f;
 
         [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix Inverse(in Matrix m)
         {
             if (m._isIdentity)
@@ -329,6 +331,7 @@ namespace Octans
                 throw new InvalidOperationException("Matrix is not invertible.");
             }
 
+            var detInv = 1f / det;
             var m2 = new Matrix(m.Columns, m.Rows);
             for (var r = 0; r < m.Rows; r++)
             {
@@ -336,7 +339,7 @@ namespace Octans
                 {
                     var cf = Cofactor(m, r, c);
                     // Transpose.
-                    m2._data[c, r] = cf / det;
+                    m2._data[c, r] = cf * detInv;
                 }
             }
 
@@ -345,59 +348,58 @@ namespace Octans
 
         public Matrix Inverse() => Inverse(this);
 
-        private static readonly ObjectPool<Matrix> ColMatPool = new ObjectPool<Matrix>(() => new Matrix(new[] { 0f }, new[] { 0f }, new[] { 0f }, new[] { 0f }));
-        private static readonly ObjectPool<Matrix> TransformMatPool = new ObjectPool<Matrix>(() => new Matrix(4, 4));
+        //private static readonly ObjectPool<Matrix> ColMatPool = new ObjectPool<Matrix>(() => new Matrix(new[] { 0f }, new[] { 0f }, new[] { 0f }, new[] { 0f }));
+        //private static readonly ObjectPool<Matrix> TransformMatPool = new ObjectPool<Matrix>(() => new Matrix(4, 4));
 
-        private static Matrix ColMatFromPool(float x, float y, float z, float w)
-        {
-            var m = ColMatPool.GetObject();
-            m._data[0, 0] = x;
-            m._data[1, 0] = y;
-            m._data[2, 0] = z;
-            m._data[3, 0] = w;
-            return m;
-        }
+        //private static Matrix ColMatFromPool(float x, float y, float z, float w)
+        //{
+        //    var m = ColMatPool.GetObject();
+        //    m._data[0, 0] = x;
+        //    m._data[1, 0] = y;
+        //    m._data[2, 0] = z;
+        //    m._data[3, 0] = w;
+        //    return m;
+        //}
 
-        private static void ReturnColMat(Matrix m)
-        {
-            ColMatPool.PutObject(m);
-        }
+        //private static void ReturnColMat(Matrix m)
+        //{
+        //    ColMatPool.PutObject(m);
+        //}
 
-        private static void ReturnTransformMatPool(Matrix m)
-        {
-            TransformMatPool.PutObject(m);
-        }
+        //private static void ReturnTransformMatPool(Matrix m)
+        //{
+        //    TransformMatPool.PutObject(m);
+        //}
+
+        //[Pure]
+        //private static Matrix MultiplyTransformPool(in Matrix a, in Matrix b)
+        //{
+        //    if (a.Columns != 4 && a.Rows != 4)
+        //    {
+        //        throw new InvalidOperationException("Pool only holds 4x4 matrices");
+        //    }
+        //    if (a.Columns != b.Rows)
+        //    {
+        //        throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
+        //    }
+
+        //    var m = TransformMatPool.GetObject();
+        //    for (var i = 0; i < 4; i++)
+        //    {
+        //        for (var j = 0; j < b.Columns; j++)
+        //        {
+        //            m._data[i, j] = 0f;
+        //            m._data[i, j] += a[i, 0] * b[0, j];
+        //            m._data[i, j] += a[i, 1] * b[1, j];
+        //            m._data[i, j] += a[i, 2] * b[2, j];
+        //            m._data[i, j] += a[i, 3] * b[3, j];
+        //        }
+        //    }
+
+        //    return m;
+        //}
 
         [Pure]
-        private static Matrix MultiplyTransformPool(in Matrix a, in Matrix b)
-        {
-            if (a.Columns != 4 && a.Rows != 4)
-            {
-                throw new InvalidOperationException("Pool only holds 4x4 matrices");
-            }
-            if (a.Columns != b.Rows)
-            {
-                throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
-            }
-
-            var m = TransformMatPool.GetObject();
-            for (var i = 0; i < 4; i++)
-            {
-                for (var j = 0; j < b.Columns; j++)
-                {
-                    m._data[i, j] = 0f;
-                    m._data[i, j] += a[i, 0] * b[0, j];
-                    m._data[i, j] += a[i, 1] * b[1, j];
-                    m._data[i, j] += a[i, 2] * b[2, j];
-                    m._data[i, j] += a[i, 3] * b[3, j];
-                }
-            }
-
-            return m;
-        }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Point Multiply4x4Point(in Matrix a, in Point b)
         {
 
@@ -415,7 +417,6 @@ namespace Octans
         }
 
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector Multiply4x4Vector(in Matrix a, in Vector b)
         {
 

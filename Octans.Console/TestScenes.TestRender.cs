@@ -19,20 +19,34 @@ namespace Octans.ConsoleApp
 
             var width = 600;
             var height = 400;
-            var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance,
-                                                SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance,
-                                                w);
-            //var ws = new RaytracedWorld(3, w);
-            var scene = new Scene(c, ws);
-            var aaa = new SamplesPerPixelRenderer(200, scene);
+            //var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
+            //var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
+            //var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance,
+            //                                    SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance,
+            //                                    w);
+            ////var ws = new RaytracedWorld(3, w);
+            //var scene = new Scene(c, ws);
+            //var aaa = new SamplesPerPixelRenderer(200, scene);
             var canvas = new Canvas(width, height);
+
+            var pps = new PerPixelSampler(200);
+            var camera = new ApertureCamera2(MathF.PI / 3f, 3f / 2, 0.05f,
+                                             new Point(0, 1.25f, -4f),
+                                             new Point(0, 1, 0), 3.5f);
+            var cws = new ComposableWorldSampler(2,
+                                                 16,
+                                                 GGXNormalDistribution.Instance,
+                                                 SchlickBeckmanGeometricShadow.Instance,
+                                                 SchlickFresnelFunction.Instance,
+                                                 w);
+
+            var ctx = new RenderContext2(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+            ctx.Render();
+            //     RenderContext.Render(canvas, aaa);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -51,7 +65,7 @@ namespace Octans.ConsoleApp
                                                 w);
             //var ws = new PhongWorldShading(3, w);
             var scene = new Scene(c, ws);
-           // var aaa = new AdaptiveRenderer(3, 0.0001f, scene);
+            // var aaa = new AdaptiveRenderer(3, 0.0001f, scene);
             var aaa = new SamplesPerPixelRenderer(50, scene);
             var canvas = new Canvas(width, height);
 
@@ -66,6 +80,26 @@ namespace Octans.ConsoleApp
 
         private static World BuildWorld()
         {
+            Console.WriteLine("Loading file...");
+            var filePath = Path.Combine(GetExecutionPath(), "indoor_env.ppm");
+            //var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");
+            Console.WriteLine("Parsing file...");
+            var textureCanvas = PPM.ParseFile(filePath);
+            var image = new UVImage(textureCanvas);
+            var map = new TextureMap(image, UVMapping.Spherical);
+
+            var skySphere = new Sphere
+            {
+                Material =
+                {
+                    Texture = map, Ambient = 1.0f, CastsShadows = false, Transparency = 0f, Roughness = 1f,
+                    SpecularColor = new Color(0.0f, 0.0f, 0.0f)
+                }
+            };
+
+            //skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
+            skySphere.SetTransform(Transforms.RotateY(3.3f).Scale(10000f));
+
             var s1 = new StripeTexture(Colors.White, Colors.Black);
             var s2 = new StripeTexture(Colors.White, Colors.Black);
             s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
@@ -105,7 +139,7 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Texture = worldPattern, Diffuse = 0.7f, Specular = 1f, Reflective = 0.4f, Shininess = 600,
-                    Roughness = 0.2f, Metallic = 0.4f, SpecularColor = new Color(0.1f, 0.2f, 0.5f), Ambient = 0f
+                    Roughness = 0.2f, Metallic = 0.3f, SpecularColor = new Color(0.1f, 0.2f, 0.5f), Ambient = 0f
                 }
             };
             middle.SetTransform(Transforms.RotateY(1.5f).Translate(-0.5f, 1f, 0.1f));
@@ -115,7 +149,7 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Texture = new TextureMap(new UVCheckers(20, 10, Colors.Black, Colors.White), UVMapping.Spherical),
-                    Roughness = 0.9f,
+                    Roughness = 0.5f,
                     Diffuse = 0.7f,
                     Specular = 0.3f,
                     Reflective = 0.2f,
@@ -123,7 +157,7 @@ namespace Octans.ConsoleApp
                     SpecularColor = new Color(0.2f, 0.2f, 0.2f)
                 }
             };
-            right.SetTransform(Transforms.Translate(0.25f, 0.25f, -0.75f) * Transforms.Scale(0.25f));
+            right.SetTransform(Transforms.Translate(0.25f, 0.25f, -1f) * Transforms.Scale(0.25f));
 
             var left = new Sphere
             {
@@ -228,12 +262,13 @@ namespace Octans.ConsoleApp
             gl.AddChild(cone);
             //gl.AddChild(t);
             gl.AddChild(floor);
+            gl.AddChild(skySphere);
 
             gl.Divide(1);
 
             var w = new World();
-            w.SetLights(new AreaLight(new Point(-11f, 4, -5), new Vector(8f, 0, 0), 6, new Vector(0, 0.005f, 0), 3,
-                                      new Color(1f, 1f, 1f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
+            w.SetLights(new AreaLight(new Point(-80f, 80, -60), new Vector(100f, 0, 0), 6, new Vector(0, 0f, -10f), 3,
+                                      new Color(0.9f, 0.93f, 0.95f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
 
             //w.SetLights(new PointLight(new Point(-3.5f, 4f, -5f), new Color(0.9f, 0.9f, 0.9f)));
             w.SetObjects(gl);
