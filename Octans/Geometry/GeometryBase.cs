@@ -4,11 +4,13 @@
     {
         private Matrix _inverse;
         private Matrix _transform;
+        private Matrix _inverseTranspose;
 
         protected GeometryBase()
         {
             Transform = Matrix.Identity;
             _inverse = Matrix.Identity;
+            _inverseTranspose = Matrix.Identity;
             Material = new Material();
         }
 
@@ -19,10 +21,12 @@
             {
                 _transform = value;
                 _inverse = value.Inverse();
+                _inverseTranspose = _inverse.Transpose();
             }
         }
 
         public Matrix TransformInverse() => _inverse;
+        public Matrix TransformInverseTranspose() => _inverseTranspose;
 
         public Material Material { get; protected set; }
 

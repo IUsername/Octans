@@ -51,7 +51,7 @@ namespace Octans
         [Pure]
         public static Normal NormalToWorld(this IGeometry geometry, in Normal localNormal)
         {
-            var normal = geometry.TransformInverse().Transpose() * localNormal;
+            var normal = geometry.TransformInverseTranspose() * localNormal;
             normal = normal.Normalize();
             if (geometry.Parent != null)
             {

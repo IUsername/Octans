@@ -75,6 +75,7 @@ namespace Octans
         //    return arr;
         //}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Matrix Transpose()
         {
             if (_isIdentity)
@@ -83,11 +84,24 @@ namespace Octans
             }
 
             var m = new Matrix(Columns, Rows);
-            for (var row = 0; row < Rows; row++)
+            if (Columns == 4)
             {
-                for (var col = 0; col < Columns; col++)
+                for (var row = 0; row < Rows; row++)
                 {
-                    m._data[col, row] = this[row, col];
+                    m._data[0, row] = this[row, 0];
+                    m._data[1, row] = this[row, 1];
+                    m._data[2, row] = this[row, 2];
+                    m._data[3, row] = this[row, 3];
+                }
+            }
+            else
+            {
+                for (var row = 0; row < Rows; row++)
+                {
+                    for (var col = 0; col < Columns; col++)
+                    {
+                        m._data[col, row] = this[row, col];
+                    }
                 }
             }
 

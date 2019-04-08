@@ -6,18 +6,50 @@ namespace Octans.Geometry
     {
         private const float Epsilon = 0.0001f;
 
+        //public override IIntersections LocalIntersects(in Ray localRay)
+        //{
+        //    var (xtMin, xtMax) = CheckAxis(localRay.Origin.X, localRay.Direction.X);
+        //    var (ytMin, ytMax) = CheckAxis(localRay.Origin.Y, localRay.Direction.Y);
+        //    var (ztMin, ztMax) = CheckAxis(localRay.Origin.Z, localRay.Direction.Z);
+
+        //    var tMin = MathF.Max(MathF.Max(xtMin, ytMin), ztMin);
+        //    var tMax = MathF.Min(MathF.Min(xtMax, ytMax), ztMax);
+
+        //    return tMin > tMax
+        //        ? Intersections.Empty()
+        //        : Intersections.Create(new Intersection(tMin, this), new Intersection(tMax, this));
+        //}
+
         public override IIntersections LocalIntersects(in Ray localRay)
         {
-            var (xtMin, xtMax) = CheckAxis(localRay.Origin.X, localRay.Direction.X);
-            var (ytMin, ytMax) = CheckAxis(localRay.Origin.Y, localRay.Direction.Y);
-            var (ztMin, ztMax) = CheckAxis(localRay.Origin.Z, localRay.Direction.Z);
+            var t1 = (-1f - localRay.Origin.X) * localRay.InverseDirection.X;
+            var t2 = (1f - localRay.Origin.X) * localRay.InverseDirection.X;
+            var t3 = (-1f - localRay.Origin.Y) * localRay.InverseDirection.Y;
+            var t4 = (1f - localRay.Origin.Y) * localRay.InverseDirection.Y;
+            var t5 = (-1f - localRay.Origin.Z) * localRay.InverseDirection.Z;
+            var t6 = (1f - localRay.Origin.Z) * localRay.InverseDirection.Z;
 
-            var tMin = MathF.Max(MathF.Max(xtMin, ytMin), ztMin);
-            var tMax = MathF.Min(MathF.Min(xtMax, ytMax), ztMax);
+            var tMax = MathF.Min(MathF.Min(MathF.Max(t1, t2), MathF.Max(t3, t4)), MathF.Max(t5, t6));
 
-            return tMin > tMax
-                ? Intersections.Empty()
-                : Intersections.Create(new Intersection(tMin, this), new Intersection(tMax, this));
+            //var t = 0f;
+            if (tMax < 0f)
+            {
+                return Intersections.Empty();
+            }
+
+            var tMin = MathF.Max(MathF.Max(MathF.Min(t1, t2), MathF.Min(t3, t4)), MathF.Min(t5, t6));
+            if (tMin > tMax)
+            {
+                return Intersections.Empty();
+            }
+
+            if (float.IsNaN(tMax))
+            {
+                return Intersections.Empty();
+            }
+
+            //t = tMin;
+            return Intersections.Create(new Intersection(tMin, this), new Intersection(tMax, this));
         }
 
         private static (float min, float max) CheckAxis(float origin, float direction)

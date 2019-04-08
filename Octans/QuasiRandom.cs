@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Octans
 {
@@ -10,28 +11,41 @@ namespace Octans
         /// <param name="n">Index in sequence.</param>
         /// <param name="b">Number base.</param>
         /// <returns></returns>
+        //private static float VanDerCorput(long n, int b)
+        //{
+        //    long p = 0, q = 1;
+        //    while (n != 0)
+        //    {
+        //        p = p * b + n % b;
+        //        q *= b;
+        //        n /= b;
+        //    }
+
+        //    var numerator = p;
+        //    var denominator = q;
+        //    while (p != 0)
+        //    {
+        //        n = p;
+        //        p = q % p;
+        //        q = n;
+        //    }
+
+        //    numerator /= q;
+        //    denominator /= q;
+        //    return numerator / (float) denominator;
+        //}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float VanDerCorput(long n, int b)
         {
-            long p = 0, q = 1;
-            while (n != 0)
+            float p = 0, q = 1;
+            while (n > 0)
             {
-                p = p * b + n % b;
-                q *= b;
+                p += (n % b) / (q *= b);
                 n /= b;
             }
 
-            var numerator = p;
-            var denominator = q;
-            while (p != 0)
-            {
-                n = p;
-                p = q % p;
-                q = n;
-            }
-
-            numerator /= q;
-            denominator /= q;
-            return numerator / (float) denominator;
+            return p;
         }
 
         private static double VanDerCorputDouble(long n, int b)

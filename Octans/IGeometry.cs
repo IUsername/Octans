@@ -9,6 +9,7 @@
         IIntersections LocalIntersects(in Ray localRay);
 
         Matrix TransformInverse();
+        Matrix TransformInverseTranspose();
         Normal LocalNormalAt(in Point localPoint, in Intersection intersection);
         void SetTransform(Matrix matrix);
         void SetMaterial(Material material);
