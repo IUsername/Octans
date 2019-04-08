@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Octans.Geometry
 {
@@ -6,15 +6,54 @@ namespace Octans.Geometry
     {
         public static bool Includes(this IGeometry a, IGeometry b)
         {
-            switch (a)
+            if (ReferenceEquals(a, b))
             {
-                case Group g when g.Children.Any(c => ReferenceEquals(a, c) || Includes(c, b)):
-                    return true;
-                case ConstructiveSolid s:
-                    return s.Left.Includes(b) || s.Right.Includes(b);
-                default:
-                    return ReferenceEquals(a, b);
+                return true;
             }
+
+            var queue = new Queue<IGeometry>();
+            queue.Enqueue(a);
+            while (queue.TryDequeue(out var current))
+            {
+                switch (current)
+                {
+                    case Group g:
+                        for (var i = 0; i < g.Children.Count; i++)
+                        {
+                            var checking = g.Children[i];
+                            if (ReferenceEquals(b, checking))
+                            {
+                                return true;
+                            }
+
+                            switch (checking)
+                            {
+                                case Group _:
+                                    queue.Enqueue(checking);
+                                    break;
+                                case ConstructiveSolid s:
+                                    queue.Enqueue(s.Left);
+                                    queue.Enqueue(s.Right);
+                                    break;
+                            }
+                        }
+
+                        break;
+                    case ConstructiveSolid s:
+                        queue.Enqueue(s.Left);
+                        queue.Enqueue(s.Right);
+                        break;
+                    default:
+                        if (ReferenceEquals(b, current))
+                        {
+                            return true;
+                        }
+
+                        break;
+                }
+            }
+
+            return false;
         }
     }
 }

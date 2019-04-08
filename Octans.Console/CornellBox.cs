@@ -86,15 +86,17 @@ namespace Octans.ConsoleApp
 
             var width = 800;
             var height = 800;
-            var transform = Transforms.View(new Point(278, 278, -800f), new Point(278, 278, 0), new Vector(0, 1, 0));
-
+            var from = new Point(278, 278, -800f);
+            var to = new Point(278, 278, 0);
 
             var canvas = new Canvas(width, height);
 
             var pps = new PerPixelSampler(100);
-            var camera = new ApertureCamera2(278f / 400f, 1f, 0.01f,
-                                             new Point(278, 278, -800f),
-                                             new Point(278, 278, 0));
+            var fov = 278f / 400f;
+            var aspectRatio = 1f;
+            var camera = new ApertureCamera(fov, aspectRatio, 0.01f,from,to);
+            //var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            //var camera = new PinholeCamera2(transform, fov, aspectRatio);
             var cws = new ComposableWorldSampler(2,
                                                  8,
                                                  GGXNormalDistribution.Instance,
@@ -102,21 +104,11 @@ namespace Octans.ConsoleApp
                                                  SchlickFresnelFunction.Instance,
                                                  w);
 
-            var ctx = new RenderContext2(canvas, new RenderPipeline(cws, camera, pps));
-
-
-            var c = new PinholeCamera(transform, 278f /400f, width, height);
-            //var c = new ApertureCamera(278f / 400f, width, height, 0.1f, new Point(278, 278, -800f), new Point(278, 278, 0), 850f);
-            var ws = new ComposableWorldShading(5, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
-            //var ws = new PhongWorldShading(3, w);
-            var scene = new Scene(c, ws);
-            var aaa = new SamplesPerPixelRenderer(400, scene);
-           // var canvas = new Canvas(width, height);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            //RenderContext.Render(canvas, aaa);
             ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "cornell");
             stopwatch.Stop();
@@ -187,7 +179,7 @@ namespace Octans.ConsoleApp
 
             var world = new World();
             world.SetObjects(g);
-            world.SetLights(new AreaLight(new Point(213f, 554f, 227f), new Vector(130f,0,0), 4, new Vector(0,0,105f), 4, new Color(0.7f, 0.7f, 0.7f)));
+            world.SetLights(new AreaLight(new Point(213f, 554f, 227f), new Vector(130f,0,0), 4, new Vector(0,0,105f), 4, new Color(1.5f, 1.5f, 1.5f)));
 
             return world;
         }

@@ -19,7 +19,7 @@ namespace Octans.ConsoleApp
             {
                 var cube1 = new Cube
                 {
-                    Material = {Texture = CreateTestCubeMap()}
+                    Material = {Texture = CreateTestCubeMap(), Roughness = 1f, SpecularColor = new Color(0.3f,0.3f,0.3f)}
                 };
                 cube1.SetTransform(Transforms.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
                 return cube1;
@@ -43,16 +43,23 @@ namespace Octans.ConsoleApp
 
             var width = 800;
             var height = 400;
-            var transform = Transforms.View(new Point(0, 0, -20f), new Point(0, 0, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, 0.8f, width, height);
-            var scene = new Scene(c, new PhongWorldShading(1, w));
-            var aaa = new AdaptiveRenderer(3, 0.1f, scene);
+            var from = new Point(0, 0, -20f);
+            var to = new Point(0, 0, 0);
+
             var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(16);
+            var fov = 0.8f;
+            var aspectRatio = (float) width/height;
+            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var camera = new PinholeCamera(transform, fov, aspectRatio);
+            var cws = new PhongWorldShading(1, w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+          
+            ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "mapping");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -96,16 +103,22 @@ namespace Octans.ConsoleApp
 
             var width = 800;
             var height = 400;
-            var transform = Transforms.View(new Point(0, 0, -20f), new Point(0, 0, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, 0.8f, width, height);
-            var scene = new Scene(c, new PhongWorldShading(1, w));
-            var aaa = new AdaptiveRenderer(3, 0.1f, scene);
+            var from = new Point(0, 0, -20f);
+            var to = new Point(0, 0, 0);
+
             var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(16);
+            var fov = 0.8f;
+            var aspectRatio = (float)width / height;
+            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var camera = new PinholeCamera(transform, fov, aspectRatio);
+            var cws = new PhongWorldShading(1, w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+            ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "mapping_sky_box");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -149,16 +162,22 @@ namespace Octans.ConsoleApp
 
             var width = 800;
             var height = 400;
-            var transform = Transforms.View(new Point(0, 0, -20f), new Point(0, 0, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, 0.8f, width, height);
-            var scene = new Scene(c, new PhongWorldShading(1, w));
-            var aaa = new AdaptiveRenderer(3, 0.1f, scene);
+            var from = new Point(0, 0, -20f);
+            var to = new Point(0, 0, 0);
+
             var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(16);
+            var fov = 0.8f;
+            var aspectRatio = (float)width / height;
+            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var camera = new PinholeCamera(transform, fov, aspectRatio);
+            var cws = new PhongWorldShading(1, w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+            ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "mapping_spheres");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -180,12 +199,17 @@ namespace Octans.ConsoleApp
 
             skySphere.SetTransform(Transforms.RotateY(2.1f).Scale(1000f));
 
-            var s = new Sphere();
-            s.Material.Roughness = 0.1f;
-            s.Material.Texture = SolidColor.Create(new Color(1f, 0.0f, 0.0f));
-            s.Material.SpecularColor = new Color(0.2f,0.2f,0.2f);
-            s.Material.Metallic = 0f;
-            s.Material.Ambient = 0f;
+            var s = new Sphere
+            {
+                Material =
+                {
+                    Roughness = 0.1f,
+                    Texture = SolidColor.Create(new Color(1f, 0.0f, 0.0f)),
+                    SpecularColor = new Color(0.2f, 0.2f, 0.2f),
+                    Metallic = 0f,
+                    Ambient = 0f
+                }
+            };
 
             var g = new Group();
             g.AddChild(skySphere);
@@ -197,19 +221,28 @@ namespace Octans.ConsoleApp
             w.SetLights(new PointLight(new Point(100, 100, -100), new Color(1f,1f,1f)));
             w.SetObjects(g);
 
-            var width = 800;
+            var width = 400;
             var height = 400;
-            var transform = Transforms.View(new Point(0, 0, -6f), new Point(0, 0, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, 0.8f, width, height);
-            var ws = new ComposableWorldShading(1, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
-            var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(3, 0.005f, scene);
+            var from = new Point(0, -0.8f, -4f);
+            var to = new Point(0, 0, 0);
+
             var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(1000);
+            var fov = 0.8f;
+            var aspectRatio = (float)width / height;
+            var camera = new ApertureCamera(fov, aspectRatio, 0.05F, from,to);
+            var cws = new ComposableWorldSampler(1,
+                                                 2,
+                                                 GGXNormalDistribution.Instance,
+                                                 SchlickBeckmanGeometricShadow.Instance,
+                                                 SchlickFresnelFunction.Instance,
+                                                 w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+            ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "sky_sphere");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -228,7 +261,7 @@ namespace Octans.ConsoleApp
 
             var skySphere = new Sphere()
             {
-                Material = { Texture = map, Ambient = 1.2f, CastsShadows = false, Transparency = 1f }
+                Material = { Texture = map, Ambient = 1.5f, CastsShadows = false, Transparency = 1f }
             };
 
             skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
@@ -239,16 +272,17 @@ namespace Octans.ConsoleApp
             var y = 1f;
             var nX = 10;
             var nZ = 1;
-            var delta = 1f / (nX * nZ);
+            var delta = 1f / (nX * nZ - 1);
             int n = 0;
-            bool metallic = true;
+            bool metallic = false;
             for (var z = 0; z < nZ; z++)
             {
                 for (var x = 0; x < nX; x++)
                 {
                     var s = new Sphere();
                     s.SetTransform(Transforms.TranslateY(1f).Scale(1.2f).Translate(x * dx, 0, z * dz));
-                    var color = x % 2 == 0 ? new Color(0.8f, 0.8f, 0.9f) : new Color(1f, 0.3f, 0.3f);
+                   // var color = x % 2 == 0 ? new Color(1f, 1f, 1f) : new Color(1f, 0.3f, 0.3f);
+                    var color = new Color(1f, 0.3f, 0.3f);
                     s.Material.Texture = SolidColor.Create(color);
                     s.Material.SpecularColor = metallic ? color : new Color(0.2f,0.2f,0.2f);
                     s.Material.Roughness =  MathFunction.Saturate(n * delta + 0.01f);
@@ -294,24 +328,44 @@ namespace Octans.ConsoleApp
             g2.Divide(1);
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(mid.X, 500, -500), Colors.White));
+            w.SetLights(new PointLight(new Point(mid.X, 500, -500), new Color(1.7f,1.7f,1.7f)));
             w.SetObjects(g2);
+
+            //var width = 1200;
+            //var height = 140;
+            //var transform = Transforms.View(new Point(mid.X, 6f, -32f), mid, new Vector(0, 1, 0));
+            //var c = new PinholeCamera(transform, MathF.PI / 4f, width, height);
+            ////var c = new ApertureCamera(MathF.PI / 4f, width, height, 0.04f, new Point(mid.X, 6f, -32f), mid);
+            //var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, GGXSmithGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            ////var ws = new PhongWorldShading(3, w);
+            //var scene = new Scene(c, ws);
+            //var aaa = new AdaptiveRenderer(4, 0.00001f, scene);
+            //var canvas = new Canvas(width, height);
+
 
             var width = 1200;
             var height = 140;
-            var transform = Transforms.View(new Point(mid.X, 6f, -32f), mid, new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, MathF.PI / 4f, width, height);
-            //var c = new ApertureCamera(MathF.PI / 4f, width, height, 0.04f, new Point(mid.X, 6f, -32f), mid);
-            var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, GGXSmithGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
-            //var ws = new PhongWorldShading(3, w);
-            var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(4, 0.00001f, scene);
+            var from = new Point(mid.X, 6f, -32f);
+            var to = mid;
+
             var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(400);
+            var fov = MathF.PI / 4f;
+            var aspectRatio = (float)width / height;
+            var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to);
+            var cws = new ComposableWorldSampler(2,
+                                                 16,
+                                                 GGXNormalDistribution.Instance,
+                                                 GGXSmithGeometricShadow.Instance,
+                                                 SchlickFresnelFunction.Instance,
+                                                 w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+            ctx.Render();
+            //RenderContext.Render(canvas, aaa);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "col_row");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);

@@ -62,23 +62,38 @@ namespace Octans.ConsoleApp
             group.Divide(1);
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.0f, 1.0f, 1.0f)));
+            w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.8f, 1.8f, 1.8f)));
             w.SetObjects(group);
+
+            //var width = 600;
+            //var height = 400;
+            //var transform = Transforms.View(new Point(0, 3.0f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
+            //var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
+            ////var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
+            //var ws = new PhongWorldShading(5, w);
+            //var scene = new Scene(c, ws);
+            //var aaa = new AdaptiveRenderer(3, 0.05f, scene);
+            //var canvas = new Canvas(width, height);
 
             var width = 600;
             var height = 400;
-            var transform = Transforms.View(new Point(0, 3.0f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            //var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance, SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance, w);
-            var ws = new PhongWorldShading(5, w);
-            var scene = new Scene(c, ws);
-            var aaa = new AdaptiveRenderer(3, 0.05f, scene);
+            var from = new Point(0, 3.0f, -5f);
+            var to = new Point(0, 1, 0);
+
             var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(3);
+            var fov = MathF.PI / 3f;
+            var aspectRatio = (float)width / height;
+            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var camera = new PinholeCamera(transform, fov, aspectRatio);
+            var cws = new PhongWorldShading(5, w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
+            //RenderContext.Render(canvas, aaa);
+            ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
@@ -112,17 +127,32 @@ namespace Octans.ConsoleApp
             w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
             w.SetObjects(g);
 
+            //var width = 300;
+            //var height = 200;
+            //var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
+            //var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
+            //var scene = new Scene(c, new PhongWorldShading(1, w));
+            //var canvas = new Canvas(width, height);
+
             var width = 300;
             var height = 200;
-            var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            var scene = new Scene(c, new PhongWorldShading(1, w));
+            var from = new Point(0, 1.5f, -5f);
+            var to = new Point(0, 1, 0);
+
             var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(3);
+            var fov = MathF.PI / 3f;
+            var aspectRatio = (float)width / height;
+            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var camera = new PinholeCamera(transform, fov, aspectRatio);
+            var cws = new PhongWorldShading(1, w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            RenderContext.Render(canvas, scene);
+            //RenderContext.Render(canvas, scene);
+            ctx.Render();
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);

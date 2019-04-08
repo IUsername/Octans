@@ -14,20 +14,24 @@ namespace Octans.Pipeline
         public Color Gather(in PixelInformation pixel, ISampler sampler, IPixelRenderSegment segment)
         {
             var total = Colors.Black;
-            var local = sampler.Create(Math.Abs(pixel.Coordinate.GetHashCode()));
-            // Needs to have the precision of double.
-            var width = (double) pixel.Width;
-            var height = (double) pixel.Height;
+            var index = Math.Abs(pixel.Coordinate.GetHashCode());
+            var local = sampler.Create(index);
             for (var i = 0; i < SamplesPerPixel; i++)
             {
                 var (u, v) = local.NextUV();
-                var iu = (pixel.Coordinate.X + u) / width;
-                var iv = (pixel.Coordinate.Y + v) / height;
-                var hash = Math.Abs(iu.GetHashCode() + iv.GetHashCode());
-                total += segment.Render(new PixelSample(pixel.Coordinate, iu, iv), sampler.Create(hash));
+                var sample = new PixelSample(in pixel, u, v);
+                total += segment.Render(in sample, sampler.Create(Index(in sample)));
             }
-
             return total / SamplesPerPixel;
+        }
+
+        private static int Index(in PixelSample sample)
+        {
+            var hashCode = sample.Pixel.Coordinate.X;
+            hashCode = (hashCode * 397) ^ sample.Pixel.Coordinate.Y;
+            hashCode = (hashCode * 397) ^ sample.U.GetHashCode();
+            hashCode = (hashCode * 397) ^ sample.V.GetHashCode();
+            return Math.Abs(hashCode);
         }
     }
 }

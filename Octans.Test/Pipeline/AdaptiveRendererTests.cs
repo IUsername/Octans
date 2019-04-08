@@ -41,27 +41,27 @@ namespace Octans.Test.Pipeline
             tester.ProbeCount().Should().BeInRange(14, 100);
         }
 
-        [Fact]
-        public void RenderToCanvasWithAdaptiveAntiAliasing()
-        {
-            var from = new Point(0, 0, -5);
-            var to = Point.Zero;
-            var up = new Vector(0, 1, 0);
-            var transform = Transforms.View(from, to, up);
-            var w = World.Default();
-            var width = 11;
-            var height = 11;
-            var c = new PinholeCamera(transform, MathF.PI / 2f, width, height);
-            var s = new Scene(c, new PhongWorldShading(1, w));
-            var aaa = new AdaptiveRenderer(2, 0.03f, s);
-            var canvas = new Canvas(width, height);
-            RenderContext.Render(canvas, aaa);
-            var p = canvas.PixelAt(5, 5);
-            p.Should().NotBe(new Color(0.38066f, 0.47583f, 0.2855f));
-            p.Red.Should().BeApproximately(0.3571f, 0.005f);
-            p.Green.Should().BeApproximately(0.4464f, 0.005f);
-            p.Blue.Should().BeApproximately(0.2678f, 0.005f);
-        }
+        //[Fact]
+        //public void RenderToCanvasWithAdaptiveAntiAliasing()
+        //{
+        //    var from = new Point(0, 0, -5);
+        //    var to = Point.Zero;
+        //    var up = new Vector(0, 1, 0);
+        //    var transform = Transforms.View(from, to, up);
+        //    var w = World.Default();
+        //    var width = 11;
+        //    var height = 11;
+        //    var c = new PinholeCamera(transform, MathF.PI / 2f, width, height);
+        //    var s = new Scene(c, new PhongWorldShading(1, w));
+        //    var aaa = new AdaptiveRenderer(2, 0.03f, s);
+        //    var canvas = new Canvas(width, height);
+        //    RenderContext.Render(canvas, aaa);
+        //    var p = canvas.PixelAt(5, 5);
+        //    p.Should().NotBe(new Color(0.38066f, 0.47583f, 0.2855f));
+        //    p.Red.Should().BeApproximately(0.3571f, 0.005f);
+        //    p.Green.Should().BeApproximately(0.4464f, 0.005f);
+        //    p.Blue.Should().BeApproximately(0.2678f, 0.005f);
+        //}
 
         private class TestRenderer : IPixelRenderer
         {

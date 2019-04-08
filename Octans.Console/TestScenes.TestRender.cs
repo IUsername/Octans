@@ -19,61 +19,26 @@ namespace Octans.ConsoleApp
 
             var width = 600;
             var height = 400;
-            //var transform = Transforms.View(new Point(0, 1.25f, -4f), new Point(0, 1, 0), new Vector(0, 1, 0));
-            //var c = new PinholeCamera(transform, MathF.PI / 3f, width, height);
-            //var ws = new ComposableWorldShading(3, GGXNormalDistribution.Instance,
-            //                                    SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance,
-            //                                    w);
-            ////var ws = new RaytracedWorld(3, w);
-            //var scene = new Scene(c, ws);
-            //var aaa = new SamplesPerPixelRenderer(200, scene);
             var canvas = new Canvas(width, height);
 
-            var pps = new PerPixelSampler(200);
-            var camera = new ApertureCamera2(MathF.PI / 3f, 3f / 2, 0.05f,
+            var pps = new PerPixelSampler(500);
+            var camera = new ApertureCamera(MathF.PI / 3f, 3f / 2, 0.05f,
                                              new Point(0, 1.25f, -4f),
                                              new Point(0, 1, 0), 3.5f);
             var cws = new ComposableWorldSampler(2,
                                                  16,
                                                  GGXNormalDistribution.Instance,
-                                                 SchlickBeckmanGeometricShadow.Instance,
+                                                 GGXSmithGeometricShadow.Instance, 
                                                  SchlickFresnelFunction.Instance,
                                                  w);
 
-            var ctx = new RenderContext2(canvas, new RenderPipeline(cws, camera, pps));
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             ctx.Render();
-            //     RenderContext.Render(canvas, aaa);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene");
-            stopwatch.Stop();
-            Console.WriteLine("Done ({0})", stopwatch.Elapsed);
-        }
-
-        public static void TestRenderDOF()
-        {
-            var w = BuildWorld();
-
-            var width = 600;
-            var height = 400;
-            var c = new ApertureCamera(MathF.PI / 3f, width, height, 0.04f, new Point(0, 1.25f, -4f),
-                                       new Point(0, 1, 0), 3.5f);
-            var ws = new ComposableWorldShading(1, GGXNormalDistribution.Instance,
-                                                SchlickBeckmanGeometricShadow.Instance, SchlickFresnelFunction.Instance,
-                                                w);
-            //var ws = new PhongWorldShading(3, w);
-            var scene = new Scene(c, ws);
-            // var aaa = new AdaptiveRenderer(3, 0.0001f, scene);
-            var aaa = new SamplesPerPixelRenderer(50, scene);
-            var canvas = new Canvas(width, height);
-
-            Console.WriteLine("Rendering at {0}x{1}...", width, height);
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            RenderContext.Render(canvas, aaa);
-            PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "scene_dof");
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
         }
@@ -268,7 +233,7 @@ namespace Octans.ConsoleApp
 
             var w = new World();
             w.SetLights(new AreaLight(new Point(-80f, 80, -60), new Vector(100f, 0, 0), 6, new Vector(0, 0f, -10f), 3,
-                                      new Color(0.9f, 0.93f, 0.95f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
+                                      new Color(1.8f, 1.8f, 1.8f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
 
             //w.SetLights(new PointLight(new Point(-3.5f, 4f, -5f), new Color(0.9f, 0.9f, 0.9f)));
             w.SetObjects(gl);

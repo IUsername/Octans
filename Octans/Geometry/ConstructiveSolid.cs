@@ -72,8 +72,9 @@ namespace Octans.Geometry
 
             var result = Intersections.Builder();
             var sorted = intersections.ToSorted();
-            foreach (var i in sorted)
+            for (var index = 0; index < sorted.Length; index++)
             {
+                var i = sorted[index];
                 var lHit = Left.Includes(i.Geometry);
                 if (IntersectionAllowed(Op, lHit, inL, inR))
                 {

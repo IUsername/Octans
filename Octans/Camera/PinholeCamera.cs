@@ -2,22 +2,22 @@
 
 namespace Octans.Camera
 {
-    public class PinholeCamera : ICamera
+    public class PinholeCamera : ICameraSampler
     {
         private readonly float _halfHeight;
         private readonly float _halfWidth;
         private readonly Matrix _inv;
-        public float PixelSize { get; }
+        private readonly float _width;
+        private readonly Point _origin;
 
-        public PinholeCamera(in Matrix transform, float fieldOfView, int hSize, int vSize)
+        public PinholeCamera(in Matrix transform, float fieldOfView, float aspectRatio)
         {
             Transform = transform;
             FieldOfView = fieldOfView;
-            HSize = hSize;
-            VSize = vSize;
+            AspectRatio = aspectRatio;
             _inv = transform.Inverse();
             var halfView = MathF.Tan(fieldOfView / 2f);
-            var aspect = (float) hSize / vSize;
+            var aspect = aspectRatio;
             var halfWidth = halfView;
             var halfHeight = halfView;
             if (aspect >= 1f)
@@ -31,34 +31,26 @@ namespace Octans.Camera
 
             _halfHeight = halfHeight;
             _halfWidth = halfWidth;
-            PixelSize = halfWidth * 2f / hSize;
+            _width = halfWidth * 2f;
+            _origin = _inv * Point.Zero;
         }
 
         public Matrix Transform { get; }
         public float FieldOfView { get; }
-        public int HSize { get; }
-        public int VSize { get; }
+        public float AspectRatio { get; }
 
-        public Color Render(IScene scene, in SubPixel sp)
+        public (Ray ray, float throughput) CameraRay(in PixelSample sample, ISampler sampler)
         {
-            var r = PixelToRay(in sp);
-            return scene.World.ColorFor(in r);
-        }
-
-        public Ray PixelToRay(in SubPixel sp)
-        {
-            var dx = (float) sp.Dx / sp.Divisions;
-            var dy = (float) sp.Dy / sp.Divisions;
-            var xOffset = (sp.X + dx) * PixelSize;
-            var yOffset = (sp.Y + dy) * PixelSize;
+            var pixelSize = _width / sample.Pixel.Width;
+            var xOffset = (sample.Pixel.Coordinate.X + sample.U) * pixelSize;
+            var yOffset = (sample.Pixel.Coordinate.Y + sample.V) * pixelSize;
 
             var worldX = _halfWidth - xOffset;
             var worldY = _halfHeight - yOffset;
 
             var pixel = _inv * new Point(worldX, worldY, -1f);
-            var origin = _inv * Point.Zero;
-            var direction = (pixel - origin).Normalize();
-            return new Ray(origin, direction);
+            var direction = (pixel - _origin).Normalize();
+            return (new Ray(_origin, direction), 1f);
         }
     }
 }

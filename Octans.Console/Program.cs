@@ -4,14 +4,13 @@
     {
         private static void Main(string[] args)
         {
-            CornellBox.TestRender();
+            //CornellBox.TestRender();
             //TestScenes.ColRowTestRender();
             //TestScenes.SkyBoxMappingTestRender();
             //TestScenes.SphereMappingTestRender();
             //TestScenes.InsideSphere();
             //TestScenes.MappingTestRender();
-            //TestScenes.TestRender();
-            //TestScenes.TestRenderDOF();
+            TestScenes.TestRender();
             //TestScenes.TeapotTest();
             //TestScenes.SolidTestRender();
             //TestScenes.LowPolyTeapotTest();

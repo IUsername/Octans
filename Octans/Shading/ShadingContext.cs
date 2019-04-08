@@ -1,37 +1,40 @@
 ﻿using System;
-using System.Threading;
 using Octans.Light;
 
 namespace Octans.Shading
 {
     public class ShadingContext
     {
-        private static int seed = Environment.TickCount;
-
-        private static readonly ThreadLocal<Random> random =
-            new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed)));
-
         private readonly IFresnelFunction _ff;
         private readonly IGeometricShadow _gsf;
-
-        private readonly ThreadLocal<long> _index =
-            new ThreadLocal<long>(() => Thread.CurrentThread.ManagedThreadId * 10);
-
         private readonly INormalDistribution _ndf;
 
-        public ShadingContext(INormalDistribution ndf, IGeometricShadow gsf, in IFresnelFunction ff)
+        public ShadingContext(int minDepth,
+                               int maxDepth,
+                               INormalDistribution ndf,
+                               IGeometricShadow gsf,
+                               in IFresnelFunction ff)
         {
+            MinDepth = minDepth;
+            MaxDepth = maxDepth;
             _ndf = ndf;
             _gsf = gsf;
             _ff = ff;
         }
 
-        public static float Rand() => (float) random.Value.NextDouble();
+        public int MinDepth { get; }
 
-        public static bool IsShadowed(World w, in Point p, in Point lightPoint)
+        public int MaxDepth { get; }
+
+        public static bool IsShadowed(World w, in Point p, in Point lightPoint, in Normal normal)
         {
             var v = lightPoint - p;
-         //   var distance = v.Magnitude();
+            var nDotN = v % normal;
+            if (nDotN <= 0f)
+            {
+                return false;
+            }
+            //   var distance = v.Magnitude();
             var direction = v.Normalize();
             var r = new Ray(p, direction);
             var xs = w.Intersect(in r);
@@ -148,15 +151,14 @@ namespace Octans.Shading
         //    return surface * rrFactor;
         //}
 
-        public Color ColorAt(World world, in Ray ray, int minDepth, long index)
+        public Color ColorAt(World world, in Ray ray, ISampler sampler)
         {
             var currentRay = ray;
             var throughPut = Colors.White;
             var color = Colors.Black;
-            var maxDepth = 10;
-           // var depthFactor = 1 / (maxDepth-1f);
+            //var depthFactor = 1 / (MaxDepth);
 
-            for (var depth = 0; depth < maxDepth; depth++)
+            for (var depth = 0; depth < MaxDepth; depth++)
             {
                 var xs = world.Intersect(in currentRay);
                 var hit = xs.Hit();
@@ -168,8 +170,7 @@ namespace Octans.Shading
 
                 var info = new IntersectionInfo(hit.Value, currentRay);
                 var material = info.Geometry.Material;
-                var a = material.Ambient;
-                var ambient = a > 0 ? a : 0.01f;
+                var ambient = material.Ambient;
                 var surfaceColor = material.Texture.ShapeColor(info.Geometry, info.OverPoint);
 
                 // Illumination Equation
@@ -183,37 +184,39 @@ namespace Octans.Shading
                     break;
                 }
 
-                var directProbability = MathFunction.MixF(0.10f, 0.50f, material.Roughness );
-                if (Rand() <= directProbability)
+            //    var alpha = material.Roughness * material.Roughness;
+            //var directProbability = material.Roughness;// 0.5f;// MathFunction.MixF(0.20f, 0.70f, material.Roughness);
+            var directProbability = MathFunction.MixF(0.5f, MathFunction.MixF(0.0f, 0.5f, material.Roughness), material.Metallic);
+                if (sampler.Random() <= directProbability)
                 {
-                    var direct = DirectLighting(world, info, index);
-                    color += direct * throughPut * (1 / directProbability);
+                    var direct = DirectLighting(world, info, sampler);
+                    color += direct * throughPut;//* (1 / directProbability);
                     break;
                 }
 
                 throughPut *= 1f / (1f - directProbability);
 
                 // Indirect lighting
-                (currentRay, throughPut) = IndirectLighting(index, info, in throughPut);
+                (currentRay, throughPut) = IndirectLighting(sampler, info, in throughPut);
 
 
-                if (depth < minDepth)
+                if (depth < MinDepth)
                 {
                     continue;
                 }
 
                 // Russian roulette
-                var continueProbability = MathF.Min(1f,
-                                                    MathF.Max(throughPut.Red, MathF.Max(throughPut.Green, throughPut.Blue)));
-                if (Rand() > continueProbability)
+                var maxChannel = MathF.Max(throughPut.Red, MathF.Max(throughPut.Green, throughPut.Blue));
+                var continueProbability = MathFunction.ClampF(0f, 1f, maxChannel);
+                if (sampler.Random() > continueProbability)
                 {
                     break;
                 }
 
                 throughPut *= 1f / continueProbability;
 
-                //var stopProbability = MathF.Min(1f, depthFactor * (depth + 1));
-                //if (Rand() <= stopProbability)
+                //var stopProbability = MathF.Min(1f, depthFactor * (depth));
+                //if (sampler.Random() <= stopProbability)
                 //{
                 //    break;
                 //}
@@ -225,26 +228,28 @@ namespace Octans.Shading
             return color;
         }
 
-        private (Ray bounce, Color throughPut) IndirectLighting(long index, IntersectionInfo info, in Color throughPut)
+        private (Ray bounce, Color throughPut) IndirectLighting(ISampler sampler,
+                                                                IntersectionInfo info,
+                                                                in Color throughPut)
         {
-            var i = index;
             var localFrame = new LocalFrame(info.Normal);
+            var (e0, e1) = sampler.NextUV();
             while (true)
             {
-                var (e0, e1) = QuasiRandom.Next(i++);
                 var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
                 if (!(wi.Z > 0f))
                 {
+                    (e0, e1) = sampler.NextUV();
                     continue;
                 }
 
                 var direction = localFrame.ToWorld(in wi);
                 var currentRay = new Ray(info.OverPoint, direction);
-                return(currentRay, throughPut * f);
+                return (currentRay, throughPut * f);
             }
         }
 
-        private Color DirectLighting(World world, IntersectionInfo info, long index)
+        private Color DirectLighting(World world, IntersectionInfo info, ISampler sampler)
         {
             var surface = Colors.Black;
             // Direct lighting
@@ -252,7 +257,7 @@ namespace Octans.Shading
             {
                 var light = world.Lights[i];
                 // ReSharper disable InconsistentNaming
-                var (intensity, sampled) = IntensityAt(world, info.OverPoint, light, index);
+                var (intensity, sampled) = IntensityAt(world, info.OverPoint, info.Normal, light, sampler );
 
 
                 if (!(intensity > 0f))
@@ -274,7 +279,7 @@ namespace Octans.Shading
                     var F = 1f;
                     F *= _ff.Factor(in si);
 
-                    specularIntensity = D * F * G  / denominator;
+                    specularIntensity = D * F * G / denominator;
                 }
 
                 // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
@@ -364,17 +369,22 @@ namespace Octans.Shading
         //    return r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
         //}
 
-        public static (float intensity, Point sampledPoint) IntensityAt(World world, in Point point, ILight light, long index)
+        public static (float intensity, Point sampledPoint) IntensityAt(
+            World world,
+            in Point point,
+            in Normal normal,
+            ILight light,
+            ISampler sampler)
         {
             switch (light)
             {
                 case PointLight _:
-                    return (IsShadowed(world, in point, light.Position) ? 0.0f : 1.0f, light.Position);
+                    return (IsShadowed(world, in point, light.Position, in normal) ? 0.0f : 1.0f, light.Position);
                 case AreaLight area:
                 {
-                    var (lu, lv) = QuasiRandom.Next(index);
+                    var (lu, lv) = sampler.NextUV();
                     var lPoint = area.GetPoint(lu, lv);
-                    return (!IsShadowed(world, in point, lPoint) ? 1f : 0f, lPoint);
+                    return (!IsShadowed(world, in point, in lPoint, in normal) ? 1f : 0f, lPoint);
 
 
                     //    var total = 0.0f;
@@ -392,7 +402,7 @@ namespace Octans.Shading
                     //return total / area.Samples;
                 }
                 default:
-                    return (0f, new Point(0,0,0));
+                    return (0f, new Point(0, 0, 0));
             }
         }
     }

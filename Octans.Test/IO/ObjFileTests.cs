@@ -165,47 +165,47 @@ f 1 3 4
             t2.P3.Should().Be(data.Vertices[4]);
         }
 
-        [Fact(Skip = "Slow")]
-        public void LoadFromFile()
-        {
-            var path = AppDomain.CurrentDomain.BaseDirectory;
-            var pathItems = path.Split(Path.DirectorySeparatorChar);
-            var pos = pathItems.Reverse().ToList().FindIndex(x => string.Equals("bin", x));
-            var projectPath = string.Join(Path.DirectorySeparatorChar.ToString(),
-                                          pathItems.Take(pathItems.Length - pos - 1));
+        //[Fact(Skip = "Slow")]
+        //public void LoadFromFile()
+        //{
+        //    var path = AppDomain.CurrentDomain.BaseDirectory;
+        //    var pathItems = path.Split(Path.DirectorySeparatorChar);
+        //    var pos = pathItems.Reverse().ToList().FindIndex(x => string.Equals("bin", x));
+        //    var projectPath = string.Join(Path.DirectorySeparatorChar.ToString(),
+        //                                  pathItems.Take(pathItems.Length - pos - 1));
 
-            path = Path.Combine(projectPath, "teapot-low.obj");
-            var data = ObjFile.ParseFile(path);
-            var g = data.Groups[0];
-            g.SetTransform(Transforms.Scale(0.1f).RotateX(-MathF.PI / 2f));
+        //    path = Path.Combine(projectPath, "teapot-low.obj");
+        //    var data = ObjFile.ParseFile(path);
+        //    var g = data.Groups[0];
+        //    g.SetTransform(Transforms.Scale(0.1f).RotateX(-MathF.PI / 2f));
 
-            var material = new Material
-            {
-                Texture = new SolidColor(new Color(0.3f, 0.3f, 1f)),
-                Reflective = 0.4f,
-                Ambient = 0.2f,
-                Diffuse = 0.3f
-            };
+        //    var material = new Material
+        //    {
+        //        Texture = new SolidColor(new Color(0.3f, 0.3f, 1f)),
+        //        Reflective = 0.4f,
+        //        Ambient = 0.2f,
+        //        Diffuse = 0.3f
+        //    };
 
-            var floor = new Cube();
-            floor.SetMaterial(material);
-            var fg = new Group();
-            fg.AddChild(floor);
-            fg.SetTransform(Transforms.TranslateY(-1).Scale(1f));
+        //    var floor = new Cube();
+        //    floor.SetMaterial(material);
+        //    var fg = new Group();
+        //    fg.AddChild(floor);
+        //    fg.SetTransform(Transforms.TranslateY(-1).Scale(1f));
 
-            var w = new World();
-            w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
-            w.SetObjects(fg, g);
+        //    var w = new World();
+        //    w.SetLights(new PointLight(new Point(-10, 10, -10), Colors.White));
+        //    w.SetObjects(fg, g);
 
-            var width = 300;
-            var height = 200;
-            var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
-            var c = new PinholeCamera(transform, MathF.PI / 32f, width, height);
-            var s = new Scene(c, new PhongWorldShading(1, w));
-            var canvas = new Canvas(width, height);
-            RenderContext.Render(canvas, s);
+        //    var width = 300;
+        //    var height = 200;
+        //    var transform = Transforms.View(new Point(0, 1.5f, -5f), new Point(0, 1, 0), new Vector(0, 1, 0));
+        //    var c = new PinholeCamera(transform, MathF.PI / 32f, width, height);
+        //    var s = new Scene(c, new PhongWorldShading(1, w));
+        //    var canvas = new Canvas(width, height);
+        //    RenderContext.Render(canvas, s);
 
-            PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
-        }
+        //    PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "teapot");
+        //}
     }
 }

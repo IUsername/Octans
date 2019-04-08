@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 
 namespace Octans.Shading
 {
@@ -43,7 +42,7 @@ namespace Octans.Shading
         private static float GGX(float alpha, float NdotX)
         {
             var t = MathF.Sqrt(alpha + (1f - alpha) * (NdotX * NdotX));
-            return 2 * NdotX / ((NdotX) + t);
+            return 2 * NdotX / (NdotX + t);
         }
     }
 }

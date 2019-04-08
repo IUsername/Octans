@@ -42,13 +42,13 @@ namespace Octans
 
     public readonly struct PixelSample
     {
-        public PixelCoordinate Coordinate { get; }
-        public double U { get; }
-        public double V { get; }
+        public PixelInformation Pixel { get; }
+        public float U { get; }
+        public float V { get; }
 
-        public PixelSample(in PixelCoordinate coordinate, double u, double v)
+        public PixelSample(in PixelInformation pixel, float u, float v)
         {
-            Coordinate = coordinate;
+            Pixel = pixel;
             U = u;
             V = v;
         }

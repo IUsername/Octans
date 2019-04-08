@@ -5,21 +5,6 @@
         Color Render(in SubPixel sp);
     }
 
-    public interface ICamera
-    {
-        Color Render(IScene scene, in SubPixel sp);
-    }
-
-    public interface IWorldShading
-    {
-        Color ColorFor(in Ray ray);
-    }
-
-    public interface IScene
-    {
-        IWorldShading World { get; }
-    }
-
 
     public interface IPixelSampler
     {
@@ -72,35 +57,6 @@
         public Color Capture(in PixelInformation pixel, ISampler sampler)
         {
            return Film.Gather(in pixel, sampler, this);
-        }
-    }
-
-    
-
-    public class QuasiRandomSampler : ISampler
-    {
-        private long _index;
-        private long _rInd;
-
-        public QuasiRandomSampler(long index)
-        {
-            _index = index;
-            _rInd = index;
-        }
-
-        public (float u, float v) NextUV()
-        {
-            return QuasiRandom.Next(++_index);
-        }
-
-        public float Random()
-        {
-            return QuasiRandom.Rand(_rInd++);
-        }
-
-        public ISampler Create(long i)
-        { 
-           return new QuasiRandomSampler(i);
         }
     }
 }

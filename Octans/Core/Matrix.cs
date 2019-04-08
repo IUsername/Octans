@@ -400,7 +400,7 @@ namespace Octans
         //}
 
         [Pure]
-        private static Point Multiply4x4Point(in Matrix a, in Point b)
+        private static Point Multiply(in Matrix a, in Point b)
         {
 
             //if (a.Columns != 4 && a.Rows != 4)
@@ -414,11 +414,11 @@ namespace Octans
             var w = a[3, 0] * b.X + a[3, 1] * b.Y + a[3, 2] * b.Z + a[3, 3];
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            return w != 1f ? new Point(x/w, y/w, z/w) : new Point(x, y, z);
+            return w != 1f ? new Point(x,y,z) / w : new Point(x, y, z);
         }
 
         [Pure]
-        private static Vector Multiply4x4Vector(in Matrix a, in Vector b)
+        private static Vector Multiply(in Matrix a, in Vector b)
         {
 
             //if (a.Columns != 4 && a.Rows != 4)
@@ -434,7 +434,7 @@ namespace Octans
         }
 
         [Pure]
-        private static Normal Multiply4x4Normal(in Matrix a, in Normal b)
+        private static Normal Multiply(in Matrix a, in Normal b)
         {
 
             //if (a.Columns != 4 && a.Rows != 4)
@@ -449,33 +449,33 @@ namespace Octans
             return new Normal(x, y, z);
         }
 
-        [Pure]
-        private static Point OpMultiplyPoint(in Matrix left, in Point right)
-        {
-                return Multiply4x4Point(in left, in right);
+        //[Pure]
+        //private static Point OpMultiplyPoint(in Matrix left, in Point right)
+        //{
+        //        return Multiply4x4Point(in left, in right);
 
-            //if (left._isIdentity) return right;
-            //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
-            //var m = MultiplyTransformPool(in left, in rMat);
-            //var p = ToPoint(in m);
-            //ReturnColMat(rMat);
-            //ReturnTransformMatPool(m);
-            //return p;
-        }
+        //    //if (left._isIdentity) return right;
+        //    //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
+        //    //var m = MultiplyTransformPool(in left, in rMat);
+        //    //var p = ToPoint(in m);
+        //    //ReturnColMat(rMat);
+        //    //ReturnTransformMatPool(m);
+        //    //return p;
+        //}
 
-        [Pure]
-        private static Vector OpMultiplyVector(in Matrix left, in Vector right)
-        {
-            return Multiply4x4Vector(in left, in right);
+        //[Pure]
+        //private static Vector OpMultiplyVector(in Matrix left, in Vector right)
+        //{
+        //    return Multiply4x4Vector(in left, in right);
 
-            //if (left._isIdentity) return right;
-            //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
-            //var m = MultiplyTransformPool(in left, in rMat);
-            //var v = ToVector(in m);
-            //ReturnColMat(rMat);
-            //ReturnTransformMatPool(m);
-            //return v;
-        }
+        //    //if (left._isIdentity) return right;
+        //    //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
+        //    //var m = MultiplyTransformPool(in left, in rMat);
+        //    //var v = ToVector(in m);
+        //    //ReturnColMat(rMat);
+        //    //ReturnTransformMatPool(m);
+        //    //return v;
+        //}
 
         [Pure]
         public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);
@@ -487,12 +487,12 @@ namespace Octans
         public static Matrix operator *(Matrix left, Matrix right) => Multiply(in left, in right);
 
         [Pure]
-        public static Point operator *(Matrix left, Point right) => OpMultiplyPoint(in left, in right);
+        public static Point operator *(Matrix left, Point right) => Multiply(in left, in right);
 
         [Pure]
-        public static Vector operator *(Matrix left, Vector right) => OpMultiplyVector(in left, in right);
+        public static Vector operator *(Matrix left, Vector right) => Multiply(in left, in right);
 
         [Pure]
-        public static Normal operator *(Matrix left, Normal right) => Multiply4x4Normal(in left, in right);
+        public static Normal operator *(Matrix left, Normal right) => Multiply(in left, in right);
     }
 }
