@@ -33,11 +33,16 @@ namespace Octans.Shading
                                                      float e1)
         {
             var wo = localFrame.ToLocal(info.Eye);
+            // TODO: Handle Z == 0 better.
+            if (wo.Z <= 0f)
+            {
+                return (wo, Colors.Black);
+            }
             var wm = GGXVndf(wo, info.Roughness, info.Roughness, e0, e1);
             var wi = -wo.Reflect(wm);
 
             // The following is always going to check is wi.Z > 0 since local frame Z is (0,0,+1)
-            var n = localFrame.ToLocal(info.Normal);
+            //var n = localFrame.ToLocal(info.Normal);
             //var NdotWi = MathFunction.Saturate(n % wi);
             //if (NdotWi > 0)
             if (!(wi.Z > 0))
@@ -46,7 +51,14 @@ namespace Octans.Shading
                 return (wi, Colors.Black);
             }
 
-            var F =  SchlickFresnel(info.Geometry.Material.SpecularColor, wi%wm);
+
+            // TODO: This is repeated in ShadingInfo.
+            var color =
+                info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
+            var specularColor = Color.Lerp(info.Geometry.Material.SpecularColor, color, info.Geometry.Material.Metallic * 0.5f);
+
+
+            var F =  SchlickFresnel(specularColor, wi%wm);
             //var G1 = SmithGGXMasking(in wm, in wi, in wo, info.Alpha);
             //var G2 = SmithGGXMaskingShadowing(in wm, in wi, in wo, info.Alpha);
             var G1 = G1SmithApprox(in wm, in wo, info.Alpha);
@@ -55,25 +67,69 @@ namespace Octans.Shading
             return (wi, reflectance);
         }
 
-        public Color Transmission(in ShadingInfo si, in IntersectionInfo info, in Vector wo, in Vector wm, in Vector wi)
+        public (Vector wi, Color transmissionFactor) SampleTransmission(in IntersectionInfo info,
+                                                                        in LocalFrame localFrame,
+                                                                        float e0,
+                                                                        float e1)
         {
-            return EvalTransmission(si.DiffuseColor, in info, in wo, in wm, in wi);
+            var wo = localFrame.ToLocal(info.Eye);
+            // TODO: Handle Z == 0 better.
+            if (wo.Z <= 0f)
+            {
+                return (wo, Colors.Black);
+            }
+            var wm = GGXVndf(wo, info.Roughness, info.Roughness, e0, e1);
+
+            var nRatio = info.N1 / info.N2;
+            var cosI = wo % wm;
+            var sin2T = nRatio * nRatio * (1f - cosI * cosI);
+            if (sin2T > 1f)
+            {
+                // Total internal reflection.
+                return (new Vector(), Colors.Black);
+            }
+
+            var cosT = MathF.Sqrt(1f - sin2T);
+            var wi = wm * (nRatio * cosI - cosT) - wo * nRatio;
+
+
+            //var wi = -wo.Reflect(wm);
+
+            // The following is always going to check is wi.Z > 0 since local frame Z is (0,0,+1)
+            //var n = localFrame.ToLocal(info.Normal);
+            //var NdotWi = MathFunction.Saturate(n % wi);
+            //if (NdotWi > 0)
+            //if (!(wi.Z > 0))
+            //{
+            //    // Below surface.
+            //    return (wi, Colors.Black);
+            //}
+
+            //var tF = EvalTransmission(Colors.White, in info, in wo, in wm,
+            //                          in wi);
+            return (wi, Colors.White);
         }
 
-        public Color EvalTransmission(Color baseColor, in IntersectionInfo info, in Vector wo, in Vector wm, in Vector wi)
+        //public Color Transmission(in ShadingInfo si, in IntersectionInfo info, in Vector wo, in Vector wm, in Vector wi)
+        //{
+        //    return EvalTransmission(si.DiffuseColor, in info, in wo, in wm, in wi);
+        //}
+
+        private static Color EvalTransmission(Color baseColor, in IntersectionInfo info, in Vector wo, in Vector wm, in Vector wi)
         {
             var relativeIor = info.N1 / info.N2;
             var n2 = relativeIor * relativeIor;
-            var norm = new Vector(0, 0, 1f);
 
-            var HdotL = wm % wi;
-            var HdotV = wm % wo;
-            var absNdotL = Vector.AbsDot(norm, wi);
-            var absNdotV = Vector.AbsDot(norm, wo);
+            var h = (wo + wi).Normalize();
+
+            var HdotL = h % wi;
+            var HdotV = h % wo;
+            var absNdotL = Vector.AbsDot(wm, wi);
+            var absNdotV = Vector.AbsDot(wm, wo);
             var absHdotL = MathF.Abs(HdotL);
             var absHdotV = MathF.Abs(HdotV);
 
-            var d = GGXNormalDist2(info.Alpha, norm%wm);
+            var d = GGXNormalDist2(info.Alpha, wm%h);
             var gl = G1SmithApprox(in wm, in wi, info.Alpha);
             var gv = G1SmithApprox(in wm, in wo, info.Alpha);
             var f = DielectricFresnel(HdotV, 1f, 1f / relativeIor);

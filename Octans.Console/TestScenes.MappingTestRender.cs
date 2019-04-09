@@ -248,9 +248,128 @@ namespace Octans.ConsoleApp
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
         }
 
+        public static void RowMetal(int spp)
+        {
+            Material CreateMaterial()
+            {
+                var material = new Material();
+                var color = new Color(1f, 0.3f, 0.3f);
+                material.Texture = SolidColor.Create(color);
+                material.SpecularColor = color;
+                material.Metallic = 1f;
+                material.Ambient = 0f;
+                return material;
+            }
+
+            const float delta = 1f / 9;
+
+            RowTestByDelegate(spp, "metal", i =>
+            {
+                var metal = CreateMaterial();
+                metal.Roughness = MathFunction.Saturate((i - 1) * delta + 0.01f);
+                return metal;
+            });
+        }
+
+        public static void RowPlastic(int spp)
+        {
+            Material CreateMaterial()
+            {
+                var material = new Material();
+                var color = new Color(1f, 0.3f, 0.3f);
+                material.Texture = SolidColor.Create(color);
+                material.SpecularColor = new Color(0.2f, 0.2f, 0.2f);
+                material.Metallic = 0f;
+                material.Ambient = 0f;
+                return material;
+            }
+
+            const float delta = 1f / 9;
+
+            RowTestByDelegate(spp, "plastic", i =>
+            {
+                var metal = CreateMaterial();
+                metal.Roughness = MathFunction.Saturate((i - 1) * delta + 0.01f);
+                return metal;
+            });
+        }
+
+        public static void RowMetalPlastic(int spp)
+        {
+            Material CreateMaterial()
+            {
+                var material = new Material();
+                var color = new Color(1f, 0.3f, 0.3f);
+                material.Texture = SolidColor.Create(color);
+                material.SpecularColor = new Color(0.2f, 0.2f, 0.2f);
+                material.Metallic = 0f;
+                material.Ambient = 0f;
+                material.Roughness = 0.1f;
+                return material;
+            }
+
+            const float delta = 1f / 9;
+
+            RowTestByDelegate(spp, "plastic_metal", i =>
+            {
+                var metal = CreateMaterial();
+                metal.Metallic = MathFunction.Saturate((i - 1) * delta);
+                return metal;
+            });
+        }
+
+        public static void RowTransparent(int spp)
+        {
+            Material CreateMaterial()
+            {
+                var material = new Material();
+                var color = new Color(1f, 0.3f, 0.3f);
+                material.Texture = SolidColor.Create(color);
+                material.SpecularColor = new Color(0.6f, 0.6f, 0.6f);
+                material.Roughness = 0.1f;
+                material.Metallic = 0.3f;
+                material.RefractiveIndex = 1.51f;
+                material.Ambient = 0f;
+                return material;
+            }
+
+            const float delta = 1f / 9;
+
+            RowTestByDelegate(spp, "transparent", i =>
+            {
+                var metal = CreateMaterial();
+                metal.Transparency = MathFunction.Saturate((i - 1) * delta + 0.01f);
+                return metal;
+            });
+        }
+
+        public static void RowTransparentRoughness(int spp)
+        {
+            Material CreateMaterial()
+            {
+                var material = new Material();
+                var color = new Color(0.9f, 0.9f, 0.9f);
+                material.Texture = SolidColor.Create(color);
+                material.SpecularColor = new Color(0.6f, 0.6f, 0.6f);
+                material.Transparency = 0.5f;
+                material.Metallic = 0.3f;
+                material.RefractiveIndex = 1.51f;
+                material.Ambient = 0f;
+                return material;
+            }
+
+            const float delta = 1f / 9;
+
+            RowTestByDelegate(spp, "transparent_roughness", i =>
+            {
+                var metal = CreateMaterial();
+                metal.Roughness = MathFunction.Saturate((i - 1) * delta);
+                return metal;
+            });
+        }
+
         public static void ColRowTestRender()
         {
-
             Console.WriteLine("Loading file...");
             //var filePath = Path.Combine(GetExecutionPath(), "indoor_env.ppm");
             var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");
@@ -367,6 +486,104 @@ namespace Octans.ConsoleApp
             ctx.Render();
             //RenderContext.Render(canvas, aaa);
             PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "col_row");
+            stopwatch.Stop();
+            Console.WriteLine("Done ({0})", stopwatch.Elapsed);
+        }
+
+        public static void RowTestByDelegate(int spp, string fileSuffix, Func<int, Material> materialFunc)
+        {
+            Console.WriteLine("Loading file...");
+            var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");
+            Console.WriteLine("Parsing file...");
+            var textureCanvas = PPM.ParseFile(filePath);
+            var image = new UVImage(textureCanvas);
+            var map = new TextureMap(image, UVMapping.Spherical);
+
+            var skySphere = new Sphere
+            {
+                Material = { Texture = map, Ambient = 1.5f, CastsShadows = false, Transparency = 1f }
+            };
+
+            skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
+
+            var g = new Group();
+            var dx = 2.75f;
+            var dz = 3.5f;
+            var y = 1f;
+            var nX = 10;
+            var nZ = 1;
+            int n = 0;
+            for (var z = 0; z < nZ; z++)
+            {
+                for (var x = 0; x < nX; x++)
+                {
+                    var s = new Sphere();
+                    s.SetTransform(Transforms.TranslateY(1f).Scale(1.2f).Translate(x * dx, 0, z * dz));
+                    s.SetMaterial(materialFunc(x + 1));
+                    g.AddChild(s);
+                    n++;
+                }
+            }
+
+            var lightGray = new Color(0.9f, 0.9f, 0.9f);
+            var darkGray = new Color(0.1f, 0.9f, 0.1f);
+            var s1 = new StripeTexture(lightGray, darkGray);
+            var s2 = new StripeTexture(lightGray, darkGray);
+            s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            var pattern = new BlendedCompositeTexture(s1, s2);
+            pattern.SetTransform(Transforms.Scale(1f / 30f));
+
+            var text = new CheckerTexture(new Color(0.3f, 0.7f, 0.3f), new Color(0.13f, 0.13f, 0.13f));
+            text.SetTransform(Transforms.Scale(1f / 16f));
+
+            var floor = new Cube
+            {
+                Material =
+                {
+                    Texture = text,
+                    SpecularColor = new Color(0.3f,0.3f,0.3f),
+                    Metallic = 0f,
+                    Roughness = 0.45f,
+                    Ambient = 0.15f
+                }
+            };
+            floor.SetTransform(Transforms.TranslateY(-1f).Scale(40f));
+
+            var min = g.LocalBounds().Min;
+            var max = g.LocalBounds().Max;
+            var dir = max - min;
+            var mid = min + (dir * 0.5f);
+
+            var g2 = new Group(g, floor, skySphere);
+            g2.Divide(1);
+
+            var w = new World();
+            w.SetLights(new PointLight(new Point(mid.X, 500, -500), new Color(1.7f, 1.7f, 1.7f)));
+            w.SetObjects(g2);
+
+            var width = 1200;
+            var height = 140;
+            var from = new Point(mid.X, 6f, -32f);
+            var to = mid;
+
+            var canvas = new Canvas(width, height);
+            var pps = new PerPixelSampler(spp);
+            var fov = MathF.PI / 4f;
+            var aspectRatio = (float)width / height;
+            var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to);
+            var cws = new ComposableWorldSampler(2,
+                                                 16,
+                                                 GGXNormalDistribution.Instance,
+                                                 GGXSmithGeometricShadow.Instance,
+                                                 SchlickFresnelFunction.Instance,
+                                                 w);
+            var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
+
+            Console.WriteLine("Rendering at {0}x{1}...", width, height);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            ctx.Render();
+            PPM.ToFile(canvas, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "col_row_"+ fileSuffix);
             stopwatch.Stop();
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
         }

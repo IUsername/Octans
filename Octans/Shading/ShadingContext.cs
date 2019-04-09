@@ -10,10 +10,10 @@ namespace Octans.Shading
         private readonly INormalDistribution _ndf;
 
         public ShadingContext(int minDepth,
-                               int maxDepth,
-                               INormalDistribution ndf,
-                               IGeometricShadow gsf,
-                               in IFresnelFunction ff)
+                              int maxDepth,
+                              INormalDistribution ndf,
+                              IGeometricShadow gsf,
+                              in IFresnelFunction ff)
         {
             MinDepth = minDepth;
             MaxDepth = maxDepth;
@@ -34,122 +34,15 @@ namespace Octans.Shading
             {
                 return false;
             }
-            //   var distance = v.Magnitude();
+
             var direction = v.Normalize();
             var r = new Ray(p, direction);
+            // TODO: Optimized shadow hit test
             var xs = w.Intersect(in r);
             var h = xs.Hit(true);
             xs.Return();
             return h.HasValue && h.Value.T < v.Magnitude();
         }
-
-        //private Color HitColor(World world, in IntersectionInfo info, int depth)
-        //{
-        //    // TODO: Forward propagate the quasi-random sampling instead of thread local tracking.
-        //    var ambient = info.Geometry.Material.Ambient;
-        //    var surfaceColor = info.Geometry.Material.Texture.ShapeColor(info.Geometry, info.OverPoint);
-
-        //    // Illumination Equation
-        //    // I = k_a*I_a + I_i(k_d(L%N) + k_s(V%R)^n) + k_t*I_t + k_r*I_r;
-        //    // Ambient + Direct Diffuse + Direct Specular + Indirect (Specular & Diffuse)
-
-        //    var surface = ambient * surfaceColor;
-        //    // TODO: This is a hack/assumption to jump out for quick shading of environment map.
-        //    if (ambient >= 1f)
-        //    {
-        //        return surface;
-        //    }
-
-        //    // Direct lighting
-        //    foreach (var light in world.Lights)
-        //    {
-        //        // ReSharper disable InconsistentNaming
-        //        var intensity = IntensityAt(world, info.OverPoint, light);
-        //        var specularIntensity = 0f;
-        //        var k_d = Colors.Black;
-        //        var k_s = Colors.Black;
-        //        var si = new ShadingInfo(intensity, in light, in info);
-        //        if (intensity > 0f)
-        //        {
-        //            var denominator = 4f * si.NdotL * si.NdotV;
-        //            if (denominator > 0f)
-        //            {
-        //                var D = 1f;
-        //                D *= _ndf.Factor(in si);
-
-        //                var G = 1f;
-        //                G *= _gsf.Factor(in si);
-
-        //                var F = 1f;
-        //                F *= _ff.Factor(in si);
-
-        //                specularIntensity = D * F * G / denominator;
-        //            }
-
-        //            // TODO: Unify. Diffuse color already includes diffuse intensity/attenuation at the moment.
-        //            k_d = si.DiffuseColor;
-        //            k_s = si.SpecularColor * specularIntensity;
-        //        }
-        //        // ReSharper restore InconsistentNaming
-
-        //        var c = k_d + k_s;
-        //        // Lambert's cosine law.
-        //        surface += si.LightIntensity * c * si.NdotL;
-        //    }
-
-        //    // Russian roulette
-        //    var rrFactor = 1f;
-        //    if (depth >= 2)
-        //    {
-        //        var continueProbability = MathF.Min(1f - 0.0625f * depth, MathF.Max(surface.Red, MathF.Max(surface.Green, surface.Blue))  );
-        //        if (Rand() > continueProbability)
-        //        {
-        //            return surface;
-        //        }
-        //        rrFactor = 1f / continueProbability;
-
-        //        //float stopProbability = MathF.Min(1f, 0.0625f * depth);
-        //        //if (Rand() <= stopProbability)
-        //        //{
-        //        //    return surface;
-        //        //}
-        //        //rrFactor = 1f / (1f - stopProbability);
-        //    }
-
-
-        //    // Indirect lighting
-        //    var localFrame = new LocalFrame(info.Normal);
-        //    var indirect = Colors.Black;
-
-        //    // TODO: Make parameter for ray count.
-        //    var rayCount = 1;
-        //    var captured = 0;
-
-        //    var di = _index.Value;
-        //    while (captured < rayCount)
-        //    {
-        //        //var e0 = (float)Randoms.WellBalanced.NextDouble();
-        //        //var e1 = (float)Randoms.WellBalanced.NextDouble();
-        //        var (e0, e1) = QuasiRandom.Next(di++);
-        //        var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
-        //        if (!(wi.Z > 0f))
-        //        {
-        //            continue;
-        //        }
-
-        //        var direction = localFrame.ToWorld(in wi);
-        //        var reflectedRay = new Ray(info.OverPoint, direction);
-        //        var color = ColorAt(world, in reflectedRay, depth + 1, 0);
-        //        indirect += color * f;
-        //        captured++;
-        //    }
-
-        //    _index.Value = di;
-        //    indirect /= captured;
-        //    surface += indirect;
-
-        //    return surface * rrFactor;
-        //}
 
         public Color ColorAt(World world, in Ray ray, ISampler sampler)
         {
@@ -184,20 +77,40 @@ namespace Octans.Shading
                     break;
                 }
 
-            //    var alpha = material.Roughness * material.Roughness;
-            //var directProbability = material.Roughness;// 0.5f;// MathFunction.MixF(0.20f, 0.70f, material.Roughness);
-            var directProbability = MathFunction.MixF(0.5f, MathFunction.MixF(0.0f, 0.5f, material.Roughness), material.Metallic);
-                if (sampler.Random() <= directProbability)
+                var probabilityOfReflection = MathFunction.MixF(1f, Schlick(in info), material.Transparency);
+                if (sampler.Random() <= probabilityOfReflection)
                 {
-                    var direct = DirectLighting(world, info, sampler);
-                    color += direct * throughPut;//* (1 / directProbability);
-                    break;
+                    //   throughPut *= 1f - material.Transparency;
+                    // Direct + Indirect
+
+                    var directProbability = MathFunction.MixF(0.5f,
+                                                              MathFunction.MixF(0.0f, 0.5f, material.Roughness),
+                                                              material.Metallic);
+
+                    if (sampler.Random() <= directProbability)
+                    {
+                        var direct = DirectLighting(world, info, sampler);
+                        color += direct * throughPut; //* (1 / directProbability);
+                        break;
+                    }
+
+                    throughPut *= 1f / (1f - directProbability);
+
+                    // Indirect lighting
+                    (currentRay, throughPut) = IndirectLighting(sampler, info, in throughPut);
+                }
+                else
+                {
+                    //  throughPut *= 1f / probabilityOfReflection;
+
+                    // Transmission
+                    (currentRay, throughPut) = Transmitted(in info, in throughPut, sampler);
                 }
 
-                throughPut *= 1f / (1f - directProbability);
-
-                // Indirect lighting
-                (currentRay, throughPut) = IndirectLighting(sampler, info, in throughPut);
+                if (throughPut == Colors.Black)
+                {
+                    break;
+                }
 
 
                 if (depth < MinDepth)
@@ -224,7 +137,6 @@ namespace Octans.Shading
                 //throughPut *= 1f / (1f - stopProbability);
             }
 
-            // _index.Value = index;
             return color;
         }
 
@@ -237,15 +149,20 @@ namespace Octans.Shading
             while (true)
             {
                 var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
-                if (!(wi.Z > 0f))
+                if (wi.Z > 0f)
                 {
-                    (e0, e1) = sampler.NextUV();
-                    continue;
+                    var direction = localFrame.ToWorld(in wi);
+                    var currentRay = new Ray(info.OverPoint, direction);
+                    return (currentRay, throughPut * f);
                 }
 
-                var direction = localFrame.ToWorld(in wi);
-                var currentRay = new Ray(info.OverPoint, direction);
-                return (currentRay, throughPut * f);
+                if (wi.Z == 0)
+                {
+                    // Total internal reflection.
+                    return (new Ray(), Colors.Black);
+                }
+
+                (e0, e1) = sampler.NextUV();
             }
         }
 
@@ -257,7 +174,7 @@ namespace Octans.Shading
             {
                 var light = world.Lights[i];
                 // ReSharper disable InconsistentNaming
-                var (intensity, sampled) = IntensityAt(world, info.OverPoint, info.Normal, light, sampler );
+                var (intensity, sampled) = IntensityAt(world, info.OverPoint, info.Normal, light, sampler);
 
 
                 if (!(intensity > 0f))
@@ -295,79 +212,82 @@ namespace Octans.Shading
             return surface;
         }
 
-        //public Color ReflectedColor(World world, in IntersectionInfo info, int remaining = 5)
-        //{
-        //    if (remaining < 1)
-        //    {
-        //        return Colors.Black;
-        //    }
+        public (Ray ray, Color throughPut) Transmitted(in IntersectionInfo info, in Color throughput, ISampler sampler)
+        {
+            if (info.Geometry.Material.Transparency <= 0f)
+            {
+                return (new Ray(), Colors.Black);
+            }
 
-        //    var roughness = info.Geometry.Material.Roughness;
-        //    var reflective = 1f - MathF.Pow(roughness, 0.14f);
+            if (!info.IsInside)
+            {
+                var localFrame = new LocalFrame(info.Normal);
+                var (e0, e1) = sampler.NextUV();
+                //while (true)
+                //{
+                var (wi, f) = _ndf.SampleTransmission(in info, in localFrame, e0, e1);
+                //if (wi.Z != 0f)
+                //{
+                var diffuseDir = localFrame.ToWorld(in wi);
+                var currentRay = new Ray(info.UnderPoint, diffuseDir);
+                // TODO: factor is ignored because it is not correct.
+                //return (currentRay, throughput);
+                return (currentRay, throughput * f);
+                //}
 
-        //    //var reflective = info.Geometry.Material.Reflective;
-        //    if (reflective <= 0f)
-        //    {
-        //        return Colors.Black;
-        //    }
+                //if (wi.Z == 0)
+                //{
+                // Total internal reflection.
+                //return (new Ray(), Colors.Black);
+                //}
 
-        //    var reflectedRay = new Ray(info.OverPoint, info.Reflect);
-        //    var color = ColorAt(world, in reflectedRay, --remaining);
-        //    return color * reflective;
-        //}
+                //(e0, e1) = sampler.NextUV();
+                //}
+            }
 
-        //public Color RefractedColor(World world, in IntersectionInfo info, int remaining)
-        //{
-        //    if (remaining < 1)
-        //    {
-        //        return Colors.Black;
-        //    }
+            var nRatio = info.N1 / info.N2;
+            var cosI = info.Eye % info.Normal;
+            var sin2T = nRatio * nRatio * (1f - cosI * cosI);
+            if (sin2T > 1f)
+            {
+                // Total internal reflection.
+                return (new Ray(), Colors.Black);
+            }
 
-        //    if (info.Geometry.Material.Transparency <= 0f)
-        //    {
-        //        return Colors.Black;
-        //    }
+            var cosT = MathF.Sqrt(1f - sin2T);
+            var direction = (Vector) info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
 
-        //    var nRatio = info.N1 / info.N2;
-        //    var cosI = info.Eye % info.Normal;
-        //    var sin2T = nRatio * nRatio * (1f - cosI * cosI);
-        //    if (sin2T > 1f)
-        //    {
-        //        // Total internal reflection.
-        //        return Colors.Black;
-        //    }
 
-        //    var cosT = MathF.Sqrt(1f - sin2T);
-        //    var direction = info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
-        //    var refractedRay = new Ray(info.UnderPoint, direction);
-        //    return ColorAt(world, in refractedRay, --remaining) * info.Geometry.Material.Transparency;
-        //}
+            return (new Ray(info.UnderPoint, direction), throughput);
+        }
 
-        //public static float Schlick(in IntersectionInfo info)
-        //{
-        //    // Cosine of angle between eye and normal vectors.
-        //    var cos = info.Eye % info.Normal;
 
-        //    // Total internal reflections can only occur when N1 > N2.
-        //    if (info.N1 > info.N2)
-        //    {
-        //        var n = info.N1 / info.N2;
-        //        var sin2T = n * n * (1f - cos * cos);
-        //        if (sin2T > 1f)
-        //        {
-        //            return 1.0f;
-        //        }
+        public static float Schlick(in IntersectionInfo info)
+        {
+            // Cosine of angle between eye and normal vectors.
+            var cos = info.Eye % info.Normal;
 
-        //        // Cosine of theta_t
-        //        var cosT = MathF.Sqrt(1f - sin2T);
-        //        cos = cosT;
-        //    }
+            // Total internal reflections can only occur when N1 > N2.
+            if (info.N1 > info.N2)
+            {
+                var n = info.N1 / info.N2;
+                var sin2T = n * n * (1f - cos * cos);
+                if (sin2T > 1f)
+                {
+                    return 1.0f;
+                }
 
-        //    // r0 == F0 - equivalent refractive index
-        //    var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
-        //    r0 *= r0;
-        //    return r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
-        //}
+                // Cosine of theta_t
+                var cosT = MathF.Sqrt(1f - sin2T);
+                cos = cosT;
+            }
+
+            var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
+            r0 *= r0;
+            // Probability of reflection
+            var rProb = r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
+            return rProb;
+        }
 
         public static (float intensity, Point sampledPoint) IntensityAt(
             World world,

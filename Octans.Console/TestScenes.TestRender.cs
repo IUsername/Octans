@@ -13,7 +13,7 @@ namespace Octans.ConsoleApp
 {
     internal static partial class TestScenes
     {
-        public static void TestRender()
+        public static void TestRender(int spp)
         {
             var w = BuildWorld();
 
@@ -21,7 +21,7 @@ namespace Octans.ConsoleApp
             var height = 400;
             var canvas = new Canvas(width, height);
 
-            var pps = new PerPixelSampler(500);
+            var pps = new PerPixelSampler(spp);
             var camera = new ApertureCamera(MathF.PI / 3f, 3f / 2, 0.05f,
                                              new Point(0, 1.25f, -4f),
                                              new Point(0, 1, 0), 3.5f);
@@ -57,7 +57,7 @@ namespace Octans.ConsoleApp
             {
                 Material =
                 {
-                    Texture = map, Ambient = 1.0f, CastsShadows = false, Transparency = 0f, Roughness = 1f,
+                    Texture = map, Ambient = 1.5f, CastsShadows = false, Transparency = 0f, Roughness = 1f,
                     SpecularColor = new Color(0.0f, 0.0f, 0.0f)
                 }
             };
@@ -124,16 +124,42 @@ namespace Octans.ConsoleApp
             };
             right.SetTransform(Transforms.Translate(0.25f, 0.25f, -1f) * Transforms.Scale(0.25f));
 
+            var rightPlastic = new Sphere
+            {
+                Material =
+                {
+                    Texture = new SolidColor(new Color(1f, 0.0f, 0.0f)),
+                    SpecularColor = new Color(0.2f,0.2f,0.2f),
+                    Roughness = 0.10f, Metallic = 0f,
+                    Ambient = 0.0f
+                }
+            };
+            rightPlastic.SetTransform(Transforms.Translate(-0.15f, 0.15f, -0.91f) * Transforms.Scale(0.15f));
+
             var left = new Sphere
             {
                 Material =
                 {
-                    Texture = new SolidColor(new Color(0.1f, 0.1f, 0.12f)), Diffuse = 0.05f, Specular = 0.9f,
-                    Roughness = 0.015f, Metallic = 0.9f,
-                    Transparency = 0.9f, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.0f, Shininess = 300
+                    Texture = new SolidColor(new Color(0.9f, 0.9f, 0.9f)), Diffuse = 0.05f, Specular = 0.9f,
+                    SpecularColor = new Color(0.6f,0.6f,0.6f),
+                    Roughness = 0.15f, Metallic = 0.6f,
+                    Transparency = 0.89f, RefractiveIndex = 1.50f, Reflective = 1.4f, Ambient = 0.0f, Shininess = 300
                 }
             };
-            left.SetTransform(Transforms.Translate(-2.1f, 0.33f, 0.5f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
+            left.SetTransform(Transforms.Translate(-1.3f, 0.30f, -0.75f) * Transforms.Scale(0.30f));
+           // left.SetTransform(Transforms.Translate(-2.1f, 0.33f, 0.5f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
+
+            var leftChrome = new Sphere
+            {
+                Material =
+                {
+                    Texture = new SolidColor(new Color(0.9f, 0.9f, 0.95f)), Diffuse = 0.05f, Specular = 0.9f,
+                    SpecularColor = new Color(0.9f,0.9f,0.95f),
+                    Roughness = 0.10f, Metallic = 1f,
+                    Transparency = 0, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.0f, Shininess = 300
+                }
+            };
+            leftChrome.SetTransform(Transforms.Translate(-0.95f, 0.15f, -1.1f) * Transforms.Scale(0.15f));
 
             var cube = new Cube
             {
@@ -220,9 +246,11 @@ namespace Octans.ConsoleApp
             var gl = new Group();
             gl.AddChild(middle);
             gl.AddChild(left);
+            gl.AddChild(leftChrome);
             gl.AddChild(cylinder);
             gl.AddChild(s);
             gl.AddChild(right);
+            gl.AddChild(rightPlastic);
             gl.AddChild(cube);
             gl.AddChild(cone);
             //gl.AddChild(t);

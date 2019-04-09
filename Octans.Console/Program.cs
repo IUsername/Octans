@@ -6,11 +6,16 @@
         {
             //CornellBox.TestRender();
             //TestScenes.ColRowTestRender();
+            //TestScenes.RowMetal(1000);
+            //TestScenes.RowPlastic(1000);
+            //TestScenes.RowTransparentRoughness(1000);
+            //TestScenes.RowMetalPlastic(100);
+            //TestScenes.RowTransparent(100);
             //TestScenes.SkyBoxMappingTestRender();
             //TestScenes.SphereMappingTestRender();
             //TestScenes.InsideSphere();
             //TestScenes.MappingTestRender();
-            TestScenes.TestRender();
+            TestScenes.TestRender(1000);
             //TestScenes.TeapotTest();
             //TestScenes.SolidTestRender();
             //TestScenes.LowPolyTeapotTest();
