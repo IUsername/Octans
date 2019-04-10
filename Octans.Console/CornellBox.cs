@@ -71,7 +71,7 @@ namespace Octans.ConsoleApp
             var halfWidth = width / 2f;
             var halfHeight = height / 2f;
             var box = new Cube();
-            box.SetTransform(Transforms
+            box.SetTransform(Transform
                              .RotateY(rotateY)
                              .Translate(1f,1f,1f)
                              .Scale(halfWidth, halfHeight, halfWidth)

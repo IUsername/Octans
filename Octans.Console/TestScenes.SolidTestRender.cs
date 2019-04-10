@@ -27,10 +27,10 @@ namespace Octans.ConsoleApp
             var d3 = CutPips(RoundedCube(radius, white), blackPip);
             var d4 = CutPips(RoundedCube(radius, yellow), blackPip);
 
-            d1.SetTransform(Transforms.RotateY(-2.2f).TranslateY(1f).Scale(0.5f));
-            d2.SetTransform(Transforms.RotateZ(MathF.PI / 2f).TranslateY(1f).TranslateX(2f).TranslateZ(1f).Scale(0.5f));
-            d3.SetTransform(Transforms.RotateY(0.5f).TranslateY(1f).TranslateX(-4f).TranslateZ(1f).Scale(0.5f));
-            d4.SetTransform(Transforms.RotateY(-0.2f).TranslateY(3f).TranslateX(0.2f).TranslateZ(1.25f).Scale(0.5f));
+            d1.SetTransform(Transform.RotateY(-2.2f).TranslateY(1f).Scale(0.5f));
+            d2.SetTransform(Transform.RotateZ(MathF.PI / 2f).TranslateY(1f).TranslateX(2f).TranslateZ(1f).Scale(0.5f));
+            d3.SetTransform(Transform.RotateY(0.5f).TranslateY(1f).TranslateX(-4f).TranslateZ(1f).Scale(0.5f));
+            d4.SetTransform(Transform.RotateY(-0.2f).TranslateY(3f).TranslateX(0.2f).TranslateZ(1.25f).Scale(0.5f));
 
             var lightGray = new Color(0.48f, 0.48f, 0.48f);
             var darkGray = new Color(0.15f, 0.15f, 0.15f);
@@ -41,7 +41,7 @@ namespace Octans.ConsoleApp
             //pattern.SetTransform(Transforms.Scale(1f / 20f));
 
             var pattern = new CheckerTexture(lightGray, darkGray);
-            pattern.SetTransform(Transforms.Scale(1f / 20f));
+            pattern.SetTransform(Transform.Scale(1f / 20f));
 
             var floor = new Cube
             {
@@ -56,7 +56,7 @@ namespace Octans.ConsoleApp
                     Ambient = 0f
                 }
             };
-            floor.SetTransform(Transforms.TranslateY(-1f).Scale(20f));
+            floor.SetTransform(Transform.TranslateY(-1f).Scale(20f));
             var g = new Group(d1, d2, d3, d4, floor);
             g.Divide(1);
 

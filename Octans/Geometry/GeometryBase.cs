@@ -2,31 +2,21 @@
 {
     public abstract class GeometryBase : IGeometry
     {
-        private Matrix _inverse;
-        private Matrix _transform;
-        private Matrix _inverseTranspose;
+     //   private Matrix _inverse;
+     //    private Matrix _inverseTranspose;
 
         protected GeometryBase()
         {
-            Transform = Matrix.Identity;
-            _inverse = Matrix.Identity;
-            _inverseTranspose = Matrix.Identity;
+            Transform = Transform.Identity;
+      //      _inverse = Matrix.Identity;
+     //       _inverseTranspose = Matrix.Identity;
             Material = new Material();
         }
 
-        public Matrix Transform
-        {
-            get => _transform;
-            protected set
-            {
-                _transform = value;
-                _inverse = value.Inverse();
-                _inverseTranspose = _inverse.Transpose();
-            }
-        }
+        public Transform Transform { get; protected set; }
 
-        public Matrix TransformInverse() => _inverse;
-        public Matrix TransformInverseTranspose() => _inverseTranspose;
+        //  public Matrix TransformInverse() => _inverse;
+      //  public Matrix TransformInverseTranspose() => _inverseTranspose;
 
         public Material Material { get; protected set; }
 
@@ -34,10 +24,10 @@
 
         public abstract Normal LocalNormalAt(in Point localPoint, in Intersection intersection);
 
-        public void SetTransform(Matrix matrix)
+        public void SetTransform(Transform transform)
         {
             // TODO: Allow mutations?
-            Transform = matrix;
+            Transform = transform;
         }
 
         public void SetMaterial(Material material)

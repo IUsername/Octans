@@ -49,7 +49,7 @@ namespace Octans.Test
         {
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var shape = new Sphere();
-            shape.SetTransform(Transforms.Translate(0, 0, 1));
+            shape.SetTransform(Transform.Translate(0, 0, 1));
             var i = new Intersection(5, shape);
             var comps = new IntersectionInfo(i, r);
             comps.OverPoint.Z.Should().BeLessThan(-IntersectionInfo.Epsilon / 2f);
@@ -70,15 +70,15 @@ namespace Octans.Test
         public void DeterminesN1AndN2()
         {
             var a = Spheres.GlassSphere();
-            a.SetTransform(Transforms.Scale(2f));
+            a.SetTransform(Transform.Scale(2f));
             a.Material.RefractiveIndex = 1.5f;
 
             var b = Spheres.GlassSphere();
-            b.SetTransform(Transforms.TranslateZ(-0.25f));
+            b.SetTransform(Transform.TranslateZ(-0.25f));
             b.Material.RefractiveIndex = 2.0f;
 
             var c = Spheres.GlassSphere();
-            c.SetTransform(Transforms.TranslateZ(0.25f));
+            c.SetTransform(Transform.TranslateZ(0.25f));
             c.Material.RefractiveIndex = 2.5f;
 
             var r = new Ray(new Point(0, 0, -4), new Vector(0, 0, 1));
@@ -116,7 +116,7 @@ namespace Octans.Test
         {
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var shape = new Sphere();
-            shape.SetTransform(Transforms.Translate(0, 0, 1));
+            shape.SetTransform(Transform.Translate(0, 0, 1));
             var i = new Intersection(5, shape);
             var comps = new IntersectionInfo(i, r);
             comps.UnderPoint.Z.Should().BeGreaterThan(IntersectionInfo.Epsilon / 2f);

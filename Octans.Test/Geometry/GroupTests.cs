@@ -11,7 +11,7 @@ namespace Octans.Test.Geometry
         public void HasIdentityMatrixByDefault()
         {
             var g = new Group();
-            g.Transform.Should().Be(Matrix.Identity);
+            g.Transform.Should().Be(Transform.Identity);
         }
 
         [Fact]
@@ -47,8 +47,8 @@ namespace Octans.Test.Geometry
             var s1 = new Sphere();
             var s2 = new Sphere();
             var s3 = new Sphere();
-            s2.SetTransform(Transforms.TranslateZ(-3f));
-            s3.SetTransform(Transforms.TranslateX(5f));
+            s2.SetTransform(Transform.TranslateZ(-3f));
+            s3.SetTransform(Transform.TranslateX(5f));
             g.AddChild(s1);
             g.AddChild(s2);
             g.AddChild(s3);
@@ -65,9 +65,9 @@ namespace Octans.Test.Geometry
         public void CanTranslateGroup()
         {
             var g = new Group();
-            g.SetTransform(Transforms.Scale(2f));
+            g.SetTransform(Transform.Scale(2f));
             var s = new Sphere();
-            s.SetTransform(Transforms.TranslateX(5f));
+            s.SetTransform(Transform.TranslateX(5f));
             g.AddChild(s);
             var r = new Ray(new Point(10, 0, -10), new Vector(0, 0, 1));
             var xs = g.Intersects(r);
@@ -79,7 +79,7 @@ namespace Octans.Test.Geometry
         {
             var g = new Group();
             var c = new Cube();
-            c.SetTransform(Transforms.RotateZ(MathF.PI / 4));
+            c.SetTransform(Transform.RotateZ(MathF.PI / 4));
             g.AddChild(c);
             var b = g.LocalBounds();
             b.Min.Should().Be(new Point(-1 / MathF.Sin(MathF.PI / 4), -1 / MathF.Sin(MathF.PI / 4), -1));
@@ -90,9 +90,9 @@ namespace Octans.Test.Geometry
         public void LocalBoundsConsidersAllChildren()
         {
             var s = new Sphere();
-            s.SetTransform(Transforms.Translate(2, 5, -3) * Transforms.Scale(2f));
+            s.SetTransform(Transform.Translate(2, 5, -3) * Transform.Scale(2f));
             var c = new Cylinder {Minimum = -2, Maximum = 2};
-            c.SetTransform(Transforms.Translate(-4, -1, 4) * Transforms.Scale(0.5f, 1, 0.5f));
+            c.SetTransform(Transform.Translate(-4, -1, 4) * Transform.Scale(0.5f, 1, 0.5f));
             var g = new Group();
             g.AddChild(s);
             g.AddChild(c);
@@ -106,7 +106,7 @@ namespace Octans.Test.Geometry
         {
             var g = new Group();
             var c = new Cube();
-            c.SetTransform(Transforms.TranslateX(10));
+            c.SetTransform(Transform.TranslateX(10));
             g.AddChild(c);
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 0, 1));
             var intersects = g.Intersects(r);
@@ -141,9 +141,9 @@ namespace Octans.Test.Geometry
         public void PartitionChildren()
         {
             var s1 = new Sphere();
-            s1.SetTransform(Transforms.Translate(-2, 0, 0));
+            s1.SetTransform(Transform.Translate(-2, 0, 0));
             var s2 = new Sphere();
-            s2.SetTransform(Transforms.Translate(2, 0, 0));
+            s2.SetTransform(Transform.Translate(2, 0, 0));
             var s3 = new Sphere();
             var g = new Group(s1, s2, s3);
             var (left, right) = g.PartitionChildren();
@@ -169,9 +169,9 @@ namespace Octans.Test.Geometry
         public void DivideGroup()
         {
             var s1 = new Sphere();
-            s1.SetTransform(Transforms.Translate(-2, 0, 0));
+            s1.SetTransform(Transform.Translate(-2, 0, 0));
             var s2 = new Sphere();
-            s2.SetTransform(Transforms.Translate(2, 0, 0));
+            s2.SetTransform(Transform.Translate(2, 0, 0));
             var s3 = new Sphere();
             var g = new Group(s1, s2, s3);
             g.Divide(1);
@@ -186,11 +186,11 @@ namespace Octans.Test.Geometry
         public void DivideGroupWithHigherThreshold()
         {
             var s1 = new Sphere();
-            s1.SetTransform(Transforms.Translate(-2, 0, 0));
+            s1.SetTransform(Transform.Translate(-2, 0, 0));
             var s2 = new Sphere();
-            s2.SetTransform(Transforms.Translate(2, 0, 0));
+            s2.SetTransform(Transform.Translate(2, 0, 0));
             var s3 = new Sphere();
-            s3.SetTransform(Transforms.Translate(2, -1, 0));
+            s3.SetTransform(Transform.Translate(2, -1, 0));
             var sg = new Group(s1, s2, s3);
             var s4 = new Sphere();
             var g = new Group(sg, s4);

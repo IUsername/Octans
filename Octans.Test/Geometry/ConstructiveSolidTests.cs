@@ -93,7 +93,7 @@ namespace Octans.Test.Geometry
         {
             var s1 = new Sphere();
             var s2 = new Sphere();
-            s2.SetTransform(Transforms.TranslateZ(0.5f));
+            s2.SetTransform(Transform.TranslateZ(0.5f));
             var c = new ConstructiveSolid(ConstructiveOp.Union, s1, s2);
             var r = new Ray(new Point(0, 0, -5), new Vector(0, 0, 1));
             var xs = c.LocalIntersects(in r);
@@ -109,7 +109,7 @@ namespace Octans.Test.Geometry
         {
             var l = new Sphere();
             var r = new Sphere();
-            r.SetTransform(Transforms.Translate(2, 3, 4));
+            r.SetTransform(Transform.Translate(2, 3, 4));
             var s = new ConstructiveSolid(ConstructiveOp.Difference, l, r);
             var b = s.LocalBounds();
             b.Min.Should().Be(new Point(-1, -1, -1));
@@ -146,14 +146,14 @@ namespace Octans.Test.Geometry
         public void DivideSubdividesChildren()
         {
             var s1 = new Sphere();
-            s1.SetTransform(Transforms.Translate(-1.5f, 0, 0));
+            s1.SetTransform(Transform.Translate(-1.5f, 0, 0));
             var s2 = new Sphere();
-            s2.SetTransform(Transforms.Translate(1.5f, 0, 0));
+            s2.SetTransform(Transform.Translate(1.5f, 0, 0));
             var left = new Group(s1, s2);
             var s3 = new Sphere();
-            s3.SetTransform(Transforms.Translate(0, 0, -1.5f));
+            s3.SetTransform(Transform.Translate(0, 0, -1.5f));
             var s4 = new Sphere();
-            s4.SetTransform(Transforms.Translate(0, 0, 1.5f));
+            s4.SetTransform(Transform.Translate(0, 0, 1.5f));
             var right = new Group(s3, s4);
             var s = new ConstructiveSolid(ConstructiveOp.Difference, left, right);
             s.Divide(1);

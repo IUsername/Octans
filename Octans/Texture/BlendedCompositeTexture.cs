@@ -13,10 +13,10 @@
 
         public override Color LocalColorAt(in Point localPoint)
         {
-            var aLocal = A.TransformInverse() * localPoint;
+            var aLocal = A.Transform.Inverse * localPoint;
             var a = A.LocalColorAt(in aLocal);
 
-            var bLocal = B.TransformInverse() * localPoint;
+            var bLocal = B.Transform.Inverse * localPoint;
             var b = B.LocalColorAt(in bLocal);
 
             return (a + b) / 2f;

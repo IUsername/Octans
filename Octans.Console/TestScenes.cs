@@ -23,29 +23,29 @@ namespace Octans.ConsoleApp
             ConstructiveSolid SolidFaces(float r)
             {
                 var cY = new Cube();
-                cY.SetTransform(Transforms.Scale(1f - r, 1f, 1f - r));
+                cY.SetTransform(Transform.Scale(1f - r, 1f, 1f - r));
                 cY.SetMaterial(mat);
 
                 var cX = new Cube();
-                cX.SetTransform(Transforms.Scale(1f, 1f - r, 1f - r));
+                cX.SetTransform(Transform.Scale(1f, 1f - r, 1f - r));
                 cX.SetMaterial(mat);
                 var su = new ConstructiveSolid(ConstructiveOp.Union, cY, cX);
 
                 var cZ = new Cube();
-                cZ.SetTransform(Transforms.Scale(1f - r, 1f - r, 1f));
+                cZ.SetTransform(Transform.Scale(1f - r, 1f - r, 1f));
                 cZ.SetMaterial(mat);
                 return new ConstructiveSolid(ConstructiveOp.Union, su, cZ);
             }
 
             ConstructiveSolid Union(IGeometry a, IGeometry b) => new ConstructiveSolid(ConstructiveOp.Union, a, b);
 
-            Cylinder CreateCylinder(float r, Point from, Material material, Matrix rotation)
+            Cylinder CreateCylinder(float r, Point from, Material material, Transform rotation)
             {
                 var dist = 1f - r;
                 var fOffset = from * dist;
                 var e = new Cylinder {Minimum = 0f, Maximum = 2f * dist / r, IsClosed = true};
                 e.SetMaterial(material);
-                e.SetTransform(Transforms.Scale(r).Apply(rotation).Translate(fOffset.X, fOffset.Y, fOffset.Z));
+                e.SetTransform(Transform.Scale(r).Apply(rotation).Translate(fOffset.X, fOffset.Y, fOffset.Z));
                 return e;
             }
 
@@ -54,19 +54,19 @@ namespace Octans.ConsoleApp
                 var dist = 1f - r;
                 var offset = corner * dist;
                 var sphere = new Sphere();
-                sphere.SetTransform(Transforms.Scale(r).Translate(offset.X, offset.Y, offset.Z));
+                sphere.SetTransform(Transform.Scale(r).Translate(offset.X, offset.Y, offset.Z));
                 sphere.SetMaterial(material);
                 return sphere;
             }
 
             Cylinder EdgeX(float r, Point from, Material material) =>
-                CreateCylinder(r, from, material, Transforms.RotateZ(-MathF.PI / 2));
+                CreateCylinder(r, from, material, Transform.RotateZ(-MathF.PI / 2));
 
             Cylinder EdgeY(float r, Point from, Material material) =>
-                CreateCylinder(r, from, material, Matrix.Identity);
+                CreateCylinder(r, from, material, Transform.Identity);
 
             Cylinder EdgeZ(float r, Point from, Material material) =>
-                CreateCylinder(r, from, material, Transforms.RotateX(MathF.PI / 2));
+                CreateCylinder(r, from, material, Transform.RotateX(MathF.PI / 2));
 
             var s = SolidFaces(radius);
             var points = new[]
@@ -108,7 +108,7 @@ namespace Octans.ConsoleApp
             Sphere PipSphere(Point point, Material mat)
             {
                 var sphere = new Sphere();
-                sphere.SetTransform(Transforms.Scale(0.2f).Translate(point.X, point.Y, point.Z));
+                sphere.SetTransform(Transform.Scale(0.2f).Translate(point.X, point.Y, point.Z));
                 sphere.SetMaterial(mat);
                 return sphere;
             }

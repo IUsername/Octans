@@ -2,9 +2,8 @@
 {
     public interface ITexture
     {
-        Matrix Transform { get; }
-        Matrix TransformInverse();
+        Transform Transform { get; }
         Color LocalColorAt(in Point localPoint);
-        void SetTransform(Matrix transform);
+        void SetTransform(Transform transform);
     }
 }

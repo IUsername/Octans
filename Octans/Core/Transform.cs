@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Octans.Core
+namespace Octans
 {
     public class Transform
     {
@@ -24,7 +24,7 @@ namespace Octans.Core
 
         [Pure]
         public static Transform Multiply(in Transform left, in Transform right) =>
-            new Transform(left.Matrix * right.Matrix, left.Inverse * right.Inverse);
+            new Transform(left.Matrix * right.Matrix, right.Inverse * left.Inverse);
 
         [Pure]
         public static Transform Invert(in Transform transform) => new Transform(transform.Inverse, transform.Matrix);

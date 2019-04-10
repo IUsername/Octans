@@ -34,7 +34,7 @@ namespace Octans.ConsoleApp
             };
 
             //skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
-            skySphere.SetTransform(Transforms.RotateY(3.3f).Scale(10000f));
+            skySphere.SetTransform(Transform.RotateY(3.3f).Scale(10000f));
 
             var path = Path.Combine(GetExecutionPath(), "teapot.obj");
 
@@ -44,7 +44,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("File parsed...");
 
             var triangulated = data.Groups[0];
-            triangulated.SetTransform(Transforms.Scale(0.10f).RotateX(-MathF.PI / 2f).RotateY(MathF.PI / 8f));
+            triangulated.SetTransform(Transform.Scale(0.10f).RotateX(-MathF.PI / 2f).RotateY(MathF.PI / 8f));
 
             var glass = new Material
             {
@@ -74,12 +74,12 @@ namespace Octans.ConsoleApp
                 Diffuse = 0.3f
             };
 
-            checkerboard.Texture.SetTransform(Transforms.Scale(0.125f));
+            checkerboard.Texture.SetTransform(Transform.Scale(0.125f));
 
             var group = new Group();
             var floor = new Cube();
             floor.SetMaterial(checkerboard);
-            floor.SetTransform(Transforms.TranslateY(-1).Scale(5f));
+            floor.SetTransform(Transform.TranslateY(-1).Scale(5f));
             group.AddChild(floor);
             group.AddChild(triangulated);
             group.AddChild(skySphere);
@@ -137,7 +137,7 @@ namespace Octans.ConsoleApp
             var path = Path.Combine(GetExecutionPath(), "teapot-low.obj");
             var data = ObjFile.ParseFile(path);
             var triangulated = data.Groups[0];
-            triangulated.SetTransform(Transforms.Scale(0.1f).RotateX(-MathF.PI / 2f));
+            triangulated.SetTransform(Transform.Scale(0.1f).RotateX(-MathF.PI / 2f));
 
             var material = new Material
             {
@@ -151,7 +151,7 @@ namespace Octans.ConsoleApp
             floor.SetMaterial(material);
             var fg = new Group();
             fg.AddChild(floor);
-            fg.SetTransform(Transforms.TranslateY(-1).Scale(1f));
+            fg.SetTransform(Transform.TranslateY(-1).Scale(1f));
 
             var g = new Group(fg, triangulated);
             g.Divide(1);

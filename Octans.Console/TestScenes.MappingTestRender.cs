@@ -21,7 +21,7 @@ namespace Octans.ConsoleApp
                 {
                     Material = {Texture = CreateTestCubeMap(), Roughness = 1f, SpecularColor = new Color(0.3f,0.3f,0.3f)}
                 };
-                cube1.SetTransform(Transforms.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
+                cube1.SetTransform(Transform.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
                 return cube1;
             }
 
@@ -81,7 +81,7 @@ namespace Octans.ConsoleApp
                 {
                     Material = { Texture = skyBoxMap }
                 };
-                cube1.SetTransform(Transforms.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
+                cube1.SetTransform(Transform.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
                 return cube1;
             }
 
@@ -140,7 +140,7 @@ namespace Octans.ConsoleApp
                 {
                     Material = { Texture = map }
                 };
-                s.SetTransform(Transforms.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
+                s.SetTransform(Transform.RotateY(rotY).RotateX(rotX).Translate(tx, ty, 0));
                 return s;
             }
 
@@ -197,7 +197,7 @@ namespace Octans.ConsoleApp
                 Material = { Texture = map, Ambient = 1.2f, CastsShadows = false, Transparency = 1f}
             };
 
-            skySphere.SetTransform(Transforms.RotateY(2.1f).Scale(1000f));
+            skySphere.SetTransform(Transform.RotateY(2.1f).Scale(1000f));
 
             var s = new Sphere
             {
@@ -383,7 +383,7 @@ namespace Octans.ConsoleApp
                 Material = { Texture = map, Ambient = 1.5f, CastsShadows = false, Transparency = 1f }
             };
 
-            skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
+            skySphere.SetTransform(Transform.RotateY(3.4f).Scale(1000f));
 
             var g = new Group();
             var dx = 2.75f;
@@ -399,7 +399,7 @@ namespace Octans.ConsoleApp
                 for (var x = 0; x < nX; x++)
                 {
                     var s = new Sphere();
-                    s.SetTransform(Transforms.TranslateY(1f).Scale(1.2f).Translate(x * dx, 0, z * dz));
+                    s.SetTransform(Transform.TranslateY(1f).Scale(1.2f).Translate(x * dx, 0, z * dz));
                    // var color = x % 2 == 0 ? new Color(1f, 1f, 1f) : new Color(1f, 0.3f, 0.3f);
                     var color = new Color(1f, 0.3f, 0.3f);
                     s.Material.Texture = SolidColor.Create(color);
@@ -417,12 +417,12 @@ namespace Octans.ConsoleApp
             var darkGray = new Color(0.1f, 0.9f, 0.1f);
             var s1 = new StripeTexture(lightGray, darkGray);
             var s2 = new StripeTexture(lightGray, darkGray);
-            s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            s2.SetTransform(Transform.RotateY(MathF.PI / 2));
             var pattern = new BlendedCompositeTexture(s1, s2);
-            pattern.SetTransform(Transforms.Scale(1f / 30f));
+            pattern.SetTransform(Transform.Scale(1f / 30f));
 
             var text = new CheckerTexture(new Color(0.3f,0.7f,0.3f), new Color(0.13f, 0.13f, 0.13f));
-            text.SetTransform(Transforms.Scale(1f / 16f));
+            text.SetTransform(Transform.Scale(1f / 16f));
 
             var floor = new Cube
             {
@@ -435,7 +435,7 @@ namespace Octans.ConsoleApp
                     Ambient = 0.15f
                 }
             };
-            floor.SetTransform(Transforms.TranslateY(-1f).Scale(40f));
+            floor.SetTransform(Transform.TranslateY(-1f).Scale(40f));
 
             var min = g.LocalBounds().Min;
             var max = g.LocalBounds().Max;
@@ -504,7 +504,7 @@ namespace Octans.ConsoleApp
                 Material = { Texture = map, Ambient = 1.5f, CastsShadows = false, Transparency = 1f }
             };
 
-            skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
+            skySphere.SetTransform(Transform.RotateY(3.4f).Scale(1000f));
 
             var g = new Group();
             var dx = 2.75f;
@@ -518,7 +518,7 @@ namespace Octans.ConsoleApp
                 for (var x = 0; x < nX; x++)
                 {
                     var s = new Sphere();
-                    s.SetTransform(Transforms.TranslateY(1f).Scale(1.2f).Translate(x * dx, 0, z * dz));
+                    s.SetTransform(Transform.TranslateY(1f).Scale(1.2f).Translate(x * dx, 0, z * dz));
                     s.SetMaterial(materialFunc(x + 1));
                     g.AddChild(s);
                     n++;
@@ -529,12 +529,12 @@ namespace Octans.ConsoleApp
             var darkGray = new Color(0.1f, 0.9f, 0.1f);
             var s1 = new StripeTexture(lightGray, darkGray);
             var s2 = new StripeTexture(lightGray, darkGray);
-            s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            s2.SetTransform(Transform.RotateY(MathF.PI / 2));
             var pattern = new BlendedCompositeTexture(s1, s2);
-            pattern.SetTransform(Transforms.Scale(1f / 30f));
+            pattern.SetTransform(Transform.Scale(1f / 30f));
 
             var text = new CheckerTexture(new Color(0.3f, 0.7f, 0.3f), new Color(0.13f, 0.13f, 0.13f));
-            text.SetTransform(Transforms.Scale(1f / 16f));
+            text.SetTransform(Transform.Scale(1f / 16f));
 
             var floor = new Cube
             {
@@ -547,7 +547,7 @@ namespace Octans.ConsoleApp
                     Ambient = 0.15f
                 }
             };
-            floor.SetTransform(Transforms.TranslateY(-1f).Scale(40f));
+            floor.SetTransform(Transform.TranslateY(-1f).Scale(40f));
 
             var min = g.LocalBounds().Min;
             var max = g.LocalBounds().Max;

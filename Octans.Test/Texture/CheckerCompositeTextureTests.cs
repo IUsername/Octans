@@ -49,7 +49,7 @@ namespace Octans.Test.Texture
             texture.LocalColorAt(new Point(2.01f, 0, 0)).Should().Be(Colors.White);
             texture.LocalColorAt(new Point(2.01f, 1.01f, 0)).Should().Be(Colors.Black);
 
-            stripe.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            stripe.SetTransform(Transform.RotateY(MathF.PI / 2));
             texture = new CheckerCompositeTexture(new SolidColor(Colors.White), stripe);
             texture.LocalColorAt(new Point(0, 0, 0)).Should().Be(Colors.White);
             texture.LocalColorAt(new Point(0.99f, 0, 0)).Should().Be(Colors.White);

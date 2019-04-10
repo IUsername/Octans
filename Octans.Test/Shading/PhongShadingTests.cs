@@ -199,7 +199,7 @@ namespace Octans.Test.Shading
             var w = World.Default();
             var shape = new Plane();
             shape.SetMaterial(new Material {Reflective = 0.5f});
-            shape.SetTransform(Transforms.Translate(0, -1, 0));
+            shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), shape);
@@ -213,7 +213,7 @@ namespace Octans.Test.Shading
             var w = World.Default();
             var shape = new Plane();
             shape.SetMaterial(new Material {Reflective = 0.5f});
-            shape.SetTransform(Transforms.Translate(0, -1, 0));
+            shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), shape);
@@ -227,7 +227,7 @@ namespace Octans.Test.Shading
             var w = World.Default();
             var shape = new Plane();
             shape.SetMaterial(new Material {Reflective = 0.5f});
-            shape.SetTransform(Transforms.Translate(0, -1, 0));
+            shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
             var i = new Intersection(MathF.Sqrt(2f), shape);
@@ -241,10 +241,10 @@ namespace Octans.Test.Shading
             var w = new World();
             w.SetLights(new PointLight(new Point(0, 0, 0), Colors.White));
             var lower = new Plane {Material = {Reflective = 1f}};
-            lower.SetTransform(Transforms.Translate(0, -1, 0));
+            lower.SetTransform(Transform.Translate(0, -1, 0));
 
             var upper = new Plane {Material = {Reflective = 1f}};
-            upper.SetTransform(Transforms.Translate(0, 1, 0));
+            upper.SetTransform(Transform.Translate(0, 1, 0));
 
             w.SetObjects(lower, upper);
             var r = new Ray(new Point(0, 0, 0), new Vector(0, 1, 0));
@@ -321,11 +321,11 @@ namespace Octans.Test.Shading
         {
             var w = World.Default();
             var floor = new Plane {Material = {Transparency = 0.5f, RefractiveIndex = 1.5f}};
-            floor.SetTransform(Transforms.Translate(0, -1, 0));
+            floor.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(floor);
 
             var ball = new Sphere {Material = {Texture = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
-            ball.SetTransform(Transforms.Translate(0, -3.5f, -0.5f));
+            ball.SetTransform(Transform.Translate(0, -3.5f, -0.5f));
             w.AddObject(ball);
 
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
@@ -375,11 +375,11 @@ namespace Octans.Test.Shading
         {
             var w = World.Default();
             var floor = new Plane {Material = {Transparency = 0.5f, Reflective = 0.5f, RefractiveIndex = 1.5f}};
-            floor.SetTransform(Transforms.Translate(0, -1, 0));
+            floor.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(floor);
 
             var ball = new Sphere {Material = {Texture = new SolidColor(new Color(1, 0, 0)), Ambient = 0.5f}};
-            ball.SetTransform(Transforms.Translate(0, -3.5f, -0.5f));
+            ball.SetTransform(Transform.Translate(0, -3.5f, -0.5f));
             w.AddObject(ball);
 
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));

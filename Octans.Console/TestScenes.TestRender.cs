@@ -63,13 +63,13 @@ namespace Octans.ConsoleApp
             };
 
             //skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
-            skySphere.SetTransform(Transforms.RotateY(3.3f).Scale(10000f));
+            skySphere.SetTransform(Transform.RotateY(3.3f).Scale(10000f));
 
             var s1 = new StripeTexture(Colors.White, Colors.Black);
             var s2 = new StripeTexture(Colors.White, Colors.Black);
-            s2.SetTransform(Transforms.RotateY(MathF.PI / 2));
+            s2.SetTransform(Transform.RotateY(MathF.PI / 2));
             var pattern = new BlendedCompositeTexture(s1, s2);
-            pattern.SetTransform(Transforms.Scale(1f / 20f));
+            pattern.SetTransform(Transform.Scale(1f / 20f));
 
             var testPattern =
                 new UVAlignTestPattern(Colors.White, Colors.Red, Colors.Yellow, Colors.Green, Colors.Blue);
@@ -97,7 +97,7 @@ namespace Octans.ConsoleApp
                     SpecularColor = new Color(0.1f, 0.1f, 0.1f)
                 }
             };
-            floor.SetTransform(Transforms.TranslateY(-1).Scale(20f));
+            floor.SetTransform(Transform.TranslateY(-1).Scale(20f));
 
             var middle = new Sphere
             {
@@ -107,7 +107,7 @@ namespace Octans.ConsoleApp
                     Roughness = 0.2f, Metallic = 0.3f, SpecularColor = new Color(0.1f, 0.2f, 0.5f), Ambient = 0f
                 }
             };
-            middle.SetTransform(Transforms.RotateY(1.5f).Translate(-0.5f, 1f, 0.1f));
+            middle.SetTransform(Transform.RotateY(1.5f).Translate(-0.5f, 1f, 0.1f));
 
             var right = new Sphere
             {
@@ -122,7 +122,7 @@ namespace Octans.ConsoleApp
                     SpecularColor = new Color(0.2f, 0.2f, 0.2f)
                 }
             };
-            right.SetTransform(Transforms.Translate(0.25f, 0.25f, -1f) * Transforms.Scale(0.25f));
+            right.SetTransform(Transform.Translate(0.25f, 0.25f, -1f) * Transform.Scale(0.25f));
 
             var rightPlastic = new Sphere
             {
@@ -134,7 +134,7 @@ namespace Octans.ConsoleApp
                     Ambient = 0.0f
                 }
             };
-            rightPlastic.SetTransform(Transforms.Translate(-0.15f, 0.15f, -0.91f) * Transforms.Scale(0.15f));
+            rightPlastic.SetTransform(Transform.Translate(-0.15f, 0.15f, -0.91f) * Transform.Scale(0.15f));
 
             var left = new Sphere
             {
@@ -146,7 +146,7 @@ namespace Octans.ConsoleApp
                     Transparency = 0.88f, RefractiveIndex = 1.52f,  Ambient = 0.0f
                 }
             };
-            left.SetTransform(Transforms.Translate(-1.3f, 0.30f, -0.75f) * Transforms.Scale(0.30f));
+            left.SetTransform(Transform.Translate(-1.3f, 0.30f, -0.75f) * Transform.Scale(0.30f));
            // left.SetTransform(Transforms.Translate(-2.1f, 0.33f, 0.5f) * Transforms.Scale(0.33f, 0.33f, 0.33f));
 
             var leftChrome = new Sphere
@@ -159,7 +159,7 @@ namespace Octans.ConsoleApp
                     Transparency = 0, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.0f, Shininess = 300
                 }
             };
-            leftChrome.SetTransform(Transforms.Translate(-0.95f, 0.15f, -1.1f) * Transforms.Scale(0.15f));
+            leftChrome.SetTransform(Transform.Translate(-0.95f, 0.15f, -1.1f) * Transform.Scale(0.15f));
 
             var cube = new Cube
             {
@@ -169,8 +169,8 @@ namespace Octans.ConsoleApp
                     Ambient = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f)
                 }
             };
-            cube.Material.Texture.SetTransform(Transforms.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
-            cube.SetTransform(Transforms.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
+            cube.Material.Texture.SetTransform(Transform.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
+            cube.SetTransform(Transform.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
 
             var cone = new Cone
             {
@@ -186,7 +186,7 @@ namespace Octans.ConsoleApp
                     Reflective = 0.2f
                 }
             };
-            cone.SetTransform(Transforms.Scale(0.6f, 2f, 0.6f).Translate(1.5f, 2.0f, 0));
+            cone.SetTransform(Transform.Scale(0.6f, 2f, 0.6f).Translate(1.5f, 2.0f, 0));
 
             var cylinder = new Cylinder
             {
@@ -200,7 +200,7 @@ namespace Octans.ConsoleApp
                     Texture = testMap
                 }
             };
-            cylinder.SetTransform(Transforms.Translate(-3f, 0f, 3.5f));
+            cylinder.SetTransform(Transform.Translate(-3f, 0f, 3.5f));
 
             //var t = new Triangle(new Point(0, 0, 0), new Point(1, 0.5f, 0), new Point(0.5f, 1f, 1f))
             //{
@@ -228,7 +228,7 @@ namespace Octans.ConsoleApp
                 Maximum = 0.01f,
                 IsClosed = true
             };
-            co.SetTransform(Transforms.Scale(1.5f, 1f, 1.5f));
+            co.SetTransform(Transform.Scale(1.5f, 1f, 1.5f));
             co.SetMaterial(ringMaterial);
 
             var ci = new Cylinder
@@ -237,11 +237,11 @@ namespace Octans.ConsoleApp
                 Maximum = 0.1f,
                 IsClosed = true
             };
-            ci.SetTransform(Transforms.Scale(1.2f, 1f, 1.2f));
+            ci.SetTransform(Transform.Scale(1.2f, 1f, 1.2f));
             ci.SetMaterial(ringMaterial);
 
             var s = new ConstructiveSolid(ConstructiveOp.Difference, co, ci);
-            s.SetTransform(Transforms.RotateZ(-0.2f).RotateX(-0.1f).Translate(-0.5f, 1f, 0.1f));
+            s.SetTransform(Transform.RotateZ(-0.2f).RotateX(-0.1f).Translate(-0.5f, 1f, 0.1f));
 
             var gl = new Group();
             gl.AddChild(middle);

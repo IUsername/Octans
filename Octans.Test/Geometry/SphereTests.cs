@@ -99,7 +99,7 @@ namespace Octans.Test.Geometry
         public void GlassSphereProperties()
         {
             var s = Spheres.GlassSphere();
-            s.Transform.Should().Be(Matrix.Identity);
+            s.Transform.Should().Be(Transform.Identity);
             s.Material.Transparency.Should().Be(1f);
             s.Material.RefractiveIndex.Should().Be(1.5f);
         }

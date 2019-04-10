@@ -6,7 +6,7 @@ namespace Octans
     {
         [Pure]
         public static Ray ToLocal(in this Ray worldRay, in IGeometry geometry) =>
-            worldRay.Transform(geometry.TransformInverse());
+            worldRay.Transform(geometry.Transform.Inverse);
 
         [Pure]
         public static IIntersections Intersects(this IGeometry geometry, in Ray worldRay)
@@ -24,7 +24,7 @@ namespace Octans
                 world = geometry.Parent.ToLocal(in worldPoint);
             }
 
-            return geometry.TransformInverse() * world;
+            return geometry.Transform.Inverse * world;
         }
 
         [Pure]
@@ -37,7 +37,7 @@ namespace Octans
             }
 
             var localPoint = geometry.ToLocal(in world);
-            return texture.TransformInverse() * localPoint;
+            return texture.Transform.Inverse * localPoint;
         }
 
         [Pure]
@@ -51,7 +51,7 @@ namespace Octans
         [Pure]
         public static Normal NormalToWorld(this IGeometry geometry, in Normal localNormal)
         {
-            var normal = geometry.TransformInverseTranspose() * localNormal;
+            var normal = geometry.Transform.Inverse.Transpose() * localNormal;
             normal = normal.Normalize();
             if (geometry.Parent != null)
             {
@@ -62,6 +62,6 @@ namespace Octans
         }
 
         [Pure]
-        public static Bounds ParentSpaceBounds(this IGeometry geometry) => geometry.LocalBounds().Transform(geometry.Transform);
+        public static Bounds ParentSpaceBounds(this IGeometry geometry) => geometry.LocalBounds().Transform(geometry.Transform.Matrix);
     }
 }
