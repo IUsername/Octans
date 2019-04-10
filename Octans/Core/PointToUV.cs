@@ -1,4 +1,4 @@
 ﻿namespace Octans
 {
-    public delegate (float u, float v) PointToUV(in Point p);
+    public delegate UVPoint PointToUV(in Point p);
 }

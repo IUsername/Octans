@@ -11,8 +11,8 @@
 
         public override Color LocalColorAt(in Point localPoint)
         {
-            var (u, v) = UVMapping.SkyBox(in localPoint);
-            return SkyBoxImage.ColorAt(u, v);
+            var uv = UVMapping.SkyBox(in localPoint);
+            return SkyBoxImage.ColorAt(uv);
         }
     }
 }

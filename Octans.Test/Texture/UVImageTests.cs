@@ -26,10 +26,10 @@ namespace Octans.Test.Texture
 ";
             var canvas = PPM.Parse(ppm);
             var pattern = new UVImage(canvas);
-            pattern.ColorAt(0f, 0f).Should().Be(new Color(0.9f, 0.9f, 0.9f));
-            pattern.ColorAt(0.3f, 0f).Should().Be(new Color(0.2f, 0.2f, 0.2f));
-            pattern.ColorAt(0.6f, 0.3f).Should().Be(new Color(0.1f, 0.1f, 0.1f));
-            pattern.ColorAt(1f, 1f).Should().Be(new Color(0.9f, 0.9f, 0.9f));
+            pattern.ColorAt(new UVPoint(0f, 0f)).Should().Be(new Color(0.9f, 0.9f, 0.9f));
+            pattern.ColorAt(new UVPoint(0.3f, 0f)).Should().Be(new Color(0.2f, 0.2f, 0.2f));
+            pattern.ColorAt(new UVPoint(0.6f, 0.3f)).Should().Be(new Color(0.1f, 0.1f, 0.1f));
+            pattern.ColorAt(new UVPoint(1f, 1f)).Should().Be(new Color(0.9f, 0.9f, 0.9f));
         }
     }
 }

@@ -57,6 +57,18 @@ namespace Octans
         }
 
         [Pure]
+        public static float Distance(in Point a, in Point b)
+        {
+            return (a - b).Magnitude();
+        }
+
+        [Pure]
+        public static float DistanceSqr(in Point a, in Point b)
+        {
+            return (a - b).MagSqr();
+        }
+
+        [Pure]
         public static Point operator +(Point left, Vector right) => left.Add(in right);
 
         [Pure]

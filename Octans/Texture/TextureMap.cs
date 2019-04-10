@@ -13,8 +13,8 @@
 
         public Color PatternAt(in Point point)
         {
-            var (u, v) = Map(in point);
-            return Texture.ColorAt(u, v);
+            var uv = Map(in point);
+            return Texture.ColorAt(uv);
         }
 
 

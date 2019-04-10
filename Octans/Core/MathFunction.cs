@@ -93,5 +93,21 @@ namespace Octans
                 return (b1, b2);
             }
         }
+
+        [Pure]
+        public static float Rad(float degrees)
+        {
+            const float piDiv180 = MathF.PI / 180f;
+            return degrees * piDiv180;
+        }
+
+        [Pure]
+        public static float Deg(float radians)
+        {
+            const float oneEightyOverPi = 180f / MathF.PI;
+            return radians * oneEightyOverPi;
+        }
+
+       
     }
 }

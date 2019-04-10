@@ -17,10 +17,10 @@ namespace Octans.Texture
         public Color A { get; }
         public Color B { get; }
 
-        public Color ColorAt(float u, float v)
+        public Color ColorAt(UVPoint uv)
         {
-            var u2 = MathF.Floor(u * Width);
-            var v2 = MathF.Floor(v * Height);
+            var u2 = MathF.Floor(uv.U * Width);
+            var v2 = MathF.Floor(uv.V * Height);
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             return (u2 + v2) % 2f == 0f ? A : B;

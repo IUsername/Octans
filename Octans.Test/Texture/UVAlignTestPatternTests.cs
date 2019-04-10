@@ -16,11 +16,11 @@ namespace Octans.Test.Texture
             var br = Colors.Blue;
 
             var c = new UVAlignTestPattern(main, ul, ur, bl, br);
-            c.ColorAt(0.5f, 0.5f).Should().Be(main);
-            c.ColorAt(0.1f, 0.9f).Should().Be(ul);
-            c.ColorAt(0.9f, 0.9f).Should().Be(ur);
-            c.ColorAt(0.1f, 0.1f).Should().Be(bl);
-            c.ColorAt(0.9f, 0.1f).Should().Be(br);
+            c.ColorAt(new UVPoint(0.5f, 0.5f)).Should().Be(main);
+            c.ColorAt(new UVPoint(0.1f, 0.9f)).Should().Be(ul);
+            c.ColorAt(new UVPoint(0.9f, 0.9f)).Should().Be(ur);
+            c.ColorAt(new UVPoint(0.1f, 0.1f)).Should().Be(bl);
+            c.ColorAt(new UVPoint(0.9f, 0.1f)).Should().Be(br);
         }
     }
 }

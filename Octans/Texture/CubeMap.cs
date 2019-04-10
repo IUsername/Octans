@@ -27,27 +27,27 @@
         public override Color LocalColorAt(in Point localPoint)
         {
             var face = UVMapping.PointToCubeFace(in localPoint);
-            float u, v;
+            UVPoint uv;
             switch (face)
             {
                 case UVMapping.CubeFace.Front:
-                    (u, v) = UVMapping.CubeUVFrontFace(in localPoint);
-                    return Front.ColorAt(u, v);
+                    uv = UVMapping.CubeUVFrontFace(in localPoint);
+                    return Front.ColorAt(uv);
                 case UVMapping.CubeFace.Left:
-                    (u, v) = UVMapping.CubeUVLeftFace(in localPoint);
-                    return Left.ColorAt(u, v);
+                    uv = UVMapping.CubeUVLeftFace(in localPoint);
+                    return Left.ColorAt(uv);
                 case UVMapping.CubeFace.Right:
-                    (u, v) = UVMapping.CubeUVRightFace(in localPoint);
-                    return Right.ColorAt(u, v);
+                    uv = UVMapping.CubeUVRightFace(in localPoint);
+                    return Right.ColorAt(uv);
                 case UVMapping.CubeFace.Top:
-                    (u, v) = UVMapping.CubeUVTopFace(in localPoint);
-                    return Top.ColorAt(u, v);
+                    uv = UVMapping.CubeUVTopFace(in localPoint);
+                    return Top.ColorAt(uv);
                 case UVMapping.CubeFace.Bottom:
-                    (u, v) = UVMapping.CubeUVBottomFace(in localPoint);
-                    return Bottom.ColorAt(u, v);
+                    uv = UVMapping.CubeUVBottomFace(in localPoint);
+                    return Bottom.ColorAt(uv);
                 case UVMapping.CubeFace.Back:
-                    (u, v) = UVMapping.CubeUVBackFace(in localPoint);
-                    return Back.ColorAt(u, v);
+                    uv = UVMapping.CubeUVBackFace(in localPoint);
+                    return Back.ColorAt(uv);
                 default:
                     return Colors.Black;
             }

@@ -17,17 +17,17 @@
             Br = br;
         }
 
-        public Color ColorAt(float u, float v)
+        public Color ColorAt(UVPoint uv)
         {
-            if (v > 0.8f)
+            if (uv.V > 0.8f)
             {
-                if (u < 0.2f) return Ul;
-                if (u > 0.8f) return Ur;
+                if (uv.U < 0.2f) return Ul;
+                if (uv.U > 0.8f) return Ur;
             }
-            else if (v < 0.2f)
+            else if (uv.V < 0.2f)
             {
-                if (u < 0.2f) return Bl;
-                if (u > 0.8f) return Br;
+                if (uv.U < 0.2f) return Bl;
+                if (uv.U > 0.8f) return Br;
             }
 
             return Main;

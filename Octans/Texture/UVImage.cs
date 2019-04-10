@@ -12,10 +12,10 @@ namespace Octans.Texture
         }
 
 
-        public Color ColorAt(float u, float v)
+        public Color ColorAt(UVPoint uv)
         {
-            v = 1f - v;
-            var x = u * (_canvas.Width - 1);
+            var v = 1f - uv.V;
+            var x = uv.U * (_canvas.Width - 1);
             var y = v * (_canvas.Height - 1);
             return _canvas.PixelAt(Round(in x), Round(in y));
         }

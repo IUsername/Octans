@@ -34,7 +34,7 @@ namespace Octans.Camera
 
             _halfHeight = halfHeight;
             _halfWidth = halfWidth;
-            FocalDistance = focalDistance < 0 ? (from - to).Magnitude() : focalDistance;
+            FocalDistance = focalDistance < 0 ? Point.Distance(from, to) : focalDistance;
 
             _width = halfWidth * 2f;
             _camera = CameraToWorld * Point.Zero;
