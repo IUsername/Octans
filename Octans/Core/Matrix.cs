@@ -1,5 +1,4 @@
 ﻿using System;
-//using System.Buffers;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
@@ -11,7 +10,7 @@ namespace Octans
 
         public readonly int Rows;
         public readonly int Columns;
-        private readonly bool _isIdentity;
+        //private readonly bool _isIdentity;
 
         private readonly float[,] _data;
 
@@ -21,31 +20,31 @@ namespace Octans
             Columns = values[0].Length;
 
             _data = new float[Rows, Columns];
-            var isIdentity = true;
+            //var isIdentity = true;
             for (var row = 0; row < Rows; row++)
             {
                 for (var col = 0; col < Columns; col++)
                 {
                     _data[row, col] = values[row][col];
-                    if (!isIdentity)
-                    {
-                        continue;
-                    }
+                    //if (!isIdentity)
+                    //{
+                    //    continue;
+                    //}
 
-                    // ReSharper disable CompareOfFloatsByEqualityOperator
-                    if (row == col)
-                    {
-                        isIdentity = _data[row, col] == 1.0f;
-                    }
-                    else
-                    {
-                        isIdentity = _data[row, col] == 0.0f;
-                    }
-                    // ReSharper restore CompareOfFloatsByEqualityOperator
+                    //// ReSharper disable CompareOfFloatsByEqualityOperator
+                    //if (row == col)
+                    //{
+                    //    isIdentity = _data[row, col] == 1.0f;
+                    //}
+                    //else
+                    //{
+                    //    isIdentity = _data[row, col] == 0.0f;
+                    //}
+                    //// ReSharper restore CompareOfFloatsByEqualityOperator
                 }
             }
 
-            _isIdentity = isIdentity;
+            //_isIdentity = isIdentity;
         }
 
         private Matrix(int rows, int columns)
@@ -53,35 +52,18 @@ namespace Octans
             Rows = rows;
             Columns = columns;
             _data = new float[Rows, Columns];
-            _isIdentity = false;
+            //_isIdentity = false;
         }
 
         public float this[int row, int col] => _data[row, col];
 
-        //public float[][] ToArray()
-        //{
-        //    var arr = new float[Rows][];
-        //    for (var row = 0; row < Rows; row++)
-        //    {
-        //        var cur = new float[Columns];
-        //        for (var col = 0; col < Columns; col++)
-        //        {
-        //            cur[col] = this[row, col];
-        //        }
-
-        //        arr[row] = cur;
-        //    }
-
-        //    return arr;
-        //}
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Matrix Transpose()
         {
-            if (_isIdentity)
-            {
-                return this;
-            }
+            //if (_isIdentity)
+            //{
+            //    return this;
+            //}
 
             var m = new Matrix(Columns, Rows);
             if (Columns == 4)
@@ -174,41 +156,71 @@ namespace Octans
                     break;
             }
 
-            var arr = new float[size][];
             var k = 0;
+            var m = new Matrix(size, size);
             for (var row = 0; row < size; row++)
             {
-                var cur = new float[size];
                 for (var col = 0; col < size; col++)
                 {
-                    cur[col] = values[k++];
+                    m._data[row, col] = values[k++];
                 }
-
-                arr[row] = cur;
             }
-
-            return new Matrix(arr);
+            return m;
         }
 
-        //[Pure]
-        //private static Point ToPoint(in Matrix m) => new Point(m[0, 0], m[1, 0], m[2, 0], m[3, 0]);
-
-        //[Pure]
-        //private static Vector ToVector(in Matrix m) => new Vector(m[0, 0], m[1, 0], m[2, 0]);
+        public Matrix(
+            float m00,
+            float m01,
+            float m02,
+            float m03,
+            float m10,
+            float m11,
+            float m12,
+            float m13,
+            float m20,
+            float m21,
+            float m22,
+            float m23,
+            float m30,
+            float m31,
+            float m32,
+            float m33)
+        {
+            Rows = 4;
+            Columns = 4;
+            _data = new float[4, 4];
+            _data[0, 0] = m00;
+            _data[0, 1] = m01;
+            _data[0, 2] = m02;
+            _data[0, 3] = m03;
+            _data[1, 0] = m10;
+            _data[1, 1] = m11;
+            _data[1, 2] = m12;
+            _data[1, 3] = m13;
+            _data[2, 0] = m20;
+            _data[2, 1] = m21;
+            _data[2, 2] = m22;
+            _data[2, 3] = m23;
+            _data[3, 0] = m30;
+            _data[3, 1] = m31;
+            _data[3, 2] = m32;
+            _data[3, 3] = m33;
+            //_isIdentity = false;
+        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Matrix Multiply(in Matrix a, in Matrix b)
         {
-            if (a._isIdentity)
-            {
-                return b;
-            }
+            //if (a._isIdentity)
+            //{
+            //    return b;
+            //}
 
-            if (b._isIdentity)
-            {
-                return a;
-            }
+            //if (b._isIdentity)
+            //{
+            //    return a;
+            //}
 
             if (a.Columns != b.Rows)
             {
@@ -333,10 +345,10 @@ namespace Octans
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix Inverse(in Matrix m)
         {
-            if (m._isIdentity)
-            {
-                return m;
-            }
+            //if (m._isIdentity)
+            //{
+            //    return m;
+            //}
 
             var det = Determinant(m);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
@@ -362,84 +374,21 @@ namespace Octans
 
         public Matrix Inverse() => Inverse(this);
 
-        //private static readonly ObjectPool<Matrix> ColMatPool = new ObjectPool<Matrix>(() => new Matrix(new[] { 0f }, new[] { 0f }, new[] { 0f }, new[] { 0f }));
-        //private static readonly ObjectPool<Matrix> TransformMatPool = new ObjectPool<Matrix>(() => new Matrix(4, 4));
-
-        //private static Matrix ColMatFromPool(float x, float y, float z, float w)
-        //{
-        //    var m = ColMatPool.GetObject();
-        //    m._data[0, 0] = x;
-        //    m._data[1, 0] = y;
-        //    m._data[2, 0] = z;
-        //    m._data[3, 0] = w;
-        //    return m;
-        //}
-
-        //private static void ReturnColMat(Matrix m)
-        //{
-        //    ColMatPool.PutObject(m);
-        //}
-
-        //private static void ReturnTransformMatPool(Matrix m)
-        //{
-        //    TransformMatPool.PutObject(m);
-        //}
-
-        //[Pure]
-        //private static Matrix MultiplyTransformPool(in Matrix a, in Matrix b)
-        //{
-        //    if (a.Columns != 4 && a.Rows != 4)
-        //    {
-        //        throw new InvalidOperationException("Pool only holds 4x4 matrices");
-        //    }
-        //    if (a.Columns != b.Rows)
-        //    {
-        //        throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
-        //    }
-
-        //    var m = TransformMatPool.GetObject();
-        //    for (var i = 0; i < 4; i++)
-        //    {
-        //        for (var j = 0; j < b.Columns; j++)
-        //        {
-        //            m._data[i, j] = 0f;
-        //            m._data[i, j] += a[i, 0] * b[0, j];
-        //            m._data[i, j] += a[i, 1] * b[1, j];
-        //            m._data[i, j] += a[i, 2] * b[2, j];
-        //            m._data[i, j] += a[i, 3] * b[3, j];
-        //        }
-        //    }
-
-        //    return m;
-        //}
-
         [Pure]
         private static Point Multiply(in Matrix a, in Point b)
         {
-
-            //if (a.Columns != 4 && a.Rows != 4)
-            //{
-            //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
-            //}
-
             var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z + a[0, 3];
             var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z + a[1, 3];
             var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z + a[2, 3];
             var w = a[3, 0] * b.X + a[3, 1] * b.Y + a[3, 2] * b.Z + a[3, 3];
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            return w != 1f ? new Point(x,y,z) / w : new Point(x, y, z);
+            return w != 1f ? new Point(x, y, z) / w : new Point(x, y, z);
         }
 
         [Pure]
         private static Vector Multiply(in Matrix a, in Vector b)
         {
-
-            //if (a.Columns != 4 && a.Rows != 4)
-            //{
-            //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
-            //}
-
             var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z;
             var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z;
             var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z;
@@ -450,46 +399,12 @@ namespace Octans
         [Pure]
         private static Normal Multiply(in Matrix a, in Normal b)
         {
-
-            //if (a.Columns != 4 && a.Rows != 4)
-            //{
-            //    throw new InvalidOperationException("Pool only holds 4x4 matrices");
-            //}
-
             var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z;
             var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z;
             var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z;
 
             return new Normal(x, y, z);
         }
-
-        //[Pure]
-        //private static Point OpMultiplyPoint(in Matrix left, in Point right)
-        //{
-        //        return Multiply4x4Point(in left, in right);
-
-        //    //if (left._isIdentity) return right;
-        //    //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
-        //    //var m = MultiplyTransformPool(in left, in rMat);
-        //    //var p = ToPoint(in m);
-        //    //ReturnColMat(rMat);
-        //    //ReturnTransformMatPool(m);
-        //    //return p;
-        //}
-
-        //[Pure]
-        //private static Vector OpMultiplyVector(in Matrix left, in Vector right)
-        //{
-        //    return Multiply4x4Vector(in left, in right);
-
-        //    //if (left._isIdentity) return right;
-        //    //var rMat = ColMatFromPool(right.X, right.Y, right.Z, right.W);
-        //    //var m = MultiplyTransformPool(in left, in rMat);
-        //    //var v = ToVector(in m);
-        //    //ReturnColMat(rMat);
-        //    //ReturnTransformMatPool(m);
-        //    //return v;
-        //}
 
         [Pure]
         public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);

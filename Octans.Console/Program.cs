@@ -15,8 +15,8 @@
             //TestScenes.SphereMappingTestRender();
             //TestScenes.InsideSphere();
             //TestScenes.MappingTestRender();
-            //TestScenes.TestRender(1000);
-            TestScenes.TeapotTest();
+            TestScenes.TestRender(100);
+            //TestScenes.TeapotTest();
             //TestScenes.SolidTestRender(20);
             //TestScenes.LowPolyTeapotTest();
             System.Console.ReadKey();
