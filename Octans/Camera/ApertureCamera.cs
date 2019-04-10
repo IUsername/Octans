@@ -8,7 +8,7 @@ namespace Octans.Camera
         private readonly float _focalDist;
         private readonly float _halfHeight;
         private readonly float _halfWidth;
-        private readonly Matrix _inv;
+        private readonly Transform _transform;
         private readonly float _width;
 
         public ApertureCamera(float fieldOfView,
@@ -16,11 +16,12 @@ namespace Octans.Camera
                                float apertureRadius,
                                Point from,
                                Point to,
+                               Vector up,
                                float focalDistance = -1)
         {
             ApertureRadius = apertureRadius;
-            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
-            _inv = transform.Inverse();
+            _transform = Transform.LookAt(from, to, up);
+          
             var halfView = MathF.Tan(fieldOfView / 2f);
             var halfWidth = halfView;
             var halfHeight = halfView;
@@ -38,7 +39,7 @@ namespace Octans.Camera
             _focalDist = focalDistance < 0 ? (from - to).Magnitude() : focalDistance;
 
             _width = halfWidth * 2f;
-            _camera = _inv * Point.Zero;
+            _camera = _transform.Inverse * Point.Zero;
         }
 
         public float ApertureRadius { get; }
@@ -50,11 +51,11 @@ namespace Octans.Camera
             var phi = 2 * MathF.PI * u2;
             var u = ApertureRadius * MathF.Cos(phi) * r;
             var v = ApertureRadius * MathF.Sin(phi) * r;
-            var offset = new Vector(u, v, 0);
+            var offset = new Point(u, v, 0);
 
             var aimed = FocalPlanePoint(in sample);
 
-            var start = _inv * (Point.Zero + offset);
+            var start = _transform.Inverse * (offset);
             var dir = (aimed - start).Normalize();
             var ray = new Ray(start, dir);
             return (ray, 1f);
@@ -70,7 +71,7 @@ namespace Octans.Camera
             var worldX = _halfWidth - xOffset;
             var worldY = _halfHeight - yOffset;
 
-            var pixel = _inv * new Point(worldX, worldY, -1f);
+            var pixel = _transform.Inverse * new Point(worldX, worldY, -1f);
             var direction = (pixel - _camera).Normalize();
             var r = new Ray(_camera, direction);
             return r.Position(_focalDist);

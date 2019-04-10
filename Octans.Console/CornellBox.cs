@@ -94,7 +94,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(100);
             var fov = 278f / 400f;
             var aspectRatio = 1f;
-            var camera = new ApertureCamera(fov, aspectRatio, 0.01f,from,to);
+            var camera = new ApertureCamera(fov, aspectRatio, 0.01f,from,to, Vectors.Up);
             //var transform = Transforms.View(from, to, new Vector(0, 1, 0));
             //var camera = new PinholeCamera2(transform, fov, aspectRatio);
             var cws = new ComposableWorldSampler(2,

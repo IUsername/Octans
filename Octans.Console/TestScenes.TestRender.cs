@@ -24,7 +24,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(spp);
             var camera = new ApertureCamera(MathF.PI / 3f, 3f / 2, 0.05f,
                                              new Point(0, 1.25f, -4f),
-                                             new Point(0, 1, 0), 3.5f);
+                                             new Point(0, 1, 0), Vectors.Up, 3.5f);
             var cws = new ComposableWorldSampler(2,
                                                  16,
                                                  GGXNormalDistribution.Instance,

@@ -147,8 +147,18 @@ namespace Octans
 
         public static Transform LookAt(Point from, Point look, Vector up)
         {
-            var forward = (look - from).Normalize();
-            var left = Vector.Cross(up.Normalize(), forward);
+            //var forward = (look - from).Normalize();
+            //var left = Vector.Cross(forward, up.Normalize()).Normalize();
+            //var trueUp = Vector.Cross(left, forward);
+            //var orientation = new Matrix(new[] { left.X, left.Y, left.Z, 0 },
+            //                             new[] { trueUp.X, trueUp.Y, trueUp.Z, 0 },
+            //                             new[] { -forward.X, -forward.Y, -forward.Z, 0 },
+            //                             new[] { 0.0f, 0, 0, 1 });
+            //return new Transform(orientation * Transforms.Translate(-from.X, -from.Y, -from.Z));
+
+
+            var forward = (from-look).Normalize();
+            var left = Vector.Cross(up.Normalize(), forward).Normalize();
             var trueUp = Vector.Cross(forward, left);
             var m = new Matrix(
                 left.X, trueUp.X, forward.X, from.X,

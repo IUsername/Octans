@@ -10,7 +10,7 @@ namespace Octans.Test.Camera
         [Fact]
         public void ConstructingCamera()
         {
-            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, 160f/120);
+            var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, 160f/120);
             c.AspectRatio.Should().Be(160f / 120);
             c.FieldOfView.Should().Be(MathF.PI / 2f);
             c.Transform.Should().Be(Matrix.Identity);
@@ -22,7 +22,7 @@ namespace Octans.Test.Camera
         {
             var width = 201;
             var height = 101;
-            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, (float) width / height);
+            var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, (float) width / height);
             var coordinate = new PixelCoordinate(100, 50);
             var (r, t) =
                 c.CameraRay(
@@ -37,7 +37,7 @@ namespace Octans.Test.Camera
         {
             var width = 201;
             var height = 101;
-            var c = new PinholeCamera(in Matrix.Identity, MathF.PI / 2f, (float)width / height);
+            var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, (float)width / height);
             var coordinate = new PixelCoordinate(0, 0);
             var (r, t) =
                 c.CameraRay(
@@ -52,7 +52,7 @@ namespace Octans.Test.Camera
         {
             var width = 201;
             var height = 101;
-            var transform = Transforms.RotateY(MathF.PI / 4f) * Transforms.Translate(0, -2, 5);
+            var transform = Transform.RotateY(MathF.PI / 4f) * Transform.Translate(0, -2, 5);
             var c = new PinholeCamera(transform, MathF.PI / 2f, (float)width / height);
             var coordinate = new PixelCoordinate(100, 50);
             var (r, t) =

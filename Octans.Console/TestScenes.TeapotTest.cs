@@ -107,12 +107,12 @@ namespace Octans.ConsoleApp
             var to = new Point(0.25f, 0.5f, 0);
 
             var canvas = new Canvas(width, height);
-            var pps = new PerPixelSampler(800);
+            var pps = new PerPixelSampler(10);
             var fov = MathF.PI / 3f;
             var aspectRatio = (float)width / height;
-            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var transform = Transform.LookAt(from, to, new Vector(0, 1, 0));
             //var camera = new PinholeCamera(transform, fov, aspectRatio);
-            var camera = new ApertureCamera(fov, aspectRatio, 0.08f, from,to);
+            var camera = new ApertureCamera(fov, aspectRatio, 0.08f, from,to, Vectors.Up);
             //  var cws = new PhongWorldShading(5, w);
             var cws = new ComposableWorldSampler(2,
                                                  16,
@@ -176,7 +176,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(3);
             var fov = MathF.PI / 3f;
             var aspectRatio = (float)width / height;
-            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var transform = Transform.LookAt(from, to, new Vector(0, 1, 0));
             var camera = new PinholeCamera(transform, fov, aspectRatio);
             var cws = new PhongWorldShading(1, w);
             var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));

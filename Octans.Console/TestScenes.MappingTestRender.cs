@@ -50,7 +50,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(16);
             var fov = 0.8f;
             var aspectRatio = (float) width/height;
-            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var transform = Transform.LookAt(from, to, new Vector(0, 1, 0));
             var camera = new PinholeCamera(transform, fov, aspectRatio);
             var cws = new PhongWorldShading(1, w);
             var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
@@ -110,7 +110,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(16);
             var fov = 0.8f;
             var aspectRatio = (float)width / height;
-            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var transform = Transform.LookAt(from, to, new Vector(0, 1, 0));
             var camera = new PinholeCamera(transform, fov, aspectRatio);
             var cws = new PhongWorldShading(1, w);
             var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
@@ -169,7 +169,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(16);
             var fov = 0.8f;
             var aspectRatio = (float)width / height;
-            var transform = Transforms.View(from, to, new Vector(0, 1, 0));
+            var transform = Transform.LookAt(from, to, new Vector(0, 1, 0));
             var camera = new PinholeCamera(transform, fov, aspectRatio);
             var cws = new PhongWorldShading(1, w);
             var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
@@ -230,7 +230,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(1000);
             var fov = 0.8f;
             var aspectRatio = (float)width / height;
-            var camera = new ApertureCamera(fov, aspectRatio, 0.05F, from,to);
+            var camera = new ApertureCamera(fov, aspectRatio, 0.05F, from, to,Vectors.Up);
             var cws = new ComposableWorldSampler(1,
                                                  2,
                                                  GGXNormalDistribution.Instance,
@@ -471,7 +471,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(400);
             var fov = MathF.PI / 4f;
             var aspectRatio = (float)width / height;
-            var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to);
+            var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to, Vectors.Up);
             var cws = new ComposableWorldSampler(2,
                                                  16,
                                                  GGXNormalDistribution.Instance,
@@ -570,7 +570,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(spp);
             var fov = MathF.PI / 4f;
             var aspectRatio = (float)width / height;
-            var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to);
+            var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to, Vectors.Up);
             var cws = new ComposableWorldSampler(2,
                                                  16,
                                                  GGXNormalDistribution.Instance,

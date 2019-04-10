@@ -90,7 +90,7 @@ namespace Octans.ConsoleApp
             var pps = new PerPixelSampler(spp);
             var fov = MathF.PI / 3f;
             var aspectRatio = (float) width / height;
-            var camera = new ApertureCamera(fov, aspectRatio, 0.15f, from, to);
+            var camera = new ApertureCamera(fov, aspectRatio, 0.15f, from, to, Vectors.Up);
             //var transform = Transforms.View(from, to, new Vector(0, 1, 0));
             //var camera = new PinholeCamera2(transform, fov, aspectRatio);
             //var cws = new PhongWorldShading2(4, w);
