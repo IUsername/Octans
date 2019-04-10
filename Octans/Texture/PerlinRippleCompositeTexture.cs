@@ -18,8 +18,8 @@
             var z = Perlin.Noise(localPoint.Y, localPoint.Z, localPoint.X);
             var offset = new Vector(x, y, z) * Perturbation;
 
-            var global = Transform.Matrix * (localPoint + offset);
-            var baseLocal = BaseTexture.Transform.Inverse * global;
+            var global = Transform * (localPoint + offset);
+            var baseLocal = BaseTexture.Transform ^ global;
             return BaseTexture.LocalColorAt(in baseLocal);
         }
     }

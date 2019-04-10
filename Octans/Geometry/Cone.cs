@@ -130,14 +130,14 @@ namespace Octans.Geometry
                 {
                     if (WithinRadius(in localPoint))
                     {
-                        return new Normal(0, 1, 0);
+                        return Normals.YPos;
                     }
                 }
                 else if (localPoint.Y <= Minimum + Epsilon)
                 {
                     if (WithinRadius(in localPoint))
                     {
-                        return new Normal(0, -1, 0);
+                        return Normals.YNeg;
                     }
                 }
             }

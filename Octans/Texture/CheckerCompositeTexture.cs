@@ -18,11 +18,11 @@ namespace Octans.Texture
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if ((MathF.Floor(localPoint.X) + MathF.Floor(localPoint.Y) + MathF.Floor(localPoint.Z)) % 2f == 0f)
             {
-                var aLocal = A.Transform.Inverse * localPoint;
+                var aLocal = A.Transform ^ localPoint;
                 return A.LocalColorAt(in aLocal);
             }
 
-            var bLocal = B.Transform.Inverse * localPoint;
+            var bLocal = B.Transform ^ localPoint;
             return B.LocalColorAt(in bLocal);
         }
     }

@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Octans
@@ -185,8 +184,8 @@ namespace Octans
 
     public class PerThreadObjectPool<T>
     {
-        private readonly ThreadLocal<Queue<T>> _objects;
         private readonly Func<T> _generator;
+        private readonly ThreadLocal<Queue<T>> _objects;
 
         public PerThreadObjectPool(Func<T> generator)
         {

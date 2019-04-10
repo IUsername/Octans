@@ -98,12 +98,12 @@ namespace Octans.Geometry
             {
                 if (localPoint.Y >= Maximum - Epsilon)
                 {
-                    return new Normal(0, 1, 0);
+                    return Normals.YPos;
                 }
 
                 if (localPoint.Y <= Minimum + Epsilon)
                 {
-                    return new Normal(0, -1, 0);
+                    return Normals.YNeg;
                 }
             }
 

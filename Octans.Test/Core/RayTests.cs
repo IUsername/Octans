@@ -32,8 +32,8 @@ namespace Octans.Test
             var p = new Point(1, 2, 3);
             var dir = new Vector(0, 1, 0);
             var r1 = new Ray(p, dir);
-            var m = Transforms.Translate(3, 4, 5);
-            var r2 = r1.Transform(m);
+            var t = Transform.Translate(3, 4, 5);
+            var r2 = t * r1;
             r2.Origin.Should().BeEquivalentTo(new Point(4, 6, 8));
             r2.Direction.Should().BeEquivalentTo(new Vector(0, 1, 0));
         }
@@ -44,8 +44,8 @@ namespace Octans.Test
             var p = new Point(1, 2, 3);
             var dir = new Vector(0, 1, 0);
             var r1 = new Ray(p, dir);
-            var m = Transforms.Scale(2, 3, 4);
-            var r2 = r1.Transform(m);
+            var t = Transform.Scale(2, 3, 4);
+            var r2 = t * r1;
             r2.Origin.Should().BeEquivalentTo(new Point(2, 6, 12));
             r2.Direction.Should().BeEquivalentTo(new Vector(0, 3, 0));
         }

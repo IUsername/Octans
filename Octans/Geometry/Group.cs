@@ -82,8 +82,9 @@ namespace Octans.Geometry
             var left = new List<IGeometry>();
             var right = new List<IGeometry>();
             var remaining = new List<IGeometry>();
-            foreach (var child in _children)
+            for (var index = 0; index < _children.Count; index++)
             {
+                var child = _children[index];
                 var cb = child.ParentSpaceBounds();
                 if (l.ContainsBounds(cb))
                 {

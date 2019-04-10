@@ -9,42 +9,62 @@ namespace Octans
         private const float Epsilon = 0.00001f;
 
         public readonly int Rows;
+
         public readonly int Columns;
-        //private readonly bool _isIdentity;
 
         private readonly float[,] _data;
 
-        public Matrix(params float[][] values)
+        public Matrix(
+            float m00,
+            float m01,
+            float m02,
+            float m03,
+            float m10,
+            float m11,
+            float m12,
+            float m13,
+            float m20,
+            float m21,
+            float m22,
+            float m23,
+            float m30,
+            float m31,
+            float m32,
+            float m33)
+        {
+            Rows = 4;
+            Columns = 4;
+            _data = new float[4, 4];
+            _data[0, 0] = m00;
+            _data[0, 1] = m01;
+            _data[0, 2] = m02;
+            _data[0, 3] = m03;
+            _data[1, 0] = m10;
+            _data[1, 1] = m11;
+            _data[1, 2] = m12;
+            _data[1, 3] = m13;
+            _data[2, 0] = m20;
+            _data[2, 1] = m21;
+            _data[2, 2] = m22;
+            _data[2, 3] = m23;
+            _data[3, 0] = m30;
+            _data[3, 1] = m31;
+            _data[3, 2] = m32;
+            _data[3, 3] = m33;
+        }
+
+        private Matrix(params float[][] values)
         {
             Rows = values.Length;
             Columns = values[0].Length;
-
             _data = new float[Rows, Columns];
-            //var isIdentity = true;
             for (var row = 0; row < Rows; row++)
             {
                 for (var col = 0; col < Columns; col++)
                 {
                     _data[row, col] = values[row][col];
-                    //if (!isIdentity)
-                    //{
-                    //    continue;
-                    //}
-
-                    //// ReSharper disable CompareOfFloatsByEqualityOperator
-                    //if (row == col)
-                    //{
-                    //    isIdentity = _data[row, col] == 1.0f;
-                    //}
-                    //else
-                    //{
-                    //    isIdentity = _data[row, col] == 0.0f;
-                    //}
-                    //// ReSharper restore CompareOfFloatsByEqualityOperator
                 }
             }
-
-            //_isIdentity = isIdentity;
         }
 
         private Matrix(int rows, int columns)
@@ -52,7 +72,6 @@ namespace Octans
             Rows = rows;
             Columns = columns;
             _data = new float[Rows, Columns];
-            //_isIdentity = false;
         }
 
         public float this[int row, int col] => _data[row, col];
@@ -60,31 +79,13 @@ namespace Octans
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Matrix Transpose()
         {
-            //if (_isIdentity)
-            //{
-            //    return this;
-            //}
-
-            var m = new Matrix(Columns, Rows);
-            if (Columns == 4)
+            var m = new Matrix(4, 4);
+            for (var row = 0; row < Rows; row++)
             {
-                for (var row = 0; row < Rows; row++)
-                {
-                    m._data[0, row] = this[row, 0];
-                    m._data[1, row] = this[row, 1];
-                    m._data[2, row] = this[row, 2];
-                    m._data[3, row] = this[row, 3];
-                }
-            }
-            else
-            {
-                for (var row = 0; row < Rows; row++)
-                {
-                    for (var col = 0; col < Columns; col++)
-                    {
-                        m._data[col, row] = this[row, col];
-                    }
-                }
+                m._data[0, row] = this[row, 0];
+                m._data[1, row] = this[row, 1];
+                m._data[2, row] = this[row, 2];
+                m._data[3, row] = this[row, 3];
             }
 
             return m;
@@ -131,147 +132,31 @@ namespace Octans
             }
         }
 
-        public static Matrix Identity = new Matrix(new[] {1.0f, 0, 0, 0},
-                                                   new[] {0.0f, 1, 0, 0},
-                                                   new[] {0.0f, 0, 1, 0},
-                                                   new[] {0.0f, 0, 0, 1});
+        public static Matrix Identity = new Matrix(1, 0, 0, 0,
+                                                   0, 1, 0, 0,
+                                                   0, 0, 1, 0,
+                                                   0, 0, 0, 1);
 
-        public static Matrix Square(params float[] values)
-        {
-            var len = values.Length;
-            int size;
-            switch (len)
-            {
-                case 16:
-                    size = 4;
-                    break;
-                case 9:
-                    size = 3;
-                    break;
-                case 4:
-                    size = 2;
-                    break;
-                default:
-                    size = (int) Math.Sqrt(len);
-                    break;
-            }
-
-            var k = 0;
-            var m = new Matrix(size, size);
-            for (var row = 0; row < size; row++)
-            {
-                for (var col = 0; col < size; col++)
-                {
-                    m._data[row, col] = values[k++];
-                }
-            }
-            return m;
-        }
-
-        public Matrix(
-            float m00,
-            float m01,
-            float m02,
-            float m03,
-            float m10,
-            float m11,
-            float m12,
-            float m13,
-            float m20,
-            float m21,
-            float m22,
-            float m23,
-            float m30,
-            float m31,
-            float m32,
-            float m33)
-        {
-            Rows = 4;
-            Columns = 4;
-            _data = new float[4, 4];
-            _data[0, 0] = m00;
-            _data[0, 1] = m01;
-            _data[0, 2] = m02;
-            _data[0, 3] = m03;
-            _data[1, 0] = m10;
-            _data[1, 1] = m11;
-            _data[1, 2] = m12;
-            _data[1, 3] = m13;
-            _data[2, 0] = m20;
-            _data[2, 1] = m21;
-            _data[2, 2] = m22;
-            _data[2, 3] = m23;
-            _data[3, 0] = m30;
-            _data[3, 1] = m31;
-            _data[3, 2] = m32;
-            _data[3, 3] = m33;
-            //_isIdentity = false;
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Matrix Multiply(in Matrix a, in Matrix b)
         {
-            //if (a._isIdentity)
-            //{
-            //    return b;
-            //}
-
-            //if (b._isIdentity)
-            //{
-            //    return a;
-            //}
-
-            if (a.Columns != b.Rows)
+            var m = new Matrix(4, 4);
+            for (var r = 0; r < 4; r++)
             {
-                throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
-            }
-
-            var m = new Matrix(a.Rows, b.Columns);
-            for (var r = 0; r < a.Rows; r++)
-            {
-                for (var c = 0; c < b.Columns; c++)
+                for (var c = 0; c < 4; c++)
                 {
                     m._data[r, c] = 0.0f;
-                    for (var k = 0; k < a.Columns; k++)
-                    {
-                        m._data[r, c] += a[r, k] * b[k, c];
-                    }
+                    m._data[r, c] += a[r, 0] * b[0, c];
+                    m._data[r, c] += a[r, 1] * b[1, c];
+                    m._data[r, c] += a[r, 2] * b[2, c];
+                    m._data[r, c] += a[r, 3] * b[3, c];
                 }
             }
 
             return m;
         }
-
-        //[Pure]
-        //private static Point MultiplyPoint(in Matrix a, in Point b)
-        //{
-        //    if (a._isIdentity)
-        //    {
-        //        return b;
-        //    }
-
-        //    if (a.Columns != 4)
-        //    {
-        //        throw new InvalidOperationException("Matrices do not have the correct shapes for multiplication.");
-        //    }
-
-        //    var m = new Matrix(a.Rows, b.Columns);
-        //    for (var r = 0; r < a.Rows; r++)
-        //    {
-        //        for (var c = 0; c < 4; c++)
-        //        {
-        //            var temp = 0.0f;
-        //            for (var k = 0; k < a.Columns; k++)
-        //            {
-        //                temp += a[r, k] * b[k, c];
-        //            }
-
-        //            m._data[r, c] = temp;
-        //        }
-        //    }
-        //    return new Point(x,y,z,w);
-        //}
 
 
         [Pure]
@@ -345,11 +230,6 @@ namespace Octans
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix Inverse(in Matrix m)
         {
-            //if (m._isIdentity)
-            //{
-            //    return m;
-            //}
-
             var det = Determinant(m);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (det == 0.0f)
@@ -364,7 +244,7 @@ namespace Octans
                 for (var c = 0; c < m.Columns; c++)
                 {
                     var cf = Cofactor(m, r, c);
-                    // Transpose.
+                    // Transpose
                     m2._data[c, r] = cf * detInv;
                 }
             }
@@ -375,38 +255,6 @@ namespace Octans
         public Matrix Inverse() => Inverse(this);
 
         [Pure]
-        private static Point Multiply(in Matrix a, in Point b)
-        {
-            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z + a[0, 3];
-            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z + a[1, 3];
-            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z + a[2, 3];
-            var w = a[3, 0] * b.X + a[3, 1] * b.Y + a[3, 2] * b.Z + a[3, 3];
-
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            return w != 1f ? new Point(x, y, z) / w : new Point(x, y, z);
-        }
-
-        [Pure]
-        private static Vector Multiply(in Matrix a, in Vector b)
-        {
-            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z;
-            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z;
-            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z;
-
-            return new Vector(x, y, z);
-        }
-
-        [Pure]
-        private static Normal Multiply(in Matrix a, in Normal b)
-        {
-            var x = a[0, 0] * b.X + a[0, 1] * b.Y + a[0, 2] * b.Z;
-            var y = a[1, 0] * b.X + a[1, 1] * b.Y + a[1, 2] * b.Z;
-            var z = a[2, 0] * b.X + a[2, 1] * b.Y + a[2, 2] * b.Z;
-
-            return new Normal(x, y, z);
-        }
-
-        [Pure]
         public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);
 
         [Pure]
@@ -414,14 +262,5 @@ namespace Octans
 
         [Pure]
         public static Matrix operator *(Matrix left, Matrix right) => Multiply(in left, in right);
-
-        [Pure]
-        public static Point operator *(Matrix left, Point right) => Multiply(in left, in right);
-
-        [Pure]
-        public static Vector operator *(Matrix left, Vector right) => Multiply(in left, in right);
-
-        [Pure]
-        public static Normal operator *(Matrix left, Normal right) => Multiply(in left, in right);
     }
 }

@@ -115,11 +115,11 @@ namespace Octans.Test
         }
 
         [Fact]
-        public void CanTransformByMatrix()
+        public void CanTransform()
         {
             var b = Bounds.Unit;
-            var m = Transforms.RotateX(MathF.PI / 4f) * Transforms.RotateY(MathF.PI / 4f);
-            var t = b.Transform(in m);
+            var m = Transform.RotateX(MathF.PI / 4f) * Transform.RotateY(MathF.PI / 4f);
+            var t = m * b;
             t.Min.Should().Be(new Point(-1.4142f, -1.7071f, -1.7071f));
             t.Max.Should().Be(new Point(1.4142f, 1.7071f, 1.7071f));
         }

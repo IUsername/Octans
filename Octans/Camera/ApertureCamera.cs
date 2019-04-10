@@ -5,23 +5,21 @@ namespace Octans.Camera
     public class ApertureCamera : ICameraSampler
     {
         private readonly Point _camera;
-        private readonly float _focalDist;
         private readonly float _halfHeight;
         private readonly float _halfWidth;
-        private readonly Transform _transform;
         private readonly float _width;
 
         public ApertureCamera(float fieldOfView,
-                               float aspectRatio,
-                               float apertureRadius,
-                               Point from,
-                               Point to,
-                               Vector up,
-                               float focalDistance = -1)
+                              float aspectRatio,
+                              float apertureRadius,
+                              Point from,
+                              Point to,
+                              Vector up,
+                              float focalDistance = -1)
         {
             ApertureRadius = apertureRadius;
-            _transform = Transform.LookAt(from, to, up);
-          
+            CameraToWorld = Transform.Invert(Transform.LookAt(from, to, up));
+
             var halfView = MathF.Tan(fieldOfView / 2f);
             var halfWidth = halfView;
             var halfHeight = halfView;
@@ -36,11 +34,15 @@ namespace Octans.Camera
 
             _halfHeight = halfHeight;
             _halfWidth = halfWidth;
-            _focalDist = focalDistance < 0 ? (from - to).Magnitude() : focalDistance;
+            FocalDistance = focalDistance < 0 ? (from - to).Magnitude() : focalDistance;
 
             _width = halfWidth * 2f;
-            _camera = _transform.Inverse * Point.Zero;
+            _camera = CameraToWorld * Point.Zero;
         }
+
+        public float FocalDistance { get; }
+
+        public Transform CameraToWorld { get; }
 
         public float ApertureRadius { get; }
 
@@ -55,7 +57,7 @@ namespace Octans.Camera
 
             var aimed = FocalPlanePoint(in sample);
 
-            var start = _transform.Inverse * (offset);
+            var start = CameraToWorld * offset;
             var dir = (aimed - start).Normalize();
             var ray = new Ray(start, dir);
             return (ray, 1f);
@@ -71,10 +73,10 @@ namespace Octans.Camera
             var worldX = _halfWidth - xOffset;
             var worldY = _halfHeight - yOffset;
 
-            var pixel = _transform.Inverse * new Point(worldX, worldY, -1f);
+            var pixel = CameraToWorld * new Point(worldX, worldY, -1f);
             var direction = (pixel - _camera).Normalize();
             var r = new Ray(_camera, direction);
-            return r.Position(_focalDist);
+            return r.Position(FocalDistance);
         }
     }
 }

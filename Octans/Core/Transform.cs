@@ -1,9 +1,8 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 
 namespace Octans
 {
-    public class Transform
+    public partial class Transform
     {
         public static Transform Identity = new Transform(Matrix.Identity, Matrix.Identity);
 
@@ -20,7 +19,100 @@ namespace Octans
         }
 
         public Matrix Matrix { get; }
+
         public Matrix Inverse { get; }
+
+        [Pure]
+        public static Point Apply(in Transform t, in Point p)
+        {
+            var m = t.Matrix;
+            var x = m[0, 0] * p.X + m[0, 1] * p.Y + m[0, 2] * p.Z + m[0, 3];
+            var y = m[1, 0] * p.X + m[1, 1] * p.Y + m[1, 2] * p.Z + m[1, 3];
+            var z = m[2, 0] * p.X + m[2, 1] * p.Y + m[2, 2] * p.Z + m[2, 3];
+            var w = m[3, 0] * p.X + m[3, 1] * p.Y + m[3, 2] * p.Z + m[3, 3];
+
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            return w != 1f ? new Point(x, y, z) / w : new Point(x, y, z);
+        }
+
+        [Pure]
+        public static Point ApplyInverse(in Transform t, in Point p)
+        {
+            var i = t.Inverse;
+            var x = i[0, 0] * p.X + i[0, 1] * p.Y + i[0, 2] * p.Z + i[0, 3];
+            var y = i[1, 0] * p.X + i[1, 1] * p.Y + i[1, 2] * p.Z + i[1, 3];
+            var z = i[2, 0] * p.X + i[2, 1] * p.Y + i[2, 2] * p.Z + i[2, 3];
+            var w = i[3, 0] * p.X + i[3, 1] * p.Y + i[3, 2] * p.Z + i[3, 3];
+
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            return w != 1f ? new Point(x, y, z) / w : new Point(x, y, z);
+        }
+
+        [Pure]
+        private static Vector Apply(in Transform t, in Vector v)
+        {
+            var m = t.Matrix;
+            var x = m[0, 0] * v.X + m[0, 1] * v.Y + m[0, 2] * v.Z;
+            var y = m[1, 0] * v.X + m[1, 1] * v.Y + m[1, 2] * v.Z;
+            var z = m[2, 0] * v.X + m[2, 1] * v.Y + m[2, 2] * v.Z;
+
+            return new Vector(x, y, z);
+        }
+
+        [Pure]
+        private static Vector ApplyInverse(in Transform t, in Vector v)
+        {
+            var i = t.Inverse;
+            var x = i[0, 0] * v.X + i[0, 1] * v.Y + i[0, 2] * v.Z;
+            var y = i[1, 0] * v.X + i[1, 1] * v.Y + i[1, 2] * v.Z;
+            var z = i[2, 0] * v.X + i[2, 1] * v.Y + i[2, 2] * v.Z;
+
+            return new Vector(x, y, z);
+        }
+
+        [Pure]
+        private static Normal Apply(in Transform t, in Normal n)
+        {
+            // Inverse transpose
+            var i = t.Inverse;
+            var x = i[0, 0] * n.X + i[1, 0] * n.Y + i[2, 0] * n.Z;
+            var y = i[0, 1] * n.X + i[1, 1] * n.Y + i[2, 1] * n.Z;
+            var z = i[0, 2] * n.X + i[1, 2] * n.Y + i[2, 2] * n.Z;
+
+            return new Normal(x, y, z);
+        }
+
+        [Pure]
+        private static Ray Apply(in Transform t, in Ray r)
+        {
+            var o = t * r.Origin;
+            var d = t * r.Direction;
+            return new Ray(o, d);
+        }
+
+        [Pure]
+        private static Ray ApplyInverse(in Transform t, in Ray r)
+        {
+            var o = t ^ r.Origin;
+            var d = t ^ r.Direction;
+            return new Ray(o, d);
+        }
+
+        [Pure]
+        private static Bounds Apply(in Transform t, in Bounds b)
+        {
+            // Vectorize?
+            var p = Bounds.ToCornerPoints(in b);
+            p[0] = t * p[0];
+            p[1] = t * p[1];
+            p[2] = t * p[2];
+            p[3] = t * p[3];
+            p[4] = t * p[4];
+            p[5] = t * p[5];
+            p[6] = t * p[6];
+            p[7] = t * p[7];
+            return Bounds.FromPoints(p);
+        }
 
         [Pure]
         public static Transform Multiply(in Transform left, in Transform right) =>
@@ -36,164 +128,28 @@ namespace Octans
         [Pure]
         public static Transform operator *(Transform left, Transform right) => Multiply(in left, in right);
 
+        [Pure]
+        public static Point operator *(Transform left, Point right) => Apply(in left, in right);
 
-        public static Transform Translate(float x, float y, float z)
-        {
-            var m = new Matrix(
-                1, 0, 0, x,
-                0, 1, 0, y,
-                0, 0, 1, z,
-                0, 0, 0, 1);
+        [Pure]
+        public static Point operator ^(Transform left, Point right) => ApplyInverse(in left, in right);
 
-            var mInv = new Matrix(
-                1, 0, 0, -x,
-                0, 1, 0, -y,
-                0, 0, 1, -z,
-                0, 0, 0, 1);
+        [Pure]
+        public static Vector operator *(Transform left, Vector right) => Apply(in left, in right);
 
-            return new Transform(m, mInv);
-        }
+        [Pure]
+        public static Vector operator ^(Transform left, Vector right) => ApplyInverse(in left, in right);
 
-        public static Transform TranslateX(float x) => Translate(x, 0f, 0f);
-        public static Transform TranslateY(float y) => Translate(0f, y, 0f);
-        public static Transform TranslateZ(float z) => Translate(0f, 0f, z);
+        [Pure]
+        public static Normal operator *(Transform left, Normal right) => Apply(in left, in right);
 
-        public static Transform Scale(float x, float y, float z)
-        {
-            var m = new Matrix(
-                x, 0, 0, 0,
-                0, y, 0, 0,
-                0, 0, z, 0,
-                0, 0, 0, 1);
+        [Pure]
+        public static Ray operator *(Transform left, Ray right) => Apply(in left, in right);
 
-            var mInv = new Matrix(
-                1 / x, 0, 0, 0,
-                0, 1 / y, 0, 0,
-                0, 0, 1 / z, 0,
-                0, 0, 0, 1);
+        [Pure]
+        public static Ray operator ^(Transform left, Ray right) => ApplyInverse(in left, in right);
 
-            return new Transform(m, mInv);
-        }
-
-        public static Transform Scale(float factor) => Scale(factor, factor, factor);
-
-        public static Transform RotateX(float rad)
-        {
-            var m = new Matrix(
-                1, 0, 0, 0,
-                0, MathF.Cos(rad), -MathF.Sin(rad), 0,
-                0, MathF.Sin(rad), MathF.Cos(rad), 0,
-                0, 0, 0, 1);
-
-            return new Transform(m, m.Transpose());
-        }
-
-        public static Transform RotateY(float rad)
-        {
-            var m = new Matrix(
-                MathF.Cos(rad), 0, MathF.Sin(rad), 0,
-                0, 1, 0, 0,
-                -MathF.Sin(rad), 0, MathF.Cos(rad), 0,
-                0, 0, 0, 1);
-
-            return new Transform(m, m.Transpose());
-        }
-
-        public static Transform RotateZ(float rad)
-        {
-            var m = new Matrix(
-                MathF.Cos(rad), -MathF.Sin(rad), 0, 0,
-                MathF.Sin(rad), MathF.Cos(rad), 0, 0,
-                0.0f, 0, 1, 0,
-                0.0f, 0, 0, 1);
-
-            return new Transform(m, m.Transpose());
-        }
-
-        public static Transform Shear(float xy, float xz, float yx, float yz, float zx, float zy)
-        {
-            var m = new Matrix(1, xy, xz, 0,
-                               yx, 1, yz, 0,
-                               zx, zy, 1, 0,
-                               0, 0, 0, 1);
-            return new Transform(m);
-        }
-
-        public static Transform Rotate(float theta, in Vector axis)
-        {
-            var a = axis.Normalize();
-            var sinTheta = MathF.Sin(theta);
-            var cosTheta = MathF.Cos(theta);
-            var oneMinusCos = 1f - cosTheta;
-            var m = new Matrix(
-                cosTheta + a.X * a.X * oneMinusCos,
-                a.X * a.Y * oneMinusCos - a.Z * sinTheta,
-                a.X * a.Z * oneMinusCos + a.Y * sinTheta,
-                0,
-                a.Y * a.X * oneMinusCos + a.Z * sinTheta,
-                cosTheta + a.Y * a.Y * oneMinusCos,
-                a.Y * a.Z * oneMinusCos - a.X * sinTheta,
-                0,
-                a.Z * a.X * oneMinusCos - a.Z * sinTheta,
-                a.Z * a.Y * oneMinusCos + a.Z * sinTheta,
-                cosTheta + a.Z * a.Z * oneMinusCos,
-                0,
-                0,
-                0,
-                0,
-                1);
-            return new Transform(m, m.Transpose());
-        }
-
-        public static Transform LookAt(Point from, Point look, Vector up)
-        {
-            //var forward = (look - from).Normalize();
-            //var left = Vector.Cross(forward, up.Normalize()).Normalize();
-            //var trueUp = Vector.Cross(left, forward);
-            //var orientation = new Matrix(new[] { left.X, left.Y, left.Z, 0 },
-            //                             new[] { trueUp.X, trueUp.Y, trueUp.Z, 0 },
-            //                             new[] { -forward.X, -forward.Y, -forward.Z, 0 },
-            //                             new[] { 0.0f, 0, 0, 1 });
-            //return new Transform(orientation * Transforms.Translate(-from.X, -from.Y, -from.Z));
-
-
-            var forward = (from-look).Normalize();
-            var left = Vector.Cross(up.Normalize(), forward).Normalize();
-            var trueUp = Vector.Cross(forward, left);
-            var m = new Matrix(
-                left.X, trueUp.X, forward.X, from.X,
-                left.Y, trueUp.Y, forward.Y, from.Y,
-                left.Z, trueUp.Z, forward.Z, from.Z,
-                0, 0, 0, 1
-            );
-            return new Transform(m.Inverse(), m);
-        }
-    }
-
-    public static class TransformExtensions
-    {
-        public static Transform Translate(this Transform m, float x, float y, float z) =>
-            Transform.Translate(x, y, z) * m;
-
-        public static Transform Apply(this Transform m, in Transform n) => n * m;
-
-        public static Transform TranslateX(this Transform m, float x) => Transform.TranslateX(x) * m;
-
-        public static Transform TranslateY(this Transform m, float y) => Transform.TranslateY(y) * m;
-
-        public static Transform TranslateZ(this Transform m, float z) => Transform.TranslateX(z) * m;
-
-        public static Transform Scale(this Transform m, float x, float y, float z) => Transform.Scale(x, y, z) * m;
-
-        public static Transform Scale(this Transform m, float factor) => Transform.Scale(factor) * m;
-
-        public static Transform RotateX(this Transform m, float rad) => Transform.RotateX(rad) * m;
-
-        public static Transform RotateY(this Transform m, float rad) => Transform.RotateY(rad) * m;
-
-        public static Transform RotateZ(this Transform m, float rad) => Transform.RotateZ(rad) * m;
-
-        public static Transform Shear(this Transform m, float xy, float xz, float yx, float yz, float zx, float zy) =>
-            Transform.Shear(xy, xz, yx, yz, zx, zy) * m;
+        [Pure]
+        public static Bounds operator *(Transform left, Bounds right) => Apply(in left, in right);
     }
 }

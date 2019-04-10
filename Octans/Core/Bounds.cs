@@ -176,17 +176,6 @@ namespace Octans
 
         public bool ContainsBounds(Bounds bounds) => ContainsPoint(bounds.Min) && ContainsPoint(bounds.Max);
 
-        public Bounds Transform(in Matrix matrix)
-        {
-            var corners = ToCornerPoints(this);
-            for (var i = 0; i < 8; i++)
-            {
-                corners[i] = matrix * corners[i];
-            }
-
-            return FromPoints(corners);
-        }
-
         public (Bounds left, Bounds right) Split()
         {
             var wX = Max.X - Min.X;

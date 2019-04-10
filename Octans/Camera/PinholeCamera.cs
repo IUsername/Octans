@@ -6,13 +6,12 @@ namespace Octans.Camera
     {
         private readonly float _halfHeight;
         private readonly float _halfWidth;
-      //  private readonly Matrix _inv;
         private readonly float _width;
         private readonly Point _origin;
 
         public PinholeCamera(in Transform transform, float fieldOfView, float aspectRatio)
         {
-            Transform = transform;
+            CameraToWorld = Transform.Invert(transform);
             FieldOfView = fieldOfView;
             AspectRatio = aspectRatio;
            // _inv = transform.Inverse();
@@ -32,10 +31,10 @@ namespace Octans.Camera
             _halfHeight = halfHeight;
             _halfWidth = halfWidth;
             _width = halfWidth * 2f;
-            _origin = Transform.Inverse * Point.Zero;
+            _origin = CameraToWorld * Point.Zero;
         }
 
-        public Transform Transform { get; }
+        public Transform CameraToWorld { get; }
         public float FieldOfView { get; }
         public float AspectRatio { get; }
 
@@ -48,7 +47,7 @@ namespace Octans.Camera
             var worldX = _halfWidth - xOffset;
             var worldY = _halfHeight - yOffset;
 
-            var pixel = Transform.Inverse * new Point(worldX, worldY, -1f);
+            var pixel = CameraToWorld * new Point(worldX, worldY, -1f);
             var direction = (pixel - _origin).Normalize();
             return (new Ray(_origin, direction), 1f);
         }

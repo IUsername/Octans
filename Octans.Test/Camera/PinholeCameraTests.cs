@@ -13,8 +13,8 @@ namespace Octans.Test.Camera
             var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, 160f/120);
             c.AspectRatio.Should().Be(160f / 120);
             c.FieldOfView.Should().Be(MathF.PI / 2f);
-            c.Transform.Should().Be(Matrix.Identity);
-            c.Transform.Should().Be(Matrix.Identity);
+            c.CameraToWorld.Matrix.Should().Be(Matrix.Identity);
+            c.CameraToWorld.Inverse.Should().Be(Matrix.Identity);
         }
 
         [Fact]

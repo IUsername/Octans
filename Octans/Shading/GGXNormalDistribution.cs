@@ -210,7 +210,7 @@ namespace Octans.Shading
         {
             // Stretch to sample with roughness of 1
             var v = new Vector(alphaX * ve.X, alphaY * ve.Y, ve.Z).Normalize();
-            var T1 = (v.Z < 0.9999f) ? Vector.Cross(new Vector(0, 0, 1),v).Normalize() : new Vector(1, 0, 0);
+            var T1 = (v.Z < 0.9999f) ? Vector.Cross(Vectors.ZAxis, v).Normalize() : Vectors.XAxis;
             var T2 = Vector.Cross(v,T1);
 
             // Project proportionally onto each half of disk

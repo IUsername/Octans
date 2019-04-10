@@ -137,4 +137,10 @@ namespace Octans
         public static explicit operator Normal(in Vector v) => new Normal(v.X, v.Y, v.Z);
 
     }
+
+    public static class Normals
+    {
+        public static Normal YPos = new Normal(0,1,0);
+        public static Normal YNeg = new Normal(0,-1,0);
+    }
 }
