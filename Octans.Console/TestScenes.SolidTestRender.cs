@@ -12,7 +12,7 @@ namespace Octans.ConsoleApp
 {
     internal static partial class TestScenes
     {
-        public static void SolidTestRender()
+        public static void SolidTestRender(int spp)
         {
             var radius = 0.25f;
             var red = new Material {Texture = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, SpecularColor = new Color(0.5f,0.5f,0.5f)};
@@ -87,7 +87,7 @@ namespace Octans.ConsoleApp
 
             var canvas = new Canvas(width, height);
 
-            var pps = new PerPixelSampler(10);
+            var pps = new PerPixelSampler(spp);
             var fov = MathF.PI / 3f;
             var aspectRatio = (float) width / height;
             var camera = new ApertureCamera(fov, aspectRatio, 0.15f, from, to);

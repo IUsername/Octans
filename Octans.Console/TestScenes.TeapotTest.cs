@@ -15,6 +15,27 @@ namespace Octans.ConsoleApp
     {
         public static void TeapotTest()
         {
+
+            Console.WriteLine("Loading file...");
+            var filePath = Path.Combine(GetExecutionPath(), "indoor_env.ppm");
+            //var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");
+            Console.WriteLine("Parsing file...");
+            var textureCanvas = PPM.ParseFile(filePath);
+            var image = new UVImage(textureCanvas);
+            var map = new TextureMap(image, UVMapping.Spherical);
+
+            var skySphere = new Sphere
+            {
+                Material =
+                {
+                    Texture = map, Ambient = 2.5f, CastsShadows = false, Transparency = 0f, Roughness = 1f,
+                    SpecularColor = new Color(0.0f, 0.0f, 0.0f)
+                }
+            };
+
+            //skySphere.SetTransform(Transforms.RotateY(3.4f).Scale(1000f));
+            skySphere.SetTransform(Transforms.RotateY(3.3f).Scale(10000f));
+
             var path = Path.Combine(GetExecutionPath(), "teapot.obj");
 
             Console.WriteLine("Loading file {0}...", path);
@@ -27,13 +48,13 @@ namespace Octans.ConsoleApp
 
             var glass = new Material
             {
-                Texture = new SolidColor(new Color(0.2f, 0.6f, 0.3f)),
+                Texture = new SolidColor(new Color(0.8f, 1f, 0.9f)),
                 Reflective = 0.78f,
-                Roughness = 0.03f,
-                Metallic = 0f,
-                SpecularColor = new Color(0.3f,1f,0.5f),
-                RefractiveIndex = 0.89f,
-                Transparency = 0.83f,
+                Roughness = 0.35f,
+                Metallic = 0.65f,
+                SpecularColor = new Color(0.7f,0.9f,0.8f),
+                RefractiveIndex = 1.52f,
+                Transparency = 0.80f,
                 Ambient = 0.0f,
                 Diffuse = 0.2f,
                 Shininess = 200f,
@@ -44,9 +65,11 @@ namespace Octans.ConsoleApp
 
             var checkerboard = new Material
             {
-                Texture = new CheckerTexture(new Color(1f, 1f, 0.5f), new Color(0.55f, 0.55f, 1f)),
+                Texture = new CheckerTexture(new Color(0.95f, 0.95f, 0.95f), new Color(0.8f, 0.05f, 0.05f)),
+                Metallic = 0.4f,
+                SpecularColor = new Color(0.3f,0.3f,0.3f),
                 Reflective = 0.5f,
-                Roughness = 0.2f,
+                Roughness = 0.1f,
                 Ambient = 0.0f,
                 Diffuse = 0.3f
             };
@@ -59,10 +82,13 @@ namespace Octans.ConsoleApp
             floor.SetTransform(Transforms.TranslateY(-1).Scale(5f));
             group.AddChild(floor);
             group.AddChild(triangulated);
+            group.AddChild(skySphere);
             group.Divide(1);
 
             var w = new World();
-            w.SetLights(new PointLight(new Point(-10, 10, -10), new Color(1.8f, 1.8f, 1.8f)));
+            w.SetLights(new AreaLight(new Point(-80f, 80, -60), new Vector(100f, 0, 0), 6, new Vector(0, 0f, -10f), 3,
+                                      new Color(1.8f, 1.8f, 1.8f), new Sequence(0.7f, 0.3f, 0.9f, 0.1f, 0.5f)));
+            //w.SetLights(new PointLight(new Point(-30, 30, -30), new Color(1.4f, 1.4f, 1.4f)));
             w.SetObjects(group);
 
             //var width = 600;
@@ -77,16 +103,23 @@ namespace Octans.ConsoleApp
 
             var width = 600;
             var height = 400;
-            var from = new Point(0, 3.0f, -5f);
-            var to = new Point(0, 1, 0);
+            var from = new Point(0, 2.5f, -2.5f);
+            var to = new Point(0.25f, 0.5f, 0);
 
             var canvas = new Canvas(width, height);
-            var pps = new PerPixelSampler(3);
+            var pps = new PerPixelSampler(800);
             var fov = MathF.PI / 3f;
             var aspectRatio = (float)width / height;
             var transform = Transforms.View(from, to, new Vector(0, 1, 0));
-            var camera = new PinholeCamera(transform, fov, aspectRatio);
-            var cws = new PhongWorldShading(5, w);
+            //var camera = new PinholeCamera(transform, fov, aspectRatio);
+            var camera = new ApertureCamera(fov, aspectRatio, 0.08f, from,to);
+            //  var cws = new PhongWorldShading(5, w);
+            var cws = new ComposableWorldSampler(2,
+                                                 16,
+                                                 GGXNormalDistribution.Instance,
+                                                 GGXSmithGeometricShadow.Instance,
+                                                 SchlickFresnelFunction.Instance,
+                                                 w);
             var ctx = new RenderContext(canvas, new RenderPipeline(cws, camera, pps));
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);

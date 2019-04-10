@@ -140,10 +140,10 @@ namespace Octans.ConsoleApp
             {
                 Material =
                 {
-                    Texture = new SolidColor(new Color(0.9f, 0.9f, 0.9f)), Diffuse = 0.05f, Specular = 0.9f,
+                    Texture = new SolidColor(new Color(0.95f, 0.95f, 0.95f)), 
                     SpecularColor = new Color(0.6f,0.6f,0.6f),
-                    Roughness = 0.15f, Metallic = 0.6f,
-                    Transparency = 0.89f, RefractiveIndex = 1.50f, Reflective = 1.4f, Ambient = 0.0f, Shininess = 300
+                    Roughness = 0.1f, Metallic = 0.4f,
+                    Transparency = 0.88f, RefractiveIndex = 1.52f,  Ambient = 0.0f
                 }
             };
             left.SetTransform(Transforms.Translate(-1.3f, 0.30f, -0.75f) * Transforms.Scale(0.30f));
@@ -155,7 +155,7 @@ namespace Octans.ConsoleApp
                 {
                     Texture = new SolidColor(new Color(0.9f, 0.9f, 0.95f)), Diffuse = 0.05f, Specular = 0.9f,
                     SpecularColor = new Color(0.9f,0.9f,0.95f),
-                    Roughness = 0.10f, Metallic = 1f,
+                    Roughness = 0.55f, Metallic = 1f,
                     Transparency = 0, RefractiveIndex = 1.52f, Reflective = 1.4f, Ambient = 0.0f, Shininess = 300
                 }
             };

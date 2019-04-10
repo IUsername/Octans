@@ -348,11 +348,11 @@ namespace Octans.ConsoleApp
             Material CreateMaterial()
             {
                 var material = new Material();
-                var color = new Color(0.9f, 0.9f, 0.9f);
+                var color = new Color(1f,1f, 1f);
                 material.Texture = SolidColor.Create(color);
-                material.SpecularColor = new Color(0.6f, 0.6f, 0.6f);
-                material.Transparency = 0.5f;
-                material.Metallic = 0.3f;
+                material.SpecularColor = new Color(0.8f, 0.8f, 0.8f);
+                material.Transparency = 0.92f;
+                material.Metallic = 0.65f;
                 material.RefractiveIndex = 1.51f;
                 material.Ambient = 0f;
                 return material;
