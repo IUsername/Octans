@@ -43,14 +43,12 @@ namespace Octans
     public readonly struct PixelSample
     {
         public PixelInformation Pixel { get; }
-        public float U { get; }
-        public float V { get; }
+        public UVPoint UV { get; }
 
-        public PixelSample(in PixelInformation pixel, float u, float v)
+        public PixelSample(in PixelInformation pixel, in UVPoint uv)
         {
             Pixel = pixel;
-            U = u;
-            V = v;
+            UV = uv;
         }
     }
 
@@ -76,7 +74,7 @@ namespace Octans
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (obj is null)
             {
                 return false;
             }

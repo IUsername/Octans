@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using Octans.Camera;
 using Octans.Geometry;
 using Octans.IO;
@@ -14,13 +15,32 @@ namespace Octans.ConsoleApp
     {
         public static void SolidTestRender(int spp)
         {
+            Console.WriteLine("Loading file...");
+            var filePath = Path.Combine(GetExecutionPath(), "neon_env.ppm");
+            //var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");
+            Console.WriteLine("Parsing file...");
+            var textureCanvas = PPM.ParseFile(filePath);
+            var image = new UVImage(textureCanvas);
+            var map = new TextureMap(image, UVMapping.Spherical);
+
+            var skySphere = new Sphere
+            {
+                Material =
+                {
+                    Texture = map, Ambient = 1.0f, CastsShadows = false, Transparency = 0f, Roughness = 1f,
+                    SpecularColor = new Color(0.0f, 0.0f, 0.0f)
+                }
+            };
+
+            skySphere.SetTransform(Transform.RotateY(3.3f).Scale(1000f));
+
             var radius = 0.25f;
-            var red = new Material {Texture = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, SpecularColor = new Color(0.5f,0.5f,0.5f)};
-            var blue = new Material {Texture = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, SpecularColor = new Color(0.5f, 0.5f, 0.5f) };
-            var yellow = new Material {Texture = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, SpecularColor = new Color(0.5f, 0.5f, 0.5f) };
-            var white = new Material {Texture = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, SpecularColor = new Color(0.5f, 0.5f, 0.5f) };
-            var blackPip = new Material {Texture = new SolidColor(new Color(0.1f, 0.1f, 0.1f)), Ambient = 0.0f, SpecularColor = new Color(0.5f, 0.5f, 0.5f) };
-            var whitePip = new Material { Texture = new SolidColor(new Color(0.95f, 0.95f, 0.95f)), Ambient = 0.0f, SpecularColor = new Color(0.5f, 0.5f, 0.5f) };
+            var red = new Material {Texture = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f,0.3f,0.3f)};
+            var blue = new Material {Texture = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
+            var yellow = new Material {Texture = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
+            var white = new Material {Texture = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
+            var blackPip = new Material {Texture = new SolidColor(new Color(0.1f, 0.1f, 0.1f)), Ambient = 0.0f, Roughness = 0.8f, Metallic = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f) };
+            var whitePip = new Material { Texture = new SolidColor(new Color(0.95f, 0.95f, 0.95f)), Ambient = 0.0f, Roughness = 0.8f, Metallic = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f) };
 
             var d1 = CutPips(RoundedCube(radius, blue), whitePip);
             var d2 = CutPips(RoundedCube(radius, red), whitePip);
@@ -48,7 +68,7 @@ namespace Octans.ConsoleApp
                 Material =
                 {
                     Texture = pattern,
-                    Roughness = 0.3f,
+                    Roughness = 0.5f,
                     Specular = 0.1f,
                     Diffuse = 0.3f,
                     Reflective = 0.15f,
@@ -57,7 +77,7 @@ namespace Octans.ConsoleApp
                 }
             };
             floor.SetTransform(Transform.TranslateY(-1f).Scale(20f));
-            var g = new Group(d1, d2, d3, d4, floor);
+            var g = new Group(d1, d2, d3, d4, floor, skySphere);
             g.Divide(1);
 
             var w = new World();

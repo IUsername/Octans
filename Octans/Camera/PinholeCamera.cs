@@ -41,8 +41,8 @@ namespace Octans.Camera
         public (Ray ray, float throughput) CameraRay(in PixelSample sample, ISampler sampler)
         {
             var pixelSize = _width / sample.Pixel.Width;
-            var xOffset = (sample.Pixel.Coordinate.X + sample.U) * pixelSize;
-            var yOffset = (sample.Pixel.Coordinate.Y + sample.V) * pixelSize;
+            var xOffset = (sample.Pixel.Coordinate.X + sample.UV.U) * pixelSize;
+            var yOffset = (sample.Pixel.Coordinate.Y + sample.UV.V) * pixelSize;
 
             var worldX = _halfWidth - xOffset;
             var worldY = _halfHeight - yOffset;

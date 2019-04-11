@@ -28,7 +28,7 @@
 
     public interface ISampler
     {
-        (float u, float v) NextUV();
+        UVPoint NextUV();
 
         float Random();
 

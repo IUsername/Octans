@@ -48,9 +48,9 @@ namespace Octans.Camera
 
         public (Ray ray, float throughput) CameraRay(in PixelSample sample, ISampler sampler)
         {
-            var (u1, u2) = sampler.NextUV();
-            var r = MathF.Sqrt(1f - u1 * u1);
-            var phi = 2 * MathF.PI * u2;
+            var uv = sampler.NextUV();
+            var r = MathF.Sqrt(1f - uv.U * uv.U);
+            var phi = 2 * MathF.PI * uv.V;
             var u = ApertureRadius * MathF.Cos(phi) * r;
             var v = ApertureRadius * MathF.Sin(phi) * r;
             var offset = new Point(u, v, 0);
@@ -67,8 +67,8 @@ namespace Octans.Camera
         private Point FocalPlanePoint(in PixelSample sample)
         {
             var pixelSize = _width / sample.Pixel.Width;
-            var xOffset = (sample.Pixel.Coordinate.X + sample.U) * pixelSize;
-            var yOffset = (sample.Pixel.Coordinate.Y + sample.V) * pixelSize;
+            var xOffset = (sample.Pixel.Coordinate.X + sample.UV.U) * pixelSize;
+            var yOffset = (sample.Pixel.Coordinate.Y + sample.UV.V) * pixelSize;
 
             var worldX = _halfWidth - xOffset;
             var worldY = _halfHeight - yOffset;

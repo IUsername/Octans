@@ -18,8 +18,8 @@ namespace Octans.Pipeline
             var local = sampler.Create(index);
             for (var i = 0; i < SamplesPerPixel; i++)
             {
-                var (u, v) = local.NextUV();
-                var sample = new PixelSample(in pixel, u, v);
+                var uv = local.NextUV();
+                var sample = new PixelSample(in pixel, in uv);
                 total += segment.Render(in sample, sampler.Create(Index(in sample)));
             }
             return total / SamplesPerPixel;
@@ -29,8 +29,8 @@ namespace Octans.Pipeline
         {
             var hashCode = sample.Pixel.Coordinate.X;
             hashCode = (hashCode * 397) ^ sample.Pixel.Coordinate.Y;
-            hashCode = (hashCode * 397) ^ sample.U.GetHashCode();
-            hashCode = (hashCode * 397) ^ sample.V.GetHashCode();
+            hashCode = (hashCode * 397) ^ sample.UV.U.GetHashCode();
+            hashCode = (hashCode * 397) ^ sample.UV.V.GetHashCode();
             return Math.Abs(hashCode);
         }
     }

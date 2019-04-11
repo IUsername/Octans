@@ -108,6 +108,7 @@ namespace Octans
             return radians * oneEightyOverPi;
         }
 
-       
+
+        public const float OneMinusEpsilon = 1.99999988f - 1f;// BitConverter.ToSingle(new byte[] { 255, 255, 255, 63 }, 0) - 1f;
     }
 }

@@ -24,9 +24,9 @@ namespace Octans.Test.Camera
             var height = 101;
             var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, (float) width / height);
             var coordinate = new PixelCoordinate(100, 50);
-            var (r, t) =
+            var (r, _) =
                 c.CameraRay(
-                    new PixelSample(new PixelInformation(coordinate, width, height), 0.5f, 0.5f),
+                    new PixelSample(new PixelInformation(coordinate, width, height), new UVPoint(0.5f, 0.5f)),
                     new TestSampler(0f, 0f, 0.5f));
             r.Origin.Should().Be(Point.Zero);
             r.Direction.Should().Be(new Vector(0, 0, -1));
@@ -39,9 +39,9 @@ namespace Octans.Test.Camera
             var height = 101;
             var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, (float)width / height);
             var coordinate = new PixelCoordinate(0, 0);
-            var (r, t) =
+            var (r, _) =
                 c.CameraRay(
-                    new PixelSample(new PixelInformation(coordinate, width, height), 0.5f, 0.5f),
+                    new PixelSample(new PixelInformation(coordinate, width, height), new UVPoint(0.5f, 0.5f)),
                     new TestSampler(0f, 0f, 0.5f));
             r.Origin.Should().Be(Point.Zero);
             r.Direction.Should().Be(new Vector(0.66519f, 0.33259f, -0.66851f));
@@ -55,9 +55,9 @@ namespace Octans.Test.Camera
             var transform = Transform.RotateY(MathF.PI / 4f) * Transform.Translate(0, -2, 5);
             var c = new PinholeCamera(transform, MathF.PI / 2f, (float)width / height);
             var coordinate = new PixelCoordinate(100, 50);
-            var (r, t) =
+            var (r, _) =
                 c.CameraRay(
-                    new PixelSample(new PixelInformation(coordinate, width, height), 0.5f, 0.5f),
+                    new PixelSample(new PixelInformation(coordinate, width, height), new UVPoint(0.5f, 0.5f)),
                     new TestSampler(0f, 0f, 0.5f));
             r.Origin.Should().Be(new Point(0, 2, -5));
             r.Direction.Should().Be(new Vector(MathF.Sqrt(2f) / 2f, 0.0f, -MathF.Sqrt(2f) / 2f));
@@ -77,9 +77,9 @@ namespace Octans.Test.Camera
             _rand = rand;
         }
 
-        public (float u, float v) NextUV()
+        public UVPoint NextUV()
         {
-            return (_u, _v);
+            return new UVPoint(_u, _v);
         }
 
         public float Random()

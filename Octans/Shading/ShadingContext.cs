@@ -145,10 +145,10 @@ namespace Octans.Shading
                                                                 in Color throughPut)
         {
             var localFrame = new LocalFrame(info.Normal);
-            var (e0, e1) = sampler.NextUV();
+            var uv = sampler.NextUV();
             while (true)
             {
-                var (wi, f) = _ndf.Sample(in info, in localFrame, e0, e1);
+                var (wi, f) = _ndf.Sample(in info, in localFrame, uv.U, uv.V);
                 if (wi.Z > 0f)
                 {
                     var direction = localFrame.ToWorld(in wi);
@@ -162,7 +162,7 @@ namespace Octans.Shading
                     return (new Ray(), Colors.Black);
                 }
 
-                (e0, e1) = sampler.NextUV();
+                uv = sampler.NextUV();
             }
         }
 
@@ -222,10 +222,10 @@ namespace Octans.Shading
             if (!info.IsInside)
             {
                 var localFrame = new LocalFrame(info.Normal);
-                var (e0, e1) = sampler.NextUV();
+                var uv = sampler.NextUV();
                 //while (true)
                 //{
-                var (wi, f) = _ndf.SampleTransmission(in info, in localFrame, e0, e1);
+                var (wi, f) = _ndf.SampleTransmission(in info, in localFrame, uv.U, uv.V);
                 //if (wi.Z != 0f)
                 //{
                 var diffuseDir = localFrame.ToWorld(in wi);
@@ -302,8 +302,8 @@ namespace Octans.Shading
                     return (IsShadowed(world, in point, light.Position, in normal) ? 0.0f : 1.0f, light.Position);
                 case AreaLight area:
                 {
-                    var (lu, lv) = sampler.NextUV();
-                    var lPoint = area.GetPoint(lu, lv);
+                    var uv = sampler.NextUV();
+                    var lPoint = area.GetPoint(uv.U, uv.V);
                     return (!IsShadowed(world, in point, in lPoint, in normal) ? 1f : 0f, lPoint);
 
 

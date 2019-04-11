@@ -11,7 +11,7 @@
             _rInd = index;
         }
 
-        public (float u, float v) NextUV()
+        public UVPoint NextUV()
         {
             return QuasiRandom.Next(++_index);
         }
