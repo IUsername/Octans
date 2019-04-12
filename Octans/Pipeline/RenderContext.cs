@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Octans.Sampling;
 
 namespace Octans.Pipeline
 {
@@ -18,7 +19,7 @@ namespace Octans.Pipeline
         public void Render()
         {
             const int chunkSize = 4;
-            var queue = new ConcurrentQueue<FilmArea>();
+            var queue = new ConcurrentQueue<PixelArea>();
             for (var y = 0; y < Canvas.Height;)
             {
                 var yEnd = Math.Min(Canvas.Height, y + chunkSize);
@@ -27,7 +28,7 @@ namespace Octans.Pipeline
                     var xEnd = Math.Min(Canvas.Width, x + chunkSize);
                     var min = new PixelCoordinate(x, y);
                     var max = new PixelCoordinate(xEnd, yEnd);
-                    queue.Enqueue(new FilmArea(min, max));
+                    queue.Enqueue(new PixelArea(min, max));
                     x = xEnd;
                 }
 
@@ -38,7 +39,7 @@ namespace Octans.Pipeline
             Parallel.ForEach(queue, a => RenderToCanvas(a, Canvas, Pipeline, sampler));
         }
 
-        private static void RenderToCanvas(FilmArea area, Canvas canvas, RenderPipeline pipeline, ISampler sampler)
+        private static void RenderToCanvas(PixelArea area, Canvas canvas, RenderPipeline pipeline, ISampler sampler)
         {
             for (var y = area.Min.Y; y < area.Max.Y; y++)
             {

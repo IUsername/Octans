@@ -11,12 +11,12 @@
             //TestScenes.RowTransparentRoughness(100);
             //TestScenes.RowMetalPlastic(100);
             //TestScenes.RowTransparent(100);
-            TestScenes.RowTransparentRefraction(100);
+            //TestScenes.RowTransparentRefraction(100);
             //TestScenes.SkyBoxMappingTestRender();
             //TestScenes.SphereMappingTestRender();
             //TestScenes.InsideSphere();
             //TestScenes.MappingTestRender();
-            //TestScenes.TestRender(10);
+            TestScenes.TestRender(100);
             //TestScenes.TeapotTest();
             //TestScenes.SolidTestRender(500);
             //TestScenes.LowPolyTeapotTest();

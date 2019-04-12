@@ -1,4 +1,6 @@
-﻿namespace Octans.Shading
+﻿using Octans.Sampling;
+
+namespace Octans.Shading
 {
     public class ComposableWorldSampler : IWorldSampler
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using Octans.Camera;
+using Octans.Sampling;
 using Xunit;
 
 namespace Octans.Test.Camera

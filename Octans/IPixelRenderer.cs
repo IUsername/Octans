@@ -1,4 +1,6 @@
-﻿namespace Octans
+﻿using Octans.Sampling;
+
+namespace Octans
 {
     public interface IPixelRenderer
     {
@@ -26,14 +28,7 @@
         Color Render(in PixelSample sample, ISampler sampler);
     }
 
-    public interface ISampler
-    {
-        UVPoint NextUV();
-
-        float Random();
-
-        ISampler Create(ulong i);
-    }
+  
 
     public class RenderPipeline : IPixelRenderSegment
     {

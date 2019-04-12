@@ -1,4 +1,6 @@
-﻿namespace Octans
+﻿using Octans.Sampling;
+
+namespace Octans
 {
     public class QuasiRandomSampler : ISampler
     {

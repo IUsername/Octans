@@ -1,5 +1,6 @@
 ﻿using System;
 using Octans.Light;
+using Octans.Sampling;
 
 namespace Octans.Shading
 {

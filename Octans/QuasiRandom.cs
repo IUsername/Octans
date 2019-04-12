@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -10,11 +11,11 @@ namespace Octans
         private static readonly Lazy<IReadOnlyList<ushort>> Perm = new Lazy<IReadOnlyList<ushort>>(
             () => ComputeRadicalInversePermutations(new Random(63)), LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private static readonly uint[] PrimesTable = {2, 3, 5, 7, 11};
-        private static readonly uint[] PrimesSums = {0, 2, 5, 10, 17};
-        private static readonly float[] PrimesInv = {1f / 2, 1f / 3, 1f / 5, 1f / 7, 1f / 11};
+        private static readonly uint[] PrimesTable = {2, 3, 5, 7, 11, 13};
+        private static readonly uint[] PrimesSums = {0, 2, 5, 10, 17, 28};
+        private static readonly float[] PrimesInv = {1f / 2, 1f / 3, 1f / 5, 1f / 7, 1f / 11, 1f / 13};
 
-        public static IReadOnlyList<ushort> ComputeRadicalInversePermutations(Random rand)
+        public static ushort[] ComputeRadicalInversePermutations(Random rand)
         {
             var permArraySize = 0u;
             for (var i = 0; i < PrimesTable.Length; i++)
@@ -31,12 +32,22 @@ namespace Octans
                     perms[index + j] = (ushort) j;
                 }
 
-                var prime =(int) PrimesTable[i];
+                var prime = (int) PrimesTable[i];
                 Shuffle(perms, index, prime, 1, rand);
                 index += prime;
             }
 
             return perms;
+        }
+
+        public static Span<ushort> PermutationsForDimension(ushort[] permutations, int dim)
+        {
+            if (dim > PrimesTable.Length)
+            {
+                throw new ArgumentOutOfRangeException($"Can only sample {PrimesTable.Length} dimensions.");
+            }
+
+            return new Span<ushort>(permutations, (int) PrimesSums[dim], (int) PrimesTable[dim]);
         }
 
         public static IReadOnlyList<ushort> RadicalInversePermutations() => Perm.Value;
@@ -114,16 +125,12 @@ namespace Octans
             switch (dimension)
             {
                 case 0:
-                    //const float inv2 = 1f / 2f;
-                    //var rib = RadicalInverseOpt((ulong)n, 2, inv2);
                     return RadicalInverseBase2(n);
                 case 1:
                 case 2:
                 case 3:
                 case 4:
-                    var b = PrimesTable[dimension];
-                    var bInv = PrimesInv[dimension];
-                    return RadicalInverseOpt(n, b, bInv);
+                    return RadicalInverse(n, dimension);
             }
 
             throw new NotImplementedException($"Dimension {dimension} not implemented.");
@@ -155,7 +162,7 @@ namespace Octans
             throw new NotImplementedException($"Dimension {dimension} not implemented.");
         }
 
-        private static float RadicalInverseBase2(ulong n) => ReverseBits64(n) * 2.32830644E-10f;
+        public static float RadicalInverseBase2(ulong n) => ReverseBits64(n) * 2.32830644E-10f;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong ReverseBits64(ulong n)
@@ -177,8 +184,11 @@ namespace Octans
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static float RadicalInverseOpt(ulong n, uint b, float invBase)
+        public static float RadicalInverse(ulong n, int dimension)
         {
+            Debug.Assert(dimension < PrimesTable.Length);
+            var b = PrimesTable[dimension];
+            var bInv = PrimesInv[dimension];
             ulong reversedDigits = 0;
             var invBaseN = 1f;
             while (n > 0)
@@ -186,7 +196,7 @@ namespace Octans
                 var next = n / b;
                 var digit = n - next * b;
                 reversedDigits = reversedDigits * b + digit;
-                invBaseN *= invBase;
+                invBaseN *= bInv;
                 n = next;
             }
 
@@ -194,8 +204,30 @@ namespace Octans
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float RadicalInverseScrambled(ulong n, int dimension, Span<ushort> permutations)
+        {
+            Debug.Assert(dimension < PrimesTable.Length);
+            var b = PrimesTable[dimension];
+            var invBase = PrimesInv[dimension];
+            ulong reversedDigits = 0;
+            var invBaseN = 1f;
+            while (n > 0)
+            {
+                var next = n / b;
+                var digit = n - next * b;
+                reversedDigits = reversedDigits * b + permutations[(int) digit];
+                invBaseN *= invBase;
+                n = next;
+            }
+
+            return MathF.Min(invBaseN * (reversedDigits + invBase * permutations[0] / (1 - invBase)),
+                             MathFunction.OneMinusEpsilon);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float RadicalInverseScrambled(ulong n, uint dimension)
         {
+            Debug.Assert(dimension < PrimesTable.Length);
             var b = PrimesTable[dimension];
             var invBase = PrimesInv[dimension];
             var offset = PrimesSums[dimension];
@@ -206,12 +238,12 @@ namespace Octans
             {
                 var next = n / b;
                 var digit = n - next * b;
-                reversedDigits = reversedDigits * b + permutations[(int)(offset + digit)];
+                reversedDigits = reversedDigits * b + permutations[(int) (offset + digit)];
                 invBaseN *= invBase;
                 n = next;
             }
 
-            return MathF.Min(invBaseN * (reversedDigits + invBase * permutations[(int)offset] / (1 - invBase)),
+            return MathF.Min(invBaseN * (reversedDigits + invBase * permutations[(int) offset] / (1 - invBase)),
                              MathFunction.OneMinusEpsilon);
         }
 
@@ -249,16 +281,11 @@ namespace Octans
         private static UVPoint Gen(uint dimU, uint dimV, ulong i)
         {
             var a = new UVPoint(ScrambledRadicalInverse(i, dimU), ScrambledRadicalInverse(i, dimV));
-            var b = new UVPoint(VanDerCorput2(i, (int)dimU), VanDerCorput2(i, (int)dimV));
+            //  var b = new UVPoint(VanDerCorput2(i, (int)dimU), VanDerCorput2(i, (int)dimV));
             return a;
         }
 
         public static UVPoint Next(ulong index) => Gen(0, 1, index);
-
-        //private static (double, double) GenD(int p1, int p2, long i) =>
-        //    (VanDerCorputDouble(100 + i, p1), VanDerCorputDouble(100 + i, p2));
-
-        //public static (double, double) NextD(long index) => GenD(2, 3, index);
 
         public static float Rand(ulong index) => ScrambledRadicalInverse(index, 3);
     }
