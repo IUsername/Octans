@@ -17,7 +17,7 @@ namespace Octans.Pipeline
 
         public void Render()
         {
-            const int chunkSize = 8;
+            const int chunkSize = 4;
             var queue = new ConcurrentQueue<FilmArea>();
             for (var y = 0; y < Canvas.Height;)
             {

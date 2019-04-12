@@ -343,6 +343,33 @@ namespace Octans.ConsoleApp
             });
         }
 
+        public static void RowTransparentRefraction(int spp)
+        {
+            Material CreateMaterial()
+            {
+                var material = new Material();
+                var color = new Color(1f, 0.3f, 0.3f);
+                material.Texture = SolidColor.Create(color);
+                material.SpecularColor = new Color(0.6f, 0.6f, 0.6f);
+                material.Roughness = 0.1f;
+                material.Metallic = 0.3f;
+                material.RefractiveIndex = 1.51f;
+                material.Transparency = 0.90f;
+                material.Ambient = 0f;
+                return material;
+            }
+
+            const float delta = 1f / 9;
+
+            RowTestByDelegate(spp, "transparent_ior", i =>
+            {
+                var value = MathFunction.Saturate((i - 1) * delta);
+                var metal = CreateMaterial();
+                metal.RefractiveIndex = MathFunction.MixF(1f,2f, value);
+                return metal;
+            });
+        }
+
         public static void RowTransparentRoughness(int spp)
         {
             Material CreateMaterial()

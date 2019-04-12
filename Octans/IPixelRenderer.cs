@@ -32,7 +32,7 @@
 
         float Random();
 
-        ISampler Create(long i);
+        ISampler Create(ulong i);
     }
 
     public class RenderPipeline : IPixelRenderSegment

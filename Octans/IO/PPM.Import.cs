@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Pidgin;
 
 namespace Octans.IO
@@ -22,7 +23,8 @@ namespace Octans.IO
         public static Canvas ParseFile(string path)
         {
             Canvas data;
-            using (var sr = new StreamReader(path))
+            using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 1024, FileOptions.SequentialScan))
+            using (var sr = new StreamReader(stream, Encoding.ASCII, false, 1024, false))
             {
                 data = Parse(sr);
             }

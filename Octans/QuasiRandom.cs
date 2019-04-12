@@ -1,10 +1,64 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Octans
 {
     public static class QuasiRandom
     {
+        private static readonly Lazy<IReadOnlyList<ushort>> Perm = new Lazy<IReadOnlyList<ushort>>(
+            () => ComputeRadicalInversePermutations(new Random(63)), LazyThreadSafetyMode.ExecutionAndPublication);
+
+        private static readonly uint[] PrimesTable = {2, 3, 5, 7, 11};
+        private static readonly uint[] PrimesSums = {0, 2, 5, 10, 17};
+        private static readonly float[] PrimesInv = {1f / 2, 1f / 3, 1f / 5, 1f / 7, 1f / 11};
+
+        public static IReadOnlyList<ushort> ComputeRadicalInversePermutations(Random rand)
+        {
+            var permArraySize = 0u;
+            for (var i = 0; i < PrimesTable.Length; i++)
+            {
+                permArraySize += PrimesTable[i];
+            }
+
+            var perms = new ushort[permArraySize];
+            var index = 0;
+            for (var i = 0; i < PrimesTable.Length; i++)
+            {
+                for (var j = 0; j < PrimesTable[i]; j++)
+                {
+                    perms[index + j] = (ushort) j;
+                }
+
+                var prime =(int) PrimesTable[i];
+                Shuffle(perms, index, prime, 1, rand);
+                index += prime;
+            }
+
+            return perms;
+        }
+
+        public static IReadOnlyList<ushort> RadicalInversePermutations() => Perm.Value;
+
+        private static void Shuffle<T>(IList<T> samples, int offset, int count, int nDimensions, Random rand)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                var other = i + rand.Next(count - i);
+                for (var j = 0; j < nDimensions; j++)
+                {
+                    var aI = offset + nDimensions * i + j;
+                    var bI = offset + nDimensions * other + j;
+                    if (aI != bI)
+                    {
+                        // Swap
+                        (samples[aI], samples[bI]) = (samples[bI], samples[aI]);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         ///     Returns a quasi-random float in [0..1] based on index and base.
         /// </summary>
@@ -52,44 +106,56 @@ namespace Octans
         ///     Returns a quasi-random float in [0..1) based on index and base.
         /// </summary>
         /// <param name="n">Index in sequence.</param>
-        /// <param name="b">Number base.</param>
+        /// <param name="dimension">Dimension of the sequence. Determines the prime number base to use for the sequence.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static float VanDerCorput2(long n, int b)
+        private static float VanDerCorput2(ulong n, int dimension)
         {
-            switch (b)
+            switch (dimension)
             {
+                case 0:
+                    //const float inv2 = 1f / 2f;
+                    //var rib = RadicalInverseOpt((ulong)n, 2, inv2);
+                    return RadicalInverseBase2(n);
+                case 1:
                 case 2:
-                   // const float inv2 = 1f / 2f;
-                    //  var rib = RadicalInverseOpt((ulong)n, (uint)b, inv2);
-                    return RadicalInverseBase2((ulong)n);
                 case 3:
-                    const float inv3 = 1f / 3f;
-                    return RadicalInverseOpt((ulong)n, (uint)b, inv3);
-                case 5:
-                    const float inv5 = 1f / 5f;
-                    return RadicalInverseOpt((ulong)n, (uint)b, inv5);
-                case 7:
-                    const float inv7 = 1f / 7f;
-                    return RadicalInverseOpt((ulong)n, (uint)b, inv7);
-                case 11:
-                    const float inv11 = 1f / 11f;
-                    return RadicalInverseOpt((ulong)n, (uint)b, inv11);
+                case 4:
+                    var b = PrimesTable[dimension];
+                    var bInv = PrimesInv[dimension];
+                    return RadicalInverseOpt(n, b, bInv);
             }
-            throw new NotImplementedException($"Base {b} not implemented.");
+
+            throw new NotImplementedException($"Dimension {dimension} not implemented.");
         }
 
-        private static float RadicalInverseBase2(ulong n)
+        /// <summary>
+        ///     Returns a quasi-random float in [0..1) based on index and base.
+        /// </summary>
+        /// <param name="n">Index in sequence.</param>
+        /// <param name="dimension">Dimension for the sequence.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float ScrambledRadicalInverse(ulong n, uint dimension)
         {
-            // Magic number below found by the following:
-            //var invB = 1 / 2f;
-            //var inBN = 1f;
-            //for (var i = 0; i < 32; i++)
-            //{
-            //    inBN *= invB;
-            //}
-            return ReverseBits64(n) * 2.32830644E-10f; 
+            switch (dimension)
+            {
+                case 0:
+                    return RadicalInverseScrambled(n, dimension);
+                case 1:
+                    return RadicalInverseScrambled(n, dimension);
+                case 2:
+                    return RadicalInverseScrambled(n, dimension);
+                case 3:
+                    return RadicalInverseScrambled(n, dimension);
+                case 4:
+                    return RadicalInverseScrambled(n, dimension);
+            }
+
+            throw new NotImplementedException($"Dimension {dimension} not implemented.");
         }
+
+        private static float RadicalInverseBase2(ulong n) => ReverseBits64(n) * 2.32830644E-10f;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong ReverseBits64(ulong n)
@@ -114,7 +180,7 @@ namespace Octans
         private static float RadicalInverseOpt(ulong n, uint b, float invBase)
         {
             ulong reversedDigits = 0;
-            float invBaseN = 1f;
+            var invBaseN = 1f;
             while (n > 0)
             {
                 var next = n / b;
@@ -123,7 +189,30 @@ namespace Octans
                 invBaseN *= invBase;
                 n = next;
             }
+
             return MathF.Min(reversedDigits * invBaseN, MathFunction.OneMinusEpsilon);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float RadicalInverseScrambled(ulong n, uint dimension)
+        {
+            var b = PrimesTable[dimension];
+            var invBase = PrimesInv[dimension];
+            var offset = PrimesSums[dimension];
+            var permutations = RadicalInversePermutations();
+            ulong reversedDigits = 0;
+            var invBaseN = 1f;
+            while (n > 0)
+            {
+                var next = n / b;
+                var digit = n - next * b;
+                reversedDigits = reversedDigits * b + permutations[(int)(offset + digit)];
+                invBaseN *= invBase;
+                n = next;
+            }
+
+            return MathF.Min(invBaseN * (reversedDigits + invBase * permutations[(int)offset] / (1 - invBase)),
+                             MathFunction.OneMinusEpsilon);
         }
 
         //private static double VanDerCorputDouble(long n, int b)
@@ -151,22 +240,26 @@ namespace Octans
         //}
 
         /// <summary>
-        /// Generates Halton sequence pair using the given bases and index number.
+        ///     Generates Halton sequence pair using the given dimensions and index number.
         /// </summary>
-        /// <param name="p1">Prime number base.</param>
-        /// <param name="p2">Primer number base that is not the same as p1.</param>
+        /// <param name="dimU">Dimension for U component.</param>
+        /// <param name="dimV">Dimension for V component.</param>
         /// <param name="i">Index in sequence.</param>
         /// <returns>Pair of low discrepancy, quasi-random values in [0..1].</returns>
-        private static UVPoint Gen(int p1, int p2, long i) =>
-           new UVPoint(VanDerCorput2(i, p1), VanDerCorput2(i, p2));
+        private static UVPoint Gen(uint dimU, uint dimV, ulong i)
+        {
+            var a = new UVPoint(ScrambledRadicalInverse(i, dimU), ScrambledRadicalInverse(i, dimV));
+            var b = new UVPoint(VanDerCorput2(i, (int)dimU), VanDerCorput2(i, (int)dimV));
+            return a;
+        }
 
-        public static UVPoint Next(long index) => Gen(2, 3, index);
+        public static UVPoint Next(ulong index) => Gen(0, 1, index);
 
         //private static (double, double) GenD(int p1, int p2, long i) =>
         //    (VanDerCorputDouble(100 + i, p1), VanDerCorputDouble(100 + i, p2));
 
         //public static (double, double) NextD(long index) => GenD(2, 3, index);
 
-        public static float Rand(long index) => VanDerCorput2(100 + index, 5);
+        public static float Rand(ulong index) => ScrambledRadicalInverse(index, 3);
     }
 }

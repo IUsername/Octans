@@ -87,7 +87,7 @@ namespace Octans.Test.Camera
             return _rand;
         }
 
-        public ISampler Create(long i)
+        public ISampler Create(ulong i)
         {
             return this;
         }

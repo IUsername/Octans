@@ -2,10 +2,10 @@
 {
     public class QuasiRandomSampler : ISampler
     {
-        private long _index;
-        private long _rInd;
+        private ulong _index;
+        private ulong _rInd;
 
-        public QuasiRandomSampler(long index)
+        public QuasiRandomSampler(ulong index)
         {
             _index = index;
             _rInd = index;
@@ -21,7 +21,7 @@
             return QuasiRandom.Rand(_rInd++);
         }
 
-        public ISampler Create(long i)
+        public ISampler Create(ulong i)
         { 
             return new QuasiRandomSampler(i);
         }

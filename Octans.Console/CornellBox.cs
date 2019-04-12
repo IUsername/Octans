@@ -80,7 +80,7 @@ namespace Octans.ConsoleApp
             return box;
         }
 
-        public static void TestRender()
+        public static void TestRender(int spp)
         {
             var w = BuildBox();
 
@@ -91,7 +91,7 @@ namespace Octans.ConsoleApp
 
             var canvas = new Canvas(width, height);
 
-            var pps = new PerPixelSampler(100);
+            var pps = new PerPixelSampler(spp);
             var fov = 278f / 400f;
             var aspectRatio = 1f;
             var camera = new ApertureCamera(fov, aspectRatio, 0.01f,from,to, Vectors.Up);

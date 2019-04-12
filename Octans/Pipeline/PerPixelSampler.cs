@@ -14,7 +14,7 @@ namespace Octans.Pipeline
         public Color Gather(in PixelInformation pixel, ISampler sampler, IPixelRenderSegment segment)
         {
             var total = Colors.Black;
-            var index = Math.Abs(pixel.Coordinate.GetHashCode());
+            var index = (ulong) Math.Abs(pixel.Coordinate.GetHashCode());
             var local = sampler.Create(index);
             for (var i = 0; i < SamplesPerPixel; i++)
             {
@@ -25,13 +25,13 @@ namespace Octans.Pipeline
             return total / SamplesPerPixel;
         }
 
-        private static int Index(in PixelSample sample)
+        private static ulong Index(in PixelSample sample)
         {
             var hashCode = sample.Pixel.Coordinate.X;
             hashCode = (hashCode * 397) ^ sample.Pixel.Coordinate.Y;
             hashCode = (hashCode * 397) ^ sample.UV.U.GetHashCode();
             hashCode = (hashCode * 397) ^ sample.UV.V.GetHashCode();
-            return Math.Abs(hashCode);
+            return (ulong) Math.Abs(hashCode);
         }
     }
 }
