@@ -13,12 +13,13 @@ namespace Octans.ConsoleApp
 {
     internal static partial class TestScenes
     {
-        public static void TestRender(int spp)
+        public static void TestRender(int spp, int height)
         {
             var w = BuildWorld();
 
-            var width = 600;
-            var height = 400;
+            var aspectRatio = 3f / 2;
+            var width = (int)( aspectRatio * height);
+          //  var height = 800;
             var canvas = new Canvas(width, height);
 
             var pps = new PerPixelSampler(spp);

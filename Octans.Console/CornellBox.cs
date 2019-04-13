@@ -80,12 +80,13 @@ namespace Octans.ConsoleApp
             return box;
         }
 
-        public static void TestRender(int spp)
+        public static void TestRender(int spp, int height)
         {
             var w = BuildBox();
 
-            var width = 800;
-            var height = 800;
+            var aspectRatio = 1f;
+            var width = (int)(height * aspectRatio);
+            //var height = 800;
             var from = new Point(278, 278, -800f);
             var to = new Point(278, 278, 0);
 
@@ -93,7 +94,7 @@ namespace Octans.ConsoleApp
 
             var pps = new PerPixelSampler(spp);
             var fov = 278f / 400f;
-            var aspectRatio = 1f;
+          
             var camera = new ApertureCamera(fov, aspectRatio, 0.01f,from,to, Vectors.Up);
             //var transform = Transforms.View(from, to, new Vector(0, 1, 0));
             //var camera = new PinholeCamera2(transform, fov, aspectRatio);
@@ -170,7 +171,8 @@ namespace Octans.ConsoleApp
           
             var back = CreateXYRect(new Point(0, 0f, 555f), 555f, 555f, whiteMaterial);
             var box1 = CreateBox(165f, 165f, new Point(290, 0, 100), 0.314f, whiteMaterial);
-            var box2 = CreateBox(165f, 330f, new Point(100, 0, 260), -0.3925f, blueMetallic);
+            //var box2 = CreateBox(165f, 330f, new Point(100, 0, 260), -0.3925f, blueMetallic);
+            var box2 = CreateBox(165f, 330f, new Point(100, 0, 260), -0.3925f, whiteMaterial);
             var light = CreateXZRect(new Point(213f, 554.001f, 227f), 130f, 105f, lightMaterial);
 
 
