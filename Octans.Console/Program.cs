@@ -4,9 +4,9 @@
     {
         private static void Main(string[] args)
         {
-            //CornellBox.TestRender(100);
+            CornellBox.TestRender(100);
             //TestScenes.ColRowTestRender();
-            //TestScenes.RowMetal(1000);
+            //TestScenes.RowMetal(100);
             //TestScenes.RowPlastic(1000);
             //TestScenes.RowTransparentRoughness(100);
             //TestScenes.RowMetalPlastic(100);
@@ -16,7 +16,7 @@
             //TestScenes.SphereMappingTestRender();
             //TestScenes.InsideSphere();
             //TestScenes.MappingTestRender();
-            TestScenes.TestRender(100);
+            //TestScenes.TestRender(100);
             //TestScenes.TeapotTest();
             //TestScenes.SolidTestRender(500);
             //TestScenes.LowPolyTeapotTest();

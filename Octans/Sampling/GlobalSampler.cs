@@ -58,7 +58,7 @@ namespace Octans.Sampling
                 dim += 2;
             }
 
-            Debug.Assert(ArrayStartDim == dim);
+            Debug.Assert(_arrayEndDim == dim);
         }
 
         private void Compute1DSamples()

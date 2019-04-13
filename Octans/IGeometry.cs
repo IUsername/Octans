@@ -8,8 +8,6 @@
         IGeometry Parent { get; set; }
         IIntersections LocalIntersects(in Ray localRay);
 
-        //Matrix TransformInverse();
-        //Matrix TransformInverseTranspose();
         Normal LocalNormalAt(in Point localPoint, in Intersection intersection);
         void SetTransform(Transform transform);
         void SetMaterial(Material material);
