@@ -195,7 +195,7 @@ namespace Octans.Shading
             var NdotV = Vector.AbsDot(normal, wo);
 
             var a = 2f * NdotL * NdotV;
-            var denom = MathFunction.MixF(a, NdotL + NdotV, alpha);
+            var denom = MathFunction.Lerp(a, NdotL + NdotV, alpha);
             return a / denom;
 
         }

@@ -38,7 +38,11 @@ namespace Octans
 
         public float Magnitude() => MathF.Sqrt(MagSqr());
 
-        public float MagSqr() => X * X + Y * Y + Z * Z;
+        public float MagSqr()
+        {
+            //return X * X + Y * Y + Z * Z;
+            return MathF.FusedMultiplyAdd(X, X, MathF.FusedMultiplyAdd(Y, Y, Z * Z));
+        }
 
         public Vector Normalize()
         {
@@ -99,7 +103,11 @@ namespace Octans
         public static float operator %(Vector left, Vector right) => Dot(in left, in right);
 
         [Pure]
-        public static float Dot(in Vector a, in Vector b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+        public static float Dot(in Vector a, in Vector b)
+        {
+            //return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+            return MathF.FusedMultiplyAdd(a.X, b.X, MathF.FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
+        }
 
         [Pure]
         public static float AbsDot(in Vector a, in Vector b) => MathF.Abs(Dot(in a, in b));
@@ -109,9 +117,14 @@ namespace Octans
         {
             double aX = a.X, aY = a.Y, aZ = a.Z;
             double bX = b.X, bY = b.Y, bZ = b.Z;
-            return new Vector((float) (aY * bZ - aZ * bY),
-                              (float) (aZ * bX - aX * bZ),
-                              (float) (aX * bY - aY * bX));
+            return new Vector((float)(aY * bZ - aZ * bY),
+                              (float)(aZ * bX - aX * bZ),
+                              (float)(aX * bY - aY * bX));
+
+            //// TODO: Are we still getting enough accuracy?
+            //return new Vector(MathF.FusedMultiplyAdd(a.Y, b.Z, -a.Z * b.Y),
+            //                  MathF.FusedMultiplyAdd(a.Z, b.X, -a.X * b.Z),
+            //                  MathF.FusedMultiplyAdd(a.X, b.Y, -a.Y * b.X));
         }
 
         [Pure]

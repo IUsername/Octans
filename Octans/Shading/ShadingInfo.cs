@@ -64,8 +64,8 @@
             var fresnelLight = SchlickFresnel(NdotL);
             var fresnelView = SchlickFresnel(NdotV);
             var fresnelDiffuse = 0.5f + 2f * LdotH * LdotH * roughness;
-            return MathFunction.MixF(1f, fresnelDiffuse, fresnelLight) *
-                   MathFunction.MixF(1f, fresnelDiffuse, fresnelView);
+            return MathFunction.Lerp(1f, fresnelDiffuse, fresnelLight) *
+                   MathFunction.Lerp(1f, fresnelDiffuse, fresnelView);
         }
 
         public float IoR { get; }

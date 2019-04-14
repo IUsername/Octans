@@ -78,14 +78,14 @@ namespace Octans.Shading
                     break;
                 }
 
-                var probabilityOfReflection = MathFunction.MixF(1f, Schlick(in info), material.Transparency);
+                var probabilityOfReflection = MathFunction.Lerp(1f, Schlick(in info), material.Transparency);
                 if (sampler.Random() <= probabilityOfReflection)
                 {
                     //   throughPut *= 1f - material.Transparency;
                     // Direct + Indirect
 
-                    var directProbability = MathFunction.MixF(0.5f,
-                                                              MathFunction.MixF(0.0f, 0.5f, material.Roughness),
+                    var directProbability = MathFunction.Lerp(0.5f,
+                                                              MathFunction.Lerp(0.0f, 0.5f, material.Roughness),
                                                               material.Metallic);
 
                     if (sampler.Random() <= directProbability)

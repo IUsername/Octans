@@ -147,11 +147,15 @@ namespace Octans
             {
                 for (var c = 0; c < 4; c++)
                 {
-                    m._data[r, c] = 0.0f;
-                    m._data[r, c] += a[r, 0] * b[0, c];
-                    m._data[r, c] += a[r, 1] * b[1, c];
-                    m._data[r, c] += a[r, 2] * b[2, c];
-                    m._data[r, c] += a[r, 3] * b[3, c];
+                    ////m._data[r, c] = 0.0f;
+                    //m._data[r, c] = a[r, 0] * b[0, c];
+                    //m._data[r, c] += a[r, 1] * b[1, c];
+                    //m._data[r, c] += a[r, 2] * b[2, c];
+                    //m._data[r, c] += a[r, 3] * b[3, c];
+
+                    m._data[r, c] = MathF.FusedMultiplyAdd(a[r, 1], b[1, c], a[r, 0] * b[0, c]);
+                    m._data[r, c] = MathF.FusedMultiplyAdd(a[r, 2], b[2, c], m._data[r, c]);
+                    m._data[r, c] = MathF.FusedMultiplyAdd(a[r, 3], b[3, c], m._data[r, c]);
                 }
             }
 
@@ -165,13 +169,15 @@ namespace Octans
         {
             if (m.Columns == 2 && m.Rows == 2)
             {
-                return m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0];
+                //return m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0];
+                return MathF.FusedMultiplyAdd(m[0, 0], m[1, 1], - m[0, 1] * m[1, 0]);
             }
 
             var det = 0.0f;
             for (var c = 0; c < m.Columns; c++)
             {
-                det += m[0, c] * Cofactor(m, 0, c);
+                //det += m[0, c] * Cofactor(m, 0, c);
+                det = MathF.FusedMultiplyAdd(m[0, c], Cofactor(m, 0, c), det);
             }
 
             return det;

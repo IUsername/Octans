@@ -365,7 +365,7 @@ namespace Octans.ConsoleApp
             {
                 var value = MathFunction.Saturate((i - 1) * delta);
                 var metal = CreateMaterial();
-                metal.RefractiveIndex = MathFunction.MixF(1f,2f, value);
+                metal.RefractiveIndex = MathFunction.Lerp(1f,2f, value);
                 return metal;
             });
         }
