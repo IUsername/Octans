@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Numerics;
 
 namespace Octans
 {
@@ -14,10 +16,28 @@ namespace Octans
         }
 
         [Pure]
-        public static Point2D Add(in Point2D left, in Point2D right) => new Point2D(left.X + right.X, left.Y + right.Y);
+        public static Point2D Floor(in Point2D p)
+        {
+            return new Point2D(MathF.Floor(p.X), MathF.Floor(p.Y));
+        }
 
         [Pure]
-        public static Point2D operator +(Point2D left, Point2D right) => Add(in left, in right);
+        public static Point2D Ceiling(in Point2D p)
+        {
+            return new Point2D(MathF.Ceiling(p.X), MathF.Ceiling(p.Y));
+        }
+
+        [Pure]
+        public static Point2D Add(in Point2D left, in Vector2 right) => new Point2D(left.X + right.X, left.Y + right.Y);
+
+        [Pure]
+        public static Point2D Subtract(in Point2D left, in Vector2 right) => new Point2D(left.X - right.X, left.Y - right.Y);
+
+        [Pure]
+        public static Point2D operator +(Point2D left, Vector2 right) => Add(in left, in right);
+
+        [Pure]
+        public static Point2D operator -(Point2D left, Vector2 right) => Subtract(in left, in right);
 
         [Pure]
         public static explicit operator Point2D(in UVPoint uv) => new Point2D(uv.U, uv.V);

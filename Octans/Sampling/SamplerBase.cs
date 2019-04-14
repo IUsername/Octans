@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace Octans.Sampling
 {
@@ -90,7 +91,7 @@ namespace Octans.Sampling
         {
             var cs = new CameraSample
             {
-                FilmPoint = Get2D() + (Point2D) raster,
+                FilmPoint = Get2D() + (Vector2) raster,
                 LensPoint = Get2D()
             };
             return cs;

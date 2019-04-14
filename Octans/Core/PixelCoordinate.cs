@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Numerics;
 
 namespace Octans
 {
@@ -67,6 +68,13 @@ namespace Octans
                 return (X * 397) ^ Y;
             }
         }
+
+        [Pure]
+        public static explicit operator Vector2(in PixelCoordinate pixel) => new Vector2(pixel.X, pixel.Y);
+
+        [Pure]
+        public static explicit operator PixelCoordinate(in Point2D pixel) =>
+            new PixelCoordinate((int) pixel.X, (int) pixel.Y);
 
         public static bool operator ==(PixelCoordinate left, PixelCoordinate right) => left.Equals(right);
 
