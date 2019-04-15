@@ -60,6 +60,7 @@ namespace Octans.Sampling
             }
         }
 
+        // TODO: Use ScaleB?
         public static float RadicalInverseBase2(ulong n) => ReverseBits64(n) * 2.32830644E-10f;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

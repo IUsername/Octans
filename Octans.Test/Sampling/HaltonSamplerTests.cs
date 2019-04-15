@@ -11,7 +11,6 @@ namespace Octans.Test.Sampling
         {
             var area = new PixelArea(new PixelCoordinate(0,0), new PixelCoordinate(100,100));
             var hs = new HaltonSampler(10, area);
-            hs.SampleBounds.Should().Be(area);
             hs.SamplesPerPixel.Should().Be(10);
         }
 

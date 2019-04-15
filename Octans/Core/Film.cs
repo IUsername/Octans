@@ -8,9 +8,9 @@ namespace Octans
     public class Film : IDisposable
     {
         private const int FilterTableWidth = 16;
-        private readonly PixelArea _croppedBounds;
         private readonly float _diagonalMeters;
         private readonly IFilter _filter;
+        private readonly object _padlock = new object();
         private readonly Pixel[] _pixels;
         private readonly PixelVector _resolution;
         private readonly float _scale;
@@ -27,10 +27,12 @@ namespace Octans
             _filter = filter;
             _scale = scale;
             _diagonalMeters = sensorDiagonalMillimeters * .001f;
-            _croppedBounds = DetermineCroppedBounds(in cropWindow, in resolution);
-            _pixels = ArrayPool<Pixel>.Shared.Rent(_croppedBounds.Area());
+            CroppedBounds = DetermineCroppedBounds(in cropWindow, in resolution);
+            _pixels = ArrayPool<Pixel>.Shared.Rent(CroppedBounds.Area());
             _table = CreateFilterTable(FilterTableWidth, filter);
         }
+
+        public PixelArea CroppedBounds { get; }
 
         public void Dispose()
         {
@@ -53,15 +55,70 @@ namespace Octans
             var p0 = (PixelCoordinate) Point2D.Ceiling(bounds.Min - halfPixel - _filter.Radius);
             var p1 = (PixelCoordinate) Point2D.Floor(bounds.Max - halfPixel + _filter.Radius);
             var b = new PixelArea(p0, p1);
-            var tilePixelBounds = PixelArea.Intersect(b, _croppedBounds);
-            var pixels = ArrayPool<TilePixel>.Shared.Rent(tilePixelBounds.Area());
-            return new FilmTile(tilePixelBounds, _filter.Radius, _table, FilterTableWidth, pixels);
+            var tilePixelBounds = PixelArea.Intersect(b, CroppedBounds);
+            return new FilmTile(tilePixelBounds, _filter.Radius, _table, FilterTableWidth);
+        }
+
+        public void MergeFilmTile(FilmTile tile)
+        {
+            lock (_padlock)
+            {
+                foreach (var pixel in tile.PixelBounds)
+                {
+                    ref var tilePixel = ref tile.GetPixel(in pixel);
+                    ref var mergePixel = ref GetPixel(in pixel);
+                    var xyz = tilePixel.ContributionSum.ToXYZ();
+                    mergePixel.X += xyz[0];
+                    mergePixel.Y += xyz[1];
+                    mergePixel.Z += xyz[2];
+                    mergePixel.FilterWeightSum += tilePixel.FilterWeightSum;
+                }
+            }
+
+            tile.Return();
+        }
+
+        public void SetImage(in Spectrum[] img)
+        {
+            var nPixels = CroppedBounds.Area();
+            for (var i = 0; i < nPixels; i++)
+            {
+                ref var p = ref _pixels[i];
+                var xyz = img[i].ToXYZ();
+                p.X = xyz[0];
+                p.Y = xyz[1];
+                p.Z = xyz[2];
+                p.SplatX = p.SplatY = p.SplatZ = 0f;
+                p.FilterWeightSum = 1;
+            }
+        }
+
+        public void AddSplat(in Point2D p, in Spectrum v)
+        {
+            var coordinate = (PixelCoordinate) p;
+            if (!CroppedBounds.InsideExclusive(in coordinate))
+            {
+                return;
+            }
+
+            var xyz = v.ToXYZ();
+            ref var pixel = ref GetPixel(in coordinate);
+            pixel.SplatX = xyz[0];
+            pixel.SplatY = xyz[1];
+            pixel.SplatZ = xyz[2];
+        }
+
+        private ref Pixel GetPixel(in PixelCoordinate pixel)
+        {
+            var width = CroppedBounds.Max.X - CroppedBounds.Min.X;
+            var offset = pixel.X - CroppedBounds.Min.X + (pixel.Y - CroppedBounds.Min.Y) * width;
+            return ref _pixels[offset];
         }
 
         public PixelArea GetSampleBounds()
         {
-            var min = (Point2D) _croppedBounds.Min + new Vector2(0.5f, 0.5f) - _filter.Radius;
-            var max = (Point2D) _croppedBounds.Max - new Vector2(0.5f, 0.5f) + _filter.Radius;
+            var min = (Point2D) CroppedBounds.Min + new Vector2(0.5f, 0.5f) - _filter.Radius;
+            var max = (Point2D) CroppedBounds.Max - new Vector2(0.5f, 0.5f) + _filter.Radius;
             var bounds = new Bounds2D(min, max);
             return (PixelArea) bounds;
         }
@@ -103,18 +160,22 @@ namespace Octans
             ArrayPool<Pixel>.Shared.Return(_pixels, true);
         }
 
-        internal unsafe struct Pixel
+        internal struct Pixel
         {
-            public fixed float XYZ[3];
-            public float FilterWeightSum { get; set; }
-            public fixed float SplatXYZ[3];
+            public float X;
+            public float Y;
+            public float Z;
+            public float SplatX;
+            public float SplatY;
+            public float SplatZ;
+            public float FilterWeightSum;
             private float Pad;
         }
 
         internal struct TilePixel
         {
-            //TODO: Spectrum data
             public float FilterWeightSum { get; set; }
+            public Spectrum ContributionSum { get; set; }
         }
 
         public class FilmTile
@@ -126,23 +187,68 @@ namespace Octans
             private readonly TilePixel[] _pixels;
 
 
-            internal FilmTile(in PixelArea tileBounds,
-                              Vector2 filterRadius,
+            internal FilmTile(in PixelArea pixelBounds,
+                              in Vector2 filterRadius,
                               float[] filterTable,
-                              int filterTableWidth,
-                              TilePixel[] pixels)
+                              int filterTableWidth)
             {
                 _filterTable = filterTable;
                 _filterTableWidth = filterTableWidth;
-                _pixels = pixels;
-                TileBounds = tileBounds;
+                PixelBounds = pixelBounds;
                 _filterRadius = filterRadius;
                 _inverseFilterRadius = new Vector2(1f / filterRadius.X, 1f / filterRadius.Y);
+                _pixels = ArrayPool<TilePixel>.Shared.Rent(pixelBounds.Area());
             }
 
-            public PixelArea TileBounds { get; }
+            public PixelArea PixelBounds { get; }
 
-           // public void AddSample(in Point2D p, )
+            public void AddSample(in Point2D p, Spectrum L, float sampleWeight = 1f)
+            {
+                var discrete = p - new Vector2(0.5f, 0.5f);
+                var p0 = (PixelCoordinate) Point2D.Ceiling(discrete - _filterRadius);
+                var p1 = (PixelCoordinate) Point2D.Floor(discrete + _filterRadius) + new PixelVector(1, 1);
+                p0 = PixelCoordinate.Max(p0, PixelBounds.Min);
+                p1 = PixelCoordinate.Min(p1, PixelBounds.Max);
+
+                var ifx = new int[p1.X - p0.X];
+                for (var x = p0.X; x < p1.X; x++)
+                {
+                    var fx = MathF.Abs((x - discrete.X) * _inverseFilterRadius.X * _filterTableWidth);
+                    ifx[x - p0.X] = Math.Min((int) MathF.Floor(fx), _filterTableWidth - 1);
+                }
+
+                var ify = new int[p1.Y - p0.Y];
+                for (var y = p0.Y; y < p1.Y; y++)
+                {
+                    var fy = MathF.Abs((y - discrete.Y) * _inverseFilterRadius.Y * _filterTableWidth);
+                    ify[y - p0.Y] = Math.Min((int) MathF.Floor(fy), _filterTableWidth - 1);
+                }
+
+                for (var y = p0.Y; y < p1.Y; y++)
+                {
+                    for (var x = p0.X; x < p1.X; x++)
+                    {
+                        var offset = ify[y - p0.Y] * _filterTableWidth + ifx[x - p0.X];
+                        var filterWeight = _filterTable[offset];
+
+                        ref var pixel = ref GetPixel(new PixelCoordinate(x, y));
+                        pixel.ContributionSum += L * sampleWeight * filterWeight;
+                        pixel.FilterWeightSum += filterWeight;
+                    }
+                }
+            }
+
+            internal ref TilePixel GetPixel(in PixelCoordinate pixel)
+            {
+                var width = PixelBounds.Max.X - PixelBounds.Min.X;
+                var offset = pixel.X - PixelBounds.Min.X + (pixel.Y - PixelBounds.Min.Y) * width;
+                return ref _pixels[offset];
+            }
+
+            protected internal void Return()
+            {
+                ArrayPool<TilePixel>.Shared.Return(_pixels);
+            }
         }
     }
 }

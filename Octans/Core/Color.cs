@@ -29,7 +29,11 @@ namespace Octans
         public Color Scale(float scalar) => new Color(Red * scalar, Green * scalar, Blue * scalar);
 
         [Pure]
-        public Color Divide(float scalar) => new Color(Red / scalar, Green / scalar, Blue / scalar);
+        public Color Divide(float scalar)
+        {
+            var inv = 1f / scalar;
+            return new Color(Red * inv, Green * inv, Blue * inv);
+        }
 
         [Pure]
         public Color Pow(float exp) => new Color(MathF.Pow(Red, exp), MathF.Pow(Green, exp), MathF.Pow(Blue, exp));
