@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 
 namespace Octans
 {
-    public readonly struct PixelArea : IEnumerable<PixelCoordinate>
+    public readonly struct PixelArea : IEnumerable<PixelCoordinate>, IEquatable<PixelArea>
     {
         public PixelCoordinate Min { get; }
         public PixelCoordinate Max { get; }
@@ -14,6 +14,12 @@ namespace Octans
         {
             Min = min;
             Max = max;
+        }
+
+        public PixelArea(int xMin, int yMin, int xMax, int yMax)
+        {
+            Min = new PixelCoordinate(xMin, yMin);
+            Max = new PixelCoordinate(xMax, yMax);
         }
 
         [Pure]
@@ -40,9 +46,9 @@ namespace Octans
 
         public IEnumerator<PixelCoordinate> GetEnumerator()
         {
-            for (var x = Min.X; x < Max.X; x++)
+            for (var y = Min.Y; y < Max.Y; ++y)
             {
-                for (var y = Min.Y; y < Max.Y; y++)
+                for (var x = Min.X; x < Max.X; ++x)
                 {
                     yield return new PixelCoordinate(x, y);
                 }
@@ -50,5 +56,21 @@ namespace Octans
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool Equals(PixelArea other) => Min.Equals(other.Min) && Max.Equals(other.Max);
+
+        public override bool Equals(object obj) => obj is PixelArea other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Min.GetHashCode() * 397) ^ Max.GetHashCode();
+            }
+        }
+
+        public static bool operator ==(PixelArea left, PixelArea right) => left.Equals(right);
+
+        public static bool operator !=(PixelArea left, PixelArea right) => !left.Equals(right);
     }
 }

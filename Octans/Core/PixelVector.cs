@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace Octans
 {
@@ -7,12 +9,14 @@ namespace Octans
         public int X { get; }
         public int Y { get; }
 
+        [DebuggerStepThrough]
         public PixelVector(int x, int y)
         {
             X = x;
             Y = y;
         }
 
+        [Pure]
         public int this[int index]
         {
             get

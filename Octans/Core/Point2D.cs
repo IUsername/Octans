@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Numerics;
 
@@ -9,6 +10,7 @@ namespace Octans
         public float X { get; }
         public float Y { get; }
 
+        [DebuggerStepThrough]
         public Point2D(float x, float y)
         {
             X = x;

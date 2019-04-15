@@ -108,6 +108,41 @@ namespace Octans
             pixel.SplatZ = xyz[2];
         }
 
+        public void WriteFile(float splatScale, ISinkRgb sink)
+        {
+            var rgb = new float[3 * CroppedBounds.Area()];
+            var offset = 0;
+            var data = new Span<float>(rgb);
+            foreach(var p in CroppedBounds)
+            {
+                ref var pixel = ref GetPixel(in p);
+                var rgbSpan = data.Slice(3 * offset, 3);
+                Spectrum.XYZToRGB(pixel.X, pixel.Y, pixel.Z, in rgbSpan);
+                var filterWeightSum = pixel.FilterWeightSum;
+                if (filterWeightSum != 0f)
+                {
+                    var invWt = 1f / filterWeightSum;
+                    rgbSpan[0] = MathF.Max(0f, rgbSpan[0] * invWt);
+                    rgbSpan[1] = MathF.Max(0f, rgbSpan[1] * invWt);
+                    rgbSpan[2] = MathF.Max(0f, rgbSpan[2] * invWt);
+                }
+
+                var splatRGB = new float[3];
+                Spectrum.XYZToRGB(pixel.SplatX, pixel.SplatY, pixel.SplatZ, splatRGB);
+                rgbSpan[0] += splatScale * splatRGB[0];
+                rgbSpan[1] += splatScale * splatRGB[1];
+                rgbSpan[2] += splatScale * splatRGB[2];
+
+                rgbSpan[0] *= _scale;
+                rgbSpan[1] *= _scale;
+                rgbSpan[2] *= _scale;
+
+                ++offset;
+            }
+
+            sink.Write(in data, CroppedBounds, in _resolution);
+        }
+
         private ref Pixel GetPixel(in PixelCoordinate pixel)
         {
             var width = CroppedBounds.Max.X - CroppedBounds.Min.X;
@@ -172,10 +207,16 @@ namespace Octans
             private float Pad;
         }
 
-        internal struct TilePixel
+        internal class TilePixel
         {
             public float FilterWeightSum { get; set; }
             public Spectrum ContributionSum { get; set; }
+
+            public TilePixel()
+            {
+                FilterWeightSum = 0f;
+                ContributionSum = Spectrum.Black;
+            }
         }
 
         public class FilmTile
@@ -197,7 +238,13 @@ namespace Octans
                 PixelBounds = pixelBounds;
                 _filterRadius = filterRadius;
                 _inverseFilterRadius = new Vector2(1f / filterRadius.X, 1f / filterRadius.Y);
-                _pixels = ArrayPool<TilePixel>.Shared.Rent(pixelBounds.Area());
+                var p = ArrayPool<TilePixel>.Shared.Rent(pixelBounds.Area());
+                for (var i = 0; i < p.Length; i++)
+                {
+                    p[i] = new TilePixel();
+                }
+
+                _pixels = p;
             }
 
             public PixelArea PixelBounds { get; }

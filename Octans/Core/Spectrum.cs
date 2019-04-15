@@ -21,7 +21,7 @@ namespace Octans
         public static readonly int Samples;
         public static readonly int SampledLambdaEnd;
         public static readonly int SampledLambdaStart;
-        public static readonly Spectrum Black = new Spectrum();
+        public static readonly Spectrum Black;
 
         private static readonly Spectrum X;
         private static readonly Spectrum Y;
@@ -43,6 +43,8 @@ namespace Octans
             X = new Spectrum(x);
             Y = new Spectrum(y);
             Z = new Spectrum(z);
+
+            Black = new Spectrum();
         }
 
         public Spectrum(float v)
@@ -423,6 +425,55 @@ namespace Octans
             }
 
             return yy * (SampledLambdaEnd - SampledLambdaStart) / (CIE_Data.CIE_Y_integral * Samples);
+        }
+
+        [Pure]
+        public static float[] XYZToRGB(in float[] xyz)
+        {
+            var rgb = new float[3];
+            rgb[0] = 3.240479f * xyz[0] - 1.537150f * xyz[1] - 0.498535f * xyz[2];
+            rgb[1] = -0.969256f * xyz[0] + 1.875991f * xyz[1] + 0.041556f * xyz[2];
+            rgb[2] = 0.055648f * xyz[0] - 0.204043f * xyz[1] + 1.057311f * xyz[2];
+            return rgb;
+        }
+
+
+        [Pure]
+        public static float[] XYZToRGB(in float x, in float y, in float z)
+        {
+            var rgb = new float[3];
+            rgb[0] = 3.240479f * x - 1.537150f * y - 0.498535f * z;
+            rgb[1] = -0.969256f * x + 1.875991f * y + 0.041556f * z;
+            rgb[2] = 0.055648f *x - 0.204043f * y + 1.057311f * z;
+            return rgb;
+        }
+
+        [Pure]
+        public static void XYZToRGB(in float x, in float y, in float z, in Span<float> rgb)
+        {
+            rgb[0] = 3.240479f * x - 1.537150f * y - 0.498535f * z;
+            rgb[1] = -0.969256f * x + 1.875991f * y + 0.041556f * z;
+            rgb[2] = 0.055648f * x - 0.204043f * y + 1.057311f * z;
+        }
+
+        [Pure]
+        public static float[] RGBToXYZ(in float[] rgb)
+        {
+            var xyz = new float[3];
+            xyz[0] = 0.412453f * rgb[0] + 0.357580f * rgb[1] + 0.180423f * rgb[2];
+            xyz[1] = 0.212671f * rgb[0] + 0.715160f * rgb[1] + 0.072169f * rgb[2];
+            xyz[2] = 0.019334f * rgb[0] + 0.119193f * rgb[1] + 0.950227f * rgb[2];
+            return xyz;
+        }
+
+        [Pure]
+        public static float[] RGBToXYZ(in float r, in float g, in float b)
+        {
+            var xyz = new float[3];
+            xyz[0] = 0.412453f * r + 0.357580f * g + 0.180423f * b;
+            xyz[1] = 0.212671f * r + 0.715160f * g + 0.072169f * b;
+            xyz[2] = 0.019334f * r + 0.119193f * g + 0.950227f * b;
+            return xyz;
         }
 
         [Pure]
