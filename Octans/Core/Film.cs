@@ -139,8 +139,7 @@ namespace Octans
 
                 ++offset;
             }
-
-            sink.Write(in data, CroppedBounds, in _resolution);
+            sink.Write(rgb, CroppedBounds, in _resolution);
         }
 
         private ref Pixel GetPixel(in PixelCoordinate pixel)

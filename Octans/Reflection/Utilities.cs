@@ -134,5 +134,12 @@ namespace Octans.Reflection
 
             return r / (PI * nSamples);
         }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsType(this IBxDF bxdf, BxDFType flag)
+        {
+            return (bxdf.Type & flag) == flag;
+        }
     }
 }

@@ -4,6 +4,6 @@ namespace Octans
 {
     public interface ISinkRgb
     {
-        void Write(in Span<float> rgb, in PixelArea area, in PixelVector fullResolution);
+        void Write(in ReadOnlySpan<float> rgb, in PixelArea area, in PixelVector fullResolution);
     }
 }

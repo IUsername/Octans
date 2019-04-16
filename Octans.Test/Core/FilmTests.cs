@@ -83,7 +83,7 @@ namespace Octans.Test
         public PixelArea Area { get; private set; }
         public PixelVector FullResolution { get; private set; }
 
-        public void Write(in Span<float> rgb, in PixelArea area, in PixelVector fullResolution)
+        public void Write(in ReadOnlySpan<float> rgb, in PixelArea area, in PixelVector fullResolution)
         {
             var length = area.Area();
             var data = new float[length];
