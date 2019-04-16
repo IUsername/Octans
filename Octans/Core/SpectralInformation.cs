@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using static System.MathF;
+using static Octans.MathFunction;
 
 namespace Octans
 {
@@ -17,8 +19,8 @@ namespace Octans
             var n = CIE_Data.CIE_lambda.Length;
             for (var i = 0; i < Samples; i++)
             {
-                var wl0 = MathFunction.Lerp(SampledLambdaStart, SampledLambdaEnd, (float) i / Samples);
-                var wl1 = MathFunction.Lerp(SampledLambdaStart, SampledLambdaEnd, (float) (i + 1) / Samples);
+                var wl0 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float) i / Samples);
+                var wl1 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float) (i + 1) / Samples);
                 x[i] = AverageSpectrumSamples(CIE_Data.CIE_lambda, CIE_Data.CIE_X, n, wl0, wl1);
                 y[i] = AverageSpectrumSamples(CIE_Data.CIE_lambda, CIE_Data.CIE_Y, n, wl0, wl1);
                 z[i] = AverageSpectrumSamples(CIE_Data.CIE_lambda, CIE_Data.CIE_Z, n, wl0, wl1);
@@ -66,12 +68,12 @@ namespace Octans
             while (lambdaStart > lambda[i + 1]) ++i;
 
             float Interpolate(float w, int index) =>
-                MathFunction.Lerp(values[index], values[index + 1], (w - lambda[index]) / lambda[index + 1]);
+                Lerp(values[index], values[index + 1], (w - lambda[index]) / lambda[index + 1]);
 
             for (; i + 1 < n && lambdaEnd >= lambda[i]; ++i)
             {
-                var segStart = MathF.Max(lambdaStart, lambda[i]);
-                var segEnd = MathF.Min(lambdaEnd, lambda[i + 1]);
+                var segStart = Max(lambdaStart, lambda[i]);
+                var segEnd = Min(lambdaEnd, lambda[i + 1]);
                 sum += 0.5f * (Interpolate(segStart, i) + Interpolate(segEnd, i)) * (segEnd - segStart);
             }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using static System.Math;
 
 namespace Octans
 {
@@ -37,10 +38,10 @@ namespace Octans
         [Pure]
         public static PixelArea Intersect(in PixelArea a, in PixelArea b)
         {
-            var xMin = Math.Max(a.Min.X, b.Min.X);
-            var yMin = Math.Max(a.Min.Y, b.Min.Y);
-            var xMax = Math.Min(a.Max.X, b.Max.X);
-            var yMax = Math.Min(a.Max.Y, b.Max.Y);
+            var xMin = Max(a.Min.X, b.Min.X);
+            var yMin = Max(a.Min.Y, b.Min.Y);
+            var xMax = Min(a.Max.X, b.Max.X);
+            var yMax = Min(a.Max.Y, b.Max.Y);
             return new PixelArea(new PixelCoordinate(xMin, yMin), new PixelCoordinate(xMax, yMax));
         }
 

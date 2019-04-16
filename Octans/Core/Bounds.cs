@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using static System.MathF;
+using static System.Single;
 
 namespace Octans
 {
@@ -53,7 +54,7 @@ namespace Octans
             var maxY = enumerable.Max(p => p.Y);
             var maxZ = enumerable.Max(p => p.Z);
 
-            if (float.IsNaN(minX))
+            if (IsNaN(minX))
             {
                 // Odd case where an transform produces NaN for points. Give up and return global bounds.
                 return Infinite;
@@ -96,7 +97,7 @@ namespace Octans
             var t5 = (Min.Z - ray.Origin.Z) * ray.InverseDirection.Z;
             var t6 = (Max.Z - ray.Origin.Z) * ray.InverseDirection.Z;
 
-            var tMax = MathF.Min(MathF.Min(MathF.Max(t1, t2), MathF.Max(t3, t4)), MathF.Max(t5, t6));
+            var tMax = Min(Min(Max(t1, t2), Max(t3, t4)), Max(t5, t6));
 
             //var t = 0f;
             if (tMax < 0f)
@@ -105,14 +106,14 @@ namespace Octans
                 return false;
             }
 
-            var tMin = MathF.Max(MathF.Max(MathF.Min(t1, t2), MathF.Min(t3, t4)), MathF.Min(t5, t6));
+            var tMin = Max(Max(Min(t1, t2), Min(t3, t4)), Min(t5, t6));
             if (tMin > tMax)
             {
                 //t = tMax;
                 return false;
             }
 
-            if (float.IsNaN(tMax))
+            if (IsNaN(tMax))
             {
                 //t = float.PositiveInfinity;
                 return false;
@@ -137,8 +138,8 @@ namespace Octans
         public static Bounds Empty => new Bounds(Point.Zero, Point.Zero, true);
 
         public static Bounds Infinite =>
-            new Bounds(new Point(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity),
-                       new Point(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity));
+            new Bounds(new Point(NegativeInfinity, NegativeInfinity, NegativeInfinity),
+                       new Point(PositiveInfinity, PositiveInfinity, PositiveInfinity));
 
         public static Bounds Unit => new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
@@ -154,14 +155,14 @@ namespace Octans
                 return a;
             }
 
-            var minX = MathF.Min(a.Min.X, b.Min.X);
-            var minY = MathF.Min(a.Min.Y, b.Min.Y);
-            var minZ = MathF.Min(a.Min.Z, b.Min.Z);
+            var minX = Min(a.Min.X, b.Min.X);
+            var minY = Min(a.Min.Y, b.Min.Y);
+            var minZ = Min(a.Min.Z, b.Min.Z);
             var min = new Point(minX, minY, minZ);
 
-            var maxX = MathF.Max(a.Max.X, b.Max.X);
-            var maxY = MathF.Max(a.Max.Y, b.Max.Y);
-            var maxZ = MathF.Max(a.Max.Z, b.Max.Z);
+            var maxX = Max(a.Max.X, b.Max.X);
+            var maxY = Max(a.Max.Y, b.Max.Y);
+            var maxZ = Max(a.Max.Z, b.Max.Z);
             var max = new Point(maxX, maxY, maxZ);
 
             return new Bounds(min, max);
@@ -181,7 +182,7 @@ namespace Octans
             var wX = Max.X - Min.X;
             var wY = Max.Y - Min.Y;
             var wZ = Max.Z - Min.Z;
-            var maxW = MathF.Max(wX, MathF.Max(wY, wZ));
+            var maxW = Max(wX, Max(wY, wZ));
             // ReSharper disable CompareOfFloatsByEqualityOperator
             if (maxW == wX)
             {

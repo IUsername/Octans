@@ -204,7 +204,7 @@ namespace Octans
             public float SplatY;
             public float SplatZ;
             public float FilterWeightSum;
-            private float Pad;
+            private readonly float Pad; // Align struct
         }
 
         internal class TilePixel
@@ -215,7 +215,7 @@ namespace Octans
             public TilePixel()
             {
                 FilterWeightSum = 0f;
-                ContributionSum = Spectrum.Black;
+                ContributionSum = Spectrum.Zero;
             }
         }
 

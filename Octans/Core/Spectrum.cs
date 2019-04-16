@@ -2,6 +2,9 @@
 using System.Diagnostics.Contracts;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using static System.MathF;
+using static System.Numerics.Vector;
+using static Octans.MathFunction;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -21,7 +24,8 @@ namespace Octans
         public static readonly int Samples;
         public static readonly int SampledLambdaEnd;
         public static readonly int SampledLambdaStart;
-        public static readonly Spectrum Black;
+        public static readonly Spectrum Zero;
+        public static readonly Spectrum One;
 
         private static readonly Spectrum X;
         private static readonly Spectrum Y;
@@ -44,7 +48,8 @@ namespace Octans
             Y = new Spectrum(y);
             Z = new Spectrum(z);
 
-            Black = new Spectrum();
+            Zero = new Spectrum();
+            One = new Spectrum(1f);
         }
 
         public Spectrum(float v)
@@ -89,7 +94,7 @@ namespace Octans
             {
                 var a = new Vector<float>(_c, i);
                 var b = new Vector<float>(other._c, i);
-                if (!System.Numerics.Vector.EqualsAll(a, b))
+                if (!EqualsAll(a, b))
                 {
                     return false;
                 }
@@ -114,7 +119,7 @@ namespace Octans
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
                 var vector = new Vector<float>(_c, i);
-                if (!System.Numerics.Vector.EqualsAll(vector, Vector<float>.Zero))
+                if (!EqualsAll(vector, Vector<float>.Zero))
                 {
                     return false;
                 }
@@ -166,6 +171,26 @@ namespace Octans
         }
 
         [Pure]
+        public Spectrum Add(in float scalar)
+        {
+            int i;
+            var results = new float[Samples];
+            for (i = 0; i < RemainderIndex; i += SimdLength)
+            {
+                var a = new Vector<float>(_c, i);
+                var b = new Vector<float>(scalar);
+                System.Numerics.Vector.Add(a, b).CopyTo(results, i);
+            }
+
+            for (; i < Samples; i++)
+            {
+                results[i] = _c[i] + scalar;
+            }
+
+            return new Spectrum(results);
+        }
+
+        [Pure]
         public Spectrum Subtract(in Spectrum other)
         {
             int i;
@@ -180,6 +205,26 @@ namespace Octans
             for (; i < Samples; i++)
             {
                 results[i] = _c[i] - other._c[i];
+            }
+
+            return new Spectrum(results);
+        }
+
+        [Pure]
+        public Spectrum Subtract(in float scalar)
+        {
+            int i;
+            var results = new float[Samples];
+            for (i = 0; i < RemainderIndex; i += SimdLength)
+            {
+                var a = new Vector<float>(_c, i);
+                var b = new Vector<float>(scalar);
+                System.Numerics.Vector.Subtract(a, b).CopyTo(results, i);
+            }
+
+            for (; i < Samples; i++)
+            {
+                results[i] = _c[i] - scalar;
             }
 
             return new Spectrum(results);
@@ -272,7 +317,7 @@ namespace Octans
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
                 var a = new Vector<float>(_c, i);
-                System.Numerics.Vector.SquareRoot(a).CopyTo(results, i);
+                SquareRoot(a).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
@@ -361,12 +406,12 @@ namespace Octans
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
                 var a = new Vector<float>(spectrum._c, i);
-                System.Numerics.Vector.Min(System.Numerics.Vector.Max(a, l), h).CopyTo(results, i);
+                Min(Max(a, l), h).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = MathFunction.ClampF(low, high, spectrum._c[i]);
+                results[i] = ClampF(low, high, spectrum._c[i]);
             }
 
             return new Spectrum(results);
@@ -380,18 +425,18 @@ namespace Octans
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
                 var a = new Vector<float>(spectrum._c, i);
-                vMax = System.Numerics.Vector.Max(a, vMax);
+                vMax = Max(a, vMax);
             }
 
             var max = float.MinValue;
             for (var j = 0; j < SimdLength; j++)
             {
-                max = MathF.Max(max, vMax[j]);
+                max = Max(max, vMax[j]);
             }
 
             for (; i < Samples; i++)
             {
-                max = MathF.Max(spectrum._c[i], max);
+                max = Max(spectrum._c[i], max);
             }
 
             return max;
@@ -480,13 +525,28 @@ namespace Octans
         public static Spectrum operator +(Spectrum left, Spectrum right) => left.Add(in right);
 
         [Pure]
+        public static Spectrum operator +(Spectrum left, float right) => left.Add(in right);
+
+        [Pure]
+        public static Spectrum operator +(float left, Spectrum right) => right.Add(in left);
+
+        [Pure]
         public static Spectrum operator -(Spectrum left, Spectrum right) => left.Subtract(in right);
+
+        [Pure]
+        public static Spectrum operator -(Spectrum left, float right) => left.Subtract(in right);
+
+        [Pure]
+        public static Spectrum operator -(float left, Spectrum right) => -right.Add(in left);
 
         [Pure]
         public static Spectrum operator *(Spectrum left, Spectrum right) => left.Multiply(in right);
 
         [Pure]
         public static Spectrum operator *(Spectrum left, float right) => left.Multiply(right);
+
+        [Pure]
+        public static Spectrum operator *(float left, Spectrum right) => right.Multiply(left);
 
         [Pure]
         public static Spectrum operator /(Spectrum left, Spectrum right) => left.Divide(in right);

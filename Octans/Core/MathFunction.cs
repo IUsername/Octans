@@ -1,13 +1,13 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using static System.MathF;
 
 namespace Octans
 {
     public static class MathFunction
     {
         [Pure]
-        public static float ClampF(float min, float max, float value) => MathF.Min(max, MathF.Max(min, value));
+        public static float ClampF(float min, float max, float value) => Min(max, Max(min, value));
 
         /// <summary>
         /// Linearly interpolates between v0 and v1 by t.
@@ -20,7 +20,7 @@ namespace Octans
         public static float Lerp(float v0, float v1, float t)
         {
             //  (1f - t) * v0 + t * v1;
-            return MathF.FusedMultiplyAdd(t, v1, MathF.FusedMultiplyAdd(-t, v0, v0));
+            return FusedMultiplyAdd(t, v1, FusedMultiplyAdd(-t, v0, v0));
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Octans
         /// <param name="value">Value to limit.</param>
         /// <returns>Limited value.</returns>
         [Pure]
-        public static float Saturate(float value) => MathF.Max(0f, MathF.Min(1f, value));
+        public static float Saturate(float value) => Max(0f, Min(1f, value));
 
         /// <summary>
         /// Returns two vectors that when combined with the input normal can be used to transform to and from a
@@ -42,7 +42,7 @@ namespace Octans
         public static (Vector b1, Vector b2) OrthonormalPosZ(in Normal n)
         {
             // https://graphics.pixar.com/library/OrthonormalB/paper.pdf
-            var sign = MathF.CopySign(1f, n.Z);
+            var sign = CopySign(1f, n.Z);
             var aT = -1f / (sign + n.Z);
             var bT = n.X * n.Y * aT;
             var b1T = new Vector(1f + sign * n.X * n.X * aT, sign * bT, -sign * n.X);
@@ -70,17 +70,19 @@ namespace Octans
         [Pure]
         public static float Rad(float degrees)
         {
-            const float piDiv180 = MathF.PI / 180f;
+            const float piDiv180 = PI / 180f;
             return degrees * piDiv180;
         }
 
         [Pure]
         public static float Deg(float radians)
         {
-            const float oneEightyOverPi = 180f / MathF.PI;
+            const float oneEightyOverPi = 180f / PI;
             return radians * oneEightyOverPi;
         }
 
-        public static readonly float OneMinusEpsilon = MathF.BitDecrement(1f); // 0.99999994F;
+        public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
+
+        public const float InvPi = 1f / PI;
     }
 }

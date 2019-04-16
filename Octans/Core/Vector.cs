@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using static System.MathF;
 
 namespace Octans
 {
@@ -36,12 +37,12 @@ namespace Octans
 
         public Vector Fraction(float scalar) => new Vector(scalar / X, scalar / Y, scalar / Z);
 
-        public float Magnitude() => MathF.Sqrt(MagSqr());
+        public float Magnitude() => Sqrt(MagSqr());
 
         public float MagSqr()
         {
             //return X * X + Y * Y + Z * Z;
-            return MathF.FusedMultiplyAdd(X, X, MathF.FusedMultiplyAdd(Y, Y, Z * Z));
+            return FusedMultiplyAdd(X, X, FusedMultiplyAdd(Y, Y, Z * Z));
         }
 
         public Vector Normalize()
@@ -106,7 +107,7 @@ namespace Octans
         public static float Dot(in Vector a, in Vector b)
         {
             //return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
-            return MathF.FusedMultiplyAdd(a.X, b.X, MathF.FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
+            return FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
         }
 
         [Pure]
