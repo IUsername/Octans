@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.MathF;
 using static System.Numerics.Vector;
-using static Octans.MathFunction;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -322,7 +321,7 @@ namespace Octans
 
             for (; i < Samples; i++)
             {
-                results[i] = MathF.Sqrt(_c[i]);
+                results[i] = System.MathF.Sqrt(_c[i]);
             }
 
             return new Spectrum(results);
@@ -335,7 +334,7 @@ namespace Octans
             var s = new float[Samples];
             for (var i = 0; i < Samples; i++)
             {
-                s[i] = MathF.Pow(_c[i], y);
+                s[i] = System.MathF.Pow(_c[i], y);
             }
 
             return new Spectrum(s);
@@ -348,7 +347,7 @@ namespace Octans
             var s = new float[Samples];
             for (var i = 0; i < Samples; i++)
             {
-                s[i] = MathF.Exp(_c[i]);
+                s[i] = System.MathF.Exp(_c[i]);
             }
 
             return new Spectrum(s);
@@ -390,7 +389,7 @@ namespace Octans
 
             for (; i < Samples; i++)
             {
-                results[i] = MathFunction.Lerp(s0._c[i], s1._c[i], t);
+                results[i] = MathF.Lerp(s0._c[i], s1._c[i], t);
             }
 
             return new Spectrum(results);
@@ -411,7 +410,7 @@ namespace Octans
 
             for (; i < Samples; i++)
             {
-                results[i] = ClampF(low, high, spectrum._c[i]);
+                results[i] = MathF.Clamp(low, high, spectrum._c[i]);
             }
 
             return new Spectrum(results);

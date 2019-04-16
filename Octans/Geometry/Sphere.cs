@@ -16,7 +16,7 @@ namespace Octans.Geometry
                 return Intersections.Empty();
             }
 
-            discriminant = MathF.Sqrt(discriminant);
+            discriminant = System.MathF.Sqrt(discriminant);
             var denominator = 2f * a;
             var t1 = (-b - discriminant) / denominator;
             var t2 = (-b + discriminant) / denominator;

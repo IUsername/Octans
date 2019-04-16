@@ -11,9 +11,9 @@ namespace Octans.Test.Camera
         [Fact]
         public void ConstructingCamera()
         {
-            var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, 160f/120);
+            var c = new PinholeCamera(in Transform.Identity, System.MathF.PI / 2f, 160f/120);
             c.AspectRatio.Should().Be(160f / 120);
-            c.FieldOfView.Should().Be(MathF.PI / 2f);
+            c.FieldOfView.Should().Be(System.MathF.PI / 2f);
             c.CameraToWorld.Matrix.Should().Be(Matrix.Identity);
             c.CameraToWorld.Inverse.Should().Be(Matrix.Identity);
         }
@@ -23,7 +23,7 @@ namespace Octans.Test.Camera
         {
             var width = 201;
             var height = 101;
-            var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, (float) width / height);
+            var c = new PinholeCamera(in Transform.Identity, System.MathF.PI / 2f, (float) width / height);
             var coordinate = new PixelCoordinate(100, 50);
             var (r, _) =
                 c.CameraRay(
@@ -38,7 +38,7 @@ namespace Octans.Test.Camera
         {
             var width = 201;
             var height = 101;
-            var c = new PinholeCamera(in Transform.Identity, MathF.PI / 2f, (float)width / height);
+            var c = new PinholeCamera(in Transform.Identity, System.MathF.PI / 2f, (float)width / height);
             var coordinate = new PixelCoordinate(0, 0);
             var (r, _) =
                 c.CameraRay(
@@ -53,15 +53,15 @@ namespace Octans.Test.Camera
         {
             var width = 201;
             var height = 101;
-            var transform = Transform.RotateY(MathF.PI / 4f) * Transform.Translate(0, -2, 5);
-            var c = new PinholeCamera(transform, MathF.PI / 2f, (float)width / height);
+            var transform = Transform.RotateY(System.MathF.PI / 4f) * Transform.Translate(0, -2, 5);
+            var c = new PinholeCamera(transform, System.MathF.PI / 2f, (float)width / height);
             var coordinate = new PixelCoordinate(100, 50);
             var (r, _) =
                 c.CameraRay(
                     new PixelSample(new PixelInformation(coordinate, width, height), new UVPoint(0.5f, 0.5f)),
                     new TestSampler(0f, 0f, 0.5f));
             r.Origin.Should().Be(new Point(0, 2, -5));
-            r.Direction.Should().Be(new Vector(MathF.Sqrt(2f) / 2f, 0.0f, -MathF.Sqrt(2f) / 2f));
+            r.Direction.Should().Be(new Vector(System.MathF.Sqrt(2f) / 2f, 0.0f, -System.MathF.Sqrt(2f) / 2f));
         }
     }
 

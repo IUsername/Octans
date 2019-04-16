@@ -18,7 +18,7 @@ namespace Octans.Reflection
 
         public Spectrum Evaluate(float cosI)
         {
-            return FrConductor(MathF.Abs(cosI), _etaI, _etaT, _k);
+            return FrConductor(System.MathF.Abs(cosI), _etaI, _etaT, _k);
         }
     }
 }

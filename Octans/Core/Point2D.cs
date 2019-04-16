@@ -20,13 +20,13 @@ namespace Octans
         [Pure]
         public static Point2D Floor(in Point2D p)
         {
-            return new Point2D(MathF.Floor(p.X), MathF.Floor(p.Y));
+            return new Point2D(System.MathF.Floor(p.X), System.MathF.Floor(p.Y));
         }
 
         [Pure]
         public static Point2D Ceiling(in Point2D p)
         {
-            return new Point2D(MathF.Ceiling(p.X), MathF.Ceiling(p.Y));
+            return new Point2D(System.MathF.Ceiling(p.X), System.MathF.Ceiling(p.Y));
         }
 
         [Pure]

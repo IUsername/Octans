@@ -21,7 +21,7 @@ namespace Octans.Camera
             ApertureRadius = apertureRadius;
             CameraToWorld = Transform.Invert(Transform.LookAt(from, to, up));
 
-            var halfView = MathF.Tan(fieldOfView / 2f);
+            var halfView = System.MathF.Tan(fieldOfView / 2f);
             var halfWidth = halfView;
             var halfHeight = halfView;
             if (aspectRatio >= 1f)
@@ -50,10 +50,10 @@ namespace Octans.Camera
         public (Ray ray, float throughput) CameraRay(in PixelSample sample, ISampler sampler)
         {
             var uv = sampler.NextUV();
-            var r = MathF.Sqrt(1f - uv.U * uv.U);
-            var phi = 2 * MathF.PI * uv.V;
-            var u = ApertureRadius * MathF.Cos(phi) * r;
-            var v = ApertureRadius * MathF.Sin(phi) * r;
+            var r = System.MathF.Sqrt(1f - uv.U * uv.U);
+            var phi = 2 * System.MathF.PI * uv.V;
+            var u = ApertureRadius * System.MathF.Cos(phi) * r;
+            var v = ApertureRadius * System.MathF.Sin(phi) * r;
             var offset = new Point(u, v, 0);
 
             var aimed = FocalPlanePoint(in sample);

@@ -48,7 +48,7 @@ namespace Octans.ConsoleApp
             var d4 = CutPips(RoundedCube(radius, yellow), blackPip);
 
             d1.SetTransform(Transform.RotateY(-2.2f).TranslateY(1f).Scale(0.5f));
-            d2.SetTransform(Transform.RotateZ(MathF.PI / 2f).TranslateY(1f).TranslateX(2f).TranslateZ(1f).Scale(0.5f));
+            d2.SetTransform(Transform.RotateZ(System.MathF.PI / 2f).TranslateY(1f).TranslateX(2f).TranslateZ(1f).Scale(0.5f));
             d3.SetTransform(Transform.RotateY(0.5f).TranslateY(1f).TranslateX(-4f).TranslateZ(1f).Scale(0.5f));
             d4.SetTransform(Transform.RotateY(-0.2f).TranslateY(3f).TranslateX(0.2f).TranslateZ(1.25f).Scale(0.5f));
 
@@ -108,7 +108,7 @@ namespace Octans.ConsoleApp
             var canvas = new Canvas(width, height);
 
             var pps = new PerPixelSampler(spp);
-            var fov = MathF.PI / 3f;
+            var fov = System.MathF.PI / 3f;
             var aspectRatio = (float) width / height;
             var camera = new ApertureCamera(fov, aspectRatio, 0.15f, from, to, Vectors.Up);
             //var transform = Transforms.View(from, to, new Vector(0, 1, 0));

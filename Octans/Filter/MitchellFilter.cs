@@ -33,7 +33,7 @@ namespace Octans.Filter
 
         private float Eval1D(float x)
         {
-            x = MathF.Abs(2f * x);
+            x = System.MathF.Abs(2f * x);
             if (x > 1f)
             {
                 return ((-_b - 6f * _c) * x * x * x + (6f * _b + 30 * _c) * x * x + (-12f * _b - 48 * _c) * x +

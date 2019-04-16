@@ -14,14 +14,14 @@ namespace Octans.Shading
 
         private static float SchlickFresnelFunc(float i)
         {
-            var x = MathFunction.Saturate(1f - i);
+            var x = MathF.Saturate(1f - i);
             var x2 = x * x;
             return x2 * x2 * x;
         }
 
         private static float Calc(float ior, float LdotH)
         {
-            var f0 = MathF.Pow(ior - 1f, 2f) / MathF.Pow(ior + 1f, 2f);
+            var f0 = System.MathF.Pow(ior - 1f, 2f) / System.MathF.Pow(ior + 1f, 2f);
             return f0 + (1 - f0) * SchlickFresnelFunc(LdotH);
         }
     }

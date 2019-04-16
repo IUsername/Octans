@@ -78,14 +78,14 @@ namespace Octans.Shading
                     break;
                 }
 
-                var probabilityOfReflection = MathFunction.Lerp(1f, Schlick(in info), material.Transparency);
+                var probabilityOfReflection = MathF.Lerp(1f, Schlick(in info), material.Transparency);
                 if (sampler.Random() <= probabilityOfReflection)
                 {
                     //   throughPut *= 1f - material.Transparency;
                     // Direct + Indirect
 
-                    var directProbability = MathFunction.Lerp(0.5f,
-                                                              MathFunction.Lerp(0.0f, 0.5f, material.Roughness),
+                    var directProbability = MathF.Lerp(0.5f,
+                                                              MathF.Lerp(0.0f, 0.5f, material.Roughness),
                                                               material.Metallic);
 
                     if (sampler.Random() <= directProbability)
@@ -120,8 +120,8 @@ namespace Octans.Shading
                 }
 
                 // Russian roulette
-                var maxChannel = MathF.Max(throughPut.Red, MathF.Max(throughPut.Green, throughPut.Blue));
-                var continueProbability = MathFunction.ClampF(0f, 1f, maxChannel);
+                var maxChannel = System.MathF.Max(throughPut.Red, System.MathF.Max(throughPut.Green, throughPut.Blue));
+                var continueProbability = MathF.Clamp(0f, 1f, maxChannel);
                 if (sampler.Random() > continueProbability)
                 {
                     break;
@@ -255,7 +255,7 @@ namespace Octans.Shading
                 return (new Ray(), Colors.Black);
             }
 
-            var cosT = MathF.Sqrt(1f - sin2T);
+            var cosT = System.MathF.Sqrt(1f - sin2T);
             var direction = (Vector) info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
 
 
@@ -279,14 +279,14 @@ namespace Octans.Shading
                 }
 
                 // Cosine of theta_t
-                var cosT = MathF.Sqrt(1f - sin2T);
+                var cosT = System.MathF.Sqrt(1f - sin2T);
                 cos = cosT;
             }
 
             var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
             r0 *= r0;
             // Probability of reflection
-            var rProb = r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
+            var rProb = r0 + (1f - r0) * System.MathF.Pow(1 - cos, 5);
             return rProb;
         }
 

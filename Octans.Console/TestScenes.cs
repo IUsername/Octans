@@ -60,13 +60,13 @@ namespace Octans.ConsoleApp
             }
 
             Cylinder EdgeX(float r, Point from, Material material) =>
-                CreateCylinder(r, from, material, Transform.RotateZ(-MathF.PI / 2));
+                CreateCylinder(r, from, material, Transform.RotateZ(-System.MathF.PI / 2));
 
             Cylinder EdgeY(float r, Point from, Material material) =>
                 CreateCylinder(r, from, material, Transform.Identity);
 
             Cylinder EdgeZ(float r, Point from, Material material) =>
-                CreateCylinder(r, from, material, Transform.RotateX(MathF.PI / 2));
+                CreateCylinder(r, from, material, Transform.RotateX(System.MathF.PI / 2));
 
             var s = SolidFaces(radius);
             var points = new[]

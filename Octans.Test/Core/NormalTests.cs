@@ -52,10 +52,10 @@ namespace Octans.Test
             n.Magnitude().Should().BeApproximately(1.0f, 0.0001f);
 
             n = new Normal(1, 2, 3);
-            n.Magnitude().Should().BeApproximately(MathF.Sqrt(14), 0.0001f);
+            n.Magnitude().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
 
             n = new Normal(-1, -2, -3);
-            n.Magnitude().Should().BeApproximately(MathF.Sqrt(14), 0.0001f);
+            n.Magnitude().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace Octans.Test
         public void ReflectOffSlantedSurface()
         {
             var v = new Normal(0, -1, 0);
-            var n = new Normal(MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f, 0);
+            var n = new Normal(System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f, 0);
             var r = v.Reflect(n);
             r.Should().BeEquivalentTo(new Normal(1, 0, 0));
         }

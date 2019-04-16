@@ -1,5 +1,5 @@
 ﻿using System;
-using static Octans.MathFunction;
+using static Octans.MathF;
 
 namespace Octans.Reflection
 {

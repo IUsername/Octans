@@ -61,7 +61,7 @@ namespace Octans.Test.Geometry
         {
             var c = new Cone();
             c.LocalNormalAt(new Point(0, 0, 0), new Intersection(1, c)).Should().Be(new Normal(0, 0, 0));
-            c.LocalNormalAt(new Point(1, 1, 1), new Intersection(1, c)).Should().Be(new Normal(1, -MathF.Sqrt(2f), 1));
+            c.LocalNormalAt(new Point(1, 1, 1), new Intersection(1, c)).Should().Be(new Normal(1, -System.MathF.Sqrt(2f), 1));
             c.LocalNormalAt(new Point(-1, -1, 0), new Intersection(1, c)).Should().Be(new Normal(-1, 1, 0));
         }
 

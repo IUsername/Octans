@@ -25,18 +25,18 @@ namespace Octans.Texture
 
         public static float Noise(float x)
         {
-            var X = (int) MathF.Floor(x) & 0xff;
-            x -= MathF.Floor(x);
+            var X = (int) System.MathF.Floor(x) & 0xff;
+            x -= System.MathF.Floor(x);
             var u = Fade(x);
             return Lerp(u, Grad(perm[X], x), Grad(perm[X + 1], x - 1)) * 2;
         }
 
         public static float Noise(float x, float y)
         {
-            var X = (int) MathF.Floor(x) & 0xff;
-            var Y = (int) MathF.Floor(y) & 0xff;
-            x -= MathF.Floor(x);
-            y -= MathF.Floor(y);
+            var X = (int) System.MathF.Floor(x) & 0xff;
+            var Y = (int) System.MathF.Floor(y) & 0xff;
+            x -= System.MathF.Floor(x);
+            y -= System.MathF.Floor(y);
             var u = Fade(x);
             var v = Fade(y);
             var A = (perm[X] + Y) & 0xff;
@@ -47,12 +47,12 @@ namespace Octans.Texture
 
         public static float Noise(float x, float y, float z)
         {
-            var X = (int) MathF.Floor(x) & 0xff;
-            var Y = (int) MathF.Floor(y) & 0xff;
-            var Z = (int) MathF.Floor(z) & 0xff;
-            x -= MathF.Floor(x);
-            y -= MathF.Floor(y);
-            z -= MathF.Floor(z);
+            var X = (int) System.MathF.Floor(x) & 0xff;
+            var Y = (int) System.MathF.Floor(y) & 0xff;
+            var Z = (int) System.MathF.Floor(z) & 0xff;
+            x -= System.MathF.Floor(x);
+            y -= System.MathF.Floor(y);
+            z -= System.MathF.Floor(z);
             var u = Fade(x);
             var v = Fade(y);
             var w = Fade(z);

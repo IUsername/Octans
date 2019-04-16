@@ -4,24 +4,30 @@ using static System.MathF;
 
 namespace Octans
 {
-    public static class MathFunction
+    public static class MathF
     {
+        public const float InvPi = 1f / PI;
+
+        public const float OneEightyOverPi = 180f / PI;
+
+        public const float PiOver180 = PI / 180f;
+
+        public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
+
         [Pure]
-        public static float ClampF(float min, float max, float value) => Min(max, Max(min, value));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Clamp(float min, float max, float value) => Min(max, Max(min, value));
 
         /// <summary>
-        /// Linearly interpolates between v0 and v1 by t.
+        ///     Linearly interpolates between v0 and v1 by t.
         /// </summary>
         /// <param name="v0">Value at t = 0.</param>
         /// <param name="v1">Value at t = 1.</param>
         /// <param name="t">Point in [0..1].</param>
         /// <returns>Interpolated result.</returns>
         [Pure]
-        public static float Lerp(float v0, float v1, float t)
-        {
-            //  (1f - t) * v0 + t * v1;
-            return FusedMultiplyAdd(t, v1, FusedMultiplyAdd(-t, v0, v0));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Lerp(float v0, float v1, float t) => FusedMultiplyAdd(t, v1, FusedMultiplyAdd(-t, v0, v0));
 
         /// <summary>
         ///     Returns value limited to [0,1]/
@@ -29,11 +35,12 @@ namespace Octans
         /// <param name="value">Value to limit.</param>
         /// <returns>Limited value.</returns>
         [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Saturate(float value) => Max(0f, Min(1f, value));
 
         /// <summary>
-        /// Returns two vectors that when combined with the input normal can be used to transform to and from a
-        /// Z-positive normal orthonormal space.
+        ///     Returns two vectors that when combined with the input normal can be used to transform to and from a
+        ///     Z-positive normal orthonormal space.
         /// </summary>
         /// <param name="n">Normal vector.</param>
         /// <returns>Orthonormal vectors from input normal.</returns>
@@ -48,7 +55,7 @@ namespace Octans
             var b1T = new Vector(1f + sign * n.X * n.X * aT, sign * bT, -sign * n.X);
             var b2T = new Vector(bT, sign + n.Y * n.Y * aT, -n.Y);
             return (b1T, b2T);
-           
+
             //if (n.Z < 0f)
             //{
             //    var a = 1f / (1f - n.Z);
@@ -68,21 +75,11 @@ namespace Octans
         }
 
         [Pure]
-        public static float Rad(float degrees)
-        {
-            const float piDiv180 = PI / 180f;
-            return degrees * piDiv180;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Rad(float degrees) => degrees * PiOver180;
 
         [Pure]
-        public static float Deg(float radians)
-        {
-            const float oneEightyOverPi = 180f / PI;
-            return radians * oneEightyOverPi;
-        }
-
-        public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
-
-        public const float InvPi = 1f / PI;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Deg(float radians) => radians * OneEightyOverPi;
     }
 }

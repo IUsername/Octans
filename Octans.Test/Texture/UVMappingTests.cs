@@ -16,7 +16,7 @@ namespace Octans.Test.Texture
             UVMapping.Spherical(new Point(-1, 0, 0)).Should().Be(new UVPoint(0.75f, 0.5f));
             UVMapping.Spherical(new Point(0, 1, 0)).Should().Be(new UVPoint(0.5f, 1.0f));
             UVMapping.Spherical(new Point(0, -1, 0)).Should().Be(new UVPoint(0.5f, 0.0f));
-            var uv = UVMapping.Spherical(new Point(MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f, 0));
+            var uv = UVMapping.Spherical(new Point(System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f, 0));
             uv.U.Should().BeApproximately(0.25f, 0.00001f);
             uv.V.Should().BeApproximately(0.75f, 0.00001f);
         }

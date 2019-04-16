@@ -58,7 +58,7 @@ namespace Octans.Geometry
                     disc = 0;
                 }
 
-                var sqrt = MathF.Sqrt(disc);
+                var sqrt = System.MathF.Sqrt(disc);
                 var t0 = (-b - sqrt) / (2f * a);
                 var t1 = (-b + sqrt) / (2f * a);
 
@@ -90,7 +90,7 @@ namespace Octans.Geometry
         {
             var x = ray.Origin.X + t * ray.Direction.X;
             var z = ray.Origin.Z + t * ray.Direction.Z;
-            var r = MathF.Abs(ray.Origin.Y + t * ray.Direction.Y);
+            var r = System.MathF.Abs(ray.Origin.Y + t * ray.Direction.Y);
             var check = x * x + z * z;
             return check <= r || Check.Within(check, r, Epsilon);
         }
@@ -142,7 +142,7 @@ namespace Octans.Geometry
                 }
             }
 
-            var y = MathF.Sqrt(localPoint.X * localPoint.X + localPoint.Z * localPoint.Z);
+            var y = System.MathF.Sqrt(localPoint.X * localPoint.X + localPoint.Z * localPoint.Z);
             if (localPoint.Y > 0)
             {
                 y = -y;
@@ -155,7 +155,7 @@ namespace Octans.Geometry
         {
             if (IsClosed)
             {
-                var xz = MathF.Max(MathF.Acos(Minimum), Maximum);
+                var xz = System.MathF.Max(System.MathF.Acos(Minimum), Maximum);
                 return new Bounds(new Point(-xz, Minimum, -xz), new Point(xz, Maximum, xz));
             }
             else

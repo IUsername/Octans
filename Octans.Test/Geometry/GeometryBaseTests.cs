@@ -60,7 +60,7 @@ namespace Octans.Test.Geometry
         public void NormalsAreNormalized()
         {
             var s = new TestGeometry();
-            var n = s.NormalAt(new Point(MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f, MathF.Sqrt(3f) / 3f),
+            var n = s.NormalAt(new Point(System.MathF.Sqrt(3f) / 3f, System.MathF.Sqrt(3f) / 3f, System.MathF.Sqrt(3f) / 3f),
                                new Intersection(1f, s));
             (n == n.Normalize()).Should().BeTrue();
         }
@@ -78,8 +78,8 @@ namespace Octans.Test.Geometry
         public void NormalOnTransformedShape()
         {
             var s = new TestGeometry();
-            s.SetTransform(Transform.Scale(1f, 0.5f, 1f) * Transform.RotateZ(MathF.PI / 5f));
-            var n = s.NormalAt(new Point(0, MathF.Sqrt(2f) / 2f, -MathF.Sqrt(2f) / 2f), new Intersection(1f, s));
+            s.SetTransform(Transform.Scale(1f, 0.5f, 1f) * Transform.RotateZ(System.MathF.PI / 5f));
+            var n = s.NormalAt(new Point(0, System.MathF.Sqrt(2f) / 2f, -System.MathF.Sqrt(2f) / 2f), new Intersection(1f, s));
             n.Should().Be(new Normal(0, 0.97014f, -0.24254f));
         }
 
@@ -110,7 +110,7 @@ namespace Octans.Test.Geometry
         public void ConvertsPointFromWorldToObjectSpace()
         {
             var g1 = new Group();
-            g1.SetTransform(Transform.RotateY(MathF.PI / 2));
+            g1.SetTransform(Transform.RotateY(System.MathF.PI / 2));
             var g2 = new Group();
             g2.SetTransform(Transform.Scale(2));
             g1.AddChild(g2);
@@ -125,14 +125,14 @@ namespace Octans.Test.Geometry
         public void ConvertsNormalsFromObjectToWorldSpace()
         {
             var g1 = new Group();
-            g1.SetTransform(Transform.RotateY(MathF.PI / 2));
+            g1.SetTransform(Transform.RotateY(System.MathF.PI / 2));
             var g2 = new Group();
             g2.SetTransform(Transform.Scale(1, 2, 3));
             g1.AddChild(g2);
             var s = new Sphere();
             s.SetTransform(Transform.TranslateX(5));
             g2.AddChild(s);
-            var n = s.NormalToWorld(new Normal(MathF.PI / 3, MathF.PI / 3, MathF.PI / 3));
+            var n = s.NormalToWorld(new Normal(System.MathF.PI / 3, System.MathF.PI / 3, System.MathF.PI / 3));
             n.Should().Be(new Normal(0.2857f, 0.4286f, -0.8571f));
         }
 
@@ -140,7 +140,7 @@ namespace Octans.Test.Geometry
         public void FindNormalOnChild()
         {
             var g1 = new Group();
-            g1.SetTransform(Transform.RotateY(MathF.PI / 2));
+            g1.SetTransform(Transform.RotateY(System.MathF.PI / 2));
             var g2 = new Group();
             g2.SetTransform(Transform.Scale(1, 2, 3));
             g1.AddChild(g2);

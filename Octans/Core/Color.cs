@@ -36,7 +36,7 @@ namespace Octans
         }
 
         [Pure]
-        public Color Pow(float exp) => new Color(MathF.Pow(Red, exp), MathF.Pow(Green, exp), MathF.Pow(Blue, exp));
+        public Color Pow(float exp) => new Color(System.MathF.Pow(Red, exp), System.MathF.Pow(Green, exp), System.MathF.Pow(Blue, exp));
 
         [Pure]
         public Color Negate() => new Color(-Red, -Blue, -Green);
@@ -100,7 +100,7 @@ namespace Octans
 
         [Pure]
         public static float PerceptiveColorDelta(in Color a, in Color b) =>
-            MathF.Sqrt(PerceptiveColorDeltaSqr(in a, in b)) / 3f;
+            System.MathF.Sqrt(PerceptiveColorDeltaSqr(in a, in b)) / 3f;
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

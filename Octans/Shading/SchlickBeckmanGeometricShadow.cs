@@ -41,7 +41,7 @@ namespace Octans.Shading
 
         private static float GGX(float alpha, float NdotX)
         {
-            var t = MathF.Sqrt(alpha + (1f - alpha) * (NdotX * NdotX));
+            var t = System.MathF.Sqrt(alpha + (1f - alpha) * (NdotX * NdotX));
             return 2 * NdotX / (NdotX + t);
         }
     }

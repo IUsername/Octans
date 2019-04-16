@@ -16,7 +16,7 @@ namespace Octans.Camera
             FieldOfView = fieldOfView;
             AspectRatio = aspectRatio;
            // _inv = transform.Inverse();
-            var halfView = MathF.Tan(fieldOfView / 2f);
+            var halfView = System.MathF.Tan(fieldOfView / 2f);
             var aspect = aspectRatio;
             var halfWidth = halfView;
             var halfHeight = halfView;

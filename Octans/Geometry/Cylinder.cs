@@ -36,8 +36,8 @@ namespace Octans.Geometry
                     return builder.ToIntersections();
                 }
 
-                var t0 = (-b - MathF.Sqrt(disc)) / (2f * a);
-                var t1 = (-b + MathF.Sqrt(disc)) / (2f * a);
+                var t0 = (-b - System.MathF.Sqrt(disc)) / (2f * a);
+                var t1 = (-b + System.MathF.Sqrt(disc)) / (2f * a);
 
                 if (t0 > t1)
                 {

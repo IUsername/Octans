@@ -99,7 +99,7 @@ namespace Octans.Sampling
                 n = next;
             }
 
-            return MathF.Min(reversedDigits * invBaseN, MathFunction.OneMinusEpsilon);
+            return System.MathF.Min(reversedDigits * invBaseN, MathF.OneMinusEpsilon);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,8 +119,8 @@ namespace Octans.Sampling
                 n = next;
             }
 
-            return MathF.Min(invBaseN * (reversedDigits + invBase * permutations[0] / (1 - invBase)),
-                             MathFunction.OneMinusEpsilon);
+            return System.MathF.Min(invBaseN * (reversedDigits + invBase * permutations[0] / (1 - invBase)),
+                             MathF.OneMinusEpsilon);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Octans.Geometry
             var t5 = (-1f - localRay.Origin.Z) * localRay.InverseDirection.Z;
             var t6 = (1f - localRay.Origin.Z) * localRay.InverseDirection.Z;
 
-            var tMax = MathF.Min(MathF.Min(MathF.Max(t1, t2), MathF.Max(t3, t4)), MathF.Max(t5, t6));
+            var tMax = System.MathF.Min(System.MathF.Min(System.MathF.Max(t1, t2), System.MathF.Max(t3, t4)), System.MathF.Max(t5, t6));
 
             //var t = 0f;
             if (tMax < 0f)
@@ -37,7 +37,7 @@ namespace Octans.Geometry
                 return Intersections.Empty();
             }
 
-            var tMin = MathF.Max(MathF.Max(MathF.Min(t1, t2), MathF.Min(t3, t4)), MathF.Min(t5, t6));
+            var tMin = System.MathF.Max(System.MathF.Max(System.MathF.Min(t1, t2), System.MathF.Min(t3, t4)), System.MathF.Min(t5, t6));
             if (tMin > tMax)
             {
                 return Intersections.Empty();
@@ -57,7 +57,7 @@ namespace Octans.Geometry
             var tMinNum = -1f - origin;
             var tMaxNum = 1 - origin;
             float tMin, tMax;
-            if (MathF.Abs(direction) >= Epsilon)
+            if (System.MathF.Abs(direction) >= Epsilon)
             {
                 tMin = tMinNum / direction;
                 tMax = tMaxNum / direction;

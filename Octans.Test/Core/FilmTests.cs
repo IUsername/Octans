@@ -31,7 +31,7 @@ namespace Octans.Test
             var ext = film.GetPhysicalExtent();
             var aspect = (float) height / width;
             var meterDiag = sensorDiagMillimeters * 0.001f;
-            var x = MathF.Sqrt(meterDiag * meterDiag / (1 + aspect * aspect));
+            var x = System.MathF.Sqrt(meterDiag * meterDiag / (1 + aspect * aspect));
             ext.Min.X.Should().BeApproximately(-x / 2f, 0.0001f);
             ext.Min.Y.Should().BeApproximately(-(x * aspect) / 2f, 0.0001f);
         }

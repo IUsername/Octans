@@ -44,7 +44,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("File parsed...");
 
             var triangulated = data.Groups[0];
-            triangulated.SetTransform(Transform.Scale(0.10f).RotateX(-MathF.PI / 2f).RotateY(MathF.PI / 8f));
+            triangulated.SetTransform(Transform.Scale(0.10f).RotateX(-System.MathF.PI / 2f).RotateY(System.MathF.PI / 8f));
 
             var glass = new Material
             {
@@ -108,7 +108,7 @@ namespace Octans.ConsoleApp
 
             var canvas = new Canvas(width, height);
             var pps = new PerPixelSampler(10);
-            var fov = MathF.PI / 3f;
+            var fov = System.MathF.PI / 3f;
             var aspectRatio = (float)width / height;
             var transform = Transform.LookAt(from, to, new Vector(0, 1, 0));
             //var camera = new PinholeCamera(transform, fov, aspectRatio);
@@ -137,7 +137,7 @@ namespace Octans.ConsoleApp
             var path = Path.Combine(GetExecutionPath(), "teapot-low.obj");
             var data = ObjFile.ParseFile(path);
             var triangulated = data.Groups[0];
-            triangulated.SetTransform(Transform.Scale(0.1f).RotateX(-MathF.PI / 2f));
+            triangulated.SetTransform(Transform.Scale(0.1f).RotateX(-System.MathF.PI / 2f));
 
             var material = new Material
             {
@@ -174,7 +174,7 @@ namespace Octans.ConsoleApp
 
             var canvas = new Canvas(width, height);
             var pps = new PerPixelSampler(3);
-            var fov = MathF.PI / 3f;
+            var fov = System.MathF.PI / 3f;
             var aspectRatio = (float)width / height;
             var transform = Transform.LookAt(from, to, new Vector(0, 1, 0));
             var camera = new PinholeCamera(transform, fov, aspectRatio);

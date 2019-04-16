@@ -60,10 +60,10 @@ namespace Octans.Test
             v.Magnitude().Should().BeApproximately(1.0f, 0.0001f);
 
             v = new Vector(1, 2, 3);
-            v.Magnitude().Should().BeApproximately(MathF.Sqrt(14), 0.0001f);
+            v.Magnitude().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
 
             v = new Vector(-1, -2, -3);
-            v.Magnitude().Should().BeApproximately(MathF.Sqrt(14), 0.0001f);
+            v.Magnitude().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace Octans.Test
         public void ReflectOffSlantedSurface()
         {
             var v = new Vector(0, -1, 0);
-            var n = new Vector(MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f, 0);
+            var n = new Vector(System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f, 0);
             var r = v.Reflect(n);
             r.Should().BeEquivalentTo(new Vector(1, 0, 0));
         }

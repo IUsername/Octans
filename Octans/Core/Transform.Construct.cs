@@ -48,8 +48,8 @@ namespace Octans
         {
             var m = new Matrix(
                 1, 0, 0, 0,
-                0, MathF.Cos(rad), -MathF.Sin(rad), 0,
-                0, MathF.Sin(rad), MathF.Cos(rad), 0,
+                0, System.MathF.Cos(rad), -System.MathF.Sin(rad), 0,
+                0, System.MathF.Sin(rad), System.MathF.Cos(rad), 0,
                 0, 0, 0, 1);
 
             return new Transform(m, m.Transpose());
@@ -58,9 +58,9 @@ namespace Octans
         public static Transform RotateY(float rad)
         {
             var m = new Matrix(
-                MathF.Cos(rad), 0, MathF.Sin(rad), 0,
+                System.MathF.Cos(rad), 0, System.MathF.Sin(rad), 0,
                 0, 1, 0, 0,
-                -MathF.Sin(rad), 0, MathF.Cos(rad), 0,
+                -System.MathF.Sin(rad), 0, System.MathF.Cos(rad), 0,
                 0, 0, 0, 1);
 
             return new Transform(m, m.Transpose());
@@ -69,8 +69,8 @@ namespace Octans
         public static Transform RotateZ(float rad)
         {
             var m = new Matrix(
-                MathF.Cos(rad), -MathF.Sin(rad), 0, 0,
-                MathF.Sin(rad), MathF.Cos(rad), 0, 0,
+                System.MathF.Cos(rad), -System.MathF.Sin(rad), 0, 0,
+                System.MathF.Sin(rad), System.MathF.Cos(rad), 0, 0,
                 0.0f, 0, 1, 0,
                 0.0f, 0, 0, 1);
 
@@ -89,8 +89,8 @@ namespace Octans
         public static Transform Rotate(float theta, in Vector axis)
         {
             var a = axis.Normalize();
-            var sinTheta = MathF.Sin(theta);
-            var cosTheta = MathF.Cos(theta);
+            var sinTheta = System.MathF.Sin(theta);
+            var cosTheta = System.MathF.Cos(theta);
             var oneMinusCos = 1f - cosTheta;
             var m = new Matrix(
                 cosTheta + a.X * a.X * oneMinusCos,

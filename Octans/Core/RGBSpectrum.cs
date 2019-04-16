@@ -128,7 +128,7 @@ namespace Octans
             var s = new float[SpectrumSamples];
             for (var i = 0; i < SpectrumSamples; i++)
             {
-                s[i] = MathF.Pow(_samples[i], y);
+                s[i] = System.MathF.Pow(_samples[i], y);
             }
 
             return new RGBSpectrum(new Vector<float>(s));
@@ -158,7 +158,7 @@ namespace Octans
             var s = new float[SpectrumSamples];
             for (var i = 0; i < SpectrumSamples; i++)
             {
-                s[i] = MathFunction.ClampF(low, high, spectrum._samples[i]);
+                s[i] = MathF.Clamp(low, high, spectrum._samples[i]);
             }
 
             return new RGBSpectrum(new Vector<float>(s));
@@ -170,7 +170,7 @@ namespace Octans
             var max = float.NegativeInfinity;
             for (var i = 0; i < SpectrumSamples; i++)
             {
-                max = MathF.Max(spectrum._samples[i], max);
+                max = System.MathF.Max(spectrum._samples[i], max);
             }
 
             return max;

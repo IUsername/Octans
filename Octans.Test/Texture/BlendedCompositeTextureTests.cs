@@ -12,7 +12,7 @@ namespace Octans.Test.Texture
         {
             var s1 = new StripeTexture(Colors.White, Colors.Black);
             var s2 = new StripeTexture(Colors.White, Colors.Black);
-            s2.SetTransform(Transform.RotateY(MathF.PI / 2f));
+            s2.SetTransform(Transform.RotateY(System.MathF.PI / 2f));
             var texture = new BlendedCompositeTexture(s1, s2);
             texture.LocalColorAt(new Point(1f, 0, 0)).Should().Be(Colors.Black);
             texture.LocalColorAt(new Point(2f, 0f, 0)).Should().Be(new Color(0.5f, 0.5f, 0.5f));

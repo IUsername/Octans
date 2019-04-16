@@ -14,12 +14,12 @@
             ViewDirection = intersection.Eye;
             ViewReflectDirection = -ViewDirection.Reflect(NormalDirection);
             HalfDirection = (ViewDirection + LightDirection).Normalize();
-            NdotL = MathFunction.Saturate(NormalDirection % LightDirection);
-            NdotH = MathFunction.Saturate(NormalDirection % HalfDirection);
-            NdotV = MathFunction.Saturate(NormalDirection % ViewDirection);
-            VdotH = MathFunction.Saturate(ViewDirection % HalfDirection);
-            LdotH = MathFunction.Saturate(LightDirection % HalfDirection);
-            RdotV = MathFunction.Saturate(LightReflectDirection % ViewDirection);
+            NdotL = MathF.Saturate(NormalDirection % LightDirection);
+            NdotH = MathF.Saturate(NormalDirection % HalfDirection);
+            NdotV = MathF.Saturate(NormalDirection % ViewDirection);
+            VdotH = MathF.Saturate(ViewDirection % HalfDirection);
+            LdotH = MathF.Saturate(LightDirection % HalfDirection);
+            RdotV = MathF.Saturate(LightReflectDirection % ViewDirection);
 
             // TODO: Attenuation properties
             LightIntensity = lightIntensity * light.Intensity;
@@ -54,7 +54,7 @@
 
         private static float SchlickFresnel(float i)
         {
-            var x = MathFunction.Saturate(1f - i);
+            var x = MathF.Saturate(1f - i);
             var x2 = x * x;
             return x2 * x2 * x;
         }
@@ -64,8 +64,8 @@
             var fresnelLight = SchlickFresnel(NdotL);
             var fresnelView = SchlickFresnel(NdotV);
             var fresnelDiffuse = 0.5f + 2f * LdotH * LdotH * roughness;
-            return MathFunction.Lerp(1f, fresnelDiffuse, fresnelLight) *
-                   MathFunction.Lerp(1f, fresnelDiffuse, fresnelView);
+            return MathF.Lerp(1f, fresnelDiffuse, fresnelLight) *
+                   MathF.Lerp(1f, fresnelDiffuse, fresnelView);
         }
 
         public float IoR { get; }

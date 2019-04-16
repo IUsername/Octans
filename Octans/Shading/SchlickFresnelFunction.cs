@@ -22,6 +22,6 @@ namespace Octans.Shading
         //    return specularColor + (Colors.White - specularColor) * SchlickFresnelFunc(LdotH);
         //}
 
-        public float Factor(in ShadingInfo info) => info.F0 + (1f - info.F0) * MathF.Pow(1f - info.LdotH, 5);
+        public float Factor(in ShadingInfo info) => info.F0 + (1f - info.F0) * System.MathF.Pow(1f - info.LdotH, 5);
     }
 }

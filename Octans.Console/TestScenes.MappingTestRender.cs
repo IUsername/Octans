@@ -266,7 +266,7 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "metal", i =>
             {
                 var metal = CreateMaterial();
-                metal.Roughness = MathFunction.Saturate((i - 1) * delta + 0.01f);
+                metal.Roughness = MathF.Saturate((i - 1) * delta + 0.01f);
                 return metal;
             });
         }
@@ -289,7 +289,7 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "plastic", i =>
             {
                 var metal = CreateMaterial();
-                metal.Roughness = MathFunction.Saturate((i - 1) * delta + 0.01f);
+                metal.Roughness = MathF.Saturate((i - 1) * delta + 0.01f);
                 return metal;
             });
         }
@@ -313,7 +313,7 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "plastic_metal", i =>
             {
                 var metal = CreateMaterial();
-                metal.Metallic = MathFunction.Saturate((i - 1) * delta);
+                metal.Metallic = MathF.Saturate((i - 1) * delta);
                 return metal;
             });
         }
@@ -338,7 +338,7 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "transparent", i =>
             {
                 var metal = CreateMaterial();
-                metal.Transparency = MathFunction.Saturate((i - 1) * delta + 0.01f);
+                metal.Transparency = MathF.Saturate((i - 1) * delta + 0.01f);
                 return metal;
             });
         }
@@ -363,9 +363,9 @@ namespace Octans.ConsoleApp
 
             RowTestByDelegate(spp, "transparent_ior", i =>
             {
-                var value = MathFunction.Saturate((i - 1) * delta);
+                var value = MathF.Saturate((i - 1) * delta);
                 var metal = CreateMaterial();
-                metal.RefractiveIndex = MathFunction.Lerp(1f,2f, value);
+                metal.RefractiveIndex = MathF.Lerp(1f,2f, value);
                 return metal;
             });
         }
@@ -390,7 +390,7 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "transparent_roughness", i =>
             {
                 var metal = CreateMaterial();
-                metal.Roughness = MathFunction.Saturate((i - 1) * delta);
+                metal.Roughness = MathF.Saturate((i - 1) * delta);
                 return metal;
             });
         }
@@ -431,7 +431,7 @@ namespace Octans.ConsoleApp
                     var color = new Color(1f, 0.3f, 0.3f);
                     s.Material.Texture = SolidColor.Create(color);
                     s.Material.SpecularColor = metallic ? color : new Color(0.2f,0.2f,0.2f);
-                    s.Material.Roughness =  MathFunction.Saturate(n * delta + 0.01f);
+                    s.Material.Roughness =  MathF.Saturate(n * delta + 0.01f);
                     s.Material.Metallic = metallic ? 1f : 0f;
                     s.Material.Ambient = 0f;
                     s.Material.Reflective = 0.9f;
@@ -444,7 +444,7 @@ namespace Octans.ConsoleApp
             var darkGray = new Color(0.1f, 0.9f, 0.1f);
             var s1 = new StripeTexture(lightGray, darkGray);
             var s2 = new StripeTexture(lightGray, darkGray);
-            s2.SetTransform(Transform.RotateY(MathF.PI / 2));
+            s2.SetTransform(Transform.RotateY(System.MathF.PI / 2));
             var pattern = new BlendedCompositeTexture(s1, s2);
             pattern.SetTransform(Transform.Scale(1f / 30f));
 
@@ -496,7 +496,7 @@ namespace Octans.ConsoleApp
 
             var canvas = new Canvas(width, height);
             var pps = new PerPixelSampler(400);
-            var fov = MathF.PI / 4f;
+            var fov = System.MathF.PI / 4f;
             var aspectRatio = (float)width / height;
             var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to, Vectors.Up);
             var cws = new ComposableWorldSampler(2,
@@ -556,7 +556,7 @@ namespace Octans.ConsoleApp
             var darkGray = new Color(0.1f, 0.9f, 0.1f);
             var s1 = new StripeTexture(lightGray, darkGray);
             var s2 = new StripeTexture(lightGray, darkGray);
-            s2.SetTransform(Transform.RotateY(MathF.PI / 2));
+            s2.SetTransform(Transform.RotateY(System.MathF.PI / 2));
             var pattern = new BlendedCompositeTexture(s1, s2);
             pattern.SetTransform(Transform.Scale(1f / 30f));
 
@@ -595,7 +595,7 @@ namespace Octans.ConsoleApp
 
             var canvas = new Canvas(width, height);
             var pps = new PerPixelSampler(spp);
-            var fov = MathF.PI / 4f;
+            var fov = System.MathF.PI / 4f;
             var aspectRatio = (float)width / height;
             var camera = new ApertureCamera(fov, aspectRatio, 0.2F, from, to, Vectors.Up);
             var cws = new ComposableWorldSampler(2,

@@ -31,7 +31,7 @@ namespace Octans.Test.Shading
             var s = new Sphere();
             var m = new Material();
             var position = Point.Zero;
-            var eyeV = new Vector(0, MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
+            var eyeV = new Vector(0, System.MathF.Sqrt(2) / 2, -System.MathF.Sqrt(2) / 2);
             var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 0, -10), new Color(1f, 1f, 1f));
             var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 1);
@@ -57,7 +57,7 @@ namespace Octans.Test.Shading
             var s = new Sphere();
             var m = new Material();
             var position = Point.Zero;
-            var eyeV = new Vector(0, -MathF.Sqrt(2) / 2, -MathF.Sqrt(2) / 2);
+            var eyeV = new Vector(0, -System.MathF.Sqrt(2) / 2, -System.MathF.Sqrt(2) / 2);
             var normal = new Normal(0, 0, -1);
             var light = new PointLight(new Point(0, 10, -10), new Color(1f, 1f, 1f));
             var result = PhongShading.Lighting(m, s, light, position, eyeV, normal, 1);
@@ -201,8 +201,8 @@ namespace Octans.Test.Shading
             shape.SetMaterial(new Material {Reflective = 0.5f});
             shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
-            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
-            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(System.MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
             PhongShading.ReflectedColor(w, comps).Should().Be(new Color(0.19041f, 0.2380f, 0.14281f));
         }
@@ -215,8 +215,8 @@ namespace Octans.Test.Shading
             shape.SetMaterial(new Material {Reflective = 0.5f});
             shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
-            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
-            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(System.MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
             PhongShading.HitColor(w, comps).Should().Be(new Color(0.87677f, 0.92436f, 0.82918f));
         }
@@ -229,8 +229,8 @@ namespace Octans.Test.Shading
             shape.SetMaterial(new Material {Reflective = 0.5f});
             shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
-            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
-            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(System.MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
             PhongShading.ReflectedColor(w, comps, 0).Should().Be(Colors.Black);
         }
@@ -284,10 +284,10 @@ namespace Octans.Test.Shading
             var s = w.Objects[0];
             s.Material.Transparency = 1.0f;
             s.Material.RefractiveIndex = 1.5f;
-            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f) / 2f), new Vector(0, 1, 0));
+            var r = new Ray(new Point(0, 0, System.MathF.Sqrt(2f) / 2f), new Vector(0, 1, 0));
             var xs = Intersections.Create(
-                new Intersection(-MathF.Sqrt(2f) / 2f, s),
-                new Intersection(MathF.Sqrt(2f) / 2f, s));
+                new Intersection(-System.MathF.Sqrt(2f) / 2f, s),
+                new Intersection(System.MathF.Sqrt(2f) / 2f, s));
             // Inside sphere so look at second intersection.
             var comps = new IntersectionInfo(xs[1], r, xs);
             PhongShading.RefractedColor(w, comps, 5).Should().Be(Colors.Black);
@@ -328,8 +328,8 @@ namespace Octans.Test.Shading
             ball.SetTransform(Transform.Translate(0, -3.5f, -0.5f));
             w.AddObject(ball);
 
-            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
-            var i = new Intersection(MathF.Sqrt(2f), floor);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(System.MathF.Sqrt(2f), floor);
             var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(xs[0], r, xs);
             PhongShading.HitColor(w, comps, 5).Should().Be(new Color(0.93642f, 0.68642f, 0.68642f));
@@ -339,9 +339,9 @@ namespace Octans.Test.Shading
         public void SchlickApproximationForTotalInternalReflectionIsOne()
         {
             var s = Spheres.GlassSphere();
-            var r = new Ray(new Point(0, 0, MathF.Sqrt(2f) / 2f), new Vector(0, 1, 0));
-            var xs = Intersections.Create(new Intersection(-MathF.Sqrt(2f) / 2f, s),
-                                          new Intersection(MathF.Sqrt(2f) / 2f, s));
+            var r = new Ray(new Point(0, 0, System.MathF.Sqrt(2f) / 2f), new Vector(0, 1, 0));
+            var xs = Intersections.Create(new Intersection(-System.MathF.Sqrt(2f) / 2f, s),
+                                          new Intersection(System.MathF.Sqrt(2f) / 2f, s));
             var comps = new IntersectionInfo(xs[1], r, xs);
             var reflectance = PhongShading.Schlick(comps);
             reflectance.Should().Be(1f);
@@ -382,8 +382,8 @@ namespace Octans.Test.Shading
             ball.SetTransform(Transform.Translate(0, -3.5f, -0.5f));
             w.AddObject(ball);
 
-            var r = new Ray(new Point(0, 0, -3), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
-            var i = new Intersection(MathF.Sqrt(2f), floor);
+            var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(System.MathF.Sqrt(2f), floor);
             var xs = Intersections.Create(i);
             var comps = new IntersectionInfo(xs[0], r, xs);
             PhongShading.HitColor(w, comps, 5).Should().Be(new Color(0.93391f, 0.69643f, 0.69243f));

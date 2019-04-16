@@ -23,7 +23,7 @@ namespace Octans.ConsoleApp
             var canvas = new Canvas(width, height);
 
             var pps = new PerPixelSampler(spp);
-            var camera = new ApertureCamera(MathF.PI / 3f, 3f / 2, 0.05f,
+            var camera = new ApertureCamera(System.MathF.PI / 3f, 3f / 2, 0.05f,
                                              new Point(0, 1.25f, -4f),
                                              new Point(0, 1, 0), Vectors.Up, 3.5f);
             var cws = new ComposableWorldSampler(2,
@@ -68,7 +68,7 @@ namespace Octans.ConsoleApp
 
             var s1 = new StripeTexture(Colors.White, Colors.Black);
             var s2 = new StripeTexture(Colors.White, Colors.Black);
-            s2.SetTransform(Transform.RotateY(MathF.PI / 2));
+            s2.SetTransform(Transform.RotateY(System.MathF.PI / 2));
             var pattern = new BlendedCompositeTexture(s1, s2);
             pattern.SetTransform(Transform.Scale(1f / 20f));
 
@@ -170,8 +170,8 @@ namespace Octans.ConsoleApp
                     Ambient = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f)
                 }
             };
-            cube.Material.Texture.SetTransform(Transform.TranslateX(-0.5f).Scale(2f).RotateZ(MathF.PI / 2f));
-            cube.SetTransform(Transform.RotateY(MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
+            cube.Material.Texture.SetTransform(Transform.TranslateX(-0.5f).Scale(2f).RotateZ(System.MathF.PI / 2f));
+            cube.SetTransform(Transform.RotateY(System.MathF.PI / 4f).Translate(2.5f, 1f, 3.6f).Scale(1f, 1f, 1f));
 
             var cone = new Cone
             {

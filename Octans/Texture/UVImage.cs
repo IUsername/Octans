@@ -20,6 +20,6 @@ namespace Octans.Texture
             return _canvas.PixelAt(Round(in x), Round(in y));
         }
 
-        private static int Round(in float value) => (int) MathF.Round(value);
+        private static int Round(in float value) => (int) System.MathF.Round(value);
     }
 }

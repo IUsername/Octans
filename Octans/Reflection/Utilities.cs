@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using static System.MathF;
-using static Octans.MathFunction;
+using static Octans.MathF;
 // ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace Octans.Reflection
@@ -10,7 +10,7 @@ namespace Octans.Reflection
     {
         public static float FrDielectric(float cosThetaI, float etaI, float etaT)
         {
-            cosThetaI = ClampF(-1, 1, cosThetaI);
+            cosThetaI = Clamp(-1, 1, cosThetaI);
             var isEntering = cosThetaI > 1f;
             if (!isEntering)
             {
@@ -36,7 +36,7 @@ namespace Octans.Reflection
 
         public static Spectrum FrConductor(float cosThetaI, in Spectrum etaI, in Spectrum etaT, in Spectrum k)
         {
-            cosThetaI = ClampF(-1, 1, cosThetaI);
+            cosThetaI = Clamp(-1, 1, cosThetaI);
             var eta = etaT / etaI;
             var etaK = k / etaI;
 
@@ -91,7 +91,7 @@ namespace Octans.Reflection
         public static float CosPhi(in Vector w)
         {
             var sinTheta = SinTheta(in w);
-            return (sinTheta == 0f) ? 1f : ClampF(-1, 1, w.X / sinTheta);
+            return (sinTheta == 0f) ? 1f : Clamp(-1, 1, w.X / sinTheta);
         }
 
         [Pure]
@@ -99,7 +99,7 @@ namespace Octans.Reflection
         public static float SinPhi(in Vector w)
         {
             var sinTheta = SinTheta(in w);
-            return (sinTheta == 0f) ? 0f : ClampF(-1, 1, w.Y / sinTheta);
+            return (sinTheta == 0f) ? 0f : Clamp(-1, 1, w.Y / sinTheta);
         }
 
         [Pure]
@@ -115,7 +115,7 @@ namespace Octans.Reflection
         public static float CosDPhi(in Vector wa, in Vector wb)
         {
             var v = (wa.X * wb.X + wa.Y * wb.Y) / Sqrt((wa.X * wa.X + wa.Y * wa.Y) * (wb.X * wb.X + wb.Y * wb.Y));
-            return ClampF(-1, 1, v);
+            return Clamp(-1, 1, v);
         }
 
         // TODO: Duplicate definitions.

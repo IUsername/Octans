@@ -111,7 +111,7 @@ namespace Octans
         }
 
         [Pure]
-        public static float AbsDot(in Vector a, in Vector b) => MathF.Abs(Dot(in a, in b));
+        public static float AbsDot(in Vector a, in Vector b) => System.MathF.Abs(Dot(in a, in b));
 
         [Pure]
         public static Vector Cross(in Vector a, in Vector b)
@@ -133,9 +133,9 @@ namespace Octans
 
         [Pure]
         public static Vector Abs(in Vector t) =>
-            new Vector(MathF.Abs(t.X), MathF.Abs(t.Y), MathF.Abs(t.Z));
+            new Vector(System.MathF.Abs(t.X), System.MathF.Abs(t.Y), System.MathF.Abs(t.Z));
 
         [Pure]
-        public static float Max(in Vector t) => MathF.Max(t.X, MathF.Max(t.Y, t.Z));
+        public static float Max(in Vector t) => System.MathF.Max(t.X, System.MathF.Max(t.Y, t.Z));
     }
 }

@@ -14,6 +14,6 @@ namespace Octans.Texture
         public Color B { get; }
 
         // ReSharper disable once CompareOfFloatsByEqualityOperator
-        public override Color LocalColorAt(in Point localPoint) => MathF.Floor(localPoint.X) % 2f == 0f ? A : B;
+        public override Color LocalColorAt(in Point localPoint) => System.MathF.Floor(localPoint.X) % 2f == 0f ? A : B;
     }
 }

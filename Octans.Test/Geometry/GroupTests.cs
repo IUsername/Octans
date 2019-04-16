@@ -79,11 +79,11 @@ namespace Octans.Test.Geometry
         {
             var g = new Group();
             var c = new Cube();
-            c.SetTransform(Transform.RotateZ(MathF.PI / 4));
+            c.SetTransform(Transform.RotateZ(System.MathF.PI / 4));
             g.AddChild(c);
             var b = g.LocalBounds();
-            b.Min.Should().Be(new Point(-1 / MathF.Sin(MathF.PI / 4), -1 / MathF.Sin(MathF.PI / 4), -1));
-            b.Max.Should().Be(new Point(1 / MathF.Sin(MathF.PI / 4), 1 / MathF.Sin(MathF.PI / 4), 1));
+            b.Min.Should().Be(new Point(-1 / System.MathF.Sin(System.MathF.PI / 4), -1 / System.MathF.Sin(System.MathF.PI / 4), -1));
+            b.Max.Should().Be(new Point(1 / System.MathF.Sin(System.MathF.PI / 4), 1 / System.MathF.Sin(System.MathF.PI / 4), 1));
         }
 
         [Fact]

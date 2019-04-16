@@ -103,13 +103,13 @@ namespace Octans
         [Pure]
         public static Point Abs(in Point t)
         {
-            return new Point(MathF.Abs(t.X), MathF.Abs(t.Y), MathF.Abs(t.Z));
+            return new Point(System.MathF.Abs(t.X), System.MathF.Abs(t.Y), System.MathF.Abs(t.Z));
         }
 
         [Pure]
         public static float Max(in Point t)
         {
-            return MathF.Max(t.X, MathF.Max(t.Y, t.Z));
+            return System.MathF.Max(t.X, System.MathF.Max(t.Y, t.Z));
         }
     }
 }

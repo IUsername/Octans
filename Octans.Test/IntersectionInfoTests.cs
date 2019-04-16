@@ -60,10 +60,10 @@ namespace Octans.Test
         public void ComputesReflectionVector()
         {
             var shape = new Plane();
-            var r = new Ray(new Point(0, 1, -1), new Vector(0, -MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
-            var i = new Intersection(MathF.Sqrt(2f), shape);
+            var r = new Ray(new Point(0, 1, -1), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
+            var i = new Intersection(System.MathF.Sqrt(2f), shape);
             var comps = new IntersectionInfo(i, r);
-            comps.Reflect.Should().Be(new Vector(0, MathF.Sqrt(2f) / 2f, MathF.Sqrt(2f) / 2f));
+            comps.Reflect.Should().Be(new Vector(0, System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
         }
 
         [Fact]

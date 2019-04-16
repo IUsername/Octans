@@ -42,11 +42,11 @@ namespace Octans
         private static PixelArea DetermineCroppedBounds(in Bounds2D cropWindow, in PixelVector resolution) =>
             new PixelArea(
                 new PixelCoordinate(
-                    (int) MathF.Ceiling(resolution.X * cropWindow.Min.X),
-                    (int) MathF.Ceiling(resolution.Y * cropWindow.Min.Y)),
+                    (int) System.MathF.Ceiling(resolution.X * cropWindow.Min.X),
+                    (int) System.MathF.Ceiling(resolution.Y * cropWindow.Min.Y)),
                 new PixelCoordinate(
-                    (int) MathF.Ceiling(resolution.X * cropWindow.Max.X),
-                    (int) MathF.Ceiling(resolution.Y * cropWindow.Max.Y)));
+                    (int) System.MathF.Ceiling(resolution.X * cropWindow.Max.X),
+                    (int) System.MathF.Ceiling(resolution.Y * cropWindow.Max.Y)));
 
         public FilmTile CreateFilmTile(in PixelArea area)
         {
@@ -122,9 +122,9 @@ namespace Octans
                 if (filterWeightSum != 0f)
                 {
                     var invWt = 1f / filterWeightSum;
-                    rgbSpan[0] = MathF.Max(0f, rgbSpan[0] * invWt);
-                    rgbSpan[1] = MathF.Max(0f, rgbSpan[1] * invWt);
-                    rgbSpan[2] = MathF.Max(0f, rgbSpan[2] * invWt);
+                    rgbSpan[0] = System.MathF.Max(0f, rgbSpan[0] * invWt);
+                    rgbSpan[1] = System.MathF.Max(0f, rgbSpan[1] * invWt);
+                    rgbSpan[2] = System.MathF.Max(0f, rgbSpan[2] * invWt);
                 }
 
                 var splatRGB = new float[3];
@@ -161,7 +161,7 @@ namespace Octans
         public Bounds2D GetPhysicalExtent()
         {
             var aspect = (float) _resolution.Y / _resolution.X;
-            var x = MathF.Sqrt(_diagonalMeters * _diagonalMeters / (1 + aspect * aspect));
+            var x = System.MathF.Sqrt(_diagonalMeters * _diagonalMeters / (1 + aspect * aspect));
             var y = aspect * x;
             return new Bounds2D(new Point2D(-x / 2f, -y / 2f), new Point2D(x / 2f, y / 2f));
         }
@@ -260,15 +260,15 @@ namespace Octans
                 var ifx = new int[p1.X - p0.X];
                 for (var x = p0.X; x < p1.X; x++)
                 {
-                    var fx = MathF.Abs((x - discrete.X) * _inverseFilterRadius.X * _filterTableWidth);
-                    ifx[x - p0.X] = Math.Min((int) MathF.Floor(fx), _filterTableWidth - 1);
+                    var fx = System.MathF.Abs((x - discrete.X) * _inverseFilterRadius.X * _filterTableWidth);
+                    ifx[x - p0.X] = Math.Min((int) System.MathF.Floor(fx), _filterTableWidth - 1);
                 }
 
                 var ify = new int[p1.Y - p0.Y];
                 for (var y = p0.Y; y < p1.Y; y++)
                 {
-                    var fy = MathF.Abs((y - discrete.Y) * _inverseFilterRadius.Y * _filterTableWidth);
-                    ify[y - p0.Y] = Math.Min((int) MathF.Floor(fy), _filterTableWidth - 1);
+                    var fy = System.MathF.Abs((y - discrete.Y) * _inverseFilterRadius.Y * _filterTableWidth);
+                    ify[y - p0.Y] = Math.Min((int) System.MathF.Floor(fy), _filterTableWidth - 1);
                 }
 
                 for (var y = p0.Y; y < p1.Y; y++)

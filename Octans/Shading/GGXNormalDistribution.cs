@@ -14,17 +14,17 @@ namespace Octans.Shading
 
         private static float GGXNormalDist(float alpha, float roughness, float NdotH)
         {
-            const float oneOverPi = 1f / MathF.PI;
+            const float oneOverPi = 1f / System.MathF.PI;
             var NdotHSqr = NdotH * NdotH;
             var tanNdotHSqr = (1 - NdotHSqr) / NdotHSqr;
             var s = roughness / (NdotHSqr * (alpha + tanNdotHSqr));
-            return oneOverPi * MathF.Sqrt(s);
+            return oneOverPi * System.MathF.Sqrt(s);
         }
 
         private static float GGXNormalDist2(float alpha,float NdotH)
         {
             var denom = NdotH * NdotH * (alpha - 1f) + 1f;
-            return alpha / (MathF.PI * denom * denom);
+            return alpha / (System.MathF.PI * denom * denom);
         }
 
         public (Vector wi, Color reflectance) Sample(in IntersectionInfo info,
@@ -89,7 +89,7 @@ namespace Octans.Shading
                 return (new Vector(), Colors.Black);
             }
 
-            var cosT = MathF.Sqrt(1f - sin2T);
+            var cosT = System.MathF.Sqrt(1f - sin2T);
             var wi = wm * (nRatio * cosI - cosT) - wo * nRatio;
 
 
@@ -126,8 +126,8 @@ namespace Octans.Shading
             var HdotV = h % wo;
             var absNdotL = Vector.AbsDot(wm, wi);
             var absNdotV = Vector.AbsDot(wm, wo);
-            var absHdotL = MathF.Abs(HdotL);
-            var absHdotV = MathF.Abs(HdotV);
+            var absHdotL = System.MathF.Abs(HdotL);
+            var absHdotV = System.MathF.Abs(HdotV);
 
             var d = GGXNormalDist2(info.Alpha, wm%h);
             var gl = G1SmithApprox(in wm, in wi, info.Alpha);
@@ -145,20 +145,20 @@ namespace Octans.Shading
 
         private static float DielectricFresnel(float cosThetaI, float etaI, float etaT)
         {
-            cosThetaI = MathFunction.ClampF(-1, 1, cosThetaI);
+            cosThetaI = MathF.Clamp(-1, 1, cosThetaI);
             bool entering = cosThetaI > 0f;
             if (!entering)
             {
                 (etaI, etaT) = (etaT, etaI);
-                cosThetaI = MathF.Abs(cosThetaI);
+                cosThetaI = System.MathF.Abs(cosThetaI);
             }
 
-            var sinThetaI = MathF.Sqrt(MathF.Max(0f, 1f - cosThetaI * cosThetaI));
+            var sinThetaI = System.MathF.Sqrt(System.MathF.Max(0f, 1f - cosThetaI * cosThetaI));
             var sinThetaT = etaI / etaT * sinThetaI;
 
             if (sinThetaT >= 1) return 1f;
 
-            var cosThetaT = MathF.Sqrt(MathF.Max(0f, 1f - sinThetaT * sinThetaT));
+            var cosThetaT = System.MathF.Sqrt(System.MathF.Max(0f, 1f - sinThetaT * sinThetaT));
             var Rparl = ((etaT * cosThetaI) - (etaI * cosThetaT)) / ((etaT * cosThetaI) + (etaI * cosThetaT));
             var Rperp = ((etaI * cosThetaI) - (etaT * cosThetaT)) / ((etaI * cosThetaI) + (etaT * cosThetaT));
             return (Rparl * Rparl + Rperp * Rperp) / 2f;
@@ -167,19 +167,19 @@ namespace Octans.Shading
 
         private float SmithGGXMaskingShadowing(in Vector normal, in Vector wi, in Vector wo, float alpha)
         {
-            var NdotL = MathFunction.Saturate(normal % wi);
-            var NdotV = MathFunction.Saturate(normal % wo);
+            var NdotL = MathF.Saturate(normal % wi);
+            var NdotV = MathF.Saturate(normal % wo);
 
-            var denomA = NdotV * MathF.Sqrt(alpha + (1f - alpha) * NdotL * NdotL);
-            var denomB = NdotL * MathF.Sqrt(alpha + (1f - alpha) * NdotV * NdotV);
+            var denomA = NdotV * System.MathF.Sqrt(alpha + (1f - alpha) * NdotL * NdotL);
+            var denomB = NdotL * System.MathF.Sqrt(alpha + (1f - alpha) * NdotV * NdotV);
             return 2f * NdotL * NdotV / (denomA + denomB);
         }
 
         private float SmithGGXMasking(in Vector normal, in Vector wi, in Vector wo, float alpha)
         {
             //var NdotL =MathFunction.Saturate(normal % wi);
-            var NdotV = MathFunction.Saturate(normal % wo);
-            var denomC = MathF.Sqrt(alpha + (1f - alpha) * NdotV * NdotV) + NdotV;
+            var NdotV = MathF.Saturate(normal % wo);
+            var denomC = System.MathF.Sqrt(alpha + (1f - alpha) * NdotV * NdotV) + NdotV;
             return 2f * NdotV / denomC;
         }
 
@@ -195,7 +195,7 @@ namespace Octans.Shading
             var NdotV = Vector.AbsDot(normal, wo);
 
             var a = 2f * NdotL * NdotV;
-            var denom = MathFunction.Lerp(a, NdotL + NdotV, alpha);
+            var denom = MathF.Lerp(a, NdotL + NdotV, alpha);
             return a / denom;
 
         }
@@ -214,31 +214,31 @@ namespace Octans.Shading
             var T2 = Vector.Cross(v,T1);
 
             // Project proportionally onto each half of disk
-            var r = MathF.Sqrt(e0);
-            var phi = 2f * MathF.PI * e1;
-            var t1 = r * MathF.Cos(phi);
-            var t2 = r * MathF.Sin(phi);
+            var r = System.MathF.Sqrt(e0);
+            var phi = 2f * System.MathF.PI * e1;
+            var t1 = r * System.MathF.Cos(phi);
+            var t2 = r * System.MathF.Sin(phi);
             var s = 0.5f * (1f + v.Z);
-            t2 = (1f - s) * MathF.Sqrt(1f - t1 * t1) + s * t2;
-            var Nh = t1 * T1 + t2 * T2 + MathF.Sqrt(MathF.Max(0f, 1f - t1 * t1 - t2 * t2)) * v;
-            var Ne = new Vector(Nh.X * alphaX, Nh.Y * alphaY, MathF.Max(0f, Nh.Z)).Normalize();
+            t2 = (1f - s) * System.MathF.Sqrt(1f - t1 * t1) + s * t2;
+            var Nh = t1 * T1 + t2 * T2 + System.MathF.Sqrt(System.MathF.Max(0f, 1f - t1 * t1 - t2 * t2)) * v;
+            var Ne = new Vector(Nh.X * alphaX, Nh.Y * alphaY, System.MathF.Max(0f, Nh.Z)).Normalize();
             return Ne;
         }
 
         private static Color SchlickFresnel(in Color specularColor, float WIdotWM)
         {
-            return specularColor + (Colors.White - specularColor) * MathF.Pow(1f - MathFunction.Saturate(WIdotWM), 5);
+            return specularColor + (Colors.White - specularColor) * System.MathF.Pow(1f - MathF.Saturate(WIdotWM), 5);
         }
 
 
         private static float SchlickFresnel(in ShadingInfo si, float WIdotWM)
         {
-            return si.F0 + (1f - si.F0) * MathF.Pow(1f - WIdotWM, 5);
+            return si.F0 + (1f - si.F0) * System.MathF.Pow(1f - WIdotWM, 5);
         }
 
         private static float SchlickFresnelFunc(float i)
         {
-            var x = MathFunction.Saturate(1f - i);
+            var x = MathF.Saturate(1f - i);
             var x2 = x * x;
             return x2 * x2 * x;
         }

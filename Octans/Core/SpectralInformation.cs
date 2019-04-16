@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using static System.MathF;
-using static Octans.MathFunction;
+using static Octans.MathF;
 
 namespace Octans
 {

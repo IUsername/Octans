@@ -9,7 +9,7 @@
         public LocalFrame(in Normal worldN)
         {
             _n = (Vector)worldN;
-            (_s, _t) = MathFunction.OrthonormalPosZ(in worldN);
+            (_s, _t) = MathF.OrthonormalPosZ(in worldN);
         }
 
         public Normal ToLocal(in Normal n)

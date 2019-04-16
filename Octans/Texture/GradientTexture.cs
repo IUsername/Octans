@@ -16,7 +16,7 @@ namespace Octans.Texture
         public override Color LocalColorAt(in Point localPoint)
         {
             var distance = B - A;
-            var fraction = localPoint.X - MathF.Floor(localPoint.X);
+            var fraction = localPoint.X - System.MathF.Floor(localPoint.X);
             return A + distance * fraction;
         }
     }

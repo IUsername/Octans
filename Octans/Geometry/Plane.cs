@@ -9,7 +9,7 @@ namespace Octans.Geometry
         public override IIntersections LocalIntersects(in Ray localRay)
         {
             // XZ plane
-            if (MathF.Abs(localRay.Direction.Y) < Epsilon)
+            if (System.MathF.Abs(localRay.Direction.Y) < Epsilon)
             {
                 return Intersections.Empty();
             }

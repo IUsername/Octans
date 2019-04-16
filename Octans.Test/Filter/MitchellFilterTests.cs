@@ -23,7 +23,7 @@ namespace Octans.Test.Filter
             f.Evaluate(new Point2D(2f, 0f)).Should().BeApproximately(0f, 0.001f);
             f.Evaluate(new Point2D(0f, 2f)).Should().BeApproximately(0f, 0.001f);
             f.Evaluate(new Point2D(0f, -2f)).Should().BeApproximately(0f, 0.001f);
-            f.Evaluate(new Point2D(MathF.Sqrt(2f), MathF.Sqrt(2f))).Should().BeApproximately(0f, 0.001f);
+            f.Evaluate(new Point2D(System.MathF.Sqrt(2f), System.MathF.Sqrt(2f))).Should().BeApproximately(0f, 0.001f);
         }
 
         [Fact]

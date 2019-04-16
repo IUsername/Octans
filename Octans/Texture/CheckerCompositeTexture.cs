@@ -16,7 +16,7 @@ namespace Octans.Texture
         public override Color LocalColorAt(in Point localPoint)
         {
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if ((MathF.Floor(localPoint.X) + MathF.Floor(localPoint.Y) + MathF.Floor(localPoint.Z)) % 2f == 0f)
+            if ((System.MathF.Floor(localPoint.X) + System.MathF.Floor(localPoint.Y) + System.MathF.Floor(localPoint.Z)) % 2f == 0f)
             {
                 var aLocal = A.Transform ^ localPoint;
                 return A.LocalColorAt(in aLocal);

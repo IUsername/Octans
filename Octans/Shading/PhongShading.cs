@@ -54,7 +54,7 @@ namespace Octans.Shading
                     var reflectDotEye = reflectV % eyeVector;
                     if (reflectDotEye > 0f)
                     {
-                        var factor = MathF.Pow(reflectDotEye, m.Shininess);
+                        var factor = System.MathF.Pow(reflectDotEye, m.Shininess);
                         var specular = light.Intensity * m.Specular * factor;
                         sum += specular;
                     }
@@ -146,7 +146,7 @@ namespace Octans.Shading
                 return Colors.Black;
             }
 
-            var cosT = MathF.Sqrt(1f - sin2T);
+            var cosT = System.MathF.Sqrt(1f - sin2T);
             var direction = (Vector)info.Normal * (nRatio * cosI - cosT) - info.Eye * nRatio;
             var refractedRay = new Ray(info.UnderPoint, direction);
             return ColorAt(world, in refractedRay, --remaining) * info.Geometry.Material.Transparency;
@@ -168,14 +168,14 @@ namespace Octans.Shading
                 }
 
                 // Cosine of theta_t
-                var cosT = MathF.Sqrt(1f - sin2T);
+                var cosT = System.MathF.Sqrt(1f - sin2T);
                 cos = cosT;
             }
 
             var r0 = (info.N1 - info.N2) / (info.N1 + info.N2);
             r0 *= r0;
             // Probability of reflection
-            var rProb = r0 + (1f - r0) * MathF.Pow(1 - cos, 5);
+            var rProb = r0 + (1f - r0) * System.MathF.Pow(1 - cos, 5);
             return rProb;
         }
 

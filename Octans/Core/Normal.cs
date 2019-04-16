@@ -36,7 +36,7 @@ namespace Octans
 
         public Normal Fraction(float scalar) => new Normal(scalar / X, scalar / Y, scalar / Z);
 
-        public float Magnitude() => MathF.Sqrt(MagSqr());
+        public float Magnitude() => System.MathF.Sqrt(MagSqr());
 
         public float MagSqr() => X * X + Y * Y + Z * Z;
 
@@ -118,17 +118,17 @@ namespace Octans
         public static float Dot(in Vector a, in Normal b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z;
 
         [Pure]
-        public static float AbsDot(in Normal a, in Normal b) => MathF.Abs(Dot(in a, in b));
+        public static float AbsDot(in Normal a, in Normal b) => System.MathF.Abs(Dot(in a, in b));
 
         [Pure]
         public static Normal Reflect(in Normal @in, in Normal normal) => @in - normal * 2f * Dot(in @in, in normal);
 
         [Pure]
         public static Normal Abs(in Normal t) =>
-            new Normal(MathF.Abs(t.X), MathF.Abs(t.Y), MathF.Abs(t.Z));
+            new Normal(System.MathF.Abs(t.X), System.MathF.Abs(t.Y), System.MathF.Abs(t.Z));
 
         [Pure]
-        public static float Max(in Normal t) => MathF.Max(t.X, MathF.Max(t.Y, t.Z));
+        public static float Max(in Normal t) => System.MathF.Max(t.X, System.MathF.Max(t.Y, t.Z));
 
         [Pure]
         public static explicit  operator Vector(in Normal n) => new Vector(n.X, n.Y, n.Z);
