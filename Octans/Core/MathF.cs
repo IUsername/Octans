@@ -8,11 +8,21 @@ namespace Octans
     {
         public const float InvPi = 1f / PI;
 
-        public const float OneEightyOverPi = 180f / PI;
+        public const float Inv2Pi = 1f / (2f * PI);
 
-        public const float PiOver180 = PI / 180f;
+        public const float Inv4Pi = 1f / (4f * PI);
+
+        private const float OneEightyOverPi = 180f / PI;
+
+        private const float PiOver180 = PI / 180f;
 
         public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
+
+        // TODO: Duplicate in Vector
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float AbsDot(in Vector a, in Vector b) => Abs(Vector.Dot(in a, in b));
+
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -81,5 +91,65 @@ namespace Octans
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Deg(float radians) => radians * OneEightyOverPi;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float CosTheta(in Vector w) => w.Z;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Cos2Theta(in Vector w) => w.Z * w.Z;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float AbsCosTheta(in Vector w) => Abs(w.Z);
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Sin2Theta(in Vector w) => Max(0f, 1f - Cos2Theta(in w));
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SinTheta(in Vector w) => Sqrt(Sin2Theta(in w));
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float TanTheta(in Vector w) => SinTheta(in w) / CosTheta(in w);
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Tan2Theta(in Vector w) => Sin2Theta(in w) / Cos2Theta(in w);
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float CosPhi(in Vector w)
+        {
+            var sinTheta = SinTheta(in w);
+            return (sinTheta == 0f) ? 1f : Clamp(-1, 1, w.X / sinTheta);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SinPhi(in Vector w)
+        {
+            var sinTheta = SinTheta(in w);
+            return (sinTheta == 0f) ? 0f : Clamp(-1, 1, w.Y / sinTheta);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Cos2Phi(in Vector w) => CosPhi(in w) * CosPhi(in w);
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Sin2Phi(in Vector w) => SinPhi(in w) * SinPhi(in w);
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float CosDPhi(in Vector wa, in Vector wb)
+        {
+            var v = (wa.X * wb.X + wa.Y * wb.Y) / Sqrt((wa.X * wa.X + wa.Y * wa.Y) * (wb.X * wb.X + wb.Y * wb.Y));
+            return Clamp(-1, 1, v);
+        }
     }
 }

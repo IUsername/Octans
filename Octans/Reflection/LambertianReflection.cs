@@ -18,8 +18,8 @@ namespace Octans.Reflection
 
         public Spectrum SampleF(in Vector wo, ref Vector wi, in Point sample, out float pdf, BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point[] samples) => R;
+        public Spectrum Rho(in Vector wo, int nSamples, in Point[] u) => R;
 
-        public Spectrum Rho(int nSamples, in Point[] samples1, in Point[] samples2) => R;
+        public Spectrum Rho(int nSamples, in Point[] u1, in Point[] u2) => R;
     }
 }

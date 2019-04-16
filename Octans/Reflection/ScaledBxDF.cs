@@ -25,14 +25,14 @@
             return _scale * _bxdf.SampleF(in wo, ref wi, in sample, out pdf, sampleType);
         }
 
-        public  Spectrum Rho(in Vector wo, int nSamples, in Point[] samples)
+        public  Spectrum Rho(in Vector wo, int nSamples, in Point[] u)
         {
-            return _scale * _bxdf.Rho(in wo, nSamples, in samples);
+            return _scale * _bxdf.Rho(in wo, nSamples, in u);
         }
 
-        public Spectrum Rho(int nSamples, in Point[] samples1, in Point[] samples2)
+        public Spectrum Rho(int nSamples, in Point[] u1, in Point[] u2)
         {
-            return _scale * _bxdf.Rho(nSamples, in samples1, in samples2);
+            return _scale * _bxdf.Rho(nSamples, in u1, in u2);
         }
     }
 }

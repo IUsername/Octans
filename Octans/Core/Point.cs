@@ -20,6 +20,24 @@ namespace Octans
             Z = z;
         }
 
+        public float this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                }
+
+                throw new IndexOutOfRangeException();
+            }
+        }
+
         public Point Add(in Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z);
 
         public Vector Subtract(in Point t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);
@@ -57,16 +75,10 @@ namespace Octans
         }
 
         [Pure]
-        public static float Distance(in Point a, in Point b)
-        {
-            return (a - b).Magnitude();
-        }
+        public static float Distance(in Point a, in Point b) => (a - b).Magnitude();
 
         [Pure]
-        public static float DistanceSqr(in Point a, in Point b)
-        {
-            return (a - b).MagSqr();
-        }
+        public static float DistanceSqr(in Point a, in Point b) => (a - b).MagSqr();
 
         [Pure]
         public static Point operator +(Point left, Vector right) => left.Add(in right);
@@ -101,15 +113,10 @@ namespace Octans
         public static Point Zero = new Point(0f, 0f, 0f);
 
         [Pure]
-        public static Point Abs(in Point t)
-        {
-            return new Point(System.MathF.Abs(t.X), System.MathF.Abs(t.Y), System.MathF.Abs(t.Z));
-        }
+        public static Point Abs(in Point t) =>
+            new Point(System.MathF.Abs(t.X), System.MathF.Abs(t.Y), System.MathF.Abs(t.Z));
 
         [Pure]
-        public static float Max(in Point t)
-        {
-            return System.MathF.Max(t.X, System.MathF.Max(t.Y, t.Z));
-        }
+        public static float Max(in Point t) => System.MathF.Max(t.X, System.MathF.Max(t.Y, t.Z));
     }
 }

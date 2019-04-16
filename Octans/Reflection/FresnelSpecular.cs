@@ -31,8 +31,8 @@ namespace Octans.Reflection
             throw new NotImplementedException();
         }
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point[] samples) => throw new NotImplementedException();
+        public Spectrum Rho(in Vector wo, int nSamples, in Point[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point[] samples1, in Point[] samples2) => throw new NotImplementedException();
+        public Spectrum Rho(int nSamples, in Point[] u1, in Point[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
     }
 }

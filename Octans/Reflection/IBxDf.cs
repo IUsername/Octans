@@ -14,8 +14,8 @@
                          out float pdf,
                          BxDFType sampleType = BxDFType.None);
 
-        Spectrum Rho(in Vector wo, int nSamples, in Point[] samples);
+        Spectrum Rho(in Vector wo, int nSamples, in Point[] u);
 
-        Spectrum Rho(int nSamples, in Point[] samples1, in Point[] samples2);
+        Spectrum Rho(int nSamples, in Point[] u1, in Point[] u2);
     }
 }

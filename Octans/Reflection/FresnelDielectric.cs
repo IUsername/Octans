@@ -13,9 +13,6 @@ namespace Octans.Reflection
             _etaT = etaT;
         }
 
-        public Spectrum Evaluate(float cosI)
-        {
-            return new Spectrum(FrDielectric(cosI, _etaI, -_etaT));
-        }
+        public Spectrum Evaluate(float cosI) => new Spectrum(FrDielectric(cosI, _etaI, -_etaT));
     }
 }

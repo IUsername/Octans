@@ -1,4 +1,4 @@
-﻿using System;
+﻿using static System.MathF;
 using static Octans.Reflection.Utilities;
 
 namespace Octans.Reflection
@@ -16,9 +16,6 @@ namespace Octans.Reflection
             _k = k;
         }
 
-        public Spectrum Evaluate(float cosI)
-        {
-            return FrConductor(System.MathF.Abs(cosI), _etaI, _etaT, _k);
-        }
+        public Spectrum Evaluate(float cosI) => FrConductor(Abs(cosI), _etaI, _etaT, _k);
     }
 }

@@ -58,66 +58,6 @@ namespace Octans.Reflection
             return 0.5f * (rParallel + rPerpendicular);
         }
 
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float CosTheta(in Vector w) => w.Z;
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Cos2Theta(in Vector w) => w.Z * w.Z;
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float AbsCosTheta(in Vector w) => Abs(w.Z);
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Sin2Theta(in Vector w) => Max(0f, 1f - Cos2Theta(in w));
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float SinTheta(in Vector w) => Sqrt(Sin2Theta(in w));
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float TanTheta(in Vector w) => SinTheta(in w) / CosTheta(in w);
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Tan2Theta(in Vector w) => Sin2Theta(in w) / Cos2Theta(in w);
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float CosPhi(in Vector w)
-        {
-            var sinTheta = SinTheta(in w);
-            return (sinTheta == 0f) ? 1f : Clamp(-1, 1, w.X / sinTheta);
-        }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float SinPhi(in Vector w)
-        {
-            var sinTheta = SinTheta(in w);
-            return (sinTheta == 0f) ? 0f : Clamp(-1, 1, w.Y / sinTheta);
-        }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Cos2Phi(in Vector w) => CosPhi(in w) * CosPhi(in w);
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Sin2Phi(in Vector w) => SinPhi(in w) * SinPhi(in w);
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float CosDPhi(in Vector wa, in Vector wb)
-        {
-            var v = (wa.X * wb.X + wa.Y * wb.Y) / Sqrt((wa.X * wa.X + wa.Y * wa.Y) * (wb.X * wb.X + wb.Y * wb.Y));
-            return Clamp(-1, 1, v);
-        }
-
         // TODO: Duplicate definitions.
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -147,5 +87,52 @@ namespace Octans.Reflection
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsInSameHemisphere(in Vector w, in Normal wp) => w.Z * wp.Z > 0f;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float RoughnessToAlpha(float roughness)
+        {
+            roughness = Max(roughness, 1e-3f);
+            var x = Log(roughness);
+            return 1.62142f + 0.819955f * x + 0.1734f * x * x + 0.0171201f * x * x * x + 0.000640711f * x * x * x * x;
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Spectrum Rho(IBxDF bxdf, in Vector wo, int nSamples, in Point[] u)
+        {
+            var r = Spectrum.Zero;
+            for (var i = 0; i < nSamples; i++)
+            {
+                var wi = new Vector();
+                var f = bxdf.SampleF(in wo, ref wi, u[i], out var pdf);
+                if (pdf > 0f)
+                {
+                    r += f * AbsCosTheta(in wi) / pdf;
+                }
+            }
+
+            return r / nSamples;
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Spectrum Rho(IBxDF bxdf, int nSamples, in Point[] u1, in Point[] u2)
+        {
+            var r = Spectrum.Zero;
+            for (var i = 0; i < nSamples; i++)
+            {
+                var wi = new Vector();
+                var wo = Sampling.Utilities.UniformSampleHemisphere(u1[i]);
+                var pdfo = Sampling.Utilities.UniformSampleHemispherePdf();
+                var f = bxdf.SampleF(in wo, ref wi, u2[i], out var pdfi);
+                if (pdfi > 0f)
+                {
+                    r += f * AbsCosTheta(in wi) * AbsCosTheta(in wo) / (pdfo * pdfi);
+                }
+            }
+
+            return r / (PI * nSamples);
+        }
     }
 }
