@@ -1,11 +1,10 @@
-﻿using System;
-using static System.MathF;
+﻿using static System.MathF;
 
 namespace Octans.Geometry
 {
     public class Cube : GeometryBase
     {
-        private const float Epsilon = 0.0001f;
+        //private const float Epsilon = 0.0001f;
 
         //public override IIntersections LocalIntersects(in Ray localRay)
         //{
@@ -53,24 +52,24 @@ namespace Octans.Geometry
             return Intersections.Create(new Intersection(tMin, this), new Intersection(tMax, this));
         }
 
-        private static (float min, float max) CheckAxis(float origin, float direction)
-        {
-            var tMinNum = -1f - origin;
-            var tMaxNum = 1 - origin;
-            float tMin, tMax;
-            if (Abs(direction) >= Epsilon)
-            {
-                tMin = tMinNum / direction;
-                tMax = tMaxNum / direction;
-            }
-            else
-            {
-                tMin = float.IsNegative(tMinNum) ? float.NegativeInfinity : float.PositiveInfinity;
-                tMax = float.IsNegative(tMaxNum) ? float.NegativeInfinity : float.PositiveInfinity;
-            }
+        //private static (float min, float max) CheckAxis(float origin, float direction)
+        //{
+        //    var tMinNum = -1f - origin;
+        //    var tMaxNum = 1 - origin;
+        //    float tMin, tMax;
+        //    if (Abs(direction) >= Epsilon)
+        //    {
+        //        tMin = tMinNum / direction;
+        //        tMax = tMaxNum / direction;
+        //    }
+        //    else
+        //    {
+        //        tMin = float.IsNegative(tMinNum) ? float.NegativeInfinity : float.PositiveInfinity;
+        //        tMax = float.IsNegative(tMaxNum) ? float.NegativeInfinity : float.PositiveInfinity;
+        //    }
 
-            return tMin > tMax ? (tmin: tMax, tmax: tMin) : (tmin: tMin, tmax: tMax);
-        }
+        //    return tMin > tMax ? (tmin: tMax, tmax: tMin) : (tmin: tMin, tmax: tMax);
+        //}
 
         public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection)
         {

@@ -21,14 +21,14 @@ namespace Octans.Reflection
             Mode = mode;
             T = t;
             Distribution = distribution;
-            Fresnel = new FresnelDielectric(etaA, etaB);
+            Fresnel.Initialize(etaA, etaB);
         }
 
         public TransportMode Mode { get; }
 
         public Spectrum T { get; }
         public IMicrofacetDistribution Distribution { get; }
-        public FresnelDielectric Fresnel { get; }
+        public FresnelDielectric Fresnel { get; } = new FresnelDielectric();
 
         public BxDFType Type => BxDFType.Transmission | BxDFType.Glossy;
 

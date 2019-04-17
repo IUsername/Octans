@@ -7,7 +7,7 @@ namespace Octans.Reflection
     {
         private readonly float _etaA;
         private readonly float _etaB;
-        private readonly FresnelDielectric _fresnel;
+        private readonly FresnelDielectric _fresnel = new FresnelDielectric();
 
         public SpecularTransmission(in Spectrum t, float etaA, float etaB, TransportMode mode)
         {
@@ -15,7 +15,7 @@ namespace Octans.Reflection
             _etaB = etaB;
             Mode = mode;
             T = t;
-            _fresnel = new FresnelDielectric(etaA, etaB);
+            _fresnel.Initialize(etaA, etaB);
         }
 
         public TransportMode Mode { get; }

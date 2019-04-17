@@ -4,7 +4,7 @@ namespace Octans.Material
 {
     public static class Utilities
     {
-        public static void Bump(this Texture2<float> d, SurfaceInteraction si)
+        public static void Bump(this ITexture2<float> d, SurfaceInteraction si)
         {
             var displace = d.Evaluate(si);
 

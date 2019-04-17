@@ -1,9 +1,19 @@
-﻿using System;
-
-namespace Octans.Material
+﻿namespace Octans.Material
 {
-    public class Texture2<T>
+    public interface ITexture2<out T>
     {
-        public T Evaluate(in SurfaceInteraction si) => throw new NotImplementedException();
+        T Evaluate(in SurfaceInteraction si);
+    }
+
+    public sealed class ConstantTexture<T> : ITexture2<T>
+    {
+        private readonly T _value;
+
+        public ConstantTexture(in T value)
+        {
+            _value = value;
+        }
+
+        public T Evaluate(in SurfaceInteraction si) => _value;
     }
 }

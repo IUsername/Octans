@@ -7,16 +7,16 @@ namespace Octans.Material
 {
     public class MatteMaterial : IMaterial
     {
-        public MatteMaterial(Texture2<Spectrum> kd, Texture2<float> sigma, Texture2<float> bumpMap)
+        public MatteMaterial(ITexture2<Spectrum> kd, ITexture2<float> sigma, ITexture2<float> bumpMap)
         {
             Kd = kd;
             Sigma = sigma;
             BumpMap = bumpMap;
         }
 
-        public Texture2<Spectrum> Kd { get; }
-        public Texture2<float> Sigma { get; }
-        public Texture2<float> BumpMap { get; }
+        public ITexture2<Spectrum> Kd { get; }
+        public ITexture2<float> Sigma { get; }
+        public ITexture2<float> BumpMap { get; }
 
         public void ComputeScatteringFunctions(SurfaceInteraction si,
                                                IObjectArena arena,
@@ -33,7 +33,6 @@ namespace Octans.Material
             }
 
             var sig = Clamp(0, 90, Sigma.Evaluate(in si));
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (sig == 0f)
             {
                 bsdf.Add(arena.Create<LambertianReflection>().Initialize(in r));

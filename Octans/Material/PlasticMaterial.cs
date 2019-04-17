@@ -6,10 +6,10 @@ namespace Octans.Material
 {
     public sealed class PlasticMaterial : IMaterial
     {
-        public PlasticMaterial(Texture2<Spectrum> kd,
-                               Texture2<Spectrum> ks,
-                               Texture2<float> roughness,
-                               Texture2<float> bumpMap,
+        public PlasticMaterial(ITexture2<Spectrum> kd,
+                               ITexture2<Spectrum> ks,
+                               ITexture2<float> roughness,
+                               ITexture2<float> bumpMap,
                                bool remapRoughness)
         {
             Kd = kd;
@@ -19,10 +19,10 @@ namespace Octans.Material
             RemapRoughness = remapRoughness;
         }
 
-        public Texture2<Spectrum> Kd { get; }
-        public Texture2<Spectrum> Ks { get; }
-        public Texture2<float> Roughness { get; }
-        public Texture2<float> BumpMap { get; }
+        public ITexture2<Spectrum> Kd { get; }
+        public ITexture2<Spectrum> Ks { get; }
+        public ITexture2<float> Roughness { get; }
+        public ITexture2<float> BumpMap { get; }
         public bool RemapRoughness { get; }
 
         public void ComputeScatteringFunctions(SurfaceInteraction si,
@@ -39,19 +39,21 @@ namespace Octans.Material
             }
 
             var ks = Ks.Evaluate(in si).Clamp();
-            if (!ks.IsBlack())
+            if (ks.IsBlack())
             {
-                var fresnel = arena.Create<FresnelDielectric>().Initialize(1f, 1.5f);
-                var rough = Roughness.Evaluate(in si);
-                if (RemapRoughness)
-                {
-                    rough = TrowbridgeReitzDistribution.RoughnessToAlpha(rough);
-                }
-
-                var distribution = arena.Create<TrowbridgeReitzDistribution>().Initialize(rough, rough);
-                var specular = arena.Create<MicrofacetReflection>().Initialize(ks, distribution, fresnel);
-                bsdf.Add(specular);
+                return;
             }
+
+            var fresnel = arena.Create<FresnelDielectric>().Initialize(1f, 1.5f);
+            var rough = Roughness.Evaluate(in si);
+            if (RemapRoughness)
+            {
+                rough = TrowbridgeReitzDistribution.RoughnessToAlpha(rough);
+            }
+
+            var distribution = arena.Create<TrowbridgeReitzDistribution>().Initialize(rough, rough);
+            var specular = arena.Create<MicrofacetReflection>().Initialize(ks, distribution, fresnel);
+            bsdf.Add(specular);
         }
     }
 }

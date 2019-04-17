@@ -7,9 +7,9 @@ namespace Octans.Material
     {
         public IMaterial M1 { get; }
         public IMaterial M2 { get; }
-        public Texture2<Spectrum> Scale { get; }
+        public ITexture2<Spectrum> Scale { get; }
 
-        public MixMaterial(IMaterial m1, IMaterial m2, Texture2<Spectrum> scale)
+        public MixMaterial(IMaterial m1, IMaterial m2, ITexture2<Spectrum> scale)
         {
             M1 = m1;
             M2 = m2;
