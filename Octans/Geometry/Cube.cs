@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.MathF;
 
 namespace Octans.Geometry
 {
@@ -29,7 +30,7 @@ namespace Octans.Geometry
             var t5 = (-1f - localRay.Origin.Z) * localRay.InverseDirection.Z;
             var t6 = (1f - localRay.Origin.Z) * localRay.InverseDirection.Z;
 
-            var tMax = System.MathF.Min(System.MathF.Min(System.MathF.Max(t1, t2), System.MathF.Max(t3, t4)), System.MathF.Max(t5, t6));
+            var tMax = Min(Min(Max(t1, t2), Max(t3, t4)), Max(t5, t6));
 
             //var t = 0f;
             if (tMax < 0f)
@@ -37,7 +38,7 @@ namespace Octans.Geometry
                 return Intersections.Empty();
             }
 
-            var tMin = System.MathF.Max(System.MathF.Max(System.MathF.Min(t1, t2), System.MathF.Min(t3, t4)), System.MathF.Min(t5, t6));
+            var tMin = Max(Max(Min(t1, t2), Min(t3, t4)), Min(t5, t6));
             if (tMin > tMax)
             {
                 return Intersections.Empty();
@@ -57,7 +58,7 @@ namespace Octans.Geometry
             var tMinNum = -1f - origin;
             var tMaxNum = 1 - origin;
             float tMin, tMax;
-            if (System.MathF.Abs(direction) >= Epsilon)
+            if (Abs(direction) >= Epsilon)
             {
                 tMin = tMinNum / direction;
                 tMax = tMaxNum / direction;

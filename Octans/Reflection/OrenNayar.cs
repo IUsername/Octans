@@ -5,20 +5,21 @@ namespace Octans.Reflection
 {
     public class OrenNayar : IBxDF
     {
-        public OrenNayar(in Spectrum r, float sigma)
+        public OrenNayar Initialize(in Spectrum r, float sigma)
         {
             R = r;
             sigma = Rad(sigma);
             var sigma2 = sigma * sigma;
             A = 1f - sigma2 / (2f * (sigma2 + 0.33f));
             B = 0.45f * sigma2 / (sigma2 + 0.09f);
+            return this;
         }
 
-        public Spectrum R { get; }
+        public Spectrum R { get; private set; }
 
-        public float B { get; }
+        public float B { get; private set; }
 
-        public float A { get; }
+        public float A { get; private set; }
 
         public BxDFType Type => BxDFType.Reflection | BxDFType.Diffuse;
 

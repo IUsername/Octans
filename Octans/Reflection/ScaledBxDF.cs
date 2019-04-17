@@ -3,17 +3,18 @@
     // ReSharper disable once InconsistentNaming
     public class ScaledBxDF : IBxDF
     {
-        private readonly IBxDF _bxdf;
-        private readonly Spectrum _scale;
-
-        public ScaledBxDF(IBxDF bxdf, in Spectrum scale) 
+        private IBxDF _bxdf;
+        private Spectrum _scale;
+        
+        public ScaledBxDF Initialize(IBxDF bxdf, in Spectrum scale)
         {
             _bxdf = bxdf;
             _scale = scale;
             Type = _bxdf.Type;
+            return this;
         }
 
-        public BxDFType Type { get; }
+        public BxDFType Type { get; private set; }
 
         public Spectrum F(in Vector wo, in Vector wi)
         {

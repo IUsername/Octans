@@ -1,17 +1,30 @@
-﻿namespace Octans
+﻿using Octans.Material;
+using Octans.Memory;
+using Octans.Reflection;
+
+namespace Octans
 {
     public interface IGeometry
     {
-        Material Material { get; }
+        MaterialInfo Material { get; }
         Transform Transform { get; }
 
         IGeometry Parent { get; set; }
+
+        // TODO: Rename after migration
+        IMaterial Material2 { get; set; }
+
         IIntersections LocalIntersects(in Ray localRay);
 
         Normal LocalNormalAt(in Point localPoint, in Intersection intersection);
         void SetTransform(Transform transform);
-        void SetMaterial(Material material);
+        void SetMaterial(MaterialInfo material);
         Bounds LocalBounds();
         void Divide(int threshold);
+
+        void ComputeScatteringFunctions(SurfaceInteraction surfaceInteraction,
+                                        IObjectArena arena,
+                                        TransportMode mode,
+                                        in bool allowMultipleLobes);
     }
 }

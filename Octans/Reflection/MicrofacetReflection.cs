@@ -6,16 +6,17 @@ namespace Octans.Reflection
 {
     public sealed class MicrofacetReflection : IBxDF
     {
-        public MicrofacetReflection(in Spectrum r, IMicrofacetDistribution distribution, IFresnel fresnel)
+        public MicrofacetReflection Initialize(in Spectrum r, IMicrofacetDistribution distribution, IFresnel fresnel)
         {
             R = r;
             Distribution = distribution;
             Fresnel = fresnel;
+            return this;
         }
 
-        public Spectrum R { get; }
-        public IMicrofacetDistribution Distribution { get; }
-        public IFresnel Fresnel { get; }
+        public Spectrum R { get; private set; }
+        public IMicrofacetDistribution Distribution { get; private set; }
+        public IFresnel Fresnel { get; private set; }
 
         public BxDFType Type => BxDFType.Reflection | BxDFType.Glossy;
 

@@ -137,7 +137,7 @@ namespace Octans.Reflection
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsType(this IBxDF bxdf, BxDFType flag)
+        public static bool IsFlagged(this IBxDF bxdf, BxDFType flag)
         {
             return (bxdf.Type & flag) == flag;
         }

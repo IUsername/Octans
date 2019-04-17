@@ -7,12 +7,12 @@ using Xunit;
 
 namespace Octans.Test
 {
-    public class MaterialTests
+    public class MaterialInfoTests
     {
         [Fact]
         public void ContainsPatternAmbientDiffuseSpecularAndShininess()
         {
-            var m = new Material();
+            var m = new MaterialInfo();
             m.Texture.Should().BeAssignableTo<ITexture>();
             m.Ambient.Should().Be(0.1f);
             m.Diffuse.Should().Be(0.9f);
@@ -24,7 +24,7 @@ namespace Octans.Test
         public void LightingWithPatternApplied()
         {
             var s = new Sphere();
-            var m = new Material
+            var m = new MaterialInfo
             {
                 Texture = new StripeTexture(Colors.White, Colors.Black),
                 Ambient = 1f,
@@ -43,21 +43,21 @@ namespace Octans.Test
         [Fact]
         public void DefaultReflectivityOfZero()
         {
-            var m = new Material();
+            var m = new MaterialInfo();
             m.Reflective.Should().Be(0f);
         }
 
         [Fact]
         public void DefaultTransparencyOfZero()
         {
-            var m = new Material();
+            var m = new MaterialInfo();
             m.Transparency.Should().Be(0f);
         }
 
         [Fact]
         public void DefaultRefractiveIndexOfOne()
         {
-            var m = new Material();
+            var m = new MaterialInfo();
             m.RefractiveIndex.Should().Be(1f);
         }
     }

@@ -46,7 +46,7 @@ namespace Octans.ConsoleApp
             var triangulated = data.Groups[0];
             triangulated.SetTransform(Transform.Scale(0.10f).RotateX(-System.MathF.PI / 2f).RotateY(System.MathF.PI / 8f));
 
-            var glass = new Material
+            var glass = new MaterialInfo
             {
                 Texture = new SolidColor(new Color(0.8f, 1f, 0.9f)),
                 Reflective = 0.78f,
@@ -63,7 +63,7 @@ namespace Octans.ConsoleApp
 
             ApplyMaterialToChildren(triangulated, glass);
 
-            var checkerboard = new Material
+            var checkerboard = new MaterialInfo
             {
                 Texture = new CheckerTexture(new Color(0.95f, 0.95f, 0.95f), new Color(0.8f, 0.05f, 0.05f)),
                 Metallic = 0.4f,
@@ -139,7 +139,7 @@ namespace Octans.ConsoleApp
             var triangulated = data.Groups[0];
             triangulated.SetTransform(Transform.Scale(0.1f).RotateX(-System.MathF.PI / 2f));
 
-            var material = new Material
+            var material = new MaterialInfo
             {
                 Texture = new SolidColor(new Color(0.3f, 0.3f, 1f)),
                 Reflective = 0.4f,

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using static System.MathF;
 
 namespace Octans.Geometry
 {
@@ -16,7 +16,7 @@ namespace Octans.Geometry
                 return Intersections.Empty();
             }
 
-            discriminant = System.MathF.Sqrt(discriminant);
+            discriminant = Sqrt(discriminant);
             var denominator = 2f * a;
             var t1 = (-b - discriminant) / denominator;
             var t2 = (-b + discriminant) / denominator;
@@ -26,7 +26,7 @@ namespace Octans.Geometry
         }
 
         public override Normal LocalNormalAt(in Point localPoint, in Intersection intersection) =>
-            (Normal)(localPoint - Point.Zero);
+            (Normal) (localPoint - Point.Zero);
 
         public override Bounds LocalBounds() => Bounds.Unit;
     }

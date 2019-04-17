@@ -35,12 +35,12 @@ namespace Octans.ConsoleApp
             skySphere.SetTransform(Transform.RotateY(3.3f).Scale(1000f));
 
             var radius = 0.25f;
-            var red = new Material {Texture = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f,0.3f,0.3f)};
-            var blue = new Material {Texture = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
-            var yellow = new Material {Texture = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
-            var white = new Material {Texture = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
-            var blackPip = new Material {Texture = new SolidColor(new Color(0.1f, 0.1f, 0.1f)), Ambient = 0.0f, Roughness = 0.8f, Metallic = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f) };
-            var whitePip = new Material { Texture = new SolidColor(new Color(0.95f, 0.95f, 0.95f)), Ambient = 0.0f, Roughness = 0.8f, Metallic = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f) };
+            var red = new MaterialInfo { Texture = new SolidColor(new Color(1, 0, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f,0.3f,0.3f)};
+            var blue = new MaterialInfo { Texture = new SolidColor(new Color(0, 0, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
+            var yellow = new MaterialInfo { Texture = new SolidColor(new Color(1, 1, 0)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
+            var white = new MaterialInfo { Texture = new SolidColor(new Color(1, 1, 1)), Reflective = 0.3f, Roughness = 0.3f, Ambient = 0.0f, Metallic = 0.3f, SpecularColor = new Color(0.3f, 0.3f, 0.3f) };
+            var blackPip = new MaterialInfo { Texture = new SolidColor(new Color(0.1f, 0.1f, 0.1f)), Ambient = 0.0f, Roughness = 0.8f, Metallic = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f) };
+            var whitePip = new MaterialInfo { Texture = new SolidColor(new Color(0.95f, 0.95f, 0.95f)), Ambient = 0.0f, Roughness = 0.8f, Metallic = 0f, SpecularColor = new Color(0.2f, 0.2f, 0.2f) };
 
             var d1 = CutPips(RoundedCube(radius, blue), whitePip);
             var d2 = CutPips(RoundedCube(radius, red), whitePip);

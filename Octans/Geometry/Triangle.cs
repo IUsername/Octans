@@ -1,4 +1,4 @@
-﻿using System;
+﻿using static System.MathF;
 
 namespace Octans.Geometry
 {
@@ -32,7 +32,7 @@ namespace Octans.Geometry
             // www.tandfonline.com/doi/abs/10.1080/10867651.1997.10487468 
             var dirCrossE2 = Vector.Cross(localRay.Direction, E2);
             var det = E1 % dirCrossE2;
-            if (System.MathF.Abs(det) < Epsilon)
+            if (Abs(det) < Epsilon)
             {
                 return Intersections.Empty();
             }

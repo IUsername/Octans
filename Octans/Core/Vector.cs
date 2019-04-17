@@ -129,6 +129,21 @@ namespace Octans
         }
 
         [Pure]
+        public static Vector Cross(in Normal a, in Vector b)
+        {
+            double aX = a.X, aY = a.Y, aZ = a.Z;
+            double bX = b.X, bY = b.Y, bZ = b.Z;
+            return new Vector((float)(aY * bZ - aZ * bY),
+                              (float)(aZ * bX - aX * bZ),
+                              (float)(aX * bY - aY * bX));
+
+            //// TODO: Are we still getting enough accuracy?
+            //return new Vector(MathF.FusedMultiplyAdd(a.Y, b.Z, -a.Z * b.Y),
+            //                  MathF.FusedMultiplyAdd(a.Z, b.X, -a.X * b.Z),
+            //                  MathF.FusedMultiplyAdd(a.X, b.Y, -a.Y * b.X));
+        }
+
+        [Pure]
         public static Vector Reflect(in Vector @in, in Normal normal) => @in - (Vector)normal * 2f * (@in % normal);
 
         [Pure]

@@ -51,7 +51,7 @@ namespace Octans
         {
             var w = new World();
             var s1 = new Sphere();
-            var m = new Material
+            var m = new MaterialInfo
                 {Texture = new SolidColor(new Color(0.8f, 1.0f, 0.6f)), Diffuse = 0.7f, Specular = 0.2f};
             s1.SetMaterial(m);
             var s2 = new Sphere();

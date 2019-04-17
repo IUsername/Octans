@@ -18,7 +18,7 @@ namespace Octans.ConsoleApp
                                pathItems.Take(pathItems.Length - pos - 1));
         }
 
-        private static ConstructiveSolid RoundedCube(float radius, Material mat)
+        private static ConstructiveSolid RoundedCube(float radius, MaterialInfo mat)
         {
             ConstructiveSolid SolidFaces(float r)
             {
@@ -37,9 +37,9 @@ namespace Octans.ConsoleApp
                 return new ConstructiveSolid(ConstructiveOp.Union, su, cZ);
             }
 
-            ConstructiveSolid Union(IGeometry a, IGeometry b) => new ConstructiveSolid(ConstructiveOp.Union, a, b);
+            static ConstructiveSolid Union(IGeometry a, IGeometry b) => new ConstructiveSolid(ConstructiveOp.Union, a, b);
 
-            Cylinder CreateCylinder(float r, Point from, Material material, Transform rotation)
+            static Cylinder CreateCylinder(float r, Point from, MaterialInfo material, Transform rotation)
             {
                 var dist = 1f - r;
                 var fOffset = from * dist;
@@ -49,7 +49,7 @@ namespace Octans.ConsoleApp
                 return e;
             }
 
-            Sphere Corner(float r, Point corner, Material material)
+            static Sphere Corner(float r, Point corner, MaterialInfo material)
             {
                 var dist = 1f - r;
                 var offset = corner * dist;
@@ -59,13 +59,13 @@ namespace Octans.ConsoleApp
                 return sphere;
             }
 
-            Cylinder EdgeX(float r, Point from, Material material) =>
+            static Cylinder EdgeX(float r, Point from, MaterialInfo material) =>
                 CreateCylinder(r, from, material, Transform.RotateZ(-System.MathF.PI / 2));
 
-            Cylinder EdgeY(float r, Point from, Material material) =>
+            static Cylinder EdgeY(float r, Point from, MaterialInfo material) =>
                 CreateCylinder(r, from, material, Transform.Identity);
 
-            Cylinder EdgeZ(float r, Point from, Material material) =>
+            static Cylinder EdgeZ(float r, Point from, MaterialInfo material) =>
                 CreateCylinder(r, from, material, Transform.RotateX(System.MathF.PI / 2));
 
             var s = SolidFaces(radius);
@@ -103,9 +103,9 @@ namespace Octans.ConsoleApp
             return s;
         }
 
-        private static ConstructiveSolid CutPips(ConstructiveSolid csg, Material material)
+        private static ConstructiveSolid CutPips(ConstructiveSolid csg, MaterialInfo material)
         {
-            Sphere PipSphere(Point point, Material mat)
+            static Sphere PipSphere(Point point, MaterialInfo mat)
             {
                 var sphere = new Sphere();
                 sphere.SetTransform(Transform.Scale(0.2f).Translate(point.X, point.Y, point.Z));
@@ -113,7 +113,7 @@ namespace Octans.ConsoleApp
                 return sphere;
             }
 
-            ConstructiveSolid Diff(IGeometry s, IGeometry child) => new ConstructiveSolid(ConstructiveOp.Difference, s, child);
+            static ConstructiveSolid Diff(IGeometry s, IGeometry child) => new ConstructiveSolid(ConstructiveOp.Difference, s, child);
 
             var offset = 1.15f;
 
@@ -164,7 +164,7 @@ namespace Octans.ConsoleApp
             return new CubeMap(left, front, right, back, top, bottom);
         }
 
-        private static void ApplyMaterialToChildren(Group group, Material material)
+        private static void ApplyMaterialToChildren(Group group, MaterialInfo material)
         {
             foreach (var child in group.Children)
             {

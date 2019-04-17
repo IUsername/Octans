@@ -2,9 +2,9 @@
 
 namespace Octans
 {
-    public class Material
+    public class MaterialInfo
     {
-        public Material()
+        public MaterialInfo()
         {
             Texture = new SolidColor(Colors.White);
             Ambient = 0.1f;

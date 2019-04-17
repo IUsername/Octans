@@ -16,7 +16,7 @@ namespace Octans.Test.Shading
         public void EyeBetweenLightAndSurface()
         {
             var s = new Sphere();
-            var m = new Material();
+            var m = new MaterialInfo();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1);
             var normal = new Normal(0, 0, -1);
@@ -29,7 +29,7 @@ namespace Octans.Test.Shading
         public void EyeOffset45Deg()
         {
             var s = new Sphere();
-            var m = new Material();
+            var m = new MaterialInfo();
             var position = Point.Zero;
             var eyeV = new Vector(0, System.MathF.Sqrt(2) / 2, -System.MathF.Sqrt(2) / 2);
             var normal = new Normal(0, 0, -1);
@@ -42,7 +42,7 @@ namespace Octans.Test.Shading
         public void LightOffset45Deg()
         {
             var s = new Sphere();
-            var m = new Material();
+            var m = new MaterialInfo();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1f);
             var normal = new Normal(0, 0, -1);
@@ -55,7 +55,7 @@ namespace Octans.Test.Shading
         public void FullReflectionOfLightOffset45Deg()
         {
             var s = new Sphere();
-            var m = new Material();
+            var m = new MaterialInfo();
             var position = Point.Zero;
             var eyeV = new Vector(0, -System.MathF.Sqrt(2) / 2, -System.MathF.Sqrt(2) / 2);
             var normal = new Normal(0, 0, -1);
@@ -68,7 +68,7 @@ namespace Octans.Test.Shading
         public void LightBehindSurface()
         {
             var s = new Sphere();
-            var m = new Material();
+            var m = new MaterialInfo();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1f);
             var normal = new Normal(0, 0, -1);
@@ -81,7 +81,7 @@ namespace Octans.Test.Shading
         public void LightOnSurfaceInShadow()
         {
             var s = new Sphere();
-            var m = new Material();
+            var m = new MaterialInfo();
             var position = Point.Zero;
             var eyeV = new Vector(0, 0, -1f);
             var normal = new Normal(0, 0, -1);
@@ -94,7 +94,7 @@ namespace Octans.Test.Shading
         public void LightOnSurfaceInPartialShadow()
         {
             var s = new Sphere();
-            var m = new Material {Ambient = 0.1f, Diffuse = 0.9f, Specular = 0};
+            var m = new MaterialInfo { Ambient = 0.1f, Diffuse = 0.9f, Specular = 0};
             var position = new Point(0, 0, -1);
             var eyeV = new Vector(0, 0, -1f);
             var normal = new Normal(0, 0, -1);
@@ -198,7 +198,7 @@ namespace Octans.Test.Shading
         {
             var w = World.Default();
             var shape = new Plane();
-            shape.SetMaterial(new Material {Reflective = 0.5f});
+            shape.SetMaterial(new MaterialInfo { Reflective = 0.5f});
             shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
@@ -212,7 +212,7 @@ namespace Octans.Test.Shading
         {
             var w = World.Default();
             var shape = new Plane();
-            shape.SetMaterial(new Material {Reflective = 0.5f});
+            shape.SetMaterial(new MaterialInfo { Reflective = 0.5f});
             shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));
@@ -226,7 +226,7 @@ namespace Octans.Test.Shading
         {
             var w = World.Default();
             var shape = new Plane();
-            shape.SetMaterial(new Material {Reflective = 0.5f});
+            shape.SetMaterial(new MaterialInfo { Reflective = 0.5f});
             shape.SetTransform(Transform.Translate(0, -1, 0));
             w.AddObject(shape);
             var r = new Ray(new Point(0, 0, -3), new Vector(0, -System.MathF.Sqrt(2f) / 2f, System.MathF.Sqrt(2f) / 2f));

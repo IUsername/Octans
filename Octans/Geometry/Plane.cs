@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.MathF;
 
 namespace Octans.Geometry
 {
@@ -9,7 +10,7 @@ namespace Octans.Geometry
         public override IIntersections LocalIntersects(in Ray localRay)
         {
             // XZ plane
-            if (System.MathF.Abs(localRay.Direction.Y) < Epsilon)
+            if (Abs(localRay.Direction.Y) < Epsilon)
             {
                 return Intersections.Empty();
             }

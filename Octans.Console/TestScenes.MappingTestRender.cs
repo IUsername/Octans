@@ -15,7 +15,7 @@ namespace Octans.ConsoleApp
     {
         public static void MappingTestRender()
         {
-            Cube Cube(float rotY, float rotX, float tx, float ty)
+            static Cube Cube(float rotY, float rotX, float tx, float ty)
             {
                 var cube1 = new Cube
                 {
@@ -250,9 +250,9 @@ namespace Octans.ConsoleApp
 
         public static void RowMetal(int spp)
         {
-            Material CreateMaterial()
+            static MaterialInfo CreateMaterial()
             {
-                var material = new Material();
+                var material = new MaterialInfo();
                 var color = new Color(1f, 0.3f, 0.3f);
                 material.Texture = SolidColor.Create(color);
                 material.SpecularColor = color;
@@ -273,9 +273,9 @@ namespace Octans.ConsoleApp
 
         public static void RowPlastic(int spp)
         {
-            Material CreateMaterial()
+            static MaterialInfo CreateMaterial()
             {
-                var material = new Material();
+                var material = new MaterialInfo();
                 var color = new Color(1f, 0.3f, 0.3f);
                 material.Texture = SolidColor.Create(color);
                 material.SpecularColor = new Color(0.2f, 0.2f, 0.2f);
@@ -296,9 +296,9 @@ namespace Octans.ConsoleApp
 
         public static void RowMetalPlastic(int spp)
         {
-            Material CreateMaterial()
+            static MaterialInfo CreateMaterial()
             {
-                var material = new Material();
+                var material = new MaterialInfo();
                 var color = new Color(1f, 0.3f, 0.3f);
                 material.Texture = SolidColor.Create(color);
                 material.SpecularColor = new Color(0.2f, 0.2f, 0.2f);
@@ -320,9 +320,9 @@ namespace Octans.ConsoleApp
 
         public static void RowTransparent(int spp)
         {
-            Material CreateMaterial()
+            static MaterialInfo CreateMaterial()
             {
-                var material = new Material();
+                var material = new MaterialInfo();
                 var color = new Color(1f, 0.3f, 0.3f);
                 material.Texture = SolidColor.Create(color);
                 material.SpecularColor = new Color(0.6f, 0.6f, 0.6f);
@@ -345,9 +345,9 @@ namespace Octans.ConsoleApp
 
         public static void RowTransparentRefraction(int spp)
         {
-            Material CreateMaterial()
+            static MaterialInfo CreateMaterial()
             {
-                var material = new Material();
+                var material = new MaterialInfo();
                 var color = new Color(1f, 0.3f, 0.3f);
                 material.Texture = SolidColor.Create(color);
                 material.SpecularColor = new Color(0.6f, 0.6f, 0.6f);
@@ -372,9 +372,9 @@ namespace Octans.ConsoleApp
 
         public static void RowTransparentRoughness(int spp)
         {
-            Material CreateMaterial()
+            static MaterialInfo CreateMaterial()
             {
-                var material = new Material();
+                var material = new MaterialInfo();
                 var color = new Color(1f,1f, 1f);
                 material.Texture = SolidColor.Create(color);
                 material.SpecularColor = new Color(0.8f, 0.8f, 0.8f);
@@ -517,7 +517,7 @@ namespace Octans.ConsoleApp
             Console.WriteLine("Done ({0})", stopwatch.Elapsed);
         }
 
-        public static void RowTestByDelegate(int spp, string fileSuffix, Func<int, Material> materialFunc)
+        public static void RowTestByDelegate(int spp, string fileSuffix, Func<int, MaterialInfo> materialFunc)
         {
             Console.WriteLine("Loading file...");
             var filePath = Path.Combine(GetExecutionPath(), "winter_river_1k.ppm");

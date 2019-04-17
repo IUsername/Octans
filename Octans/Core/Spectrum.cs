@@ -354,6 +354,12 @@ namespace Octans
         }
 
         [Pure]
+        public Spectrum Clamp(float low = 0f, float high = float.PositiveInfinity)
+        {
+            return Clamp(this, low, high);
+        }
+
+        [Pure]
         public static Spectrum Negate(in Spectrum spectrum)
         {
             int i;
@@ -396,7 +402,7 @@ namespace Octans
         }
 
         [Pure]
-        public static Spectrum Clamp(in Spectrum spectrum, float low, float high = float.PositiveInfinity)
+        public static Spectrum Clamp(in Spectrum spectrum, float low = 0f, float high = float.PositiveInfinity)
         {
             int i;
             var results = new float[Samples];

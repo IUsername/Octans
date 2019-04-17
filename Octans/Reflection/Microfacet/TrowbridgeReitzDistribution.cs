@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using static System.MathF;
 using static System.Single;
 using static Octans.MathF;
@@ -7,14 +8,25 @@ namespace Octans.Reflection.Microfacet
 {
     public sealed class TrowbridgeReitzDistribution : MicrofacetDistributionBase
     {
-        private readonly float _alphaX;
-        private readonly float _alphaY;
+        private float _alphaX;
+        private float _alphaY;
 
-        public TrowbridgeReitzDistribution(float alphaX, float alphaY, bool sampleVisibleArea = true) 
+        public TrowbridgeReitzDistribution(bool sampleVisibleArea = true)
             : base(sampleVisibleArea)
+        {
+        }
+
+        public TrowbridgeReitzDistribution()
+            : base(true)
+        {
+        }
+
+        public TrowbridgeReitzDistribution Initialize(float alphaX, float alphaY, bool sampleVisibleArea = true)
         {
             _alphaX = alphaX;
             _alphaY = alphaY;
+            SampleVisibleArea = sampleVisibleArea;
+            return this;
         }
 
         public override float D(in Vector wh)
@@ -46,5 +58,8 @@ namespace Octans.Reflection.Microfacet
         public override Vector SampleWh(in Vector wo, in Vector wi) => throw new NotImplementedException();
 
         public override float Pdf(in Vector wo, in Vector wh) => throw new NotImplementedException();
+
+        [Pure]
+        public static float RoughnessToAlpha(in float roughness) => Utilities.RoughnessToAlpha(roughness);
     }
 }

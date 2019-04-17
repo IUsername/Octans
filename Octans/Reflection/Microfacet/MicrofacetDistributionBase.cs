@@ -7,7 +7,7 @@
             SampleVisibleArea = sampleVisibleArea;
         }
 
-        protected bool SampleVisibleArea { get; }
+        protected bool SampleVisibleArea { get; set; }
 
         public abstract float D(in Vector wh);
 

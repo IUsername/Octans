@@ -1,31 +1,56 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
 namespace Octans.Reflection
 {
-    public class BSDF
+    public interface IBxDFCollection
+    {
+        IBxDF this[int index] { get; }
+        void Set(in IBxDF bxdf, int index);
+    }
+
+    public class BSDF : IBxDFCollection
     {
         private const int MaxBxDFs = 8;
         private readonly IBxDF[] _bxdf = new IBxDF[MaxBxDFs];
-        private readonly Normal ng, ns;
-        private readonly Vector ss, ts;
+        private Normal _ng, _ns;
+        private Vector _ss, _ts;
         private int _nBxDFs;
 
-        // TODO: Object pool and initialize method may improve perf.
-        public BSDF(in SurfaceInteraction si, float eta = 1f)
+        public BSDF Initialize(in SurfaceInteraction si, float eta = 1f)
         {
-            // TODO: Set shading info from si
+            _ns = si.ShadingGeometry.N;
+            _ng = si.N;
+            _ss = si.ShadingGeometry.Dpdu.Normalize();
+            _ts = Vector.Cross(_ns, _ss);
             Eta = eta;
-            
+            _nBxDFs = 0;
+            //si.BSDF = this;
+            return this;
         }
 
-        public float Eta { get; }
+        IBxDF IBxDFCollection.this[int index] => (index < _nBxDFs) ? _bxdf[index] : null;
+
+        public float Eta { get; private set; }
 
         public void Add(in IBxDF bxdf)
         {
             Debug.Assert(_nBxDFs < MaxBxDFs, $"BSDF can only hold {MaxBxDFs} BxDFs.");
             _bxdf[_nBxDFs++] = bxdf;
+        }
+
+        void IBxDFCollection.Set(in IBxDF bxdf, int index)
+        {
+            if (index < _nBxDFs)
+            {
+                _bxdf[index] = bxdf;
+            }
+            else
+            {
+                throw new IndexOutOfRangeException("The index must have been previously allocated before using the Add method.");
+            }
         }
 
         [Pure]
@@ -34,7 +59,7 @@ namespace Octans.Reflection
             var count = 0;
             for (var i = 0; i < _nBxDFs; i++)
             {
-                if (_bxdf[i].IsType(flags))
+                if (_bxdf[i].IsFlagged(flags))
                 {
                     ++count;
                 }
@@ -48,16 +73,16 @@ namespace Octans.Reflection
         {
             var wi = WorldToLocal(in wiW);
             var wo = WorldToLocal(in woW);
-            var reflect = wiW % ng * (woW % ng) > 0f;
+            var reflect = wiW % _ng * (woW % _ng) > 0f;
             var f = Spectrum.Zero;
             for (var i = 0; i < _nBxDFs; ++i)
             {
-                var current = _bxdf[i];
-                if (current.IsType(flags) &&
-                    (reflect && current.IsType(BxDFType.Reflection) ||
-                     !reflect && current.IsType(BxDFType.Transmission)))
+                var b = _bxdf[i];
+                if (b.IsFlagged(flags) &&
+                    (reflect && b.IsFlagged(BxDFType.Reflection) ||
+                     !reflect && b.IsFlagged(BxDFType.Transmission)))
                 {
-                    f += current.F(in wo, in wi);
+                    f += b.F(in wo, in wi);
                 }
             }
 
@@ -71,7 +96,7 @@ namespace Octans.Reflection
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var current = _bxdf[i];
-                if (current.IsType(flags))
+                if (current.IsFlagged(flags))
                 {
                     ret += current.Rho(in wo, nSamples, in u);
                 }
@@ -87,7 +112,7 @@ namespace Octans.Reflection
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var current = _bxdf[i];
-                if (current.IsType(flags))
+                if (current.IsFlagged(flags))
                 {
                     ret += current.Rho(nSamples, in u1, in u2);
                 }
@@ -98,14 +123,14 @@ namespace Octans.Reflection
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Vector WorldToLocal(in Vector v) => new Vector(v % ss, v % ts, v % ns);
+        public Vector WorldToLocal(in Vector v) => new Vector(v % _ss, v % _ts, v % _ns);
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector LocalToWorld(in Vector v) =>
             new Vector(
-                ss.X * v.X + ts.X * v.Y + ns.X * v.Z,
-                ss.Y * v.X + ts.Y * v.Y + ns.Y * v.Z,
-                ss.Z * v.X + ts.Z * v.Y + ns.Z * v.Z);
+                _ss.X * v.X + _ts.X * v.Y + _ns.X * v.Z,
+                _ss.Y * v.X + _ts.Y * v.Y + _ns.Y * v.Z,
+                _ss.Z * v.X + _ts.Z * v.Y + _ns.Z * v.Z);
     }
 }

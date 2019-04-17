@@ -1,4 +1,8 @@
-﻿namespace Octans.Geometry
+﻿using Octans.Material;
+using Octans.Memory;
+using Octans.Reflection;
+
+namespace Octans.Geometry
 {
     public abstract class GeometryBase : IGeometry
     {
@@ -10,7 +14,7 @@
             Transform = Transform.Identity;
       //      _inverse = Matrix.Identity;
      //       _inverseTranspose = Matrix.Identity;
-            Material = new Material();
+            Material = new MaterialInfo();
         }
 
         public Transform Transform { get; protected set; }
@@ -18,7 +22,7 @@
         //  public Matrix TransformInverse() => _inverse;
       //  public Matrix TransformInverseTranspose() => _inverseTranspose;
 
-        public Material Material { get; protected set; }
+        public MaterialInfo Material { get; protected set; }
 
         public abstract IIntersections LocalIntersects(in Ray localRay);
 
@@ -30,7 +34,7 @@
             Transform = transform;
         }
 
-        public void SetMaterial(Material material)
+        public void SetMaterial(MaterialInfo material)
         {
             Material = material;
         }
@@ -42,6 +46,17 @@
         {
             // Do nothing
             // Should override to internally divide groups and CSG
+        }
+
+        // TODO: Rename after migration.
+        public IMaterial Material2 { get; set; }
+
+        public void ComputeScatteringFunctions(SurfaceInteraction surfaceInteraction,
+                                               IObjectArena arena,
+                                               TransportMode mode,
+                                               in bool allowMultipleLobes)
+        {
+            Material2?.ComputeScatteringFunctions(surfaceInteraction, arena, mode, allowMultipleLobes);
         }
     }
 }

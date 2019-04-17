@@ -5,11 +5,12 @@ namespace Octans.Reflection
 {
     public class LambertianReflection : IBxDF
     {
-        public Spectrum R { get; }
+        public Spectrum R { get; private set; }
 
-        public LambertianReflection(in Spectrum r)
+        public LambertianReflection Initialize(in Spectrum r)
         {
             R = r;
+            return this;
         }
 
         public BxDFType Type => BxDFType.Reflection | BxDFType.Diffuse;

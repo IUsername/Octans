@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Octans.Geometry;
 using Xunit;
 
@@ -38,7 +37,7 @@ namespace Octans.Test.Geometry
             var t = Transform.Scale(2, 2, 2);
             s.SetTransform(t);
             // ReSharper disable once UnusedVariable
-            var xs = s.Intersects(r);
+            var _ = s.Intersects(r);
             s.SavedRay.Origin.Should().Be(new Point(0, 0, -2.5f));
             s.SavedRay.Direction.Should().Be(new Vector(0, 0, 0.5f));
         }
@@ -51,7 +50,7 @@ namespace Octans.Test.Geometry
             var t = Transform.Translate(5, 0, 0);
             s.SetTransform(t);
             // ReSharper disable once UnusedVariable
-            var xs = s.Intersects(r);
+            var _ = s.Intersects(r);
             s.SavedRay.Origin.Should().Be(new Point(-5, 0, -5f));
             s.SavedRay.Direction.Should().Be(new Vector(0, 0, 1f));
         }
@@ -60,8 +59,9 @@ namespace Octans.Test.Geometry
         public void NormalsAreNormalized()
         {
             var s = new TestGeometry();
-            var n = s.NormalAt(new Point(System.MathF.Sqrt(3f) / 3f, System.MathF.Sqrt(3f) / 3f, System.MathF.Sqrt(3f) / 3f),
-                               new Intersection(1f, s));
+            var n = s.NormalAt(
+                new Point(System.MathF.Sqrt(3f) / 3f, System.MathF.Sqrt(3f) / 3f, System.MathF.Sqrt(3f) / 3f),
+                new Intersection(1f, s));
             (n == n.Normalize()).Should().BeTrue();
         }
 
@@ -79,7 +79,8 @@ namespace Octans.Test.Geometry
         {
             var s = new TestGeometry();
             s.SetTransform(Transform.Scale(1f, 0.5f, 1f) * Transform.RotateZ(System.MathF.PI / 5f));
-            var n = s.NormalAt(new Point(0, System.MathF.Sqrt(2f) / 2f, -System.MathF.Sqrt(2f) / 2f), new Intersection(1f, s));
+            var n = s.NormalAt(new Point(0, System.MathF.Sqrt(2f) / 2f, -System.MathF.Sqrt(2f) / 2f),
+                               new Intersection(1f, s));
             n.Should().Be(new Normal(0, 0.97014f, -0.24254f));
         }
 
@@ -87,14 +88,14 @@ namespace Octans.Test.Geometry
         public void HasDefaultMaterial()
         {
             var s = new Sphere();
-            s.Material.Should().BeEquivalentTo(new Material());
+            s.Material.Should().BeEquivalentTo(new MaterialInfo());
         }
 
         [Fact]
         public void CanBeAssignedMaterial()
         {
             var s = new Sphere();
-            var m = new Material {Ambient = 1f};
+            var m = new MaterialInfo {Ambient = 1f};
             s.SetMaterial(m);
             s.Material.Should().Be(m);
         }

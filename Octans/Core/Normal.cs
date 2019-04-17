@@ -52,6 +52,12 @@ namespace Octans
             return n % v < 0f ? -n : n;
         }
 
+        [Pure]
+        public static Normal FaceForward(in Normal n, in Normal v)
+        {
+            return n % v < 0f ? -n : n;
+        }
+
         public Normal Reflect(in Normal normal) => Reflect(in this, in normal);
 
         public bool Equals(Normal other) =>

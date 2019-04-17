@@ -23,7 +23,7 @@ namespace Octans.Shading
             return texture.LocalColorAt(in local);
         }
 
-        public static Color Lighting(Material m,
+        public static Color Lighting(MaterialInfo m,
                                      IGeometry geometry,
                                      ILight light,
                                      Point worldPoint,

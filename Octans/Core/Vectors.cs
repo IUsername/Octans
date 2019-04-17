@@ -6,5 +6,6 @@
         public static Vector YAxis = new Vector(0,1,0);
         public static Vector ZAxis = new Vector(0,0,1);
         public static Vector Up = YAxis;
+        public static Vector Zero = new Vector(0,0,0);
     }
 }

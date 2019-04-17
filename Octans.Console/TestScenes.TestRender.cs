@@ -209,7 +209,7 @@ namespace Octans.ConsoleApp
             //};
             //t.SetTransform(Transforms.Translate(1f, 2f, 1f));
 
-            var ringMaterial = new Material
+            var ringMaterial = new MaterialInfo
             {
                 Texture = new SolidColor(new Color(1f, 0.8f, 0f)),
                 Reflective = 0.4f,

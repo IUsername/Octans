@@ -15,7 +15,7 @@ namespace Octans.ConsoleApp
         private static Group CreateYZRect(in Point corner,
                                           float yHeight,
                                           float zWidth,
-                                          Material m)
+                                          MaterialInfo m)
         {
             var dY = new Vector(0, yHeight, 0);
             var dZ = new Vector(0, 0, zWidth);
@@ -33,7 +33,7 @@ namespace Octans.ConsoleApp
         private static Group CreateXZRect(in Point corner,
                                           float xWidth,
                                           float zWidth,
-                                          Material m)
+                                          MaterialInfo m)
         {
             var dX = new Vector(xWidth, 0, 0);
             var dZ = new Vector(0, 0, zWidth);
@@ -51,7 +51,7 @@ namespace Octans.ConsoleApp
         private static Group CreateXYRect(in Point corner,
                                           float xWidth,
                                           float yHeight,
-                                          Material m)
+                                          MaterialInfo m)
         {
             var dX = new Vector(xWidth, 0, 0);
             var dY = new Vector(0, yHeight, 0);
@@ -66,7 +66,7 @@ namespace Octans.ConsoleApp
             return g;
         }
 
-        private static Cube CreateBox(float width, float height, in Point position, float rotateY, Material m)
+        private static Cube CreateBox(float width, float height, in Point position, float rotateY, MaterialInfo m)
         {
             var halfWidth = width / 2f;
             var halfHeight = height / 2f;
@@ -119,7 +119,7 @@ namespace Octans.ConsoleApp
         private static World BuildBox()
         {
             var green = new Color(0.12f, 0.45f, 0.15f);
-            var greenMaterial = new Material
+            var greenMaterial = new MaterialInfo
             {
                 Texture = SolidColor.Create(green),
                 Roughness = 1f,
@@ -128,7 +128,7 @@ namespace Octans.ConsoleApp
             };
 
             var red = new Color(0.65f, 0.05f, 0.05f);
-            var redMaterial = new Material
+            var redMaterial = new MaterialInfo
             {
                 Texture = SolidColor.Create(red),
                 Roughness = 1f,
@@ -137,7 +137,7 @@ namespace Octans.ConsoleApp
             };
 
             var blue = new Color(0.15f,0.15f, 0.85f);
-            var blueMetallic = new Material
+            var blueMetallic = new MaterialInfo
             {
                 Texture = SolidColor.Create(blue),
                 Roughness = 0.2f,
@@ -147,7 +147,7 @@ namespace Octans.ConsoleApp
             };
 
             var white = new Color(0.73f, 0.73f, 0.73f);
-            var whiteMaterial = new Material
+            var whiteMaterial = new MaterialInfo
             {
                 Texture = SolidColor.Create(white),
                 Roughness = 1f,
@@ -155,7 +155,7 @@ namespace Octans.ConsoleApp
                 SpecularColor = white
             };
 
-            var lightMaterial = new Material
+            var lightMaterial = new MaterialInfo
             {
                 Texture = SolidColor.Create(1f, 1f, 1f),
                 Roughness = 1f,
