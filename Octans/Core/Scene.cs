@@ -28,9 +28,9 @@ namespace Octans
 
         public Bounds WorldBounds { get; }
 
-        public bool Intersect(in Ray r, out SurfaceInteraction si)
+        public bool Intersect(in Ray r, ref SurfaceInteraction si)
         {
-            return Aggregate.Intersect2(in r, out si);
+            return Aggregate.Intersect2(in r, ref si);
         }
 
         public bool IntersectP(in Ray r)

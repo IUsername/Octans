@@ -37,11 +37,11 @@ namespace Octans.Integrator
                 (sampleExtent.Y + tileSize - 1) / tileSize);
 
             var queue = new ConcurrentQueue<PixelArea>();
-            for (var y = 0; y < nTiles.Y;)
+            for (var y = 0; y < nTiles.Y; ++y)
             {
                 var y0 = sampleBounds.Min.Y + y * tileSize;
                 var y1 = Min(sampleBounds.Max.Y, y0 + tileSize);
-                for (var x = 0; x < nTiles.X;)
+                for (var x = 0; x < nTiles.X; ++x)
                 {
                     var x0 = sampleBounds.Min.X + x * tileSize;
                     var x1 = Min(sampleBounds.Max.X, x0 + tileSize);

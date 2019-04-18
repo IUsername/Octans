@@ -25,9 +25,10 @@ namespace Octans.Integrator
             var L = Spectrum.Zero;
             var r = ray;
             var hit = false;
+            var si = new SurfaceInteraction();
             while (!hit)
             {
-                if (!scene.Intersect(r, out var si))
+                if (!scene.Intersect(r, ref si))
                 {
                     return L;
                 }

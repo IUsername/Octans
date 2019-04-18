@@ -6,7 +6,7 @@
         ILight[] InfiniteLights { get; }
         ILight[] Lights { get; }
         IGeometry Aggregate { get; }
-        bool Intersect(in Ray r, out SurfaceInteraction si);
+        bool Intersect(in Ray r, ref SurfaceInteraction si);
         bool IntersectP(in Ray r);
     }
 }

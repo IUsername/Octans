@@ -12,7 +12,7 @@ namespace Octans
         private readonly IFilter _filter;
         private readonly object _padlock = new object();
         private readonly Pixel[] _pixels;
-        private readonly PixelVector _resolution;
+        public PixelVector FullResolution { get; }
         private readonly float _scale;
         private readonly float[] _table;
         private bool _returned;
@@ -23,7 +23,7 @@ namespace Octans
                     float sensorDiagonalMillimeters,
                     float scale)
         {
-            _resolution = resolution;
+            FullResolution = resolution;
             _filter = filter;
             _scale = scale;
             _diagonalMeters = sensorDiagonalMillimeters * .001f;
@@ -139,7 +139,7 @@ namespace Octans
 
                 ++offset;
             }
-            sink.Write(rgb, CroppedBounds, in _resolution);
+            sink.Write(rgb, CroppedBounds, FullResolution);
         }
 
         private ref Pixel GetPixel(in PixelCoordinate pixel)
@@ -159,7 +159,7 @@ namespace Octans
 
         public Bounds2D GetPhysicalExtent()
         {
-            var aspect = (float) _resolution.Y / _resolution.X;
+            var aspect = (float) FullResolution.Y / FullResolution.X;
             var x = System.MathF.Sqrt(_diagonalMeters * _diagonalMeters / (1 + aspect * aspect));
             var y = aspect * x;
             return new Bounds2D(new Point2D(-x / 2f, -y / 2f), new Point2D(x / 2f, y / 2f));

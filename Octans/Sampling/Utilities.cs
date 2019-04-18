@@ -23,7 +23,7 @@ namespace Octans.Sampling
             return new Vector(d.X,d.Y, z);
         }
 
-        private static Point2D ConcentricSampleDisk(in Point2D u)
+        public static Point2D ConcentricSampleDisk(in Point2D u)
         {
             var uOffset = 2f * u - new Vector2(1f, 1f);
 

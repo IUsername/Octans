@@ -105,6 +105,9 @@ namespace Octans
         public static Point operator -(Point t) => t.Negate();
 
         [Pure]
+        public static explicit operator Vector(Point p) => new Vector(p.X, p.Y, p.Z);
+
+        [Pure]
         public static bool operator ==(Point left, Point right) => left.Equals(right);
 
         [Pure]

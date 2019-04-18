@@ -49,7 +49,23 @@ namespace Octans.Geometry
             Material2?.ComputeScatteringFunctions(surfaceInteraction, arena, mode, allowMultipleLobes);
         }
 
-        public bool Intersect2(in Ray ray, out SurfaceInteraction si) => throw new NotImplementedException();
+        public bool Intersect2(in Ray ray, ref SurfaceInteraction si)
+        {
+            var localRay = ray.ToLocal(this);
+            var li = LocalIntersects(in localRay);
+            var intersection = li.Hit();
+            if (intersection.HasValue)
+            {
+                var info = intersection.Value;
+                var p = ray.Position(info.T);
+                var n = info.Geometry.NormalAt(in p, in info);
+                si.InitializeT(p, new Vector(), new Point2D(info.U, info.V), ray.Direction, n, new Vector(), new Vector(),
+                              new Normal(), Normals.ZPos, info.Geometry);
+                return true;
+            }
+
+            return false;
+        }
 
         public bool IntersectP(in Ray ray) => throw new NotImplementedException();
     }

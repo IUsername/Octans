@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using static System.MathF;
 using static System.Numerics.Vector;
-
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable StaticMemberInGenericType
 
 namespace Octans

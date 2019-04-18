@@ -23,7 +23,7 @@
                                         TransportMode mode,
                                         in bool allowMultipleLobes);
 
-        bool Intersect2(in Ray ray, out SurfaceInteraction si);
+        bool Intersect2(in Ray ray, ref SurfaceInteraction si);
         bool IntersectP(in Ray ray);
     }
 }

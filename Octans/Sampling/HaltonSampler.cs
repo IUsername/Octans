@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Octans.Sampling
 {
-    public class HaltonSampler : GlobalSampler
+    public sealed class HaltonSampler : GlobalSampler
     {
         private const int KMaxResolution = 128;
 

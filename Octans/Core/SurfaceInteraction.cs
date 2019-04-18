@@ -54,6 +54,39 @@ namespace Octans
             return this;
         }
 
+        // TODO: Temporary
+        public SurfaceInteraction InitializeT(in Point p,
+                                             in Vector pError,
+                                             in Point2D uv,
+                                             in Vector wo,
+                                             in Normal n,
+                                             in Vector dpdu,
+                                             in Vector dpdv,
+                                             in Normal dndu,
+                                             in Normal dndv,
+                                             IGeometry geometry)
+        {
+            base.Initialize(in p, in n, in pError, in wo);
+
+            UV = uv;
+            Wo = wo;
+            Dpdu = dpdu;
+            Dpdv = dpdv;
+            Dndu = dndu;
+            Dndv = dndv;
+            Geometry = geometry;
+            ShadingGeometry.N = N;
+            ShadingGeometry.Dpdu = dpdu;
+            ShadingGeometry.Dpdv = dpdv;
+            ShadingGeometry.Dndu = dndu;
+            ShadingGeometry.Dndv = dndv;
+
+            // TODO: Adjust orientation
+
+
+            return this;
+        }
+
         public SurfaceInteraction Initialize(in SurfaceInteraction other)
         {
             P = other.P;
