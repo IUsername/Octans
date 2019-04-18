@@ -1,26 +1,16 @@
-﻿using Octans.Material;
-using Octans.Memory;
-using Octans.Reflection;
+﻿using System;
 
 namespace Octans.Geometry
 {
     public abstract class GeometryBase : IGeometry
     {
-     //   private Matrix _inverse;
-     //    private Matrix _inverseTranspose;
-
         protected GeometryBase()
         {
             Transform = Transform.Identity;
-      //      _inverse = Matrix.Identity;
-     //       _inverseTranspose = Matrix.Identity;
             Material = new MaterialInfo();
         }
 
         public Transform Transform { get; protected set; }
-
-        //  public Matrix TransformInverse() => _inverse;
-      //  public Matrix TransformInverseTranspose() => _inverseTranspose;
 
         public MaterialInfo Material { get; protected set; }
 
@@ -58,5 +48,9 @@ namespace Octans.Geometry
         {
             Material2?.ComputeScatteringFunctions(surfaceInteraction, arena, mode, allowMultipleLobes);
         }
+
+        public bool Intersect2(in Ray ray, out SurfaceInteraction si) => throw new NotImplementedException();
+
+        public bool IntersectP(in Ray ray) => throw new NotImplementedException();
     }
 }

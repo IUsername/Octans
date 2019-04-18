@@ -327,7 +327,6 @@ namespace Octans
             return new Spectrum(results);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public Spectrum Pow(float y)
         {
@@ -339,8 +338,7 @@ namespace Octans
 
             return new Spectrum(s);
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         [Pure]
         public Spectrum Exp()
         {

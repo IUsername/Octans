@@ -1,6 +1,6 @@
-﻿using Octans.Memory;
-using Octans.Reflection;
+﻿using Octans.Reflection;
 using static Octans.MathF;
+
 // ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace Octans.Material

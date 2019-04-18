@@ -36,6 +36,9 @@ namespace Octans
                 (PixelCoordinate) Point2D.Ceiling(b.Max));
 
         [Pure]
+        public PixelVector Diagonal() => new PixelVector(Max.X - Min.X, Max.Y - Min.Y);
+
+        [Pure]
         public static PixelArea Intersect(in PixelArea a, in PixelArea b)
         {
             var xMin = Max(a.Min.X, b.Min.X);

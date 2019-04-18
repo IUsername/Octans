@@ -2,6 +2,8 @@
 using System.Runtime.CompilerServices;
 using static System.MathF;
 using static Octans.MathF;
+using static Octans.Sampling.Utilities;
+
 // ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace Octans.Reflection
@@ -99,7 +101,7 @@ namespace Octans.Reflection
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Spectrum Rho(IBxDF bxdf, in Vector wo, int nSamples, in Point[] u)
+        public static Spectrum Rho(IBxDF bxdf, in Vector wo, int nSamples, in Point2D[] u)
         {
             var r = Spectrum.Zero;
             for (var i = 0; i < nSamples; i++)
@@ -117,14 +119,14 @@ namespace Octans.Reflection
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Spectrum Rho(IBxDF bxdf, int nSamples, in Point[] u1, in Point[] u2)
+        public static Spectrum Rho(IBxDF bxdf, int nSamples, in Point2D[] u1, in Point2D[] u2)
         {
             var r = Spectrum.Zero;
             for (var i = 0; i < nSamples; i++)
             {
                 var wi = new Vector();
-                var wo = Sampling.Utilities.UniformSampleHemisphere(u1[i]);
-                var pdfo = Sampling.Utilities.UniformSampleHemispherePdf();
+                var wo = UniformSampleHemisphere(u1[i]);
+                var pdfo = UniformSampleHemispherePdf();
                 var f = bxdf.SampleF(in wo, ref wi, u2[i], out var pdfi);
                 if (pdfi > 0f)
                 {

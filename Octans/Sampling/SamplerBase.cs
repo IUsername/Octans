@@ -4,7 +4,19 @@ using System.Numerics;
 
 namespace Octans.Sampling
 {
-    public abstract class SamplerBase
+    public interface ISampler2
+    {
+        void StartPixel(in PixelCoordinate p);
+        bool StartNextSample();
+        ISampler2 Clone(int seed);
+        bool SetSampleNumber(long sampleNumber);
+        CameraSample GetCameraSample(in PixelCoordinate raster);
+        int RoundCount(int n);
+        void Request2DArray(int n);
+        Point2D[] Get2DArray(int n);
+    }
+
+    public abstract class SamplerBase : ISampler2
     {
         private readonly List<float[]> _samples1D = new List<float[]>();
         private readonly List<Point2D[]> _samples2D = new List<Point2D[]>();
@@ -72,13 +84,13 @@ namespace Octans.Sampling
             return array;
         }
 
-        public virtual bool StartNextSampler()
+        public virtual bool StartNextSample()
         {
             Reset();
             return ++CurrentPixelSampleIndex < SamplesPerPixel;
         }
 
-        public abstract SamplerBase Clone(int seed);
+        public abstract ISampler2 Clone(int seed);
 
         public virtual bool SetSampleNumber(long sampleNumber)
         {

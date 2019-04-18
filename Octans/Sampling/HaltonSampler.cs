@@ -144,6 +144,6 @@ namespace Octans.Sampling
             }
         }
 
-        public override SamplerBase Clone(int seed) => new HaltonSampler((int) SamplesPerPixel, SampleBounds);
+        public override ISampler2 Clone(int seed) => new HaltonSampler((int) SamplesPerPixel, SampleBounds);
     }
 }

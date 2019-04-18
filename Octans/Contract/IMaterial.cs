@@ -1,7 +1,4 @@
-﻿using Octans.Memory;
-using Octans.Reflection;
-
-namespace Octans.Material
+﻿namespace Octans
 {
     public interface IMaterial
     {

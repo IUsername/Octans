@@ -17,10 +17,10 @@ namespace Octans.Reflection
 
         public Spectrum F(in Vector wo, in Vector wi) => R * InvPi;
 
-        public Spectrum SampleF(in Vector wo, ref Vector wi, in Point sample, out float pdf, BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
+        public Spectrum SampleF(in Vector wo, ref Vector wi, in Point2D sample, out float pdf, BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point[] u) => R;
+        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => R;
 
-        public Spectrum Rho(int nSamples, in Point[] u1, in Point[] u2) => R;
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => R;
     }
 }

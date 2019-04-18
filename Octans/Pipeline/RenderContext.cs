@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Octans.Sampling;
+using static System.Math;
 
 namespace Octans.Pipeline
 {
@@ -22,10 +22,10 @@ namespace Octans.Pipeline
             var queue = new ConcurrentQueue<PixelArea>();
             for (var y = 0; y < Canvas.Height;)
             {
-                var yEnd = Math.Min(Canvas.Height, y + chunkSize);
+                var yEnd = Min(Canvas.Height, y + chunkSize);
                 for (var x = 0; x < Canvas.Width;)
                 {
-                    var xEnd = Math.Min(Canvas.Width, x + chunkSize);
+                    var xEnd = Min(Canvas.Width, x + chunkSize);
                     var min = new PixelCoordinate(x, y);
                     var max = new PixelCoordinate(xEnd, yEnd);
                     queue.Enqueue(new PixelArea(min, max));

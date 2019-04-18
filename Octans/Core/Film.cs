@@ -296,5 +296,10 @@ namespace Octans
                 ArrayPool<TilePixel>.Shared.Return(_pixels);
             }
         }
+
+        public void WriteImage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

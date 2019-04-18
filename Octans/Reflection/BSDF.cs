@@ -5,12 +5,6 @@ using System.Runtime.CompilerServices;
 
 namespace Octans.Reflection
 {
-    public interface IBxDFCollection
-    {
-        IBxDF this[int index] { get; }
-        void Set(in IBxDF bxdf, int index);
-    }
-
     public class BSDF : IBxDFCollection
     {
         private const int MaxBxDFs = 8;
@@ -90,7 +84,7 @@ namespace Octans.Reflection
         }
 
         [Pure]
-        public Spectrum Rho(in Vector wo, int nSamples, in Point[] u, BxDFType flags = BxDFType.All)
+        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u, BxDFType flags = BxDFType.All)
         {
             var ret = Spectrum.Zero;
             for (var i = 0; i < _nBxDFs; ++i)
@@ -106,7 +100,7 @@ namespace Octans.Reflection
         }
 
         [Pure]
-        public Spectrum Rho(int nSamples, in Point[] u1, in Point[] u2, BxDFType flags = BxDFType.All)
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2, BxDFType flags = BxDFType.All)
         {
             var ret = Spectrum.Zero;
             for (var i = 0; i < _nBxDFs; ++i)

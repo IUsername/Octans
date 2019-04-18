@@ -1,14 +1,9 @@
-﻿using Octans.Memory;
-using Octans.Reflection;
+﻿using Octans.Reflection;
 
 namespace Octans.Material
 {
     public sealed class MixMaterial : IMaterial
     {
-        public IMaterial M1 { get; }
-        public IMaterial M2 { get; }
-        public ITexture2<Spectrum> Scale { get; }
-
         public MixMaterial(IMaterial m1, IMaterial m2, ITexture2<Spectrum> scale)
         {
             M1 = m1;
@@ -16,7 +11,14 @@ namespace Octans.Material
             Scale = scale;
         }
 
-        public void ComputeScatteringFunctions(SurfaceInteraction si, IObjectArena arena, TransportMode mode, bool allowMultipleLobes)
+        public IMaterial M1 { get; }
+        public IMaterial M2 { get; }
+        public ITexture2<Spectrum> Scale { get; }
+
+        public void ComputeScatteringFunctions(SurfaceInteraction si,
+                                               IObjectArena arena,
+                                               TransportMode mode,
+                                               bool allowMultipleLobes)
         {
             var s1 = Scale.Evaluate(in si).Clamp();
             var s2 = (Spectrum.One - s1).Clamp();

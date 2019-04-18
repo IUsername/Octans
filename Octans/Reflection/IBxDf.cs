@@ -10,12 +10,12 @@
 
         Spectrum SampleF(in Vector wo,
                          ref Vector wi,
-                         in Point sample,
+                         in Point2D sample,
                          out float pdf,
                          BxDFType sampleType = BxDFType.None);
 
-        Spectrum Rho(in Vector wo, int nSamples, in Point[] u);
+        Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u);
 
-        Spectrum Rho(int nSamples, in Point[] u1, in Point[] u2);
+        Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2);
     }
 }

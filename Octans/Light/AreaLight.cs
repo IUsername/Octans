@@ -44,6 +44,15 @@ namespace Octans.Light
         public Point[] SamplePoints => Gen();
 
         public int Samples { get; }
+        public void Preprocess(IScene scene)
+        {
+            
+        }
+
+        public LightType Type => LightType.Area;
+
+        public Spectrum Le(in Ray ray) => throw new System.NotImplementedException();
+
         public Color Intensity { get; }
 
         public Point Position { get; }

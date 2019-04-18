@@ -1,5 +1,4 @@
-﻿using Octans.Memory;
-using Octans.Reflection;
+﻿using Octans.Reflection;
 
 namespace Octans
 {
@@ -9,6 +8,20 @@ namespace Octans
 
         // TODO: Init as readonly and update?
         public BSDF BSDF { get; } = new BSDF();
+
+        public Point2D UV { get; set; }
+        public Vector Dpdu { get; private set; }
+        public Vector Dpdv { get; private set; }
+        public Normal Dndu { get; private set; }
+        public Normal Dndv { get; private set; }
+        public IGeometry Geometry { get; private set; }
+
+        public float Dudx { get; private set; }
+        public float Dvdx { get; private set; }
+        public float Dudy { get; private set; }
+        public float Dvdy { get; private set; }
+        public Vector Dpdx { get; private set; }
+        public Vector Dpdy { get; private set; }
 
         public SurfaceInteraction Initialize(in Point p,
                                              in Vector pError,
@@ -57,18 +70,11 @@ namespace Octans
             BSDF.Initialize(this);
             return this;
         }
-   
-        public Point2D UV { get; set; }
-        public Vector Dpdu { get; private set; }
-        public Vector Dpdv { get; private set; }
-        public Normal Dndu { get; private set; }
-        public Normal Dndv { get; private set; }
-        public IGeometry Geometry { get; private set; }
 
         public void ComputeScatteringFunctions(in Ray r,
                                                IObjectArena arena,
                                                bool allowMultipleLobes,
-                                               TransportMode mode)
+                                               TransportMode mode = TransportMode.Radiance)
         {
             ComputeDifferentials(in r);
             Geometry.ComputeScatteringFunctions(this, arena, mode, allowMultipleLobes);
@@ -83,14 +89,11 @@ namespace Octans
             Dpdy = Vectors.Zero;
         }
 
-        public float Dudx { get; private set; }
-        public float Dvdx { get; private set; }
-        public float Dudy { get; private set; }
-        public float Dvdy { get; private set; }
-        public Vector Dpdx { get; private set; }
-        public Vector Dpdy { get; private set; }
-
-        public void SetShadingGeometry(in Vector dpdus, in Vector dpdvs, in Normal dndus, in Normal dndvs, bool orientationIsAuthorative)
+        public void SetShadingGeometry(in Vector dpdus,
+                                       in Vector dpdvs,
+                                       in Normal dndus,
+                                       in Normal dndvs,
+                                       bool orientationIsAuthorative)
         {
             ShadingGeometry.N = ((Normal) Vector.Cross(dpdus, dpdvs)).Normalize();
             // TODO: Orientation
@@ -103,6 +106,11 @@ namespace Octans
             {
                 ShadingGeometry.N = Normal.FaceForward(ShadingGeometry.N, N);
             }
+        }
+
+        public Spectrum Le(in Vector vector)
+        {
+            throw new System.NotImplementedException();
         }
     }
 
@@ -117,6 +125,13 @@ namespace Octans
 
     public abstract class Interaction
     {
+        public Point P { get; set; }
+        public Normal N { get; set; }
+        public Vector PError { get; set; }
+        public Vector Wo { get; set; }
+
+        public bool IsSurfaceInteraction => !Wo.Equals(Vectors.Zero);
+
         protected Interaction Initialize(in Point p, in Normal n, in Vector pError, in Vector wo)
         {
             P = p;
@@ -125,13 +140,6 @@ namespace Octans
             Wo = wo.Normalize();
             return this;
         }
-
-        public Point P { get; set; }
-        public Normal N { get; set; }
-        public Vector PError { get; set; }
-        public Vector Wo { get; set; }
-
-        public bool IsSurfaceInteraction => !Wo.Equals(Vectors.Zero);
 
         public Ray SpawnRay(in Vector d)
         {

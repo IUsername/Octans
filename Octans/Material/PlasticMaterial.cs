@@ -1,5 +1,4 @@
-﻿using Octans.Memory;
-using Octans.Reflection;
+﻿using Octans.Reflection;
 using Octans.Reflection.Microfacet;
 
 namespace Octans.Material

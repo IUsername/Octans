@@ -1,8 +1,4 @@
-﻿using Octans.Material;
-using Octans.Memory;
-using Octans.Reflection;
-
-namespace Octans
+﻿namespace Octans
 {
     public interface IGeometry
     {
@@ -26,5 +22,8 @@ namespace Octans
                                         IObjectArena arena,
                                         TransportMode mode,
                                         in bool allowMultipleLobes);
+
+        bool Intersect2(in Ray ray, out SurfaceInteraction si);
+        bool IntersectP(in Ray ray);
     }
 }

@@ -4,16 +4,16 @@ namespace Octans.Reflection
 {
     public class FresnelDielectric : IFresnel
     {
-        private float _etaI;
-        private float _etaT;
+        public float EtaI { get; private set; }
+        public float EtaT { get; private set; }
+
+        public Spectrum Evaluate(float cosI) => new Spectrum(FrDielectric(cosI, EtaI, -EtaT));
 
         public IFresnel Initialize(float etaI, float etaT)
         {
-            _etaI = etaI;
-            _etaT = etaT;
+            EtaI = etaI;
+            EtaT = etaT;
             return this;
         }
-
-        public Spectrum Evaluate(float cosI) => new Spectrum(FrDielectric(cosI, _etaI, -_etaT));
     }
 }

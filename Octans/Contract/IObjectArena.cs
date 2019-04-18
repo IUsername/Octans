@@ -1,4 +1,4 @@
-﻿namespace Octans.Memory
+﻿namespace Octans
 {
     public interface IObjectArena
     {

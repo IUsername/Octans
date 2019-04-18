@@ -1,4 +1,4 @@
-﻿namespace Octans.Reflection
+﻿namespace Octans
 {
     public enum TransportMode
     {

@@ -27,11 +27,11 @@ namespace Octans.Sampling
             Compute2DSamples();
         }
 
-        public override bool StartNextSampler()
+        public override bool StartNextSample()
         {
             _dimension = 0;
             _intervalSampleIndex = GetIndexForSample(CurrentPixelSampleIndex + 1);
-            return base.StartNextSampler();
+            return base.StartNextSample();
         }
 
         public override bool SetSampleNumber(long sampleNumber)
