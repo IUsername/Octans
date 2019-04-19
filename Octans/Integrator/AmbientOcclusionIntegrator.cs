@@ -1,4 +1,5 @@
 ﻿using Octans.Sampling;
+using static Octans.Sampling.Utilities;
 
 namespace Octans.Integrator
 {
@@ -28,7 +29,7 @@ namespace Octans.Integrator
             var si = new SurfaceInteraction();
             while (!hit)
             {
-                if (!scene.Intersect(r, ref si))
+                if (!scene.Intersect(ref r, ref si))
                 {
                     return L;
                 }
@@ -53,13 +54,13 @@ namespace Octans.Integrator
                     float pdf;
                     if (CosSample)
                     {
-                        wi = Sampling.Utilities.CosineSampleHemisphere(u[i]);
-                        pdf = Sampling.Utilities.CosineHemispherePdf(System.MathF.Abs(wi.Z));
+                        wi = CosineSampleHemisphere(u[i]);
+                        pdf = CosineHemispherePdf(System.MathF.Abs(wi.Z));
                     }
                     else
                     {
-                        wi = Sampling.Utilities.UniformSampleHemisphere(u[i]);
-                        pdf = Sampling.Utilities.UniformSampleHemispherePdf();
+                        wi = UniformSampleHemisphere(u[i]);
+                        pdf = UniformSampleHemispherePdf();
                     }
 
                     wi = new Vector(
@@ -67,7 +68,8 @@ namespace Octans.Integrator
                         s.Y * wi.X + t.Y * wi.Y + n.Y * wi.Z,
                         s.Z * wi.X + t.Z * wi.Y + n.Z * wi.Z);
 
-                    if (!scene.IntersectP(si.SpawnRay(wi)))
+                    var sRay = si.SpawnRay(wi);
+                    if (!scene.IntersectP(ref sRay))
                     {
                         L += wi % n / (pdf * NSamples);
                     }

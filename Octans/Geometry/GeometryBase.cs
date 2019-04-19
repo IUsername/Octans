@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Octans.Geometry
+﻿namespace Octans.Geometry
 {
     public abstract class GeometryBase : IGeometry
     {
@@ -37,36 +35,5 @@ namespace Octans.Geometry
             // Do nothing
             // Should override to internally divide groups and CSG
         }
-
-        // TODO: Rename after migration.
-        public IMaterial Material2 { get; set; }
-
-        public void ComputeScatteringFunctions(SurfaceInteraction surfaceInteraction,
-                                               IObjectArena arena,
-                                               TransportMode mode,
-                                               in bool allowMultipleLobes)
-        {
-            Material2?.ComputeScatteringFunctions(surfaceInteraction, arena, mode, allowMultipleLobes);
-        }
-
-        public bool Intersect2(in Ray ray, ref SurfaceInteraction si)
-        {
-            var localRay = ray.ToLocal(this);
-            var li = LocalIntersects(in localRay);
-            var intersection = li.Hit();
-            if (intersection.HasValue)
-            {
-                var info = intersection.Value;
-                var p = ray.Position(info.T);
-                var n = info.Geometry.NormalAt(in p, in info);
-                si.InitializeT(p, new Vector(), new Point2D(info.U, info.V), ray.Direction, n, new Vector(), new Vector(),
-                              new Normal(), Normals.ZPos, info.Geometry);
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool IntersectP(in Ray ray) => throw new NotImplementedException();
     }
 }

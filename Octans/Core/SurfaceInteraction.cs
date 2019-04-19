@@ -1,4 +1,5 @@
-﻿using Octans.Reflection;
+﻿using Octans.Primitive;
+using Octans.Reflection;
 
 namespace Octans
 {
@@ -10,18 +11,19 @@ namespace Octans
         public BSDF BSDF { get; } = new BSDF();
 
         public Point2D UV { get; set; }
-        public Vector Dpdu { get; private set; }
-        public Vector Dpdv { get; private set; }
-        public Normal Dndu { get; private set; }
-        public Normal Dndv { get; private set; }
-        public IGeometry Geometry { get; private set; }
+        public Vector Dpdu { get; set; }
+        public Vector Dpdv { get; set; }
+        public Normal Dndu { get; set; }
+        public Normal Dndv { get; set; }
+        public IShape Shape { get; set; }
 
-        public float Dudx { get; private set; }
+        public float Dudx { get; set; }
         public float Dvdx { get; private set; }
         public float Dudy { get; private set; }
         public float Dvdy { get; private set; }
         public Vector Dpdx { get; private set; }
         public Vector Dpdy { get; private set; }
+        public IPrimitive Primitive { get; set; }
 
         public SurfaceInteraction Initialize(in Point p,
                                              in Vector pError,
@@ -31,7 +33,7 @@ namespace Octans
                                              in Vector dpdv,
                                              in Normal dndu,
                                              in Normal dndv,
-                                             IGeometry geometry)
+                                             IShape shape)
         {
             base.Initialize(in p, (Normal) Vector.Cross(in dpdu, in dpdv), in pError, in wo);
 
@@ -41,14 +43,18 @@ namespace Octans
             Dpdv = dpdv;
             Dndu = dndu;
             Dndv = dndv;
-            Geometry = geometry;
+            Shape = shape;
             ShadingGeometry.N = N;
             ShadingGeometry.Dpdu = dpdu;
             ShadingGeometry.Dpdv = dpdv;
             ShadingGeometry.Dndu = dndu;
             ShadingGeometry.Dndv = dndv;
 
-            // TODO: Adjust orientation
+            if (!(shape is null) && (shape.ReverseOrientation ^ shape.TransformSwapsHandedness))
+            {
+                N *= -1;
+                ShadingGeometry.N *= -1;
+            }
 
 
             return this;
@@ -64,7 +70,7 @@ namespace Octans
                                              in Vector dpdv,
                                              in Normal dndu,
                                              in Normal dndv,
-                                             IGeometry geometry)
+                                             IShape shape)
         {
             base.Initialize(in p, in n, in pError, in wo);
 
@@ -74,7 +80,7 @@ namespace Octans
             Dpdv = dpdv;
             Dndu = dndu;
             Dndv = dndv;
-            Geometry = geometry;
+            Shape = shape;
             ShadingGeometry.N = N;
             ShadingGeometry.Dpdu = dpdu;
             ShadingGeometry.Dpdv = dpdv;
@@ -98,9 +104,43 @@ namespace Octans
             Dpdv = other.Dpdv;
             Dndu = other.Dndu;
             Dndv = other.Dndv;
-            Geometry = other.Geometry;
+            Shape = other.Shape;
             ShadingGeometry = other.ShadingGeometry;
-            BSDF.Initialize(this);
+            BSDF.Initialize(other);
+            Primitive = other.Primitive;
+            return this;
+        }
+
+        public SurfaceInteraction Initialize(in SurfaceInteraction other, in Transform t)
+        {
+            // TODO: Timing, medium, face index, and bssrdf not applied.
+            P = Transform.Apply(in t, other.P, other.PError, out var pError);
+            PError = pError;
+            N = (t * other.N).Normalize();
+            Wo = (t * other.Wo).Normalize();
+            UV = other.UV;
+            Shape = other.Shape;
+            Dpdu = t * other.Dpdu;
+            Dpdv = t * other.Dpdv;
+            Dndu = t * other.Dndu;
+            Dndv = t * other.Dndv;
+            ShadingGeometry = new ShadingGeometry
+            {
+                N = t * other.ShadingGeometry.N,
+                Dpdu = t * other.ShadingGeometry.Dpdu,
+                Dpdv = t * other.ShadingGeometry.Dpdv,
+                Dndu = t * other.ShadingGeometry.Dndu,
+                Dndv = t * other.ShadingGeometry.Dndv
+            };
+            Dudx = other.Dudx;
+            Dvdx = other.Dvdx;
+            Dudy = other.Dudy;
+            Dvdy = other.Dvdy;
+            Dpdx = other.Dpdx;
+            Dpdy = other.Dpdy;
+            Primitive = other.Primitive;
+            ShadingGeometry.N = Normal.FaceForward(ShadingGeometry.N, N);
+            BSDF.Initialize(other);
             return this;
         }
 
@@ -110,7 +150,7 @@ namespace Octans
                                                TransportMode mode = TransportMode.Radiance)
         {
             ComputeDifferentials(in r);
-            Geometry.ComputeScatteringFunctions(this, arena, mode, allowMultipleLobes);
+            Primitive.ComputeScatteringFunctions(this, arena, mode, allowMultipleLobes);
         }
 
         private void ComputeDifferentials(in Ray ray)
@@ -156,7 +196,7 @@ namespace Octans
         public Normal Dndv;
     }
 
-    public abstract class Interaction
+    public class Interaction
     {
         public Point P { get; set; }
         public Normal N { get; set; }
@@ -165,7 +205,7 @@ namespace Octans
 
         public bool IsSurfaceInteraction => !Wo.Equals(Vectors.Zero);
 
-        protected Interaction Initialize(in Point p, in Normal n, in Vector pError, in Vector wo)
+        public Interaction Initialize(in Point p, in Normal n, in Vector pError, in Vector wo)
         {
             P = p;
             N = n;

@@ -111,6 +111,13 @@ namespace Octans
         }
 
         [Pure]
+        public static float Dot(in Normal a, in Vector b)
+        {
+            //return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+            return FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
+        }
+
+        [Pure]
         public static float AbsDot(in Vector a, in Vector b) => System.MathF.Abs(Dot(in a, in b));
 
         [Pure]

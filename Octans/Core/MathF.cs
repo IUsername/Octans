@@ -22,11 +22,23 @@ namespace Octans
 
         public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
 
+        public const float MachineEpsilon = float.Epsilon * 0.5f;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Gamma(int n)
+        {
+            return (n * MachineEpsilon) / (1 - n * MachineEpsilon);
+        }
+
         // TODO: Duplicate in Vector
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float AbsDot(in Vector a, in Vector b) => Abs(Vector.Dot(in a, in b));
 
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float AbsDot(in Normal a, in Vector b) => Abs(Vector.Dot(in a, in b));
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

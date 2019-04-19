@@ -20,7 +20,11 @@ namespace Octans.Reflection
             _ss = si.ShadingGeometry.Dpdu.Normalize();
             _ts = Vector.Cross(_ns, _ss);
             Eta = eta;
-            _nBxDFs = 0;
+            _nBxDFs = si.BSDF._nBxDFs;
+            for (var i = 0; i < _nBxDFs; i++)
+            {
+                _bxdf[i] = si.BSDF._bxdf[i];
+            }
             //si.BSDF = this;
             return this;
         }

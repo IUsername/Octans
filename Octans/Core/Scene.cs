@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
+using Octans.Primitive;
 
 namespace Octans
 {
     public class Scene : IScene
     {
-        public IGeometry Aggregate { get; }
+        public IPrimitive Aggregate { get; }
         public ILight[] InfiniteLights { get; }
         public ILight[] Lights { get; }
 
-        public Scene(IGeometry aggregate, in ILight[] lights)
+        public Scene(IPrimitive aggregate, in ILight[] lights)
         {
             Aggregate = aggregate;
             Lights = lights;
-            WorldBounds = aggregate.ParentSpaceBounds();
+            WorldBounds = aggregate.WorldBounds;
             var infinite = new List<ILight>();
             foreach (var light in lights)
             {
@@ -28,14 +29,14 @@ namespace Octans
 
         public Bounds WorldBounds { get; }
 
-        public bool Intersect(in Ray r, ref SurfaceInteraction si)
+        public bool Intersect(ref Ray r, ref SurfaceInteraction si)
         {
-            return Aggregate.Intersect2(in r, ref si);
+            return Aggregate.Intersect(ref r, ref si);
         }
 
-        public bool IntersectP(in Ray r)
+        public bool IntersectP(ref Ray r)
         {
-            return Aggregate.IntersectP(in r);
+            return Aggregate.IntersectP(ref r);
         }
     }
 }
