@@ -1,4 +1,5 @@
-﻿using Octans.Primitive;
+﻿using System;
+using Octans.Primitive;
 using Octans.Reflection;
 
 namespace Octans
@@ -56,38 +57,7 @@ namespace Octans
                 ShadingGeometry.N *= -1;
             }
 
-
-            return this;
-        }
-
-        // TODO: Temporary
-        public SurfaceInteraction InitializeT(in Point p,
-                                             in Vector pError,
-                                             in Point2D uv,
-                                             in Vector wo,
-                                             in Normal n,
-                                             in Vector dpdu,
-                                             in Vector dpdv,
-                                             in Normal dndu,
-                                             in Normal dndv,
-                                             IShape shape)
-        {
-            base.Initialize(in p, in n, in pError, in wo);
-
-            UV = uv;
-            Wo = wo;
-            Dpdu = dpdu;
-            Dpdv = dpdv;
-            Dndu = dndu;
-            Dndv = dndv;
-            Shape = shape;
-            ShadingGeometry.N = N;
-            ShadingGeometry.Dpdu = dpdu;
-            ShadingGeometry.Dpdv = dpdv;
-            ShadingGeometry.Dndu = dndu;
-            ShadingGeometry.Dndv = dndv;
-
-            // TODO: Adjust orientation
+            BSDF.Initialize(this);
 
 
             return this;
@@ -106,8 +76,8 @@ namespace Octans
             Dndv = other.Dndv;
             Shape = other.Shape;
             ShadingGeometry = other.ShadingGeometry;
-            BSDF.Initialize(other);
             Primitive = other.Primitive;
+            BSDF.Initialize(other);
             return this;
         }
 
@@ -119,7 +89,6 @@ namespace Octans
             N = (t * other.N).Normalize();
             Wo = (t * other.Wo).Normalize();
             UV = other.UV;
-            Shape = other.Shape;
             Dpdu = t * other.Dpdu;
             Dpdv = t * other.Dpdv;
             Dndu = t * other.Dndu;
@@ -138,6 +107,7 @@ namespace Octans
             Dvdy = other.Dvdy;
             Dpdx = other.Dpdx;
             Dpdy = other.Dpdy;
+            Shape = other.Shape;
             Primitive = other.Primitive;
             ShadingGeometry.N = Normal.FaceForward(ShadingGeometry.N, N);
             BSDF.Initialize(other);
@@ -169,7 +139,10 @@ namespace Octans
                                        bool orientationIsAuthorative)
         {
             ShadingGeometry.N = ((Normal) Vector.Cross(dpdus, dpdvs)).Normalize();
-            // TODO: Orientation
+            if (!(Shape is null) && (Shape.ReverseOrientation ^ Shape.TransformSwapsHandedness))
+            {
+                ShadingGeometry.N = -ShadingGeometry.N;
+            }
 
             if (orientationIsAuthorative)
             {
@@ -179,11 +152,22 @@ namespace Octans
             {
                 ShadingGeometry.N = Normal.FaceForward(ShadingGeometry.N, N);
             }
+
+            ShadingGeometry.Dpdu = dpdus;
+            ShadingGeometry.Dpdv = dpdvs;
+            ShadingGeometry.Dndu = dndus;
+            ShadingGeometry.Dndv = dndvs;
         }
 
-        public Spectrum Le(in Vector vector)
+        public Spectrum Le(in Vector w)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+            //var areaLight = Primitive.AreaLight;
+            //if (!(areaLight is null))
+            //{
+            //    return areaLight.L(this, w);
+            //}
+            //return Spectrum.Zero;
         }
     }
 
