@@ -56,6 +56,8 @@ namespace Octans
             return Scale(inv);
         }
 
+        public Point PushAway() => new Point(MathF.ShiftValue(X), MathF.ShiftValue(Y), MathF.ShiftValue(Z));
+
         public bool Equals(Point other) =>
             Check.Within(X, other.X, Epsilon)
             && Check.Within(Y, other.Y, Epsilon)

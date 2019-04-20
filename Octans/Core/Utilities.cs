@@ -19,5 +19,20 @@ namespace Octans
             return light.Type == LightType.DeltaPosition || 
                    light.Type == LightType.DeltaDirection;
         }
+
+        [Pure]
+        public static Point OffsetRayOrigin(in Point p, in Vector pError, in Normal n, in Vector w)
+        {
+            var d = Normal.Abs(n) % pError;
+
+            var offset = d * (Vector) n;
+            if (w % n < 0f)
+            {
+                offset = -offset;
+            }
+
+            var po = p + offset;
+            return po.PushAway();
+        }
     }
 }

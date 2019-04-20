@@ -22,14 +22,22 @@ namespace Octans
 
         public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
 
-        public const float MachineEpsilon = float.Epsilon * 0.5f;
+        public static readonly float MachineEpsilon;
+
+        static MathF()
+        {
+            var eps = 1f;
+            while (1f + 0.5 * eps != 1f)
+            {
+                eps = 0.5f * eps;
+            }
+
+            MachineEpsilon = eps;
+        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Gamma(int n)
-        {
-            return (n * MachineEpsilon) / (1 - n * MachineEpsilon);
-        }
+        public static float Gamma(int n) => n * MachineEpsilon / (1 - n * MachineEpsilon);
 
         // TODO: Duplicate in Vector
         [Pure]
@@ -141,7 +149,7 @@ namespace Octans
         public static float CosPhi(in Vector w)
         {
             var sinTheta = SinTheta(in w);
-            return (sinTheta == 0f) ? 1f : Clamp(-1, 1, w.X / sinTheta);
+            return sinTheta == 0f ? 1f : Clamp(-1, 1, w.X / sinTheta);
         }
 
         [Pure]
@@ -149,7 +157,7 @@ namespace Octans
         public static float SinPhi(in Vector w)
         {
             var sinTheta = SinTheta(in w);
-            return (sinTheta == 0f) ? 0f : Clamp(-1, 1, w.Y / sinTheta);
+            return sinTheta == 0f ? 0f : Clamp(-1, 1, w.Y / sinTheta);
         }
 
         [Pure]
@@ -167,5 +175,9 @@ namespace Octans
             var v = (wa.X * wb.X + wa.Y * wb.Y) / Sqrt((wa.X * wa.X + wa.Y * wa.Y) * (wb.X * wb.X + wb.Y * wb.Y));
             return Clamp(-1, 1, v);
         }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float ShiftValue(in float v) => v > 0f ? BitIncrement(v) : BitDecrement(v);
     }
 }

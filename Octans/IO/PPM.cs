@@ -23,6 +23,39 @@ namespace Octans.IO
             return sb.ToString();
         }
 
+        public static string LRGBToPPM(ReadOnlySpan<float> lrgb, PixelVector resolution)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(string.Format(
+                              CultureInfo.InstalledUICulture,
+                              @"P3
+{0} {1}
+{2}", resolution.X, resolution.Y, MaxValue));
+            AppendPixelData(resolution, lrgb, sb, MaxLineWidth);
+            return sb.ToString();
+        }
+
+        private static void AppendPixelData(PixelVector resolution, ReadOnlySpan<float> lrgb, StringBuilder sb, int maxLineWidth)
+        {
+            var k = 0;
+            for (var j = 0; j < resolution.Y; ++j)
+            {
+                var parts = new int[resolution.X * 3];
+                for (var i = 0; i < resolution.X; ++i)
+                {
+                    var offset = i * 3;
+                    parts[offset] = Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
+                    parts[offset+1] = Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
+                    parts[offset+2] = Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
+
+                }
+                foreach (var line in ColorValuesToStrings(parts, maxLineWidth))
+                {
+                    sb.AppendLine(line);
+                }
+            }
+        }
+
         private static void AppendPixelData(Canvas c, StringBuilder sb, int maxLineWidth)
         {
             for (var j = 0; j < c.Height; j++)
@@ -77,6 +110,12 @@ namespace Octans.IO
         {
             // TODO: File streaming
             File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), CanvasToPPM(c));
+        }
+
+        public static void ToFile(ReadOnlySpan<float> lrgb,  PixelVector resolution, string folderPath, string fileName)
+        {
+            // TODO: File streaming
+            File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), LRGBToPPM(lrgb, resolution));
         }
     }
 }

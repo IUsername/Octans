@@ -12,7 +12,7 @@ namespace Octans.Integrator
         private readonly ICamera _camera;
 
         private readonly ThreadLocal<ObjectArena> _perThreadArena =
-            new ThreadLocal<ObjectArena>(() => new ObjectArena());
+            new ThreadLocal<ObjectArena>(() => new ObjectArena(), true);
 
         private readonly PixelArea _pixelBounds;
         private readonly ISampler2 _sampler;
@@ -51,6 +51,11 @@ namespace Octans.Integrator
                 }
             }
 
+            //foreach (var a in queue)
+            //{
+            //    RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value);
+            //}
+
             Parallel.ForEach(
                 queue, a => RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value));
 
@@ -58,6 +63,8 @@ namespace Octans.Integrator
             {
                 arena.Clear();
             }
+
+            _camera.Film.WriteFile(1f);
         }
 
         private void RenderTile(in PixelArea tile,
@@ -106,7 +113,7 @@ namespace Octans.Integrator
 
             camera.Film.MergeFilmTile(filmTile);
 
-            camera.Film.WriteImage();
+          
         }
 
         protected abstract Spectrum Li(in Ray ray, IScene scene, ISampler2 tileSampler, IObjectArena arena);

@@ -16,6 +16,7 @@ namespace Octans
         private readonly float _scale;
         private readonly float[] _table;
         private bool _returned;
+        private ISinkRgb _sink;
 
         public Film(in PixelVector resolution,
                     in Bounds2D cropWindow,
@@ -30,6 +31,12 @@ namespace Octans
             CroppedBounds = DetermineCroppedBounds(in cropWindow, in resolution);
             _pixels = ArrayPool<Pixel>.Shared.Rent(CroppedBounds.Area());
             _table = CreateFilterTable(FilterTableWidth, filter);
+        }
+
+        public void SetSink(ISinkRgb sink)
+        {
+            _sink = sink;
+
         }
 
         public PixelArea CroppedBounds { get; }
@@ -108,7 +115,7 @@ namespace Octans
             pixel.SplatZ = xyz[2];
         }
 
-        public void WriteFile(float splatScale, ISinkRgb sink)
+        public void WriteFile(float splatScale)
         {
             var rgb = new float[3 * CroppedBounds.Area()];
             var offset = 0;
@@ -139,7 +146,7 @@ namespace Octans
 
                 ++offset;
             }
-            sink.Write(rgb, CroppedBounds, FullResolution);
+            _sink.Write(rgb, CroppedBounds, FullResolution);
         }
 
         private ref Pixel GetPixel(in PixelCoordinate pixel)
@@ -297,9 +304,6 @@ namespace Octans
             }
         }
 
-        public void WriteImage()
-        {
-            throw new NotImplementedException();
-        }
+     
     }
 }

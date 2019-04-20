@@ -14,6 +14,7 @@ namespace Octans.Sampling
         int RoundCount(int n);
         void Request2DArray(int n);
         Point2D[] Get2DArray(int n);
+        long SamplesPerPixel { get; }
     }
 
     public abstract class SamplerBase : ISampler2

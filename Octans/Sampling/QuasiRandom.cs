@@ -7,9 +7,9 @@ namespace Octans.Sampling
 {
     public static class QuasiRandom
     {
-        private static readonly uint[] PrimesTable = {2, 3, 5, 7, 11, 13};
-        private static readonly uint[] PrimesSums = {0, 2, 5, 10, 17, 28};
-        private static readonly float[] PrimesInv = {1f / 2, 1f / 3, 1f / 5, 1f / 7, 1f / 11, 1f / 13};
+        private static readonly uint[] PrimesTable = {2, 3, 5, 7, 11, 13, 17, 19, 23};
+        private static readonly uint[] PrimesSums = {0, 2, 5, 10, 17, 28, 41, 58, 77};
+        private static readonly float[] PrimesInv = {1f / 2, 1f / 3, 1f / 5, 1f / 7, 1f / 11, 1f / 13, 1f / 17, 1f / 19, 1f/23};
 
         public static ushort[] ComputeRadicalInversePermutations(Random rand)
         {

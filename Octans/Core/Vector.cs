@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using static System.MathF;
 
 namespace Octans
@@ -13,7 +14,7 @@ namespace Octans
         public readonly float Y;
         public readonly float Z;
 
-        public Vector(float x, float y, float z) 
+        public Vector(float x, float y, float z)
         {
             Debug.Assert(!float.IsNaN(x) && !float.IsNaN(y) && !float.IsNaN(z));
             X = x;
@@ -39,11 +40,7 @@ namespace Octans
 
         public float Magnitude() => Sqrt(MagSqr());
 
-        public float MagSqr()
-        {
-            //return X * X + Y * Y + Z * Z;
-            return FusedMultiplyAdd(X, X, FusedMultiplyAdd(Y, Y, Z * Z));
-        }
+        public float MagSqr() => FusedMultiplyAdd(X, X, FusedMultiplyAdd(Y, Y, Z * Z));
 
         public Vector Normalize()
         {
@@ -51,9 +48,11 @@ namespace Octans
             return Divide(m);
         }
 
-        public Vector Reflect(in Vector normal) => Reflect(in this, (Normal)normal);
+        public Vector Reflect(in Vector normal) => Reflect(in this, (Normal) normal);
 
         public Vector Reflect(in Normal normal) => Reflect(in this, in normal);
+
+        public Vector PushAway() => new Vector(MathF.ShiftValue(X), MathF.ShiftValue(Y), MathF.ShiftValue(Z));
 
         public bool Equals(Vector other) =>
             Check.Within(X, other.X, Epsilon)
@@ -104,18 +103,12 @@ namespace Octans
         public static float operator %(Vector left, Vector right) => Dot(in left, in right);
 
         [Pure]
-        public static float Dot(in Vector a, in Vector b)
-        {
-            //return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
-            return FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
-        }
+        public static float Dot(in Vector a, in Vector b) =>
+            FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
 
         [Pure]
-        public static float Dot(in Normal a, in Vector b)
-        {
-            //return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
-            return FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
-        }
+        public static float Dot(in Normal a, in Vector b) =>
+            FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
 
         [Pure]
         public static float AbsDot(in Vector a, in Vector b) => System.MathF.Abs(Dot(in a, in b));
@@ -125,9 +118,9 @@ namespace Octans
         {
             double aX = a.X, aY = a.Y, aZ = a.Z;
             double bX = b.X, bY = b.Y, bZ = b.Z;
-            return new Vector((float)(aY * bZ - aZ * bY),
-                              (float)(aZ * bX - aX * bZ),
-                              (float)(aX * bY - aY * bX));
+            return new Vector((float) (aY * bZ - aZ * bY),
+                              (float) (aZ * bX - aX * bZ),
+                              (float) (aX * bY - aY * bX));
 
             //// TODO: Are we still getting enough accuracy?
             //return new Vector(MathF.FusedMultiplyAdd(a.Y, b.Z, -a.Z * b.Y),
@@ -140,9 +133,9 @@ namespace Octans
         {
             double aX = a.X, aY = a.Y, aZ = a.Z;
             double bX = b.X, bY = b.Y, bZ = b.Z;
-            return new Vector((float)(aY * bZ - aZ * bY),
-                              (float)(aZ * bX - aX * bZ),
-                              (float)(aX * bY - aY * bX));
+            return new Vector((float) (aY * bZ - aZ * bY),
+                              (float) (aZ * bX - aX * bZ),
+                              (float) (aX * bY - aY * bX));
 
             //// TODO: Are we still getting enough accuracy?
             //return new Vector(MathF.FusedMultiplyAdd(a.Y, b.Z, -a.Z * b.Y),
@@ -151,7 +144,7 @@ namespace Octans
         }
 
         [Pure]
-        public static Vector Reflect(in Vector @in, in Normal normal) => @in - (Vector)normal * 2f * (@in % normal);
+        public static Vector Reflect(in Vector @in, in Normal normal) => @in - (Vector) normal * 2f * (@in % normal);
 
         [Pure]
         public static Vector Abs(in Vector t) =>

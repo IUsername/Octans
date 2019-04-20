@@ -21,10 +21,30 @@ namespace Octans.Sampling
         public HaltonSampler(int samplesPerPixel, in PixelArea sampleBounds) : base(samplesPerPixel)
         {
             SampleBounds = sampleBounds;
+          
             FindScalesAndExponentsForArea(in sampleBounds, out _baseScales, out _baseExponents);
             _sampleStride = Stride(in _baseScales);
             _multiplicativeInv[0] = MultiplicativeInverse(_baseScales.Y, _baseScales.X);
             _multiplicativeInv[1] = MultiplicativeInverse(_baseScales.X, _baseScales.Y);
+        }
+
+        private HaltonSampler(in HaltonSampler other) : base(other.SamplesPerPixel)
+        {
+            SampleBounds = other.SampleBounds;
+            _baseScales = other._baseScales;
+            _baseExponents = other._baseExponents;
+            _sampleStride = other._sampleStride;
+            _multiplicativeInv = other._multiplicativeInv;
+
+            foreach (var row in other.Samples1D)
+            {
+                Samples1D.Add(new float[row.Length]);
+            }
+
+            foreach (var row in other.Samples2D)
+            {
+                Samples2D.Add(new Point2D[row.Length]);
+            }
         }
 
         public PixelArea SampleBounds { get; }
@@ -144,6 +164,6 @@ namespace Octans.Sampling
             }
         }
 
-        public override ISampler2 Clone(int seed) => new HaltonSampler((int) SamplesPerPixel, SampleBounds);
+        public override ISampler2 Clone(int seed) => new HaltonSampler(this);
     }
 }

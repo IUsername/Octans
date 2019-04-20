@@ -1,10 +1,11 @@
 ﻿using System;
 using Octans.Primitive;
 using Octans.Reflection;
+using static Octans.Utilities;
 
 namespace Octans
 {
-    public class SurfaceInteraction : Interaction
+    public sealed class SurfaceInteraction : Interaction
     {
         public ShadingGeometry ShadingGeometry;
 
@@ -51,14 +52,13 @@ namespace Octans
             ShadingGeometry.Dndu = dndu;
             ShadingGeometry.Dndv = dndv;
 
-            if (!(shape is null) && (shape.ReverseOrientation ^ shape.TransformSwapsHandedness))
+            if (!(shape is null) && shape.ReverseOrientation ^ shape.TransformSwapsHandedness)
             {
                 N *= -1;
                 ShadingGeometry.N *= -1;
             }
 
             BSDF.Initialize(this);
-
 
             return this;
         }
@@ -136,15 +136,15 @@ namespace Octans
                                        in Vector dpdvs,
                                        in Normal dndus,
                                        in Normal dndvs,
-                                       bool orientationIsAuthorative)
+                                       bool orientationIsAuthoritative)
         {
             ShadingGeometry.N = ((Normal) Vector.Cross(dpdus, dpdvs)).Normalize();
-            if (!(Shape is null) && (Shape.ReverseOrientation ^ Shape.TransformSwapsHandedness))
+            if (!(Shape is null) && Shape.ReverseOrientation ^ Shape.TransformSwapsHandedness)
             {
                 ShadingGeometry.N = -ShadingGeometry.N;
             }
 
-            if (orientationIsAuthorative)
+            if (orientationIsAuthoritative)
             {
                 N = Normal.FaceForward(N, ShadingGeometry.N);
             }
@@ -159,16 +159,7 @@ namespace Octans
             ShadingGeometry.Dndv = dndvs;
         }
 
-        public Spectrum Le(in Vector w)
-        {
-            throw new NotImplementedException();
-            //var areaLight = Primitive.AreaLight;
-            //if (!(areaLight is null))
-            //{
-            //    return areaLight.L(this, w);
-            //}
-            //return Spectrum.Zero;
-        }
+        public Spectrum Le(in Vector w) => throw new NotImplementedException();
     }
 
     public struct ShadingGeometry
@@ -202,13 +193,6 @@ namespace Octans
         {
             var o = OffsetRayOrigin(P, PError, N, in d);
             return new Ray(o, d);
-        }
-
-        private static Point OffsetRayOrigin(in Point p, in Vector pError, in Normal n, in Vector w)
-        {
-            // TODO: Account for pError
-            var delta = n * 0.00001f;
-            return p + (Vector) delta;
         }
     }
 }

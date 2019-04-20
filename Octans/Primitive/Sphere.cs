@@ -55,14 +55,14 @@ namespace Octans.Primitive
 
             var a = dx * dx + dy * dy + dz * dz;
             var b = 2 * (dx * ox + dy * oy + dz * oz);
-            var c = ox * ox + oy + oz - (EFloat) Radius * (EFloat) Radius;
+            var c = ox * ox + oy * oy + oz * oz - (EFloat) Radius * (EFloat) Radius;
 
             if (!EFloat.Quadratic(a, b, c, out var t0, out var t1))
             {
                 return false;
             }
 
-            if (t0.UpperBound() > ray.TMax || t0.LowerBound() <= 0f)
+            if (t0.UpperBound() > ray.TMax || t1.LowerBound() <= 0f)
             {
                 return false;
             }
@@ -184,7 +184,7 @@ namespace Octans.Primitive
             }
 
 
-            if (t0.UpperBound() > ray.TMax || t0.LowerBound() <= 0f)
+            if (t0.UpperBound() > ray.TMax || t1.LowerBound() <= 0f)
             {
                 return false;
             }
