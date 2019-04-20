@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using static System.MathF;
 using static System.Single;
+using static Octans.Utilities;
 
 namespace Octans
 {
@@ -16,8 +17,8 @@ namespace Octans
             }
             else
             {
-                Low = BitDecrement(v - err);
-                High = BitIncrement(v + err);
+                Low = NextFloatDown(v - err);
+                High = NextFloatUp(v + err);
             }
         }
 
@@ -58,14 +59,14 @@ namespace Octans
         [Pure]
         public EFloat Add(in EFloat ef) =>
             new EFloat(V + ef.V,
-                       BitIncrement(High + ef.High),
-                       BitDecrement(Low + ef.Low));
+                       NextFloatUp(High + ef.High),
+                       NextFloatDown(Low + ef.Low));
 
         [Pure]
         public EFloat Subtract(in EFloat ef) =>
             new EFloat(V - ef.V,
-                       BitIncrement(High - ef.Low),
-                       BitDecrement(Low - ef.High));
+                       NextFloatUp(High - ef.Low),
+                       NextFloatDown(Low - ef.High));
 
         [Pure]
         public EFloat Multiply(in EFloat ef)
@@ -78,8 +79,8 @@ namespace Octans
                 Low * ef.High,
                 High * ef.High
             };
-            var newLow = BitDecrement(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
-            var newHigh = BitIncrement(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
+            var newLow = NextFloatDown(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
+            var newHigh = NextFloatUp(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
             return new EFloat(newV, newHigh, newLow);
         }
 
@@ -99,8 +100,8 @@ namespace Octans
                 Low / ef.High,
                 High / ef.High
             };
-            var newLow = BitDecrement(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
-            var newHigh = BitIncrement(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
+            var newLow = NextFloatDown(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
+            var newHigh = NextFloatUp(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
             return new EFloat(newV, newHigh, newLow);
         }
 
@@ -113,8 +114,8 @@ namespace Octans
         [Pure]
         public static EFloat Sqrt(in EFloat ef) =>
             new EFloat(System.MathF.Sqrt(ef.V),
-                       BitIncrement(System.MathF.Sqrt(ef.High)),
-                       BitDecrement(System.MathF.Sqrt(ef.Low)));
+                       NextFloatUp(System.MathF.Sqrt(ef.High)),
+                       NextFloatDown(System.MathF.Sqrt(ef.Low)));
 
         [Pure]
         public static EFloat Abs(in EFloat ef)

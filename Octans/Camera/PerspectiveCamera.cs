@@ -6,8 +6,8 @@ namespace Octans.Camera
 {
     public sealed class PerspectiveCamera : ProjectiveCamera
     {
-        private Vector _dxCamera;
-        private Vector _dyCamera;
+        private readonly Vector _dxCamera;
+        private readonly Vector _dyCamera;
 
         public PerspectiveCamera(Transform cameraToWorld,
                                  Bounds2D screenWindow,

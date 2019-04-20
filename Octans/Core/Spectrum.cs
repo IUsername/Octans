@@ -3,14 +3,16 @@ using System.Diagnostics.Contracts;
 using System.Numerics;
 using static System.MathF;
 using static System.Numerics.Vector;
+
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable StaticMemberInGenericType
 
 namespace Octans
 {
-    public enum SpectralData
+    public enum SpectrumType
     {
-        RGBToSpectralLambda
+        Reflectance,
+        Illuminant
     }
 
 
@@ -28,7 +30,22 @@ namespace Octans
         private static readonly Spectrum X;
         private static readonly Spectrum Y;
         private static readonly Spectrum Z;
-      
+
+        private static readonly Spectrum RGBRefl2SpectWhite;
+        private static readonly Spectrum RGBRefl2SpectCyan;
+        private static readonly Spectrum RGBRefl2SpectMagenta;
+        private static readonly Spectrum RGBRefl2SpectYellow;
+        private static readonly Spectrum RGBRefl2SpectRed;
+        private static readonly Spectrum RGBRefl2SpectGreen;
+        private static readonly Spectrum RGBRefl2SpectBlue;
+        private static readonly Spectrum RGBIllum2SpectWhite;
+        private static readonly Spectrum RGBIllum2SpectCyan;
+        private static readonly Spectrum RGBIllum2SpectMagenta;
+        private static readonly Spectrum RGBIllum2SpectYellow;
+        private static readonly Spectrum RGBIllum2SpectRed;
+        private static readonly Spectrum RGBIllum2SpectGreen;
+        private static readonly Spectrum RGBIllum2SpectBlue;
+
         private readonly float[] _c;
 
         static Spectrum()
@@ -45,6 +62,21 @@ namespace Octans
             X = new Spectrum(x);
             Y = new Spectrum(y);
             Z = new Spectrum(z);
+
+            RGBRefl2SpectWhite = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBRefl2SpectWhite));
+            RGBRefl2SpectCyan = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBRefl2SpectCyan));
+            RGBRefl2SpectMagenta = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBRefl2SpectMagenta));
+            RGBRefl2SpectYellow = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBRefl2SpectYellow));
+            RGBRefl2SpectRed = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBRefl2SpectRed));
+            RGBRefl2SpectGreen = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBRefl2SpectGreen));
+            RGBRefl2SpectBlue = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBRefl2SpectBlue));
+            RGBIllum2SpectWhite = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectWhite));
+            RGBIllum2SpectCyan = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectCyan));
+            RGBIllum2SpectMagenta = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectMagenta));
+            RGBIllum2SpectYellow = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectYellow));
+            RGBIllum2SpectRed = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectRed));
+            RGBIllum2SpectGreen = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectGreen));
+            RGBIllum2SpectBlue = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectBlue));
 
             Zero = new Spectrum();
             One = new Spectrum(1f);
@@ -337,7 +369,7 @@ namespace Octans
 
             return new Spectrum(s);
         }
-        
+
         [Pure]
         public Spectrum Exp()
         {
@@ -351,10 +383,7 @@ namespace Octans
         }
 
         [Pure]
-        public Spectrum Clamp(float low = 0f, float high = float.PositiveInfinity)
-        {
-            return Clamp(this, low, high);
-        }
+        public Spectrum Clamp(float low = 0f, float high = float.PositiveInfinity) => Clamp(this, low, high);
 
         [Pure]
         public static Spectrum Negate(in Spectrum spectrum)
@@ -491,7 +520,7 @@ namespace Octans
             var rgb = new float[3];
             rgb[0] = 3.240479f * x - 1.537150f * y - 0.498535f * z;
             rgb[1] = -0.969256f * x + 1.875991f * y + 0.041556f * z;
-            rgb[2] = 0.055648f *x - 0.204043f * y + 1.057311f * z;
+            rgb[2] = 0.055648f * x - 0.204043f * y + 1.057311f * z;
             return rgb;
         }
 
@@ -521,6 +550,106 @@ namespace Octans
             xyz[1] = 0.212671f * r + 0.715160f * g + 0.072169f * b;
             xyz[2] = 0.019334f * r + 0.119193f * g + 0.950227f * b;
             return xyz;
+        }
+
+        [Pure]
+        public static Spectrum FromRGB(in float[] rgb, SpectrumType type)
+        {
+            var r = Zero;
+            if (type == SpectrumType.Reflectance)
+            {
+                if (rgb[0] <= rgb[1] && rgb[0] <= rgb[2])
+                {
+                    r += rgb[0] * RGBRefl2SpectWhite;
+                    if (rgb[1] <= rgb[2])
+                    {
+                        r += (rgb[1] - rgb[0]) * RGBRefl2SpectCyan;
+                        r += (rgb[2] - rgb[1]) * RGBRefl2SpectBlue;
+                    }
+                    else
+                    {
+                        r += (rgb[2] - rgb[0]) * RGBRefl2SpectCyan;
+                        r += (rgb[1] - rgb[2]) * RGBRefl2SpectGreen;
+                    }
+                }
+                else if (rgb[1] <= rgb[0] && rgb[1] <= rgb[2])
+                {
+                    r += rgb[1] * RGBRefl2SpectWhite;
+                    if (rgb[0] <= rgb[2])
+                    {
+                        r += (rgb[0] - rgb[1]) * RGBRefl2SpectMagenta;
+                        r += (rgb[2] - rgb[0]) * RGBRefl2SpectBlue;
+                    }
+                    else
+                    {
+                        r += (rgb[2] - rgb[1]) * RGBRefl2SpectMagenta;
+                        r += (rgb[0] - rgb[2]) * RGBRefl2SpectRed;
+                    }
+                }
+                else
+                {
+                    r += rgb[2] * RGBRefl2SpectWhite;
+                    if (rgb[0] <= rgb[1])
+                    {
+                        r += (rgb[0] - rgb[2]) * RGBRefl2SpectYellow;
+                        r += (rgb[1] - rgb[0]) * RGBRefl2SpectGreen;
+                    }
+                    else
+                    {
+                        r += (rgb[1] - rgb[2]) * RGBRefl2SpectYellow;
+                        r += (rgb[0] - rgb[1]) * RGBRefl2SpectRed;
+                    }
+                }
+
+                r *= 0.94f;
+            }
+            else
+            {
+                if (rgb[0] <= rgb[1] && rgb[0] <= rgb[2])
+                {
+                    r += rgb[0] * RGBIllum2SpectWhite;
+                    if (rgb[1] <= rgb[2])
+                    {
+                        r += (rgb[1] - rgb[0]) * RGBIllum2SpectCyan;
+                        r += (rgb[2] - rgb[1]) * RGBIllum2SpectBlue;
+                    }
+                    else
+                    {
+                        r += (rgb[2] - rgb[0]) * RGBIllum2SpectCyan;
+                        r += (rgb[1] - rgb[2]) * RGBIllum2SpectGreen;
+                    }
+                }
+                else if (rgb[1] <= rgb[0] && rgb[1] <= rgb[2])
+                {
+                    r += rgb[1] * RGBIllum2SpectWhite;
+                    if (rgb[0] <= rgb[2])
+                    {
+                        r += (rgb[0] - rgb[1]) * RGBIllum2SpectMagenta;
+                        r += (rgb[2] - rgb[0]) * RGBIllum2SpectBlue;
+                    }
+                    else
+                    {
+                        r += (rgb[2] - rgb[1]) * RGBIllum2SpectMagenta;
+                        r += (rgb[0] - rgb[2]) * RGBIllum2SpectRed;
+                    }
+                }
+                else
+                {
+                    r += rgb[2] * RGBIllum2SpectWhite;
+                    if (rgb[0] <= rgb[1])
+                    {
+                        r += (rgb[0] - rgb[2]) * RGBIllum2SpectYellow;
+                        r += (rgb[1] - rgb[0]) * RGBIllum2SpectGreen;
+                    }
+                    else
+                    {
+                        r += (rgb[1] - rgb[2]) * RGBIllum2SpectYellow;
+                        r += (rgb[0] - rgb[1]) * RGBIllum2SpectRed;
+                    }
+                }
+            }
+
+            return r.Clamp();
         }
 
         [Pure]

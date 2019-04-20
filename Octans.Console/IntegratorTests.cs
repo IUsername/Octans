@@ -38,7 +38,7 @@ namespace Octans.ConsoleApp
             //                                                new HaltonSampler(spp, film.GetSampleBounds()),
             //                                                film.CroppedBounds);
 
-            var integrator = new DepthIntegrator(800f, 900f, camera, new HaltonSampler(spp, film.GetSampleBounds()),
+            var integrator = new DepthIntegrator(700f, 1000f, camera, new HaltonSampler(spp, film.GetSampleBounds()),
                                                             film.CroppedBounds);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "int"));
@@ -64,9 +64,11 @@ namespace Octans.ConsoleApp
             var s2 = new Sphere(s2t, Transform.Invert(s2t), false, 30f, -30, 30, 360);
             var s2g = new GeometricPrimitive(s2, material, null);
 
-            var s3t = Transform.Translate(140, 278, 100);
-            var s3 = new Sphere(s3t, Transform.Invert(s3t), false, 60f, -60, 60, 360);
+            var s3t = Transform.Translate(0, 278, 200);
+            var s3 = new Sphere(s3t, Transform.Invert(s3t), false, 300f, -300, 300, 360);
             var s3g = new GeometricPrimitive(s3, material, null);
+
+   
 
             var bvh = new BVH(new IPrimitive[] {s1g, s2g, s3g}, SplitMethod.EqualCounts);
 

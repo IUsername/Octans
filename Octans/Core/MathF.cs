@@ -178,6 +178,6 @@ namespace Octans
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float ShiftValue(in float v) => v > 0f ? BitIncrement(v) : BitDecrement(v);
+        public static float ShiftValue(in float v) => v > 0f ? Utilities.NextFloatUp(v) : Utilities.NextFloatDown(v);
     }
 }

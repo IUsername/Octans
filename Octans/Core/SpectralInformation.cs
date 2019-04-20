@@ -7,7 +7,7 @@ namespace Octans
 {
     public class SpectralInformation 
     {
-        public int Samples => 60;
+        public int Samples => 3;
         public int SampledLambdaEnd => 700;
         public int SampledLambdaStart => 400;
 
@@ -29,8 +29,19 @@ namespace Octans
             return (x, y, z);
         }
 
-        public float[] SpectralData(SpectralData spectral) => throw new NotImplementedException();
-
+        public float[] GetRGBSpectrum(float[] rgbSpace)
+        {
+            var n = CIE_Data.RGB2SpectLambda.Length;
+            var c = new float[Samples];
+            for (var i = 0; i < Samples; i++)
+            {
+                var wl0 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float)i / Samples);
+                var wl1 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float)(i + 1) / Samples);
+                c[i] = AverageSpectrumSamples(CIE_Data.RGB2SpectLambda, rgbSpace, n, wl0, wl1);
+            }
+            return c;
+        }
+        
         private static float AverageSpectrumSamples(
             IReadOnlyList<float> lambda,
             IReadOnlyList<float> values,

@@ -57,14 +57,15 @@ namespace Octans.Test
             var film = new Film(new PixelVector(width, height),
                                 new Bounds2D(0, 0, 1, 1),
                                 new MitchellFilter(new Vector2(2, 2), 0.25f, 0.5f), 10f, 1f);
+            var testSink = new TestRGBSink();
+            film.SetSink(testSink);
             var tileArea = new PixelArea(0, 0, 16, 16);
             var tile = film.CreateFilmTile(in tileArea);
             var l = new Spectrum(1f);
             
             tile.AddSample(new Point2D(0.5f,0.5f), l);
             film.MergeFilmTile(tile);
-            var testSink = new TestRGBSink();
-            film.WriteFile(1f, testSink);
+            film.WriteFile(1f);
             film.Return();
 
             testSink.Data[0].Should().BeGreaterThan(0f);

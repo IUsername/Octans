@@ -37,6 +37,12 @@ namespace Octans.IO
 
         private static void AppendPixelData(PixelVector resolution, ReadOnlySpan<float> lrgb, StringBuilder sb, int maxLineWidth)
         {
+            static int ToByte(float v)
+            {
+               return Math.Clamp((int)(MaxValue * Utilities.GammaCorrect(v) + 0.5f), 0, MaxValue);
+               //return Math.Clamp((int)(MaxValue * v + 0.5f), 0, MaxValue);
+            }
+
             var k = 0;
             for (var j = 0; j < resolution.Y; ++j)
             {
@@ -44,9 +50,9 @@ namespace Octans.IO
                 for (var i = 0; i < resolution.X; ++i)
                 {
                     var offset = i * 3;
-                    parts[offset] = Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
-                    parts[offset+1] = Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
-                    parts[offset+2] = Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
+                    parts[offset] = ToByte(lrgb[k++]);// Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
+                    parts[offset+1] = ToByte(lrgb[k++]);//Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
+                    parts[offset+2] = ToByte(lrgb[k++]);//Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
 
                 }
                 foreach (var line in ColorValuesToStrings(parts, maxLineWidth))

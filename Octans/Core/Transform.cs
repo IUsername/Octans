@@ -25,7 +25,7 @@ namespace Octans
         public Matrix Inverse { get; }
 
         [Pure]
-        public bool SwapsHandedness( )
+        public bool SwapsHandedness()
         {
             var m = Matrix;
             var det = m[0, 0] * (m[1, 1] * m[2, 2] - m[1, 2] * m[2, 1]) -
@@ -55,12 +55,12 @@ namespace Octans
             var z = m[2, 0] * p.X + m[2, 1] * p.Y + m[2, 2] * p.Z + m[2, 3];
             var w = m[3, 0] * p.X + m[3, 1] * p.Y + m[3, 2] * p.Z + m[3, 3];
 
-            var xAbsSum = (Abs(m[0, 0] * x) + Abs(m[0, 1] * y) +
-                           Abs(m[0, 2] * z) + Abs(m[0, 3]));
-            var yAbsSum = (Abs(m[1, 0] * x) + Abs(m[1, 1] * y) +
-                           Abs(m[1, 2] * z) + Abs(m[1, 3]));
-            var zAbsSum = (Abs(m[2, 0] * x) + Abs(m[2, 1] * y) +
-                           Abs(m[2, 2] * z) + Abs(m[2, 3]));
+            var xAbsSum = Abs(m[0, 0] * x) + Abs(m[0, 1] * y) +
+                          Abs(m[0, 2] * z) + Abs(m[0, 3]);
+            var yAbsSum = Abs(m[1, 0] * x) + Abs(m[1, 1] * y) +
+                          Abs(m[1, 2] * z) + Abs(m[1, 3]);
+            var zAbsSum = Abs(m[2, 0] * x) + Abs(m[2, 1] * y) +
+                          Abs(m[2, 2] * z) + Abs(m[2, 3]);
             pError = Gamma(3) * new Vector(xAbsSum, yAbsSum, zAbsSum);
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
@@ -76,10 +76,10 @@ namespace Octans
             var w = m[3, 0] * p.X + m[3, 1] * p.Y + m[3, 2] * p.Z + m[3, 3];
 
             var xAbsError = (Gamma(3) + 1f) *
-                                (Abs(m[0, 0] * ptError.X) + Abs(m[0, 1] * ptError.Y) +
-                                 Abs(m[0, 2] * ptError.Z) +
-                                 Gamma(3) * (Abs(m[0, 0] * p.X) + Abs(m[0, 1] * p.Y) +
-                                             Abs(m[0, 2] * p.Z) + Abs(m[0, 3])));
+                            (Abs(m[0, 0] * ptError.X) + Abs(m[0, 1] * ptError.Y) +
+                             Abs(m[0, 2] * ptError.Z) +
+                             Gamma(3) * (Abs(m[0, 0] * p.X) + Abs(m[0, 1] * p.Y) +
+                                         Abs(m[0, 2] * p.Z) + Abs(m[0, 3])));
             var yAbsError = (Gamma(3) + 1f) *
                             (Abs(m[1, 0] * ptError.X) + Abs(m[1, 1] * ptError.Y) +
                              Abs(m[1, 2] * ptError.Z) +
@@ -169,10 +169,11 @@ namespace Octans
             var tMax = r.TMax;
             if (len2 > 0)
             {
-                var dt = (Vector.Abs(in d) % oError) / len2;
+                var dt = Vector.Abs(in d) % oError / len2;
                 o += d * dt;
                 tMax -= dt;
             }
+
             return new Ray(o, d, tMax);
         }
 
@@ -185,10 +186,11 @@ namespace Octans
             var tMax = r.TMax;
             if (len2 > 0)
             {
-                var dt = (Vector.Abs(in d) % oError) / len2;
+                var dt = Vector.Abs(in d) % oError / len2;
                 o += d * dt;
                 //tMax -= dt;
             }
+
             return new Ray(o, d, tMax);
         }
 
@@ -243,7 +245,8 @@ namespace Octans
         public static Point operator *(Transform left, Point right) => Apply(in left, in right);
 
         [Pure]
-        public static SurfaceInteraction operator *(Transform left, SurfaceInteraction right) => Apply(in left, in right);
+        public static SurfaceInteraction operator *(Transform left, SurfaceInteraction right) =>
+            Apply(in left, in right);
 
         [Pure]
         public static Point operator ^(Transform left, Point right) => ApplyInverse(in left, in right);
