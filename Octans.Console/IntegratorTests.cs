@@ -34,15 +34,15 @@ namespace Octans.ConsoleApp
             var film = new Film(new PixelVector(width, height), new Bounds2D(0, 0, 1, 1), filter, 20f, 1f);
             var camera = PerspectiveCamera.Create(transform, aspectRatio, 0f, dist, fov, film);
 
-            //var integrator = new AmbientOcclusionIntegrator(true, 64, camera,
-            //                                                new HaltonSampler(spp, film.GetSampleBounds()), 
-            //                                                film.CroppedBounds);
+            var integrator = new AmbientOcclusionIntegrator(true, 64, camera,
+                                                            new HaltonSampler(spp, film.GetSampleBounds()),
+                                                            film.CroppedBounds);
 
             //var integrator = new DepthIntegrator(700f, 1000f, camera, new HaltonSampler(spp, film.GetSampleBounds()),
             //                                                film.CroppedBounds);
 
-            var integrator = new NormalIntegrator(camera, new HaltonSampler(spp, film.GetSampleBounds()),
-                                                            film.CroppedBounds);
+            //var integrator = new NormalIntegrator(camera, new HaltonSampler(spp, film.GetSampleBounds()),
+            //                                                film.CroppedBounds);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "int"));
             var scene = new Scene(w, new ILight[0]);
@@ -60,7 +60,7 @@ namespace Octans.ConsoleApp
             var material =
                 new MatteMaterial(
                     new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {1f, 1f, 1f}, SpectrumType.Illuminant)),
-                    new ConstantTexture<float>(0f), null);
+                    new ConstantTexture<float>(1f), null);
 
             var s1t = Transform.Translate(278, 278, 100);
             var s1 = new Sphere(s1t, Transform.Invert(s1t), false, 100f, -100, 100, 360);
@@ -82,14 +82,7 @@ namespace Octans.ConsoleApp
             var s5 = new Sphere(s5t, Transform.Invert(s5t), false, 180f, -180, 180, 360);
             var s5g = new GeometricPrimitive(s5, material, null);
 
-
-            var s0t = Transform.Translate(278, 278, 100);
-            var s0 = new Sphere(s0t, Transform.Invert(s1t), false, 200f, -200, 200, 360);
-            var s0g = new GeometricPrimitive(s0, material, null);
-
-
             var bvh = new BVH(new IPrimitive[] {s1g, s2g, s3g, s4g, s5g}, SplitMethod.EqualCounts);
-           // var bvh = new BVH(new IPrimitive[] {s0g}, SplitMethod.EqualCounts);
 
             return bvh;
         }

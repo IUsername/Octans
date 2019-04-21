@@ -125,8 +125,8 @@ namespace Octans.Test.Geometry
             var ray = new Ray(new Point(0, 0, -5), new Vector(0, 1, 0));
             var xs = s.Intersects(ray);
             // Child not tested so SavedRay remains default.
-            l.SavedRay.Should().Be(Ray.Undefined);
-            r.SavedRay.Should().Be(Ray.Undefined);
+            l.SavedRay.Should().Be(null);
+            r.SavedRay.Should().Be(null);
         }
 
         [Fact]

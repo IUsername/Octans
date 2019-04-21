@@ -50,7 +50,7 @@ namespace Octans.Integrator
                 var t = Vector.Cross(si.N, s);
 
                 var u = tileSampler.Get2DArray(NSamples);
-                var invL = 1f / NSamples;
+                //var invL = 1f / NSamples;
                 for (var i = 0; i < NSamples; ++i)
                 {
                     Vector wi;
@@ -66,6 +66,7 @@ namespace Octans.Integrator
                         pdf = UniformHemispherePdf();
                     }
 
+                    // Local to world space
                     wi = new Vector(
                         s.X * wi.X + t.X * wi.Y + n.X * wi.Z,
                         s.Y * wi.X + t.Y * wi.Y + n.Y * wi.Z,
@@ -75,9 +76,9 @@ namespace Octans.Integrator
                     //nRay.TMax = 100f;
                     if (!scene.IntersectP(nRay))
                     {
-                      //  L += wi % n / (pdf * NSamples);
+                        L += (wi % n) / (pdf * NSamples);
 
-                        L += Spectrum.FromRGB(new []{invL, invL, invL}, SpectrumType.Illuminant);
+                        //L += Spectrum.FromRGB(new []{invL, invL, invL}, SpectrumType.Illuminant);
                     }
                 }
             }
