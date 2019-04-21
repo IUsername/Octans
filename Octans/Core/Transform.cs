@@ -178,6 +178,21 @@ namespace Octans
         }
 
         [Pure]
+        private static RayDifferential Apply(in Transform t, in RayDifferential r)
+        {
+            var tr = Apply(t, (Ray) r);
+            var rd = new RayDifferential(tr)
+            {
+                HasDifferentials = r.HasDifferentials,
+                RxOrigin = t * r.RxOrigin,
+                RyOrigin = t * r.RyOrigin,
+                RxDirection = t * r.RxDirection,
+                RyDirection = t * r.RyDirection
+            };
+            return rd;
+        }
+
+        [Pure]
         public static Ray Apply(in Transform t, in Ray r, out Vector oError, out Vector dError)
         {
             var o = Apply(t, r.Origin, out oError);
@@ -262,6 +277,9 @@ namespace Octans
 
         [Pure]
         public static Ray operator *(Transform left, Ray right) => Apply(in left, in right);
+
+        [Pure]
+        public static RayDifferential operator *(Transform left, RayDifferential right) => Apply(in left, in right);
 
         [Pure]
         public static Ray operator ^(Transform left, Ray right) => ApplyInverse(in left, in right);

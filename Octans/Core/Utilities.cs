@@ -1,6 +1,9 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.ComponentModel.Design;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using static System.MathF;
+using static System.Single;
 
 namespace Octans
 {
@@ -28,7 +31,23 @@ namespace Octans
             }
 
             var po = p + offset;
-            return po.PushAway();
+            var comp = new float[3];
+            for (var i = 0; i < 3; ++i)
+            {
+                if (offset[i] > 0f)
+                {
+                    comp[i] = NextFloatUp(po[i]);
+                }
+                else if(offset[i] < 0f)
+                {
+                    comp[i] = NextFloatDown(po[i]);
+                }
+                else
+                {
+                    comp[i] = po[i];
+                }
+            }
+            return new Point(comp[0],comp[1],comp[2]);
         }
 
         [Pure]
@@ -59,7 +78,7 @@ namespace Octans
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float NextFloatUp(float value)
         {
-            if (float.IsInfinity(value) && value > 0f)
+            if (IsPositiveInfinity(value))
             {
                 return value;
             }
@@ -76,7 +95,7 @@ namespace Octans
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float NextFloatDown(float value)
         {
-            if (float.IsInfinity(value) && value < 0f)
+            if (IsNegativeInfinity(value))
             {
                 return value;
             }
@@ -87,6 +106,23 @@ namespace Octans
             }
 
             return value >= 0f ? BitDecrement(value) : BitIncrement(value);
+        }
+
+        public static bool SolveLinearSystem2x2(float[][] A, float[] B, out float x0, out float x1)
+        {
+            Debug.Assert(A.Length == 2);
+            Debug.Assert(A[0].Length == 2 && A[1].Length == 2);
+            Debug.Assert(B.Length == 2);
+            var det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+            if (Abs(det) < 1e-10f)
+            {
+                x0 = 0f;
+                x1 = 0f;
+                return false;
+            }
+            x0 = (A[1][1] * B[0] - A[0][1] * B[1]) / det;
+            x1 = (A[0][0] * B[1] - A[1][0] * B[0]) / det;
+            return !IsNaN(x0) && !IsNaN(x1);
         }
     }
 }

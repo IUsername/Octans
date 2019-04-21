@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Octans.Memory;
 using Octans.Sampling;
 using static System.Math;
+using static System.MathF;
 
 namespace Octans.Integrator
 {
@@ -32,7 +33,7 @@ namespace Octans.Integrator
             var sampleBounds = _camera.Film.GetSampleBounds();
             var sampleExtent = sampleBounds.Diagonal();
 
-            const int tileSize = 16;
+            const int tileSize = 13;
             var nTiles = new PixelCoordinate(
                 (sampleExtent.X + tileSize - 1) / tileSize,
                 (sampleExtent.Y + tileSize - 1) / tileSize);
@@ -95,7 +96,7 @@ namespace Octans.Integrator
                     var cameraSample = tileSampler.GetCameraSample(in pixel);
 
                     var rayWeight = camera.GenerateRayDifferential(cameraSample, out var ray);
-                    //ray.ScaleDifferentials(1f / System.MathF.Sqrt(tileSampler.SamplesPerPixel));
+                    ray.ScaleDifferentials(1f / Sqrt(tileSampler.SamplesPerPixel));
 
                     var L = Spectrum.Zero;
                     ;
@@ -103,17 +104,18 @@ namespace Octans.Integrator
                     {
                         L = Li(ray, scene, tileSampler, arena);
                     }
-                    
+
                     if (L.HasNaN())
                     {
                         Debug.Print("Not-a-number encountered in radiance value.");
                         L = Spectrum.Zero;
-                    }else if (L.YComponent() < -1e-5f)
+                    }
+                    else if (L.YComponent() < -1e-5f)
                     {
                         Debug.Print("Negative luminance encountered.");
                         L = Spectrum.Zero;
                     }
-                    else if(float.IsInfinity(L.YComponent()))
+                    else if (float.IsInfinity(L.YComponent()))
                     {
                         Debug.Print("Infinite luminance encountered.");
                         L = Spectrum.Zero;
@@ -126,14 +128,10 @@ namespace Octans.Integrator
             }
 
             camera.Film.MergeFilmTile(filmTile);
-
-          
         }
 
-        protected abstract Spectrum Li(in Ray ray, IScene scene, ISampler2 tileSampler, IObjectArena arena);
+        protected abstract Spectrum Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena);
 
         protected abstract void Preprocess(in Scene scene, ISampler2 sampler);
     }
-
-   
 }

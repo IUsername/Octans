@@ -31,14 +31,54 @@ namespace Octans.Camera
         private double A { get; }
 
 
-        public override float GenerateRayDifferential(CameraSample cameraSample, out Ray ray)
+        public override float GenerateRayDifferential(in CameraSample sample, out RayDifferential ray)
         {
-            var pFilm = new Point(cameraSample.FilmPoint.X, cameraSample.FilmPoint.Y, 0);
+            var pFilm = new Point(sample.FilmPoint.X, sample.FilmPoint.Y, 0);
+            var pCamera = RasterToCamera * pFilm;
+            var dir = ((Vector) pCamera).Normalize();
+            var r = new RayDifferential(new Point(),dir);
+            if (LensRadius > 0f)
+            {
+                var pLens = LensRadius * ConcentricSampleDisk(sample.LensPoint);
+
+                var ft = FocalDistance / r.Direction.Z;
+                var pFocus = r.Position(ft);
+                var o = new Point(pLens.X, pLens.Y, 0);
+                r = new RayDifferential(o, (pFocus - o).Normalize());
+
+                var dx = ((Vector) (pCamera + _dxCamera)).Normalize();
+                ft = FocalDistance / dx.Z;
+                pFocus = new Point(0,0,0) +(ft * dx);
+                r.RxOrigin = new Point(pLens.X, pLens.Y, 0f);
+                r.RxDirection = (pFocus - r.RxOrigin).Normalize();
+
+                var dy = ((Vector)(pCamera + _dyCamera)).Normalize();
+                ft = FocalDistance / dy.Z;
+                pFocus = new Point(0, 0, 0) + (ft * dy);
+                r.RyOrigin = new Point(pLens.X, pLens.Y, 0f);
+                r.RyDirection = (pFocus - r.RyOrigin).Normalize();
+            }
+            else
+            {
+                r.RxOrigin = r.Origin;
+                r.RyOrigin = r.Origin;
+                r.RxDirection = ((Vector) pCamera + _dxCamera).Normalize();
+                r.RyDirection = ((Vector) pCamera + _dyCamera).Normalize();
+            }
+           
+            ray = CameraToWorld * r;
+            ray.HasDifferentials = true;
+            return 1f;
+        }
+
+        public override float GenerateRay(in CameraSample sample, out Ray ray)
+        {
+            var pFilm = new Point(sample.FilmPoint.X, sample.FilmPoint.Y, 0);
             var pCamera = RasterToCamera * pFilm;
             var r = new Ray(new Point(), ((Vector) pCamera).Normalize());
             if (LensRadius > 0f)
             {
-                var pLens = LensRadius * ConcentricSampleDisk(cameraSample.LensPoint);
+                var pLens = LensRadius * ConcentricSampleDisk(sample.LensPoint);
 
                 var ft = FocalDistance / r.Direction.Z;
                 var pFocus = r.Position(ft);

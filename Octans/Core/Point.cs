@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 
 namespace Octans
 {
@@ -55,8 +56,6 @@ namespace Octans
             var inv = 1f / scalar;
             return Scale(inv);
         }
-
-        public Point PushAway() => new Point(MathF.ShiftValue(X), MathF.ShiftValue(Y), MathF.ShiftValue(Z));
 
         public bool Equals(Point other) =>
             Check.Within(X, other.X, Epsilon)

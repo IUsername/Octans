@@ -175,9 +175,5 @@ namespace Octans
             var v = (wa.X * wb.X + wa.Y * wb.Y) / Sqrt((wa.X * wa.X + wa.Y * wa.Y) * (wb.X * wb.X + wb.Y * wb.Y));
             return Clamp(-1, 1, v);
         }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float ShiftValue(in float v) => v > 0f ? Utilities.NextFloatUp(v) : Utilities.NextFloatDown(v);
     }
 }

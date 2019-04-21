@@ -34,8 +34,8 @@ namespace Octans.ConsoleApp
             var film = new Film(new PixelVector(width, height), new Bounds2D(0, 0, 1, 1), filter, 20f, 1f);
             var camera = PerspectiveCamera.Create(transform, aspectRatio, 0f, dist, fov, film);
 
-            //var integrator = new AmbientOcclusionIntegrator(false, 64, camera,
-            //                                                new HaltonSampler(spp, film.GetSampleBounds()),
+            //var integrator = new AmbientOcclusionIntegrator(true, 64, camera,
+            //                                                new HaltonSampler(spp, film.GetSampleBounds()), 
             //                                                film.CroppedBounds);
 
             //var integrator = new DepthIntegrator(700f, 1000f, camera, new HaltonSampler(spp, film.GetSampleBounds()),
@@ -74,7 +74,7 @@ namespace Octans.ConsoleApp
             var s3 = new Sphere(s3t, Transform.Invert(s3t), false, 300f, -300, 300, 360);
             var s3g = new GeometricPrimitive(s3, material, null);
 
-            var s4t = Transform.Translate(380, 500, 150);
+            var s4t = Transform.Translate(400, 500, 150);
             var s4 = new Sphere(s4t, Transform.Invert(s4t), false, 180f, -180, 180, 360);
             var s4g = new GeometricPrimitive(s4, material, null);
 
@@ -83,7 +83,13 @@ namespace Octans.ConsoleApp
             var s5g = new GeometricPrimitive(s5, material, null);
 
 
+            var s0t = Transform.Translate(278, 278, 100);
+            var s0 = new Sphere(s0t, Transform.Invert(s1t), false, 200f, -200, 200, 360);
+            var s0g = new GeometricPrimitive(s0, material, null);
+
+
             var bvh = new BVH(new IPrimitive[] {s1g, s2g, s3g, s4g, s5g}, SplitMethod.EqualCounts);
+           // var bvh = new BVH(new IPrimitive[] {s0g}, SplitMethod.EqualCounts);
 
             return bvh;
         }

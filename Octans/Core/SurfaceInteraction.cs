@@ -1,6 +1,8 @@
 ﻿using System;
 using Octans.Primitive;
 using Octans.Reflection;
+using static System.MathF;
+using static System.Single;
 using static Octans.Utilities;
 
 namespace Octans
@@ -114,7 +116,7 @@ namespace Octans
             return this;
         }
 
-        public void ComputeScatteringFunctions(in Ray r,
+        public void ComputeScatteringFunctions(in RayDifferential r,
                                                IObjectArena arena,
                                                bool allowMultipleLobes,
                                                TransportMode mode = TransportMode.Radiance)
@@ -123,9 +125,88 @@ namespace Octans
             Primitive.ComputeScatteringFunctions(this, arena, mode, allowMultipleLobes);
         }
 
-        private void ComputeDifferentials(in Ray ray)
+        private void ComputeDifferentials(in RayDifferential ray)
         {
-            // TODO
+            if (ray.HasDifferentials)
+            {
+                var d = N % (Vector) P;
+                var tx = -(N % ray.RxDirection - d) / (N % ray.RxDirection);
+                if (IsInfinity(tx) || IsNaN(tx))
+                {
+                    DifferentialFailure();
+                    return;
+                }
+
+                var px = ray.RxOrigin + tx * ray.RxDirection;
+
+                var ty = -(N % ray.RyDirection - d) / (N % ray.RyDirection);
+                if (IsInfinity(ty) || IsNaN(ty))
+                {
+                    DifferentialFailure();
+                    return;
+                }
+
+                var py = ray.RyOrigin + ty * ray.RyDirection;
+
+                Dpdx = px - P;
+                Dpdy = py - P;
+
+                var dim = new int[2];
+                if (Abs(N.X) > Abs(N.Y) && Abs(N.X) > Abs(N.Y))
+                {
+                    dim[0] = 1;
+                    dim[1] = 2;
+                }
+                else if (Abs(N.Y) > Abs(N.Z))
+                {
+                    dim[0] = 0;
+                    dim[1] = 2;
+                }
+                else
+                {
+                    dim[0] = 0;
+                    dim[1] = 1;
+                }
+
+                float[][] A =
+                {
+                    new[] {Dpdu[dim[0]], Dpdv[dim[0]]},
+                    new[] {Dpdu[dim[1]], Dpdv[dim[1]]}
+                };
+
+                float[] Bx = {px[dim[0]] - P[dim[0]], px[dim[1]] - P[dim[1]]};
+                float[] By = {py[dim[0]] - P[dim[0]], py[dim[1]] - P[dim[1]]};
+
+                if (SolveLinearSystem2x2(A, Bx, out var dudx, out var dvdx))
+                {
+                    Dudx = dudx;
+                    Dvdx = dvdx;
+                }
+                else
+                {
+                    Dudx = 0f;
+                    Dvdx = 0f;
+                }
+
+                if (SolveLinearSystem2x2(A, By, out var dudy, out var dvdy))
+                {
+                    Dudy = dudy;
+                    Dvdy = dvdy;
+                }
+                else
+                {
+                    Dudy = 0f;
+                    Dvdy = 0f;
+                }
+            }
+            else
+            {
+                DifferentialFailure();
+            }
+        }
+
+        private void DifferentialFailure()
+        {
             Dudx = Dvdx = 0f;
             Dudy = Dvdy = 0f;
             Dpdx = Vectors.Zero;

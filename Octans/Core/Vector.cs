@@ -22,6 +22,24 @@ namespace Octans
             Z = z;
         }
 
+        public float this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
         public Vector Add(in Vector t) => new Vector(X + t.X, Y + t.Y, Z + t.Z);
 
         public Vector Subtract(in Vector t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);
@@ -51,8 +69,6 @@ namespace Octans
         public Vector Reflect(in Vector normal) => Reflect(in this, (Normal) normal);
 
         public Vector Reflect(in Normal normal) => Reflect(in this, in normal);
-
-        public Vector PushAway() => new Vector(MathF.ShiftValue(X), MathF.ShiftValue(Y), MathF.ShiftValue(Z));
 
         public bool Equals(Vector other) =>
             Check.Within(X, other.X, Epsilon)
@@ -133,14 +149,14 @@ namespace Octans
         {
             double aX = a.X, aY = a.Y, aZ = a.Z;
             double bX = b.X, bY = b.Y, bZ = b.Z;
-            return new Vector((float) (aY * bZ - aZ * bY),
-                              (float) (aZ * bX - aX * bZ),
-                              (float) (aX * bY - aY * bX));
+            return new Vector((float)(aY * bZ - aZ * bY),
+                              (float)(aZ * bX - aX * bZ),
+                              (float)(aX * bY - aY * bX));
 
-            //// TODO: Are we still getting enough accuracy?
-            //return new Vector(MathF.FusedMultiplyAdd(a.Y, b.Z, -a.Z * b.Y),
-            //                  MathF.FusedMultiplyAdd(a.Z, b.X, -a.X * b.Z),
-            //                  MathF.FusedMultiplyAdd(a.X, b.Y, -a.Y * b.X));
+            ////// TODO: Are we still getting enough accuracy?
+            //return new Vector(FusedMultiplyAdd(a.Y, b.Z, -a.Z * b.Y),
+            //                  FusedMultiplyAdd(a.Z, b.X, -a.X * b.Z),
+            //                  FusedMultiplyAdd(a.X, b.Y, -a.Y * b.X));
         }
 
         [Pure]

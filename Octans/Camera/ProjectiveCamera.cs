@@ -42,7 +42,7 @@ namespace Octans.Camera
         protected Transform ScreenToRaster { get; }
 
         public Film Film { get; }
-
-        public abstract float GenerateRayDifferential(CameraSample cameraSample, out Ray ray);
+        public abstract float GenerateRayDifferential(in CameraSample sample, out RayDifferential ray);
+        public abstract float GenerateRay(in CameraSample sample, out Ray ray);
     }
 }

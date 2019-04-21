@@ -160,7 +160,7 @@ namespace Octans.Shading
                 if (wi.Z == 0)
                 {
                     // Total internal reflection.
-                    return (new Ray(), Colors.Black);
+                    return (Ray.Undefined, Colors.Black);
                 }
 
                 uv = sampler.NextUV();
@@ -217,7 +217,7 @@ namespace Octans.Shading
         {
             if (info.Geometry.Material.Transparency <= 0f)
             {
-                return (new Ray(), Colors.Black);
+                return (Ray.Undefined, Colors.Black);
             }
 
             if (!info.IsInside)
@@ -252,7 +252,7 @@ namespace Octans.Shading
             if (sin2T > 1f)
             {
                 // Total internal reflection.
-                return (new Ray(), Colors.Black);
+                return (Ray.Undefined, Colors.Black);
             }
 
             var cosT = System.MathF.Sqrt(1f - sin2T);

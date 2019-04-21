@@ -20,14 +20,14 @@ namespace Octans.Sampling
         {
             var d = ConcentricSampleDisk(p);
             var z = Sqrt(Max(0f, 1f - d.X * d.X - d.Y * d.Y));
-            return new Vector(d.X,d.Y, z);
+            return new Vector(d.X, d.Y, z);
         }
 
         public static Point2D ConcentricSampleDisk(in Point2D u)
         {
             var uOffset = 2f * u - new Vector2(1f, 1f);
 
-            if(uOffset.X == 0f && uOffset.Y == 0f) return new Point2D(0f,0f);
+            if (uOffset.X == 0f && uOffset.Y == 0f) return new Point2D(0f, 0f);
 
             float theta, r;
             if (Abs(uOffset.X) > Abs(uOffset.Y))
@@ -44,9 +44,6 @@ namespace Octans.Sampling
             return r * new Point2D(Cos(theta), Sin(theta));
         }
 
-        public static float CosineHemispherePdf(float cosTheta)
-        {
-            return cosTheta * InvPi;
-        }
+        public static float CosineHemispherePdf(float cosTheta) => cosTheta * InvPi;
     }
 }

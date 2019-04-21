@@ -5,7 +5,7 @@ namespace Octans
     public static class SpaceExtensions
     {
         [Pure]
-        public static Ray ToLocal(in this Ray worldRay, in IGeometry geometry) =>
+        public static Ray ToLocal(this Ray worldRay, in IGeometry geometry) =>
             geometry.Transform ^ worldRay;
 
         [Pure]

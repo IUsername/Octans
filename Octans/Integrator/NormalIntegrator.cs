@@ -12,11 +12,11 @@ namespace Octans.Integrator
         {
         }
 
-        protected override Spectrum Li(in Ray ray, IScene scene, ISampler2 tileSampler, IObjectArena arena)
+        protected override Spectrum Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena)
         {
             var r = ray;
             var si = new SurfaceInteraction();
-            if (!scene.Intersect(ref r, ref si))
+            if (!scene.Intersect(r, ref si))
             {
                 return Spectrum.Zero;
             }

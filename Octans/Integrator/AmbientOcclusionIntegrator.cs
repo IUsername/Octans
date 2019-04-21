@@ -23,15 +23,15 @@ namespace Octans.Integrator
         public bool CosSample { get; }
         public int NSamples { get; }
 
-        protected override Spectrum Li(in Ray ray, IScene scene, ISampler2 tileSampler, IObjectArena arena)
+        protected override Spectrum Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena)
         {
             var L = Spectrum.Zero;
-            var r = ray;
+            var r =  ray;
             var hit = false;
             var si = new SurfaceInteraction();
             while (!hit)
             {
-                if (!scene.Intersect(ref r, ref si))
+                if (!scene.Intersect(r, ref si))
                 {
                     return L;
                 }
@@ -39,7 +39,7 @@ namespace Octans.Integrator
                 si.ComputeScatteringFunctions(r, arena, true);
                 if (si.BSDF.NumberOfComponents() == 0)
                 {
-                    r = si.SpawnRay(r.Direction);
+                    r = new RayDifferential(si.SpawnRay(r.Direction));
                     continue;
                 }
 
@@ -50,6 +50,7 @@ namespace Octans.Integrator
                 var t = Vector.Cross(si.N, s);
 
                 var u = tileSampler.Get2DArray(NSamples);
+                var invL = 1f / NSamples;
                 for (var i = 0; i < NSamples; ++i)
                 {
                     Vector wi;
@@ -58,10 +59,6 @@ namespace Octans.Integrator
                     {
                         wi = CosineSampleHemisphere(u[i]);
                         pdf = CosineHemispherePdf(Abs(wi.Z));
-                        if (pdf == 0f)
-                        {
-                            Debug.Print("PDF of zero");
-                        }
                     }
                     else
                     {
@@ -74,13 +71,18 @@ namespace Octans.Integrator
                         s.Y * wi.X + t.Y * wi.Y + n.Y * wi.Z,
                         s.Z * wi.X + t.Z * wi.Y + n.Z * wi.Z);
 
-                    var sRay = si.SpawnRay(wi);
-                    if (!scene.IntersectP(ref sRay))
+                    var nRay = si.SpawnRay(wi);
+                    //nRay.TMax = 100f;
+                    if (!scene.IntersectP(nRay))
                     {
-                        L += (wi % n) / (pdf * NSamples);
+                      //  L += wi % n / (pdf * NSamples);
+
+                        L += Spectrum.FromRGB(new []{invL, invL, invL}, SpectrumType.Illuminant);
                     }
                 }
             }
+
+           
 
             return L;
         }

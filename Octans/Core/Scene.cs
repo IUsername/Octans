@@ -29,12 +29,12 @@ namespace Octans
 
         public Bounds WorldBounds { get; }
 
-        public bool Intersect(ref Ray r, ref SurfaceInteraction si)
+        public bool Intersect(Ray r, ref SurfaceInteraction si)
         {
             return Aggregate.Intersect(ref r, ref si);
         }
 
-        public bool IntersectP(ref Ray r)
+        public bool IntersectP(Ray r)
         {
             return Aggregate.IntersectP(ref r);
         }
