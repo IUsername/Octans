@@ -126,7 +126,7 @@ namespace Octans.Reflection
             {
                 var wi = new Vector();
                 var wo = UniformSampleHemisphere(u1[i]);
-                var pdfo = UniformSampleHemispherePdf();
+                var pdfo = UniformHemispherePdf();
                 var f = bxdf.SampleF(in wo, ref wi, u2[i], out var pdfi);
                 if (pdfi > 0f)
                 {

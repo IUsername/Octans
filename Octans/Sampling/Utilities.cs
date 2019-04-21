@@ -6,15 +6,15 @@ namespace Octans.Sampling
 {
     public static class Utilities
     {
-        public static Vector UniformSampleHemisphere(in Point2D p)
+        public static Vector UniformSampleHemisphere(in Point2D u)
         {
-            var z = p[0];
+            var z = u[0];
             var r = Sqrt(Max(0f, 1f - z * z));
-            var phi = 2f * PI * p[1];
+            var phi = 2f * PI * u[1];
             return new Vector(r * Cos(phi), r * Sin(phi), z);
         }
 
-        public static float UniformSampleHemispherePdf() => Inv2Pi;
+        public static float UniformHemispherePdf() => Inv2Pi;
 
         public static Vector CosineSampleHemisphere(in Point2D p)
         {

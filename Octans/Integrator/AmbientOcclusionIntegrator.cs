@@ -1,4 +1,6 @@
-﻿using Octans.Sampling;
+﻿using System.Diagnostics;
+using Octans.Sampling;
+using static System.MathF;
 using static Octans.Sampling.Utilities;
 
 namespace Octans.Integrator
@@ -55,12 +57,16 @@ namespace Octans.Integrator
                     if (CosSample)
                     {
                         wi = CosineSampleHemisphere(u[i]);
-                        pdf = CosineHemispherePdf(System.MathF.Abs(wi.Z));
+                        pdf = CosineHemispherePdf(Abs(wi.Z));
+                        if (pdf == 0f)
+                        {
+                            Debug.Print("PDF of zero");
+                        }
                     }
                     else
                     {
                         wi = UniformSampleHemisphere(u[i]);
-                        pdf = UniformSampleHemispherePdf();
+                        pdf = UniformHemispherePdf();
                     }
 
                     wi = new Vector(
@@ -71,7 +77,7 @@ namespace Octans.Integrator
                     var sRay = si.SpawnRay(wi);
                     if (!scene.IntersectP(ref sRay))
                     {
-                        L += wi % n / (pdf * NSamples);
+                        L += (wi % n) / (pdf * NSamples);
                     }
                 }
             }

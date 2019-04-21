@@ -79,7 +79,8 @@ namespace Octans.Sampling
             }
 
             var array = _samples2D[_array2DIndex++];
-            Debug.Assert(array.Length == n * SamplesPerPixel);
+            //Debug.Assert(array.Length == n * SamplesPerPixel);
+            Debug.Assert(array.Length == n);
             Debug.Assert(CurrentPixelSampleIndex < SamplesPerPixel);
 
             return array;
@@ -113,13 +114,15 @@ namespace Octans.Sampling
         public void Request1DArray(int n)
         {
             Debug.Assert(RoundCount(n) == n);
-            _samples1D.Add(new float[n * SamplesPerPixel]);
+            //_samples1D.Add(new float[n * SamplesPerPixel]);
+            _samples1D.Add(new float[n]);
         }
 
         public void Request2DArray(int n)
         {
             Debug.Assert(RoundCount(n) == n);
-            _samples2D.Add(new Point2D[n * SamplesPerPixel]);
+            //_samples2D.Add(new Point2D[n * SamplesPerPixel]);
+            _samples2D.Add(new Point2D[n]);
         }
     }
 }

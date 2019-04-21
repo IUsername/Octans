@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Octans.Memory;
@@ -102,8 +103,21 @@ namespace Octans.Integrator
                     {
                         L = Li(ray, scene, tileSampler, arena);
                     }
-
-                    // TODO: Check for unexpected results.
+                    
+                    if (L.HasNaN())
+                    {
+                        Debug.Print("Not-a-number encountered in radiance value.");
+                        L = Spectrum.Zero;
+                    }else if (L.YComponent() < -1e-5f)
+                    {
+                        Debug.Print("Negative luminance encountered.");
+                        L = Spectrum.Zero;
+                    }
+                    else if(float.IsInfinity(L.YComponent()))
+                    {
+                        Debug.Print("Infinite luminance encountered.");
+                        L = Spectrum.Zero;
+                    }
 
                     filmTile.AddSample(cameraSample.FilmPoint, L, rayWeight);
 
