@@ -88,7 +88,7 @@ namespace Octans.Integrator
             return L;
         }
 
-        protected override void Preprocess(in Scene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler2 sampler)
         {
         }
     }

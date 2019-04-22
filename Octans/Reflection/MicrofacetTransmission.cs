@@ -35,7 +35,7 @@ namespace Octans.Reflection
         public Spectrum F(in Vector wo, in Vector wi)
         {
             // Only handle transmission
-            if (Utilities.IsInSameHemisphere(in wo, in wi))
+            if (IsInSameHemisphere(in wo, in wi))
             {
                 return Spectrum.Zero;
             }
@@ -68,7 +68,7 @@ namespace Octans.Reflection
 
         public Spectrum SampleF(in Vector wo,
                                 ref Vector wi,
-                                in Point2D sample,
+                                in Point2D u,
                                 out float pdf,
                                 BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
 
@@ -77,7 +77,7 @@ namespace Octans.Reflection
         public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
         public float Pdf(in Vector wo, in Vector wi)
         {
-            if (Utilities.IsInSameHemisphere(wo, wi))
+            if (IsInSameHemisphere(wo, wi))
             {
                 return 0f;
             }

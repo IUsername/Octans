@@ -20,11 +20,13 @@ namespace Octans
 
         private const float PiOver180 = PI / 180f;
 
-        public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
-
         public const float ShadowEpsilon = 0.0001f;
 
+        public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
+
         public static readonly float MachineEpsilon;
+
+        public static readonly float SqrtPiInv = 1f / Sqrt(PI);
 
         static MathF()
         {
@@ -176,6 +178,102 @@ namespace Octans
         {
             var v = (wa.X * wb.X + wa.Y * wb.Y) / Sqrt((wa.X * wa.X + wa.Y * wa.Y) * (wb.X * wb.X + wb.Y * wb.Y));
             return Clamp(-1, 1, v);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector SphericalDirection(in float sinTheta, in float cosTheta, in float phi)
+        {
+            return new Vector(sinTheta * Cos(phi), sinTheta * Sin(phi), cosTheta);
+        }
+
+        // TODO: Duplicate definitions.
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector Reflect(in Vector wo, in Vector n) => -wo + 2f * (wo % n) * n;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool Refract(in Vector wi, in Normal n, float eta, ref Vector wt)
+        {
+            // Snell's Law
+            var cosThetaI = n % wi;
+            var sin2ThetaI = Max(0f, 1f - cosThetaI * cosThetaI);
+            var sin2ThetaT = eta * eta * sin2ThetaI;
+
+            // Total internal reflection
+            if (sin2ThetaT >= 1f) return false;
+
+            var cosThetaT = Sqrt(1f - sin2ThetaT);
+            wt = eta * -wi + (eta * cosThetaI - cosThetaT) * (Vector)n;
+            return true;
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInSameHemisphere(in Vector w, in Vector wp) => w.Z * wp.Z > 0f;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInSameHemisphere(in Vector w, in Normal wp) => w.Z * wp.Z > 0f;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Erf(in float x)
+        {
+            const float a1 = 0.254829592f;
+            const float a2 = -0.284496736f;
+            const float a3 = 1.421413741f;
+            const float a4 = -1.453152027f;
+            const float a5 = 1.061405429f;
+            const float p = 0.3275911f;
+
+            var sign = CopySign(1f, x);
+            var xA = Abs(x);
+
+            // A&S formula 7.1.26
+            var t = 1f / (1f + p * xA);
+            var y = 1 - ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Exp(-xA * xA);
+
+            return sign * y;
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float ErfInv(in float x)
+        {
+            float p;
+            var xC = Clamp(x, -.99999f, .99999f);
+            var w = -Log((1 - xC) * (1 + xC));
+            if (w < 5)
+            {
+                w -= 2.5f;
+                p = 2.81022636e-08f;
+                p = 3.43273939e-07f + p * w;
+                p = -3.5233877e-06f + p * w;
+                p = -4.39150654e-06f + p * w;
+                p = 0.00021858087f + p * w;
+                p = -0.00125372503f + p * w;
+                p = -0.00417768164f + p * w;
+                p = 0.246640727f + p * w;
+                p = 1.50140941f + p * w;
+            }
+            else
+            {
+                w = Sqrt(w) - 3;
+                p = -0.000200214257f;
+                p = 0.000100950558f + p * w;
+                p = 0.00134934322f + p * w;
+                p = -0.00367342844f + p * w;
+                p = 0.00573950773f + p * w;
+                p = -0.0076224613f + p * w;
+                p = 0.00943887047f + p * w;
+                p = 1.00167406f + p * w;
+                p = 2.83297682f + p * w;
+            }
+
+            return p * xC;
         }
     }
 }

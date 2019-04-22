@@ -25,6 +25,11 @@
         float Pdf_Li(Interaction i, in Vector wi);
     }
 
+    public interface IAreaLight : ILight2
+    {
+        Spectrum L(SurfaceInteraction si, in Vector w);
+    }
+
     public sealed class PointLight2 : ILight2
     {
         public Transform Light2World { get; }
@@ -51,7 +56,8 @@
             wi = (_pLight - si.P).Normalize();
             pdf = 1f;
             visibility = new VisibilityTester(si, new Interaction(_pLight));
-            return I / Point.DistanceSqr(_pLight, si.P);
+            var d2 = Point.DistanceSqr(_pLight, si.P);
+            return I / d2;
         }
 
         public Spectrum Sample_Le(in Point2D u1, in Point2D u2, out Ray ray, out Normal nLight, out float pdfPos, out float pdfDir)
@@ -87,7 +93,7 @@
 
         public bool Unoccluded(IScene scene)
         {
-            return scene.IntersectP(P0.SpawnRayTo(P1));
+            return !scene.IntersectP(P0.SpawnRayTo(P1));
         }
     }
 

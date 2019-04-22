@@ -2,6 +2,6 @@
 {
     public interface IIntegrator
     {
-        void Render(Scene scene);
+        void Render(IScene scene);
     }
 }

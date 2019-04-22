@@ -36,7 +36,7 @@ namespace Octans.Integrator
             return Spectrum.FromRGB(new[] {x, x, x}, SpectrumType.Illuminant);
         }
 
-        protected override void Preprocess(in Scene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler2 sampler)
         {
         }
     }

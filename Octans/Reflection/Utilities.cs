@@ -60,35 +60,7 @@ namespace Octans.Reflection
             return 0.5f * (rParallel + rPerpendicular);
         }
 
-        // TODO: Duplicate definitions.
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector Reflect(in Vector wo, in Vector n) => -wo + 2f * (wo % n) * n;
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Refract(in Vector wi, in Normal n, float eta, ref Vector wt)
-        {
-            // Snell's Law
-            var cosThetaI = n % wi;
-            var sin2ThetaI = Max(0f, 1f - cosThetaI * cosThetaI);
-            var sin2ThetaT = eta * eta * sin2ThetaI;
-
-            // Total internal reflection
-            if (sin2ThetaT >= 1f) return false;
-
-            var cosThetaT = Sqrt(1f - sin2ThetaT);
-            wt = eta * -wi + (eta * cosThetaI - cosThetaT) * (Vector) n;
-            return true;
-        }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsInSameHemisphere(in Vector w, in Vector wp) => w.Z * wp.Z > 0f;
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsInSameHemisphere(in Vector w, in Normal wp) => w.Z * wp.Z > 0f;
+      
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -139,9 +111,9 @@ namespace Octans.Reflection
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsFlagged(this IBxDF bxdf, BxDFType flag)
+        public static bool AnyFlag(this IBxDF bxdf, BxDFType flag)
         {
-            return (bxdf.Type & flag) == bxdf.Type;
+            return (bxdf.Type & flag) != BxDFType.None;
         }
     }
 }

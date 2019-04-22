@@ -12,7 +12,7 @@ namespace Octans.Primitive
 
         IMaterial Material { get; }
 
-        AreaLight AreaLight { get; }
+        IAreaLight AreaLight { get; }
 
         void ComputeScatteringFunctions(SurfaceInteraction surfaceInteraction,
                                         IObjectArena arena,

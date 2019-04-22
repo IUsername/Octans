@@ -27,7 +27,7 @@ namespace Octans.Integrator
             _pixelBounds = pixelBounds;
         }
 
-        public void Render(Scene scene)
+        public void Render(IScene scene)
         {
             Preprocess(in scene, _sampler);
 
@@ -53,15 +53,16 @@ namespace Octans.Integrator
                     queue.Enqueue(new PixelArea(min, max));
                 }
             }
-
-            //foreach (var a in queue)
-            //{
-            //    RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value);
-            //}
-
+#if DEBUG
+            foreach (var a in queue)
+            {
+                RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value);
+            }
+#else
             Parallel.ForEach(
                 queue, a => RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value));
 
+#endif
             foreach (var arena in _perThreadArena.Values)
             {
                 arena.Clear();
@@ -137,21 +138,21 @@ namespace Octans.Integrator
                                        IObjectArena arena,
                                        int depth = 0);
 
-        protected abstract void Preprocess(in Scene scene, ISampler2 sampler);
+        protected abstract void Preprocess(in IScene scene, ISampler2 sampler);
 
         protected Spectrum SpecularReflect(RayDifferential ray,
-                                        SurfaceInteraction si,
-                                        IScene scene,
-                                        ISampler2 sampler,
-                                        IObjectArena arena,
-                                        in int depth)
+                                           SurfaceInteraction si,
+                                           IScene scene,
+                                           ISampler2 sampler,
+                                           IObjectArena arena,
+                                           in int depth)
         {
             var wo = si.Wo;
             var type = BxDFType.Reflection | BxDFType.Specular;
-            var f = si.BSDF.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf, type, out var sampledType);
+            var f = si.BSDF.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf, type, out _);
 
             var ns = si.ShadingGeometry.N;
-            if (pdf > 0f && !f.IsBlack() && Vector.AbsDot(ns, wi) != 0f)
+            if (pdf > 0f && !f.IsBlack() && System.MathF.Abs(wi % ns) != 0f)
             {
                 var rd = new RayDifferential(si.SpawnRay(wi));
                 if (ray.HasDifferentials)
@@ -162,35 +163,37 @@ namespace Octans.Integrator
 
                     var dndx = si.ShadingGeometry.Dndu * si.Dudx +
                                si.ShadingGeometry.Dndv * si.Dvdx;
+
                     var dndy = si.ShadingGeometry.Dndu * si.Dudy +
                                si.ShadingGeometry.Dndv * si.Dvdy;
+
                     var dwodx = -ray.RxDirection - wo;
                     var dwody = -ray.RyDirection - wo;
                     var dDNdx = dwodx % ns + wo % dndx;
                     var dDNdy = dwody % ns + wo % dndy;
 
-                    rd.RxDirection = wi - dwodx + 2f * (Vector)(wo % ns * dndx + dDNdx * ns);
-                    rd.RyDirection = wi - dwody + 2f * (Vector)(wo % ns * dndy + dDNdy * ns);
+                    rd.RxDirection = wi - dwodx + 2f * (Vector) (wo % ns * dndx + dDNdx * ns);
+                    rd.RyDirection = wi - dwody + 2f * (Vector) (wo % ns * dndy + dDNdy * ns);
                 }
 
-                return f * Li(rd, scene, sampler, arena, depth + 1) * Vector.AbsDot(ns, wi) / pdf;
+                return f * Li(rd, scene, sampler, arena, depth + 1) * System.MathF.Abs(wi % ns) / pdf;
             }
 
             return Spectrum.Zero;
         }
 
         protected Spectrum SpecularTransmit(in RayDifferential ray,
-                                          SurfaceInteraction si,
-                                          IScene scene,
-                                          ISampler2 sampler,
-                                          IObjectArena arena,
-                                          in int depth)
+                                            SurfaceInteraction si,
+                                            IScene scene,
+                                            ISampler2 sampler,
+                                            IObjectArena arena,
+                                            in int depth)
         {
             var wo = si.Wo;
             var p = si.P;
             var bsdf = si.BSDF;
             var f = bsdf.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf,
-                                  BxDFType.Transmission | BxDFType.Specular, out var sampledType);
+                                  BxDFType.Transmission | BxDFType.Specular, out _);
             var L = Spectrum.Zero;
             var ns = si.ShadingGeometry.N;
             if (pdf > 0f && !f.IsBlack() && Vector.AbsDot(wi, ns) != 0f)
@@ -225,8 +228,8 @@ namespace Octans.Integrator
                     var dmudx = (eta - eta * eta * wo % ns) / Vector.AbsDot(wi, ns) * dDNdx;
                     var dmudy = (eta - eta * eta * wo % ns) / Vector.AbsDot(wi, ns) * dDNdy;
 
-                    rd.RxDirection = wi - eta * dwodx + (Vector)(mu * dndx + dmudx * ns);
-                    rd.RyDirection = wi - eta * dwody + (Vector)(mu * dndy + dmudy * ns);
+                    rd.RxDirection = wi - eta * dwodx + (Vector) (mu * dndx + dmudx * ns);
+                    rd.RyDirection = wi - eta * dwody + (Vector) (mu * dndy + dmudy * ns);
                 }
 
                 L = f * Li(rd, scene, sampler, arena, depth + 1) * Vector.AbsDot(wi, ns) / pdf;

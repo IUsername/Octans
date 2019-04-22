@@ -49,7 +49,56 @@ namespace Octans.Reflection.Microfacet
             return (1f - 1.259f * a + 0.0396f * a * a) / (3.535f * a + 2.181f * a * a);
         }
 
-        public override Vector SampleWh(in Vector wo, in Vector wi) => throw new NotImplementedException();
+        public override Vector SampleWh(in Vector wo, in Point2D u)
+        {
+            if (!SampleVisibleArea)
+            {
+                float tan2Theta;
+                float phi;
+                if (_alphaX == _alphaY)
+                {
+                    var logSample = Log(1f - u[0]);
+                    tan2Theta = -_alphaX * _alphaY * logSample;
+                    phi = u[1] * 2f * PI;
+                }
+                else
+                {
+                    var logSample = Log(1f - u[0]);
+                    phi = Atan(_alphaY / _alphaX * Tan(2f * PI * u[1] + 0.5f * PI));
+                    if (u[1] > 0.5f)
+                    {
+                        phi += PI;
+                    }
+
+                    var sinPhi = Sin(phi);
+                    var cosPhi = Cos(phi);
+                    var alphaX2 = _alphaX * _alphaX;
+                    var alphaY2 = _alphaY * _alphaY;
+                    tan2Theta = -logSample / (cosPhi * cosPhi / alphaX2 + sinPhi * sinPhi / alphaY2);
+                }
+
+                var cosTheta = 1f / Sqrt(1f + tan2Theta);
+                var sinTheta = Sqrt(Max(0f, 1f - cosTheta * cosTheta));
+                var wh = SphericalDirection(sinTheta, cosTheta, phi);
+                if (!IsInSameHemisphere(wo, wh))
+                {
+                    wh = -wh;
+                }
+
+                return wh;
+            }
+            else
+            {
+                var flip = wo.Z < 0f;
+                var wh = Sampling.BeckmannSample(flip ? -wo : wo, _alphaX, _alphaY, u[0], u[1]);
+                if (flip)
+                {
+                    wh = -wh;
+                }
+
+                return wh;
+            }
+        }
 
         public override float Pdf(in Vector wo, in Vector wh) => throw new NotImplementedException();
     }

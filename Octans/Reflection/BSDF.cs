@@ -61,7 +61,7 @@ namespace Octans.Reflection
             var count = 0;
             for (var i = 0; i < _nBxDFs; i++)
             {
-                if (_bxdf[i].IsFlagged(flags))
+                if (_bxdf[i].AnyFlag(flags))
                 {
                     ++count;
                 }
@@ -80,9 +80,9 @@ namespace Octans.Reflection
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var b = _bxdf[i];
-                if (b.IsFlagged(flags) &&
-                    (reflect && b.IsFlagged(BxDFType.Reflection) ||
-                     !reflect && b.IsFlagged(BxDFType.Transmission)))
+                if (b.AnyFlag(flags) &&
+                    (reflect && b.AnyFlag(BxDFType.Reflection) ||
+                     !reflect && b.AnyFlag(BxDFType.Transmission)))
                 {
                     f += b.F(in wo, in wi);
                 }
@@ -98,7 +98,7 @@ namespace Octans.Reflection
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var current = _bxdf[i];
-                if (current.IsFlagged(flags))
+                if (current.AnyFlag(flags))
                 {
                     ret += current.Rho(in wo, nSamples, in u);
                 }
@@ -114,7 +114,7 @@ namespace Octans.Reflection
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var current = _bxdf[i];
-                if (current.IsFlagged(flags))
+                if (current.AnyFlag(flags))
                 {
                     ret += current.Rho(nSamples, in u1, in u2);
                 }
@@ -157,7 +157,7 @@ namespace Octans.Reflection
             var count = comp;
             for (var i = 0; i < _nBxDFs; ++i)
             {
-                if (_bxdf[i].IsFlagged(type) && count-- == 0)
+                if (_bxdf[i].AnyFlag(type) && count-- == 0)
                 {
                     bxdf = _bxdf[i];
                     break;
@@ -187,11 +187,11 @@ namespace Octans.Reflection
 
             wiWorld = LocalToWorld(wi);
 
-            if (!bxdf.IsFlagged(BxDFType.Specular) && matching > 1)
+            if (!bxdf.AnyFlag(BxDFType.Specular) && matching > 1)
             {
                 for (var i = 0; i < _nBxDFs; ++i)
                 {
-                    if (_bxdf[i] != bxdf && _bxdf[i].IsFlagged(type))
+                    if (_bxdf[i] != bxdf && _bxdf[i].AnyFlag(type))
                     {
                         pdf += _bxdf[i].Pdf(wo, wi);
                     }
@@ -203,15 +203,15 @@ namespace Octans.Reflection
                 pdf /= matching;
             }
 
-            if (!bxdf.IsFlagged(BxDFType.Specular))
+            if (!bxdf.AnyFlag(BxDFType.Specular))
             {
                 var reflect = wiWorld % _ng * woWorld % _ng > 0f;
                 f = Spectrum.Zero;
                 for (var i = 0; i < _nBxDFs; ++i)
                 {
-                    if (_bxdf[i].IsFlagged(type) &&
-                        (reflect && _bxdf[i].IsFlagged(BxDFType.Reflection) ||
-                         !reflect && _bxdf[i].IsFlagged(BxDFType.Transmission)))
+                    if (_bxdf[i].AnyFlag(type) &&
+                        (reflect && _bxdf[i].AnyFlag(BxDFType.Reflection) ||
+                         !reflect && _bxdf[i].AnyFlag(BxDFType.Transmission)))
                     {
                         f += _bxdf[i].F(wo, wi);
                     }

@@ -39,7 +39,7 @@ namespace Octans
                                              in Normal dndv,
                                              IShape shape)
         {
-            base.Initialize(in p, (Normal) Vector.Cross(in dpdu, in dpdv), in pError, in wo);
+            base.Initialize(in p, ((Normal) Vector.Cross(in dpdu, in dpdv)).Normalize(), in pError, in wo);
 
             UV = uv;
             Wo = wo;
@@ -130,7 +130,7 @@ namespace Octans
             if (ray.HasDifferentials)
             {
                 var d = N % (Vector) P;
-                var tx = -(N % ray.RxDirection - d) / (N % ray.RxDirection);
+                var tx = -(N % (Vector)ray.RxOrigin - d) / (N % ray.RxDirection);
                 if (IsInfinity(tx) || IsNaN(tx))
                 {
                     DifferentialFailure();
@@ -139,7 +139,7 @@ namespace Octans
 
                 var px = ray.RxOrigin + tx * ray.RxDirection;
 
-                var ty = -(N % ray.RyDirection - d) / (N % ray.RyDirection);
+                var ty = -(N % (Vector)ray.RyOrigin - d) / (N % ray.RyDirection);
                 if (IsInfinity(ty) || IsNaN(ty))
                 {
                     DifferentialFailure();
@@ -152,7 +152,7 @@ namespace Octans
                 Dpdy = py - P;
 
                 var dim = new int[2];
-                if (Abs(N.X) > Abs(N.Y) && Abs(N.X) > Abs(N.Y))
+                if (Abs(N.X) > Abs(N.Y) && Abs(N.X) > Abs(N.Z))
                 {
                     dim[0] = 1;
                     dim[1] = 2;
@@ -240,7 +240,11 @@ namespace Octans
             ShadingGeometry.Dndv = dndvs;
         }
 
-        public Spectrum Le(in Vector w) => throw new NotImplementedException();
+        public Spectrum Le(in Vector w)
+        {
+            var area = Primitive.AreaLight;
+            return area is null ? Spectrum.Zero : area.L(this, w);
+        }
     }
 
     public struct ShadingGeometry

@@ -12,10 +12,10 @@
 
         public Spectrum SampleF(in Vector wo,
                                 ref Vector wi,
-                                in Point2D sample,
+                                in Point2D u,
                                 out float pdf,
                                 BxDFType sampleType = BxDFType.None) =>
-            _scale * _bxdf.SampleF(in wo, ref wi, in sample, out pdf, sampleType);
+            _scale * _bxdf.SampleF(in wo, ref wi, in u, out pdf, sampleType);
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => _scale * _bxdf.Rho(in wo, nSamples, in u);
 

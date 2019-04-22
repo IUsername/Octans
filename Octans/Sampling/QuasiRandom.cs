@@ -7,9 +7,40 @@ namespace Octans.Sampling
 {
     public static class QuasiRandom
     {
-        private static readonly uint[] PrimesTable = {2, 3, 5, 7, 11, 13, 17, 19, 23};
-        private static readonly uint[] PrimesSums = {0, 2, 5, 10, 17, 28, 41, 58, 77};
-        private static readonly float[] PrimesInv = {1f / 2, 1f / 3, 1f / 5, 1f / 7, 1f / 11, 1f / 13, 1f / 17, 1f / 19, 1f/23};
+        private static readonly uint[] PrimesTable =
+        {
+            2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103,
+            107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173
+        };
+
+        private static readonly uint[] PrimesSums;
+        private static readonly float[] PrimesInv;
+
+        static QuasiRandom()
+        {
+            PrimesSums = new uint[PrimesTable.Length];
+            PrimesInv = new float[PrimesTable.Length];
+
+            var prior = 0u;
+            var current = 0u;
+            for (var i = 0; i < PrimesTable.Length; ++i)
+            {
+                prior += current;
+                PrimesSums[i] = prior;
+
+                current = PrimesTable[i];
+                PrimesInv[i] = 1f / current;
+            }
+        }
+
+        //private static readonly uint[] PrimesSums =
+        //    {0, 2, 5, 10, 17, 28, 41, 58, 77, 100, 129, 160, 197, 238, 281, 328, 381};
+
+        //private static readonly float[] PrimesInv =
+        //{
+        //    1f / 2, 1f / 3, 1f / 5, 1f / 7, 1f / 11, 1f / 13, 1f / 17, 1f / 19, 1f / 23, 1f / 29, 1f / 31, 1f / 37,
+        //    1f / 41, 1f / 43, 1f / 47, 1f / 53, 1f / 59
+        //};
 
         public static ushort[] ComputeRadicalInversePermutations(Random rand)
         {
@@ -120,7 +151,7 @@ namespace Octans.Sampling
             }
 
             return System.MathF.Min(invBaseN * (reversedDigits + invBase * permutations[0] / (1 - invBase)),
-                             MathF.OneMinusEpsilon);
+                                    MathF.OneMinusEpsilon);
         }
     }
 }

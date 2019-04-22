@@ -37,9 +37,19 @@ namespace Octans.Reflection
 
         public Spectrum SampleF(in Vector wo,
                                 ref Vector wi,
-                                in Point2D sample,
+                                in Point2D u,
                                 out float pdf,
-                                BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
+                                BxDFType sampleType = BxDFType.None)
+        {
+            wi = Sampling.Utilities.CosineSampleHemisphere(u);
+            if (wo.Z < 0f)
+            {
+                wi = new Vector(wi.X, wi.Y, -wi.Z);
+            }
+
+            pdf = Pdf(wo, wi);
+            return F(wo, wi);
+        }
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
@@ -47,7 +57,7 @@ namespace Octans.Reflection
             Utilities.Rho(this, nSamples, in u1, in u2);
 
         public float Pdf(in Vector wo, in Vector wi) =>
-            Utilities.IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
+            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
 
         public OrenNayar Initialize(in Spectrum r, float sigma)
         {

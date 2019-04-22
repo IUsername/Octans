@@ -17,7 +17,7 @@
 
         public float G(in Vector wo, in Vector wi) => 1f / (1f + Lambda(in wo) + Lambda(in wi));
 
-        public abstract Vector SampleWh(in Vector wo, in Vector wi);
+        public abstract Vector SampleWh(in Vector wo, in Point2D u);
 
         public abstract float Pdf(in Vector wo, in Vector wh);
     }

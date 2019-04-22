@@ -54,7 +54,7 @@ namespace Octans.Accelerator
         }
 
         public IMaterial Material { get; }
-        public AreaLight AreaLight { get; }
+        public IAreaLight AreaLight { get; }
 
         public void ComputeScatteringFunctions(SurfaceInteraction surfaceInteraction,
                                                IObjectArena arena,

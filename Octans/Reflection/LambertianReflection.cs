@@ -17,13 +17,23 @@ namespace Octans.Reflection
 
         public Spectrum F(in Vector wo, in Vector wi) => R * InvPi;
 
-        public Spectrum SampleF(in Vector wo, ref Vector wi, in Point2D sample, out float pdf, BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
+        public Spectrum SampleF(in Vector wo, ref Vector wi, in Point2D u, out float pdf, BxDFType sampleType = BxDFType.None)
+        {
+            wi = Sampling.Utilities.CosineSampleHemisphere(u);
+            if (wo.Z < 0f)
+            {
+                wi = new Vector(wi.X, wi.Y, -wi.Z);
+            }
+
+            pdf = Pdf(wo, wi);
+            return F(wo, wi);
+        }
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => R;
 
         public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => R;
 
         public float Pdf(in Vector wo, in Vector wi) =>
-            Utilities.IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0f;
+            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0f;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Octans.Sampling;
+using static System.MathF;
 
 namespace Octans.Integrator
 {
@@ -19,10 +20,10 @@ namespace Octans.Integrator
                                        int depth = 0)
         {
             var cr = ray;
+            var L = Spectrum.Zero;
+            var si = new SurfaceInteraction();
             while (true)
             {
-                var L = Spectrum.Zero;
-                var si = new SurfaceInteraction();
                 if (!scene.Intersect(cr, ref si))
                 {
                     foreach (var light in scene.Lights)
@@ -56,7 +57,7 @@ namespace Octans.Integrator
                     var f = si.BSDF.F(in wo, in wi);
                     if (!f.IsBlack() && visibility.Unoccluded(scene))
                     {
-                        L += f * Li * Vector.AbsDot(n, wi) / pdf;
+                        L += f * Li * Abs(wi % n) / pdf;
                     }
                 }
 
@@ -70,7 +71,7 @@ namespace Octans.Integrator
             }
         }
 
-        protected override void Preprocess(in Scene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler2 sampler)
         {
         }
     }

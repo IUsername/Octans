@@ -10,7 +10,7 @@
 
         Spectrum SampleF(in Vector wo,
                          ref Vector wi,
-                         in Point2D sample,
+                         in Point2D u,
                          out float pdf,
                          BxDFType sampleType = BxDFType.None);
 

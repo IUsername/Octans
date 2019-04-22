@@ -5,7 +5,7 @@ using static Octans.MathF;
 
 namespace Octans
 {
-    public class SpectralInformation 
+    public class SpectralInformation
     {
         public int Samples => 60;
         public int SampledLambdaEnd => 700;
@@ -28,20 +28,114 @@ namespace Octans
 
             return (x, y, z);
         }
-
+      
         public float[] GetRGBSpectrum(float[] rgbSpace)
         {
             var n = CIE_Data.RGB2SpectLambda.Length;
             var c = new float[Samples];
             for (var i = 0; i < Samples; i++)
             {
-                var wl0 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float)i / Samples);
-                var wl1 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float)(i + 1) / Samples);
+                var wl0 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float) i / Samples);
+                var wl1 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float) (i + 1) / Samples);
                 c[i] = AverageSpectrumSamples(CIE_Data.RGB2SpectLambda, rgbSpace, n, wl0, wl1);
             }
+
             return c;
         }
-        
+
+        public float[] FromSampled(float[] lambda, float[] v)
+        {
+            if (!SpectrumSamplesSorted(lambda))
+            {
+                SortSpectrumSamples(lambda, v);
+                return FromSampled(lambda, v);
+            }
+
+            var n = lambda.Length;
+            var r = new float[Samples];
+            for (var i = 0; i < Samples; ++i)
+            {
+                var wl0 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float)i / Samples);
+                var wl1 = Lerp(SampledLambdaStart, SampledLambdaEnd, (float)(i + 1) / Samples);
+                r[i] = AverageSpectrumSamples(lambda, v, n, wl0, wl1);
+            }
+
+            return r;
+        }
+
+        public float[] FromBlackbodyT(float T)
+        {
+            var v = GetLe(T);
+            return FromSampled(CIE_Data.CIE_lambda, v);
+        }
+
+        private static void SortSpectrumSamples(float[] lambda, float[] v)
+        {
+            if (lambda.Length != v.Length)
+            {
+                throw new InvalidOperationException("Lambda and value arrays must be the same length.");
+            }
+            Array.Sort(v, lambda);
+            Array.Sort(lambda);
+        }
+
+        private static bool SpectrumSamplesSorted(float[] lambda)
+        {
+            for (var i = 0; i < lambda.Length - 1; ++i)
+            {
+                if (lambda[i] > lambda[i + 1]) return false;
+            }
+
+            return true;
+        }
+
+        public float[] GetLe(float T)
+        {
+            BlackbodyNormalized(CIE_Data.CIE_lambda, T, out var Le);
+            return Le;
+        }
+
+        private static void Blackbody(float[] lambda, float T, out float[] Le)
+        {
+            var n = lambda.Length;
+            Le = new float[n];
+            if (T <= 0f)
+            {
+                for (var i = 0; i < n; ++i)
+                {
+                    Le[i] = 0f;
+                }
+
+                return;
+            }
+
+            const float c = 299792458f;
+            const float h = 6.62606957e-34f;
+            const float kb = 1.3806488e-23f;
+
+            for (var i = 0; i < n; ++i)
+            {
+                var l = lambda[i] * 1e-9f;
+                var lambda5 = (l * l) * (l * l) * l;
+                var a = 2f * h * c * c;
+                var e = Exp((h * c) / (l * kb * T));
+                var b = lambda5 *( e - 1f);
+                Le[i] = a / b;
+            }
+        }
+
+        private static void BlackbodyNormalized(float[] lambda, float T, out float[] Le)
+        {
+            Blackbody(lambda, T, out Le);
+            var lambdaMax = 2.8977721e-3f / T * 1e9f;
+            Blackbody(new[] {lambdaMax}, T, out var maxL);
+            var m = maxL[0];
+            for (var i = 0; i < Le.Length; ++i)
+            {
+                Le[i] /= m;
+            }
+        }
+
         private static float AverageSpectrumSamples(
             IReadOnlyList<float> lambda,
             IReadOnlyList<float> values,

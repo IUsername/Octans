@@ -1,25 +1,27 @@
-﻿using Octans.Light;
-
-namespace Octans.Primitive
+﻿namespace Octans.Primitive
 {
     public class GeometricPrimitive : IPrimitive
     {
-        public IShape Shape { get; }
-        public IMaterial Material { get; }
-        public AreaLight AreaLight { get; }
-
-        public GeometricPrimitive(IShape shape, IMaterial material, AreaLight areaLight)
+        public GeometricPrimitive(IShape shape, IMaterial material, IAreaLight areaLight)
         {
             Shape = shape;
             Material = material;
             AreaLight = areaLight;
         }
 
+        public IShape Shape { get; }
+        public IMaterial Material { get; }
+        public IAreaLight AreaLight { get; }
+
         public Bounds WorldBounds => Shape.WorldBounds;
 
         public bool Intersect(ref Ray r, ref SurfaceInteraction si)
         {
-            if (!Shape.Intersect(in r, out var tHit, ref si)) return false;
+            if (!Shape.Intersect(in r, out var tHit, ref si))
+            {
+                return false;
+            }
+
             r.TMax = tHit;
             si.Primitive = this;
             // TODO: Handle medium.
@@ -27,7 +29,7 @@ namespace Octans.Primitive
         }
 
         public bool IntersectP(ref Ray r) => Shape.IntersectP(r);
-      
+
 
         public void ComputeScatteringFunctions(SurfaceInteraction surfaceInteraction,
                                                IObjectArena arena,

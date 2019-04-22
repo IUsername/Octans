@@ -1,5 +1,4 @@
-﻿using System;
-using Octans.Reflection.Microfacet;
+﻿using Octans.Reflection.Microfacet;
 using static Octans.MathF;
 
 namespace Octans.Reflection
@@ -33,14 +32,34 @@ namespace Octans.Reflection
 
             wh = wh.Normalize();
             var F = Fresnel.Evaluate(wi % wh);
-            return R * Distribution.D(in wh) * Distribution.G(in wo, in wi) * F / (4f * cosThetaI * cosThetaO);
+            var D = Distribution.D(in wh);
+            var G = Distribution.G(in wo, in wi);
+            return R * D * G * F / (4f * cosThetaI * cosThetaO);
         }
 
         public Spectrum SampleF(in Vector wo,
                                 ref Vector wi,
-                                in Point2D sample,
+                                in Point2D u,
                                 out float pdf,
-                                BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
+                                BxDFType sampleType = BxDFType.None)
+        {
+            if (wo.Z == 0f)
+            {
+                pdf = 0f;
+                return Spectrum.Zero;
+            }
+
+            var wh = Distribution.SampleWh(wo, u);
+            wi = Reflect(wo, wh);
+            if (!IsInSameHemisphere(wo, wi))
+            {
+                pdf = 0f;
+                return Spectrum.Zero;
+            }
+
+            pdf = Distribution.Pdf(wo, wh) / (4f * wo % wh);
+            return F(wo, wi);
+        }
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
@@ -49,7 +68,7 @@ namespace Octans.Reflection
 
         public float Pdf(in Vector wo, in Vector wi)
         {
-            if (!Utilities.IsInSameHemisphere(wo, wi))
+            if (!IsInSameHemisphere(wo, wi))
             {
                 return 0f;
             }

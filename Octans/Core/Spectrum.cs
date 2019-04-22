@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Numerics;
 using static System.MathF;
 using static System.Numerics.Vector;
@@ -650,6 +651,13 @@ namespace Octans
             }
 
             return r.Clamp();
+        }
+
+        [Pure]
+        public static Spectrum FromBlackbodyT(float T)
+        {
+            var spectral = new SpectralInformation();
+            return new Spectrum(spectral.FromBlackbodyT(T));
         }
 
         [Pure]

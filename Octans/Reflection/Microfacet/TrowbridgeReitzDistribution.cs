@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using static System.MathF;
 using static System.Single;
 using static Octans.MathF;
@@ -52,12 +51,68 @@ namespace Octans.Reflection.Microfacet
 
             var alpha = Sqrt(Cos2Phi(in w) * _alphaX * _alphaX + Sin2Phi(in w) * _alphaY * _alphaY);
             var alpha2Tan2Theta = alpha * absTanTheta * (alpha * absTanTheta);
-            return -1f * Sqrt(1f + alpha2Tan2Theta) / 2f;
+            return (-1f + Sqrt(1f + alpha2Tan2Theta)) / 2f;
         }
 
-        public override Vector SampleWh(in Vector wo, in Vector wi) => throw new NotImplementedException();
+        public override Vector SampleWh(in Vector wo, in Point2D u)
+        {
+            if (!SampleVisibleArea)
+            {
+                float cosTheta;
+                float phi = (2f * PI) * u[1];
+                if (_alphaX == _alphaY)
+                {
+                    var tan2Theta = -_alphaX * _alphaY * u[0] / (1f - u[0]);
+                    cosTheta = 1f / Sqrt(1f + tan2Theta);
+                }
+                else
+                {
+                    phi = Atan(_alphaY / _alphaX * Tan(2f * PI * u[1] + 0.5f * PI));
+                    if (u[1] > 0.5f)
+                    {
+                        phi += PI;
+                    }
 
-        public override float Pdf(in Vector wo, in Vector wh) => throw new NotImplementedException();
+                    var sinPhi = Sin(phi);
+                    var cosPhi = Cos(phi);
+                    var alphaX2 = _alphaX * _alphaX;
+                    var alphaY2 = _alphaY * _alphaY;
+                    var alpha2 = 1f / (cosPhi * cosPhi / alphaX2 + sinPhi * sinPhi / alphaY2);
+                    var tan2Theta = alpha2 * u[0] / (1f - u[0]);
+                    cosTheta = 1f / Sqrt(1f + tan2Theta);
+                }
+
+                var sinTheta = Sqrt(Max(0f, 1f - cosTheta * cosTheta));
+                var wh = SphericalDirection(sinTheta, cosTheta, phi);
+                if (!IsInSameHemisphere(wo, wh))
+                {
+                    wh = -wh;
+                }
+
+                return wh;
+            }
+            else
+            {
+                var flip = wo.Z < 0f;
+                var wh = Sampling.TrowbridgeReitzSample(flip ? -wo : wo, _alphaX, _alphaY, u[0], u[1]);
+                if (flip)
+                {
+                    wh = -wh;
+                }
+
+                return wh;
+            }
+        }
+
+        public override float Pdf(in Vector wo, in Vector wh)
+        {
+            if (SampleVisibleArea)
+            {
+                return D(in wh) * G1(in wo) * AbsDot(wo, wh) / AbsCosTheta(wo);
+            }
+
+            return D(wh) * AbsCosTheta(wh);
+        }
 
         [Pure]
         public static float RoughnessToAlpha(in float roughness) => Utilities.RoughnessToAlpha(roughness);

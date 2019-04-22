@@ -44,7 +44,7 @@ namespace Octans.Reflection
 
         public Spectrum SampleF(in Vector wo,
                                 ref Vector wi,
-                                in Point2D sample,
+                                in Point2D u,
                                 out float pdf,
                                 BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
 
@@ -55,7 +55,7 @@ namespace Octans.Reflection
 
         public float Pdf(in Vector wo, in Vector wi)
         {
-            if (!Utilities.IsInSameHemisphere(wo, wi)) return 0f;
+            if (!IsInSameHemisphere(wo, wi)) return 0f;
             var wh = (wo + wi).Normalize();
             var pdf_wh = Distribution.Pdf(wo, wh);
             return 0.5f * (AbsCosTheta(wi) * InvPi + pdf_wh / (4f * wo % wh));

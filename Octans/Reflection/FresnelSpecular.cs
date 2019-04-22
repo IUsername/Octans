@@ -5,16 +5,12 @@ namespace Octans.Reflection
 {
     public class FresnelSpecular : IBxDF
     {
-        private readonly float _etaA;
-        private readonly float _etaB;
         private readonly FresnelDielectric _fresnel = new FresnelDielectric();
 
         public FresnelSpecular(in Spectrum r, in Spectrum t, float etaA, float etaB, TransportMode mode)
         {
             R = r;
             T = t;
-            _etaA = etaA;
-            _etaB = etaB;
             Mode = mode;
             _fresnel.Initialize(etaA, etaB);
         }
@@ -29,7 +25,7 @@ namespace Octans.Reflection
 
         public Spectrum SampleF(in Vector wo,
                                 ref Vector wi,
-                                in Point2D sample,
+                                in Point2D u,
                                 out float pdf,
                                 BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
 
@@ -38,6 +34,6 @@ namespace Octans.Reflection
         public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
 
         public float Pdf(in Vector wo, in Vector wi) =>
-            Utilities.IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0f;
+            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0f;
     }
 }
