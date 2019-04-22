@@ -11,11 +11,11 @@ namespace Octans
     {
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsFlagged(this ILight light, LightType type) => light.Type == type;
+        public static bool IsFlagged(this ILight2 light, LightType type) => light.Type == type;
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsDeltaLight(this ILight light) =>
+        public static bool IsDeltaLight(this ILight2 light) =>
             light.Type == LightType.DeltaPosition ||
             light.Type == LightType.DeltaDirection;
 

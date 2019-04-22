@@ -5,16 +5,6 @@ namespace Octans.Reflection
 {
     public class OrenNayar : IBxDF
     {
-        public OrenNayar Initialize(in Spectrum r, float sigma)
-        {
-            R = r;
-            sigma = Rad(sigma);
-            var sigma2 = sigma * sigma;
-            A = 1f - sigma2 / (2f * (sigma2 + 0.33f));
-            B = 0.45f * sigma2 / (sigma2 + 0.09f);
-            return this;
-        }
-
         public Spectrum R { get; private set; }
 
         public float B { get; private set; }
@@ -53,6 +43,20 @@ namespace Octans.Reflection
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) =>
+            Utilities.Rho(this, nSamples, in u1, in u2);
+
+        public float Pdf(in Vector wo, in Vector wi) =>
+            Utilities.IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
+
+        public OrenNayar Initialize(in Spectrum r, float sigma)
+        {
+            R = r;
+            sigma = Rad(sigma);
+            var sigma2 = sigma * sigma;
+            A = 1f - sigma2 / (2f * (sigma2 + 0.33f));
+            B = 0.45f * sigma2 / (sigma2 + 0.09f);
+            return this;
+        }
     }
 }

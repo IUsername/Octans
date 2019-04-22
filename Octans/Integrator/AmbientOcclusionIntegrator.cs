@@ -23,7 +23,7 @@ namespace Octans.Integrator
         public bool CosSample { get; }
         public int NSamples { get; }
 
-        protected override Spectrum Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena)
+        protected override Spectrum Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
         {
             var L = Spectrum.Zero;
             var r =  ray;

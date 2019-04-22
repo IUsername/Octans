@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Octans.Memory;
+using Octans.Reflection;
 using Octans.Sampling;
 using static System.Math;
 using static System.MathF;
@@ -130,8 +131,108 @@ namespace Octans.Integrator
             camera.Film.MergeFilmTile(filmTile);
         }
 
-        protected abstract Spectrum Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena);
+        protected abstract Spectrum Li(in RayDifferential ray,
+                                       IScene scene,
+                                       ISampler2 tileSampler,
+                                       IObjectArena arena,
+                                       int depth = 0);
 
         protected abstract void Preprocess(in Scene scene, ISampler2 sampler);
+
+        protected Spectrum SpecularReflect(RayDifferential ray,
+                                        SurfaceInteraction si,
+                                        IScene scene,
+                                        ISampler2 sampler,
+                                        IObjectArena arena,
+                                        in int depth)
+        {
+            var wo = si.Wo;
+            var type = BxDFType.Reflection | BxDFType.Specular;
+            var f = si.BSDF.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf, type, out var sampledType);
+
+            var ns = si.ShadingGeometry.N;
+            if (pdf > 0f && !f.IsBlack() && Vector.AbsDot(ns, wi) != 0f)
+            {
+                var rd = new RayDifferential(si.SpawnRay(wi));
+                if (ray.HasDifferentials)
+                {
+                    rd.HasDifferentials = true;
+                    rd.RxOrigin = si.P + si.Dpdx;
+                    rd.RyOrigin = si.P + si.Dpdy;
+
+                    var dndx = si.ShadingGeometry.Dndu * si.Dudx +
+                               si.ShadingGeometry.Dndv * si.Dvdx;
+                    var dndy = si.ShadingGeometry.Dndu * si.Dudy +
+                               si.ShadingGeometry.Dndv * si.Dvdy;
+                    var dwodx = -ray.RxDirection - wo;
+                    var dwody = -ray.RyDirection - wo;
+                    var dDNdx = dwodx % ns + wo % dndx;
+                    var dDNdy = dwody % ns + wo % dndy;
+
+                    rd.RxDirection = wi - dwodx + 2f * (Vector)(wo % ns * dndx + dDNdx * ns);
+                    rd.RyDirection = wi - dwody + 2f * (Vector)(wo % ns * dndy + dDNdy * ns);
+                }
+
+                return f * Li(rd, scene, sampler, arena, depth + 1) * Vector.AbsDot(ns, wi) / pdf;
+            }
+
+            return Spectrum.Zero;
+        }
+
+        protected Spectrum SpecularTransmit(in RayDifferential ray,
+                                          SurfaceInteraction si,
+                                          IScene scene,
+                                          ISampler2 sampler,
+                                          IObjectArena arena,
+                                          in int depth)
+        {
+            var wo = si.Wo;
+            var p = si.P;
+            var bsdf = si.BSDF;
+            var f = bsdf.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf,
+                                  BxDFType.Transmission | BxDFType.Specular, out var sampledType);
+            var L = Spectrum.Zero;
+            var ns = si.ShadingGeometry.N;
+            if (pdf > 0f && !f.IsBlack() && Vector.AbsDot(wi, ns) != 0f)
+            {
+                var rd = new RayDifferential(si.SpawnRay(wi));
+                if (ray.HasDifferentials)
+                {
+                    rd.HasDifferentials = true;
+                    rd.RxOrigin = p + si.Dpdx;
+                    rd.RyOrigin = p + si.Dpdy;
+
+                    var dndx = si.ShadingGeometry.Dndu * si.Dudx +
+                               si.ShadingGeometry.Dndv * si.Dvdx;
+                    var dndy = si.ShadingGeometry.Dndu * si.Dudy +
+                               si.ShadingGeometry.Dndv * si.Dvdy;
+
+                    var eta = 1f / bsdf.Eta;
+                    if (wo % ns < 0f)
+                    {
+                        eta = 1f / eta;
+                        ns = -ns;
+                        dndx = -dndx;
+                        dndy = -dndy;
+                    }
+
+                    var dwodx = -ray.RxDirection - wo;
+                    var dwody = -ray.RyDirection - wo;
+                    var dDNdx = dwodx % ns + wo % dndx;
+                    var dDNdy = dwody % ns + wo % dndy;
+
+                    var mu = eta * wo % ns - Vector.AbsDot(wi, ns);
+                    var dmudx = (eta - eta * eta * wo % ns) / Vector.AbsDot(wi, ns) * dDNdx;
+                    var dmudy = (eta - eta * eta * wo % ns) / Vector.AbsDot(wi, ns) * dDNdy;
+
+                    rd.RxDirection = wi - eta * dwodx + (Vector)(mu * dndx + dmudx * ns);
+                    rd.RyDirection = wi - eta * dwody + (Vector)(mu * dndy + dmudy * ns);
+                }
+
+                L = f * Li(rd, scene, sampler, arena, depth + 1) * Vector.AbsDot(wi, ns) / pdf;
+            }
+
+            return L;
+        }
     }
 }

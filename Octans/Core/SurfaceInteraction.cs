@@ -118,7 +118,7 @@ namespace Octans
 
         public void ComputeScatteringFunctions(in RayDifferential r,
                                                IObjectArena arena,
-                                               bool allowMultipleLobes,
+                                               bool allowMultipleLobes = true,
                                                TransportMode mode = TransportMode.Radiance)
         {
             ComputeDifferentials(in r);
@@ -261,6 +261,13 @@ namespace Octans
 
         public bool IsSurfaceInteraction => !Wo.Equals(Vectors.Zero);
 
+        public Interaction() { }
+
+        public Interaction(in Point p)
+        {
+            P = p;
+        }
+
         public Interaction Initialize(in Point p, in Normal n, in Vector pError, in Vector wo)
         {
             P = p;
@@ -274,6 +281,14 @@ namespace Octans
         {
             var o = OffsetRayOrigin(P, PError, N, in d);
             return new Ray(o, d);
+        }
+
+        public Ray SpawnRayTo(Interaction it)
+        {
+            var o = OffsetRayOrigin(P, PError, N, it.P - P);
+            var t = OffsetRayOrigin(it.P, it.PError, it.N, o - it.P);
+            var d = t - o;
+            return new Ray(o, d, 1 - MathF.ShadowEpsilon);
         }
     }
 }

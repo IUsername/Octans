@@ -6,15 +6,15 @@ namespace Octans
     public class Scene : IScene
     {
         public IPrimitive Aggregate { get; }
-        public ILight[] InfiniteLights { get; }
-        public ILight[] Lights { get; }
+        public ILight2[] InfiniteLights { get; }
+        public ILight2[] Lights { get; }
 
-        public Scene(IPrimitive aggregate, in ILight[] lights)
+        public Scene(IPrimitive aggregate, in ILight2[] lights)
         {
             Aggregate = aggregate;
             Lights = lights;
             WorldBounds = aggregate.WorldBounds;
-            var infinite = new List<ILight>();
+            var infinite = new List<ILight2>();
             foreach (var light in lights)
             {
                 light.Preprocess(this);

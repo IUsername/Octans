@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using static System.MathF;
+using static Octans.MathF;
 
 namespace Octans.Reflection
 {
@@ -9,9 +11,26 @@ namespace Octans.Reflection
     {
         private const int MaxBxDFs = 8;
         private readonly IBxDF[] _bxdf = new IBxDF[MaxBxDFs];
+        private int _nBxDFs;
         private Normal _ng, _ns;
         private Vector _ss, _ts;
-        private int _nBxDFs;
+
+        public float Eta { get; private set; }
+
+        IBxDF IBxDFCollection.this[int index] => index < _nBxDFs ? _bxdf[index] : null;
+
+        void IBxDFCollection.Set(in IBxDF bxdf, int index)
+        {
+            if (index < _nBxDFs)
+            {
+                _bxdf[index] = bxdf;
+            }
+            else
+            {
+                throw new IndexOutOfRangeException(
+                    "The index must have been previously allocated before using the Add method.");
+            }
+        }
 
         public BSDF Initialize(in SurfaceInteraction si, float eta = 1f)
         {
@@ -25,30 +44,15 @@ namespace Octans.Reflection
             {
                 _bxdf[i] = si.BSDF._bxdf[i];
             }
+
             //si.BSDF = this;
             return this;
         }
-
-        IBxDF IBxDFCollection.this[int index] => (index < _nBxDFs) ? _bxdf[index] : null;
-
-        public float Eta { get; private set; }
 
         public void Add(in IBxDF bxdf)
         {
             Debug.Assert(_nBxDFs < MaxBxDFs, $"BSDF can only hold {MaxBxDFs} BxDFs.");
             _bxdf[_nBxDFs++] = bxdf;
-        }
-
-        void IBxDFCollection.Set(in IBxDF bxdf, int index)
-        {
-            if (index < _nBxDFs)
-            {
-                _bxdf[index] = bxdf;
-            }
-            else
-            {
-                throw new IndexOutOfRangeException("The index must have been previously allocated before using the Add method.");
-            }
         }
 
         [Pure]
@@ -67,7 +71,7 @@ namespace Octans.Reflection
         }
 
         [Pure]
-        public Spectrum F(in Vector woW, in Vector wiW, BxDFType flags)
+        public Spectrum F(in Vector woW, in Vector wiW, BxDFType flags = BxDFType.All)
         {
             var wi = WorldToLocal(in wiW);
             var wo = WorldToLocal(in woW);
@@ -130,5 +134,91 @@ namespace Octans.Reflection
                 _ss.X * v.X + _ts.X * v.Y + _ns.X * v.Z,
                 _ss.Y * v.X + _ts.Y * v.Y + _ns.Y * v.Z,
                 _ss.Z * v.X + _ts.Z * v.Y + _ns.Z * v.Z);
+
+        public Spectrum Sample_F(in Vector woWorld,
+                                 out Vector wiWorld,
+                                 Point2D u,
+                                 out float pdf,
+                                 in BxDFType type,
+                                 out BxDFType sampledType)
+        {
+            var matching = NumberOfComponents(type);
+            if (matching == 0)
+            {
+                pdf = 0f;
+                wiWorld = Vectors.Zero;
+                sampledType = BxDFType.None;
+                return Spectrum.Zero;
+            }
+
+            var comp = Math.Min((int) Floor(u[0] * matching), matching - 1);
+
+            IBxDF bxdf = null;
+            var count = comp;
+            for (var i = 0; i < _nBxDFs; ++i)
+            {
+                if (_bxdf[i].IsFlagged(type) && count-- == 0)
+                {
+                    bxdf = _bxdf[i];
+                    break;
+                }
+            }
+
+            var uRemapped = new Point2D(Min(u[0] * matching - comp, OneMinusEpsilon), u[1]);
+            var wo = WorldToLocal(woWorld);
+            if (wo.Z == 0f || bxdf is null)
+            {
+                pdf = 0;
+                wiWorld = Vectors.Zero;
+                sampledType = BxDFType.None;
+                return Spectrum.Zero;
+            }
+
+            sampledType = bxdf.Type;
+            var wi = new Vector();
+            var f = bxdf.SampleF(wo, ref wi, uRemapped, out pdf, sampledType);
+            if (pdf == 0f)
+            {
+                pdf = 0;
+                wiWorld = Vectors.Zero;
+                sampledType = BxDFType.None;
+                return Spectrum.Zero;
+            }
+
+            wiWorld = LocalToWorld(wi);
+
+            if (!bxdf.IsFlagged(BxDFType.Specular) && matching > 1)
+            {
+                for (var i = 0; i < _nBxDFs; ++i)
+                {
+                    if (_bxdf[i] != bxdf && _bxdf[i].IsFlagged(type))
+                    {
+                        pdf += _bxdf[i].Pdf(wo, wi);
+                    }
+                }
+            }
+
+            if (matching > 1)
+            {
+                pdf /= matching;
+            }
+
+            if (!bxdf.IsFlagged(BxDFType.Specular))
+            {
+                var reflect = wiWorld % _ng * woWorld % _ng > 0f;
+                f = Spectrum.Zero;
+                for (var i = 0; i < _nBxDFs; ++i)
+                {
+                    if (_bxdf[i].IsFlagged(type) &&
+                        (reflect && _bxdf[i].IsFlagged(BxDFType.Reflection) ||
+                         !reflect && _bxdf[i].IsFlagged(BxDFType.Transmission)))
+                    {
+                        f += _bxdf[i].F(wo, wi);
+                    }
+                }
+            }
+
+            return f;
+        }
     }
 }

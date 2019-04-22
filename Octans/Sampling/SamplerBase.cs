@@ -15,6 +15,8 @@ namespace Octans.Sampling
         void Request2DArray(int n);
         Point2D[] Get2DArray(int n);
         long SamplesPerPixel { get; }
+        Point2D Get2D();
+        float Get1D();
     }
 
     public abstract class SamplerBase : ISampler2

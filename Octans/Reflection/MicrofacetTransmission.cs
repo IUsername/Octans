@@ -75,5 +75,19 @@ namespace Octans.Reflection
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
         public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+        public float Pdf(in Vector wo, in Vector wi)
+        {
+            if (Utilities.IsInSameHemisphere(wo, wi))
+            {
+                return 0f;
+            }
+
+            var eta = CosTheta(wo) > 0f ? (_etaB / _etaA) : (_etaA / _etaB);
+            var wh = (wo + wi * eta).Normalize();
+
+            var sqrtDenom = wo % wh + eta * wi % wh;
+            var dwh_dwi = Abs((eta * eta * wi % wh)) / (sqrtDenom * sqrtDenom);
+            return Distribution.Pdf(wo, wh) * dwh_dwi;
+        }
     }
 }

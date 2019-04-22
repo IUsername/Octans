@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics.Contracts;
+using System.Numerics;
 using static System.MathF;
 using static Octans.MathF;
 
@@ -6,6 +7,7 @@ namespace Octans.Sampling
 {
     public static class Utilities
     {
+        [Pure]
         public static Vector UniformSampleHemisphere(in Point2D u)
         {
             var z = u[0];
@@ -14,8 +16,10 @@ namespace Octans.Sampling
             return new Vector(r * Cos(phi), r * Sin(phi), z);
         }
 
+        [Pure]
         public static float UniformHemispherePdf() => Inv2Pi;
 
+        [Pure]
         public static Vector CosineSampleHemisphere(in Point2D p)
         {
             var d = ConcentricSampleDisk(p);
@@ -23,11 +27,15 @@ namespace Octans.Sampling
             return new Vector(d.X, d.Y, z);
         }
 
+        [Pure]
         public static Point2D ConcentricSampleDisk(in Point2D u)
         {
             var uOffset = 2f * u - new Vector2(1f, 1f);
 
-            if (uOffset.X == 0f && uOffset.Y == 0f) return new Point2D(0f, 0f);
+            if (uOffset.X == 0f && uOffset.Y == 0f)
+            {
+                return new Point2D(0f, 0f);
+            }
 
             float theta, r;
             if (Abs(uOffset.X) > Abs(uOffset.Y))
@@ -44,6 +52,19 @@ namespace Octans.Sampling
             return r * new Point2D(Cos(theta), Sin(theta));
         }
 
+        [Pure]
         public static float CosineHemispherePdf(float cosTheta) => cosTheta * InvPi;
+
+        [Pure]
+        public static float UniformSpherePdf() => Inv4Pi;
+
+        [Pure]
+        public static Vector UniformSampleSphere(in Point2D u)
+        {
+            var z = 1f - 2f * u[0];
+            var r = Sqrt(Max(0f, 1f - z * z));
+            var phi = 2f * PI * u[1];
+            return new Vector(r * Cos(phi), r * Sin(phi), z);
+        }
     }
 }

@@ -45,7 +45,7 @@ namespace Octans.ConsoleApp
             //                                                film.CroppedBounds);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "int"));
-            var scene = new Scene(w, new ILight[0]);
+            var scene = new Scene(w, new ILight2[0]);
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();

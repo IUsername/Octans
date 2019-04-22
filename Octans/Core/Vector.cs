@@ -127,7 +127,17 @@ namespace Octans
             FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
 
         [Pure]
+        public static float Dot(in Vector a, in Normal b) =>
+            FusedMultiplyAdd(a.X, b.X, FusedMultiplyAdd(a.Y, b.Y, a.Z * b.Z));
+
+        [Pure]
         public static float AbsDot(in Vector a, in Vector b) => System.MathF.Abs(Dot(in a, in b));
+
+        [Pure]
+        public static float AbsDot(in Normal a, in Vector b) => System.MathF.Abs(Dot(in a, in b));
+
+        [Pure]
+        public static float AbsDot(in Vector a, in Normal b) => System.MathF.Abs(Dot(in a, in b));
 
         [Pure]
         public static Vector Cross(in Vector a, in Vector b)

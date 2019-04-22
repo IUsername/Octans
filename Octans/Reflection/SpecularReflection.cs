@@ -32,5 +32,8 @@ namespace Octans.Reflection
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
         public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+
+        public float Pdf(in Vector wo, in Vector wi) =>
+            Utilities.IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
     }
 }

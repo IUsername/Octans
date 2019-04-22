@@ -6,14 +6,6 @@ namespace Octans.Reflection
 {
     public sealed class MicrofacetReflection : IBxDF
     {
-        public MicrofacetReflection Initialize(in Spectrum r, IMicrofacetDistribution distribution, IFresnel fresnel)
-        {
-            R = r;
-            Distribution = distribution;
-            Fresnel = fresnel;
-            return this;
-        }
-
         public Spectrum R { get; private set; }
         public IMicrofacetDistribution Distribution { get; private set; }
         public IFresnel Fresnel { get; private set; }
@@ -52,6 +44,26 @@ namespace Octans.Reflection
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) =>
+            Utilities.Rho(this, nSamples, in u1, in u2);
+
+        public float Pdf(in Vector wo, in Vector wi)
+        {
+            if (!Utilities.IsInSameHemisphere(wo, wi))
+            {
+                return 0f;
+            }
+
+            var wh = (wo + wi).Normalize();
+            return Distribution.Pdf(wo, wi) / (4f * wo % wh);
+        }
+
+        public MicrofacetReflection Initialize(in Spectrum r, IMicrofacetDistribution distribution, IFresnel fresnel)
+        {
+            R = r;
+            Distribution = distribution;
+            Fresnel = fresnel;
+            return this;
+        }
     }
 }

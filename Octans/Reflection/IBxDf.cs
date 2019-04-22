@@ -17,5 +17,6 @@
         Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u);
 
         Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2);
+        float Pdf(in Vector wo, in Vector wi);
     }
 }

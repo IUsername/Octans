@@ -22,6 +22,8 @@ namespace Octans
 
         public static readonly float OneMinusEpsilon = BitDecrement(1f); // 0.99999994F;
 
+        public const float ShadowEpsilon = 0.0001f;
+
         public static readonly float MachineEpsilon;
 
         static MathF()

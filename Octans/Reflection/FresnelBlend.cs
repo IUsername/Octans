@@ -50,7 +50,16 @@ namespace Octans.Reflection
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) =>
+            Utilities.Rho(this, nSamples, in u1, in u2);
+
+        public float Pdf(in Vector wo, in Vector wi)
+        {
+            if (!Utilities.IsInSameHemisphere(wo, wi)) return 0f;
+            var wh = (wo + wi).Normalize();
+            var pdf_wh = Distribution.Pdf(wo, wh);
+            return 0.5f * (AbsCosTheta(wi) * InvPi + pdf_wh / (4f * wo % wh));
+        }
 
         public Spectrum SchlickFresnelFunction(float cosTheta)
         {
