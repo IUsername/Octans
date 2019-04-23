@@ -135,8 +135,8 @@ namespace Octans.Primitive
             var dpdu = new Vector(-PhiMax * pHit.Y, PhiMax * pHit.X, 0f);
             var dpdv = (ThetaMax - ThetaMin) * new Vector(pHit.Z * cosPhi, pHit.Z * sinPhi, -Radius * Sin(theta));
 
-            var d2Pduu = -PhiMax * PhiMax * new Vector(pHit.X, pHit.Y, 0);
-            var d2Pduv = (ThetaMax - ThetaMin) * pHit.Z * PhiMax * new Vector(-sinPhi, cosPhi, 0);
+            var d2Pduu = -PhiMax * PhiMax * new Vector(pHit.X, pHit.Y, 0f);
+            var d2Pduv = (ThetaMax - ThetaMin) * pHit.Z * PhiMax * new Vector(-sinPhi, cosPhi, 0f);
             var d2Pdvv = -(ThetaMax - ThetaMin) * (ThetaMax - ThetaMin) * new Vector(pHit.X, pHit.Y, pHit.Z);
 
             var E = dpdu % dpdu;
@@ -148,8 +148,9 @@ namespace Octans.Primitive
             var g = N % d2Pdvv;
 
             var invEGF2 = 1f / (E * G - F * F);
-            var dndu = (Normal) ((f * F - e * E) * invEGF2 * dpdu +
+            var dndu = (Normal) ((f * F - e * G) * invEGF2 * dpdu +
                                  (e * F - f * E) * invEGF2 * dpdv);
+
             var dndv = (Normal) ((g * F - f * G) * invEGF2 * dpdu +
                                  (f * F - g * E) * invEGF2 * dpdv);
 

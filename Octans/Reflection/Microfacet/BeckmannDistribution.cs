@@ -7,14 +7,25 @@ namespace Octans.Reflection.Microfacet
 {
     public sealed class BeckmannDistribution : MicrofacetDistributionBase
     {
-        private readonly float _alphaX;
-        private readonly float _alphaY;
+        private float _alphaX;
+        private float _alphaY;
 
-        public BeckmannDistribution(float alphaX, float alphaY, bool sampleVisibleArea = true)
+        public BeckmannDistribution(bool sampleVisibleArea = true)
             : base(sampleVisibleArea)
+        {
+        }
+
+        public BeckmannDistribution()
+            : base(true)
+        {
+        }
+
+        public BeckmannDistribution Initialize(float alphaX, float alphaY, bool sampleVisibleArea = true)
         {
             _alphaX = alphaX;
             _alphaY = alphaY;
+            SampleVisibleArea = sampleVisibleArea;
+            return this;
         }
 
         public override float D(in Vector wh)
@@ -100,6 +111,14 @@ namespace Octans.Reflection.Microfacet
             }
         }
 
-        public override float Pdf(in Vector wo, in Vector wh) => throw new NotImplementedException();
+        public override float Pdf(in Vector wo, in Vector wh)
+        {
+            if (SampleVisibleArea)
+            {
+                return D(in wh) * G1(in wo) * AbsDot(wo, wh) / AbsCosTheta(wo);
+            }
+
+            return D(wh) * AbsCosTheta(wh);
+        }
     }
 }

@@ -39,11 +39,12 @@ namespace Octans.Reflection
             _ss = si.ShadingGeometry.Dpdu.Normalize();
             _ts = Vector.Cross(_ns, _ss);
             Eta = eta;
-            _nBxDFs = si.BSDF._nBxDFs;
-            for (var i = 0; i < _nBxDFs; i++)
-            {
-                _bxdf[i] = si.BSDF._bxdf[i];
-            }
+            _nBxDFs = 0;
+            //_nBxDFs = si.BSDF._nBxDFs;
+            //for (var i = 0; i < _nBxDFs; i++)
+            //{
+            //    _bxdf[i] = si.BSDF._bxdf[i];
+            //}
 
             //si.BSDF = this;
             return this;
@@ -75,6 +76,10 @@ namespace Octans.Reflection
         {
             var wi = WorldToLocal(in wiW);
             var wo = WorldToLocal(in woW);
+            if (wo.Z == 0f)
+            {
+                return Spectrum.Zero;
+            }
             var reflect = wiW % _ng * (woW % _ng) > 0f;
             var f = Spectrum.Zero;
             for (var i = 0; i < _nBxDFs; ++i)

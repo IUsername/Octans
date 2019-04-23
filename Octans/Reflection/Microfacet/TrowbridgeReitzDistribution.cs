@@ -37,7 +37,7 @@ namespace Octans.Reflection.Microfacet
             }
 
             var cos4Theta = Cos2Theta(in wh) * Cos2Theta(in wh);
-            var e = (Cos2Theta(in wh) / (_alphaX * _alphaX) + Sin2Phi(in wh) / (_alphaY * _alphaY)) * tan2Theta;
+            var e = (Cos2Phi(in wh) / (_alphaX * _alphaX) + Sin2Phi(in wh) / (_alphaY * _alphaY)) * tan2Theta;
             return 1f / (PI * _alphaX * _alphaY * cos4Theta * (1f + e) * (1f + e));
         }
 
@@ -59,11 +59,11 @@ namespace Octans.Reflection.Microfacet
             if (!SampleVisibleArea)
             {
                 float cosTheta;
-                float phi = (2f * PI) * u[1];
+                var phi = 2f * PI * u[1];
                 if (_alphaX == _alphaY)
                 {
-                    var tan2Theta = -_alphaX * _alphaY * u[0] / (1f - u[0]);
-                    cosTheta = 1f / Sqrt(1f + tan2Theta);
+                    var tanTheta2 = _alphaX * _alphaX * u[0] / (1f - u[0]);
+                    cosTheta = 1f / Sqrt(1f + tanTheta2);
                 }
                 else
                 {
@@ -78,8 +78,8 @@ namespace Octans.Reflection.Microfacet
                     var alphaX2 = _alphaX * _alphaX;
                     var alphaY2 = _alphaY * _alphaY;
                     var alpha2 = 1f / (cosPhi * cosPhi / alphaX2 + sinPhi * sinPhi / alphaY2);
-                    var tan2Theta = alpha2 * u[0] / (1f - u[0]);
-                    cosTheta = 1f / Sqrt(1f + tan2Theta);
+                    var tanTheta2 = alpha2 * u[0] / (1f - u[0]);
+                    cosTheta = 1f / Sqrt(1f + tanTheta2);
                 }
 
                 var sinTheta = Sqrt(Max(0f, 1f - cosTheta * cosTheta));

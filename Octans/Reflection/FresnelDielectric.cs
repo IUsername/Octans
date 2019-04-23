@@ -7,7 +7,7 @@ namespace Octans.Reflection
         public float EtaI { get; private set; }
         public float EtaT { get; private set; }
 
-        public Spectrum Evaluate(float cosI) => new Spectrum(FrDielectric(cosI, EtaI, -EtaT));
+        public Spectrum Evaluate(float cosThetaI) => new Spectrum(FrDielectric(cosThetaI, EtaI, EtaT));
 
         public IFresnel Initialize(float etaI, float etaT)
         {

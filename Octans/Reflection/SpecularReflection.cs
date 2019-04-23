@@ -4,15 +4,16 @@ namespace Octans.Reflection
 {
     public class SpecularReflection : IBxDF
     {
-        private readonly IFresnel _fresnel;
+        private  IFresnel _fresnel;
 
-        public SpecularReflection(in Spectrum r, IFresnel fresnel)
+        public SpecularReflection Initialize(Spectrum r, IFresnel fresnel)
         {
             R = r;
             _fresnel = fresnel;
+            return this;
         }
 
-        public Spectrum R { get; }
+        public Spectrum R { get; private set; }
 
         public BxDFType Type => BxDFType.Reflection | BxDFType.Specular;
 

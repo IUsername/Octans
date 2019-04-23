@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using static System.MathF;
 
 namespace Octans.Material
 {
@@ -8,7 +9,7 @@ namespace Octans.Material
         {
             var displace = d.Evaluate(si);
 
-            var du = 0.5f * System.MathF.Abs(si.Dudx) + System.MathF.Abs(si.Dudy);
+            var du = 0.5f * Abs(si.Dudx) + Abs(si.Dudy);
 
             // Create small du if no differential available.
             if (du == 0f)
@@ -21,7 +22,7 @@ namespace Octans.Material
             si.N = ((Normal) Vector.Cross(si.ShadingGeometry.Dpdu, si.ShadingGeometry.Dpdv) + du * si.Dndu).Normalize();
             var uDisplace = d.Evaluate(si);
 
-            var dv = 0.5f * System.MathF.Abs(si.Dvdx) + System.MathF.Abs(si.Dvdy);
+            var dv = 0.5f * Abs(si.Dvdx) + Abs(si.Dvdy);
 
             // Create small dv if no differential available.
             if (dv == 0f)

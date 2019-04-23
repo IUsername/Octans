@@ -43,7 +43,7 @@ namespace Octans.Material
                 return;
             }
 
-            var fresnel = arena.Create<FresnelDielectric>().Initialize(1f, 1.5f);
+            var fresnel = arena.Create<FresnelDielectric>().Initialize(1.5f, 1f);
             var rough = Roughness.Evaluate(in si);
             if (RemapRoughness)
             {
@@ -51,8 +51,7 @@ namespace Octans.Material
             }
 
             var distribution = arena.Create<TrowbridgeReitzDistribution>().Initialize(rough, rough);
-            var specular = arena.Create<MicrofacetReflection>().Initialize(ks, distribution, fresnel);
-            bsdf.Add(specular);
+            bsdf.Add(arena.Create<MicrofacetReflection>().Initialize(ks, distribution, fresnel));
         }
     }
 }

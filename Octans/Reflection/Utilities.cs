@@ -13,7 +13,7 @@ namespace Octans.Reflection
         public static float FrDielectric(float cosThetaI, float etaI, float etaT)
         {
             cosThetaI = Clamp(-1, 1, cosThetaI);
-            var isEntering = cosThetaI > 1f;
+            var isEntering = cosThetaI > 0f;
             if (!isEntering)
             {
                 (etaI, etaT) = (etaT, etaI);
@@ -31,9 +31,12 @@ namespace Octans.Reflection
 
             var cosThetaT = Sqrt(Max(0f, 1 - sinThetaT * sinThetaT));
 
-            var rParallel = (etaT * cosThetaI - etaI * cosThetaT) / (etaT * cosThetaI + etaI * cosThetaT);
-            var rPerpendicular = (etaI * cosThetaI - etaT * cosThetaT) / (etaI * cosThetaI + etaT * cosThetaT);
-            return (rParallel * rParallel + rPerpendicular + rPerpendicular) / 2f;
+            var rParallel = (etaT * cosThetaI - etaI * cosThetaT) /
+                            (etaT * cosThetaI + etaI * cosThetaT);
+
+            var rPerpendicular = (etaI * cosThetaI - etaT * cosThetaT) / 
+                                 (etaI * cosThetaI + etaT * cosThetaT);
+            return (rParallel * rParallel + rPerpendicular * rPerpendicular) / 2f;
         }
 
         public static Spectrum FrConductor(float cosThetaI, in Spectrum etaI, in Spectrum etaT, in Spectrum k)

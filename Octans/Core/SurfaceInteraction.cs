@@ -1,5 +1,4 @@
-﻿using System;
-using Octans.Primitive;
+﻿using Octans.Primitive;
 using Octans.Reflection;
 using static System.MathF;
 using static System.Single;
@@ -112,7 +111,7 @@ namespace Octans
             Shape = other.Shape;
             Primitive = other.Primitive;
             ShadingGeometry.N = Normal.FaceForward(ShadingGeometry.N, N);
-            BSDF.Initialize(other);
+            BSDF.Initialize(this);
             return this;
         }
 
@@ -130,7 +129,7 @@ namespace Octans
             if (ray.HasDifferentials)
             {
                 var d = N % (Vector) P;
-                var tx = -(N % (Vector)ray.RxOrigin - d) / (N % ray.RxDirection);
+                var tx = -(N % (Vector) ray.RxOrigin - d) / (N % ray.RxDirection);
                 if (IsInfinity(tx) || IsNaN(tx))
                 {
                     DifferentialFailure();
@@ -139,7 +138,7 @@ namespace Octans
 
                 var px = ray.RxOrigin + tx * ray.RxDirection;
 
-                var ty = -(N % (Vector)ray.RyOrigin - d) / (N % ray.RyDirection);
+                var ty = -(N % (Vector) ray.RyOrigin - d) / (N % ray.RyDirection);
                 if (IsInfinity(ty) || IsNaN(ty))
                 {
                     DifferentialFailure();
@@ -258,19 +257,21 @@ namespace Octans
 
     public class Interaction
     {
+        public Interaction()
+        {
+        }
+
+        public Interaction(in Point p)
+        {
+            P = p;
+        }
+
         public Point P { get; set; }
         public Normal N { get; set; }
         public Vector PError { get; set; }
         public Vector Wo { get; set; }
 
         public bool IsSurfaceInteraction => !Wo.Equals(Vectors.Zero);
-
-        public Interaction() { }
-
-        public Interaction(in Point p)
-        {
-            P = p;
-        }
 
         public Interaction Initialize(in Point p, in Normal n, in Vector pError, in Vector wo)
         {
