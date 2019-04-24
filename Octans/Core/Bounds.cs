@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using static System.MathF;
 using static System.Single;
@@ -143,6 +145,8 @@ namespace Octans
 
         public static Bounds Unit => new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
+        public Point Centroid => Min * 0.5f + (Vector) Max * 0.5f;
+
         public static Bounds Add(in Bounds a, in Bounds b)
         {
             if (a.IsEmpty)
@@ -168,15 +172,39 @@ namespace Octans
             return new Bounds(min, max);
         }
 
-        public static Bounds operator +(in Bounds left, in Bounds right) => Add(in left, in right);
+        public static Bounds Add(in Bounds a, in Point b)
+        {
+            if (a.IsEmpty)
+            {
+                return new Bounds(b, b);
+            }
 
+            var minX = Min(a.Min.X, b.X);
+            var minY = Min(a.Min.Y, b.Y);
+            var minZ = Min(a.Min.Z, b.Z);
+            var min = new Point(minX, minY, minZ);
+
+            var maxX = Max(a.Max.X, b.X);
+            var maxY = Max(a.Max.Y, b.Y);
+            var maxZ = Max(a.Max.Z, b.Z);
+            var max = new Point(maxX, maxY, maxZ);
+
+            return new Bounds(min, max);
+        }
+
+        public static Bounds operator +(in Bounds left, in Bounds right) => Add(in left, in right);
+        public static Bounds operator +(in Bounds left, in Point right) => Add(in left, in right);
+
+        [Pure]
         public bool ContainsPoint(Point point) =>
             point.X >= Min.X && point.X <= Max.X
                              && point.Y >= Min.Y && point.Y <= Max.Y
                              && point.Z >= Min.Z && point.Z <= Max.Z;
 
+        [Pure]
         public bool ContainsBounds(Bounds bounds) => ContainsPoint(bounds.Min) && ContainsPoint(bounds.Max);
 
+        [Pure]
         public (Bounds left, Bounds right) Split()
         {
             var wX = Max.X - Min.X;
@@ -199,6 +227,105 @@ namespace Octans
 
             var midZ = Min.Z + wZ / 2f;
             return (new Bounds(Min, new Point(Max.X, Max.Y, midZ)), new Bounds(new Point(Min.X, Min.Y, midZ), Max));
+        }
+
+        [Pure]
+        public int MaximumExtent()
+        {
+            var d = Max - Min;
+            return d.X > d.Y && d.X > d.Z ? 0 : d.Y > d.Z ? 1 : 2;
+        }
+
+        [Pure]
+        public Vector Offset(in Point p)
+        {
+            var o = p - Min;
+            var x = o.X;
+            var y = o.Y;
+            var z = o.Z;
+            if (Max.X > Min.X)
+            {
+                x /= Max.X - Min.X;
+            }
+
+            if (Max.Y > Min.Y)
+            {
+                y /= Max.Y - Min.Y;
+            }
+
+            if (Max.Z > Min.Z)
+            {
+                z /= Max.Z - Min.Z;
+            }
+
+            return new Vector(x, y, z);
+        }
+
+        [Pure]
+        public float SurfaceArea()
+        {
+            var d = Max - Min;
+            return 2f * (d.X * d.Y + d.X * d.Z + d.Y * d.Z);
+        }
+
+        public Point this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0: return Min;
+                    case 1: return Max;
+                }
+
+                throw new IndexOutOfRangeException();
+            }
+        }
+
+        public bool IntersectP(Ray ray, int[] dirIsNeg)
+        {
+            var tMin = (this[dirIsNeg[0]].X - ray.Origin.X) * ray.InverseDirection.X;
+            var tMax = (this[1 - dirIsNeg[0]].X - ray.Origin.X) * ray.InverseDirection.X;
+            var tyMin = (this[dirIsNeg[1]].Y - ray.Origin.Y) * ray.InverseDirection.Y;
+            var tyMax = (this[1 - dirIsNeg[1]].Y - ray.Origin.Y) * ray.InverseDirection.Y;
+
+            tMax *= 1f + 2f * MathF.Gamma(3);
+            tyMax *= 1f + 2f * MathF.Gamma(3);
+            if (tMin > tyMax || tyMin > tMax)
+            {
+                return false;
+            }
+
+            if (tyMin > tMin)
+            {
+                tMin = tyMin;
+            }
+
+            if (tyMax < tMax)
+            {
+                tMax = tyMax;
+            }
+
+            var tzMin = (this[dirIsNeg[2]].Z - ray.Origin.Z) * ray.InverseDirection.Z;
+            var tzMax = (this[1 - dirIsNeg[2]].Z - ray.Origin.Z) * ray.InverseDirection.Z;
+
+            tzMax *= 1f + 2f * MathF.Gamma(3);
+            if (tMin > tzMax || tzMin > tMax)
+            {
+                return false;
+            }
+
+            if (tzMin > tMin)
+            {
+                tMin = tzMin;
+            }
+
+            if (tzMax < tMax)
+            {
+                tMax = tzMax;
+            }
+
+            return tMin < ray.TMax && tMax > 0;
         }
     }
 }

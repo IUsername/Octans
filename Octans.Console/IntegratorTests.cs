@@ -118,7 +118,7 @@ namespace Octans.ConsoleApp
             var s6 = new Sphere(s6t, Transform.Invert(s6t), false, 200f, -200, 200, 360);
             var s6g = new GeometricPrimitive(s6, red, null);
 
-            var bvh = new BVH(new IPrimitive[] {s1g, s2g, s3g, s4g, s5g, s6g}, SplitMethod.EqualCounts);
+            var bvh = new BVH(new IPrimitive[] {s1g, s2g, s3g, s4g, s5g, s6g}, SplitMethod.HLBVH);
 
             var lt = Transform.Translate(400, 900, -800);
             var s = Spectrum.FromBlackbodyT(5500) * 2000000f;

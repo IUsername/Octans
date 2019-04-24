@@ -303,7 +303,5 @@ namespace Octans
                 ArrayPool<TilePixel>.Shared.Return(_pixels);
             }
         }
-
-     
     }
 }

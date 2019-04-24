@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.Design;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics.Arm.Arm64;
 using static System.MathF;
 using static System.Single;
 
@@ -39,7 +37,7 @@ namespace Octans
                 {
                     comp[i] = NextFloatUp(po[i]);
                 }
-                else if(offset[i] < 0f)
+                else if (offset[i] < 0f)
                 {
                     comp[i] = NextFloatDown(po[i]);
                 }
@@ -48,7 +46,8 @@ namespace Octans
                     comp[i] = po[i];
                 }
             }
-            return new Point(comp[0],comp[1],comp[2]);
+
+            return new Point(comp[0], comp[1], comp[2]);
         }
 
         [Pure]
@@ -121,6 +120,7 @@ namespace Octans
                 x1 = 0f;
                 return false;
             }
+
             x0 = (A[1][1] * B[0] - A[0][1] * B[1]) / det;
             x1 = (A[0][0] * B[1] - A[1][0] * B[0]) / det;
             return !IsNaN(x0) && !IsNaN(x1);
