@@ -1,26 +1,16 @@
 ﻿using static Octans.MathF;
-using static Octans.Reflection.Utilities;
 
 namespace Octans.Reflection
 {
     public class SpecularTransmission : IBxDF
     {
-        private readonly float _etaA;
-        private readonly float _etaB;
-        private readonly FresnelDielectric _fresnel = new FresnelDielectric();
+        public float EtaA { get; private set; }
+        public float EtaB { get; private set; }
+        public FresnelDielectric Fresnel { get; } = new FresnelDielectric();
 
-        public SpecularTransmission(in Spectrum t, float etaA, float etaB, TransportMode mode)
-        {
-            _etaA = etaA;
-            _etaB = etaB;
-            Mode = mode;
-            T = t;
-            _fresnel.Initialize(etaA, etaB);
-        }
+        public TransportMode Mode { get; private set; }
 
-        public TransportMode Mode { get; }
-
-        public Spectrum T { get; }
+        public Spectrum T { get; private set; }
 
         public BxDFType Type => BxDFType.Transmission | BxDFType.Specular;
 
@@ -33,22 +23,31 @@ namespace Octans.Reflection
                                 BxDFType sampleType = BxDFType.None)
         {
             var isEntering = CosTheta(in wo) > 0f;
-            var (etaI, etaT) = isEntering ? (_etaA, _etaB) : (_etaB, _etaA);
+            var (etaI, etaT) = isEntering ? (EtaA, EtaB) : (EtaB, EtaA);
             pdf = 1f;
             if (!Refract(in wo, Normal.FaceForward(Normals.ZPos, in wo), etaI / etaT, ref wi))
             {
                 return Spectrum.Zero;
             }
 
-            var ft = T * (Spectrum.One - _fresnel.Evaluate(CosTheta(in wi)));
+            var ft = T * (Spectrum.One - Fresnel.Evaluate(CosTheta(in wi)));
             return ft / AbsCosTheta(in wi);
         }
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
+        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => this.RhoValue(in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => this.RhoValue(nSamples, in u1, in u2);
 
-        public float Pdf(in Vector wo, in Vector wi) =>
-            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
+        public float Pdf(in Vector wo, in Vector wi) => this.LambertianPdfValue(in wo, in wi);
+
+        public SpecularTransmission Initialize(in Spectrum t, float etaA, float etaB, TransportMode mode)
+        {
+            EtaA = etaA;
+            EtaB = etaB;
+            Mode = mode;
+            T = t;
+            Fresnel.Initialize(etaA, etaB);
+            return this;
+        }
     }
 }

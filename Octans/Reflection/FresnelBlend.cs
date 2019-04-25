@@ -34,9 +34,9 @@ namespace Octans.Reflection
 
             wh = wh.Normalize();
 
-            var diffuse = 28f / (23f * PI)  *
+            var diffuse = 28f / (23f * PI) *
                           (1f - Pow5(1f - 0.5f * AbsCosTheta(in wi))) *
-                          (1f - Pow5(1f - 0.5f * AbsCosTheta(in wo))) * 
+                          (1f - Pow5(1f - 0.5f * AbsCosTheta(in wo))) *
                           Rd * (Spectrum.One - Rs);
 
             var specular = Distribution.D(in wh) /
@@ -52,14 +52,17 @@ namespace Octans.Reflection
                                 out float pdf,
                                 BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
+        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => this.RhoValue(in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) =>
-            Utilities.Rho(this, nSamples, in u1, in u2);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => this.RhoValue(nSamples, in u1, in u2);
 
         public float Pdf(in Vector wo, in Vector wi)
         {
-            if (!IsInSameHemisphere(wo, wi)) return 0f;
+            if (!IsInSameHemisphere(wo, wi))
+            {
+                return 0f;
+            }
+
             var wh = (wo + wi).Normalize();
             var pdf_wh = Distribution.Pdf(wo, wh);
             return 0.5f * (AbsCosTheta(wi) * InvPi + pdf_wh / (4f * wo % wh));

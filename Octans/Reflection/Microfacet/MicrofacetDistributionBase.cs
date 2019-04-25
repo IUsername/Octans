@@ -15,7 +15,7 @@
 
         public float G1(in Vector w) => 1f / (1f + Lambda(in w));
 
-        public float G(in Vector wo, in Vector wi) => 1f / (1f + Lambda(in wo) + Lambda(in wi));
+        public virtual float G(in Vector wo, in Vector wi) => 1f / (1f + Lambda(in wo) + Lambda(in wi));
 
         public abstract Vector SampleWh(in Vector wo, in Point2D u);
 

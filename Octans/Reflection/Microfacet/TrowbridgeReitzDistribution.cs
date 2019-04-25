@@ -5,7 +5,7 @@ using static Octans.MathF;
 
 namespace Octans.Reflection.Microfacet
 {
-    public sealed class TrowbridgeReitzDistribution : MicrofacetDistributionBase
+    public class TrowbridgeReitzDistribution : MicrofacetDistributionBase
     {
         private float _alphaX;
         private float _alphaY;
@@ -115,6 +115,6 @@ namespace Octans.Reflection.Microfacet
         }
 
         [Pure]
-        public static float RoughnessToAlpha(in float roughness) => Utilities.RoughnessToAlpha(roughness);
+        public static float RoughnessToAlpha(in float roughness) => BxDFExtensions.RoughnessToAlpha(roughness);
     }
 }

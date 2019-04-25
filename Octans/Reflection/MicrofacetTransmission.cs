@@ -7,27 +7,13 @@ namespace Octans.Reflection
 {
     public class MicrofacetTransmission : IBxDF
     {
-        private readonly float _etaA;
-        private readonly float _etaB;
+        private float EtaA { get; set; }
+        private float EtaB { get; set; }
 
-        public MicrofacetTransmission(in Spectrum t,
-                                      IMicrofacetDistribution distribution,
-                                      float etaA,
-                                      float etaB,
-                                      TransportMode mode)
-        {
-            _etaA = etaA;
-            _etaB = etaB;
-            Mode = mode;
-            T = t;
-            Distribution = distribution;
-            Fresnel.Initialize(etaA, etaB);
-        }
+        public TransportMode Mode { get; private set; }
 
-        public TransportMode Mode { get; }
-
-        public Spectrum T { get; }
-        public IMicrofacetDistribution Distribution { get; }
+        public Spectrum T { get; private set; }
+        public IMicrofacetDistribution Distribution { get; private set; }
         public FresnelDielectric Fresnel { get; } = new FresnelDielectric();
 
         public BxDFType Type => BxDFType.Transmission | BxDFType.Glossy;
@@ -50,7 +36,7 @@ namespace Octans.Reflection
             }
             // ReSharper restore CompareOfFloatsByEqualityOperator
 
-            var eta = CosTheta(in wo) > 0f ? _etaB / _etaA : _etaA / _etaB;
+            var eta = CosTheta(in wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
             var wh = (wo + wi * eta).Normalize();
             if (wh.Z < 0)
             {
@@ -72,9 +58,10 @@ namespace Octans.Reflection
                                 out float pdf,
                                 BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
+        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => this.RhoValue(in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => this.RhoValue(nSamples, in u1, in u2);
+
         public float Pdf(in Vector wo, in Vector wi)
         {
             if (IsInSameHemisphere(wo, wi))
@@ -82,12 +69,27 @@ namespace Octans.Reflection
                 return 0f;
             }
 
-            var eta = CosTheta(wo) > 0f ? (_etaB / _etaA) : (_etaA / _etaB);
+            var eta = CosTheta(wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
             var wh = (wo + wi * eta).Normalize();
 
             var sqrtDenom = wo % wh + eta * wi % wh;
-            var dwh_dwi = Abs((eta * eta * wi % wh)) / (sqrtDenom * sqrtDenom);
+            var dwh_dwi = Abs(eta * eta * wi % wh) / (sqrtDenom * sqrtDenom);
             return Distribution.Pdf(wo, wh) * dwh_dwi;
+        }
+
+        public MicrofacetTransmission Initialize(in Spectrum t,
+                                                 IMicrofacetDistribution distribution,
+                                                 float etaA,
+                                                 float etaB,
+                                                 TransportMode mode)
+        {
+            EtaA = etaA;
+            EtaB = etaB;
+            Mode = mode;
+            T = t;
+            Distribution = distribution;
+            Fresnel.Initialize(etaA, etaB);
+            return this;
         }
     }
 }

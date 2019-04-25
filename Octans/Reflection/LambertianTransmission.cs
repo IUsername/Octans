@@ -4,12 +4,7 @@ namespace Octans.Reflection
 {
     public class LambertianTransmission : IBxDF
     {
-        public LambertianTransmission(in Spectrum t)
-        {
-            T = t;
-        }
-
-        public Spectrum T { get; }
+        public Spectrum T { get; private set; }
 
         public BxDFType Type => BxDFType.Transmission | BxDFType.Diffuse;
 
@@ -35,7 +30,12 @@ namespace Octans.Reflection
 
         public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => T;
 
-        public float Pdf(in Vector wo, in Vector wi) =>
-            !IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0f;
+        public float Pdf(in Vector wo, in Vector wi) => !IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0f;
+
+        public LambertianTransmission Initialize(in Spectrum t)
+        {
+            T = t;
+            return this;
+        }
     }
 }

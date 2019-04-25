@@ -1,5 +1,4 @@
-﻿using System;
-using static Octans.MathF;
+﻿using static Octans.MathF;
 
 namespace Octans.Reflection
 {
@@ -39,25 +38,14 @@ namespace Octans.Reflection
                                 ref Vector wi,
                                 in Point2D u,
                                 out float pdf,
-                                BxDFType sampleType = BxDFType.None)
-        {
-            wi = Sampling.Utilities.CosineSampleHemisphere(u);
-            if (wo.Z < 0f)
-            {
-                wi = new Vector(wi.X, wi.Y, -wi.Z);
-            }
+                                BxDFType sampleType = BxDFType.None) =>
+            this.CosineSampleHemisphereF(in wo, ref wi, in u, out pdf);
 
-            pdf = Pdf(wo, wi);
-            return F(wo, wi);
-        }
+        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => this.RhoValue(in wo, nSamples, in u);
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => this.RhoValue(nSamples, in u1, in u2);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) =>
-            Utilities.Rho(this, nSamples, in u1, in u2);
-
-        public float Pdf(in Vector wo, in Vector wi) =>
-            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
+        public float Pdf(in Vector wo, in Vector wi) => this.LambertianPdfValue(in wo, in wi);
 
         public OrenNayar Initialize(in Spectrum r, float sigma)
         {

@@ -1,5 +1,8 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics.Contracts;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using static System.MathF;
+using static Octans.MathF;
 
 namespace Octans.Material
 {
@@ -45,5 +48,31 @@ namespace Octans.Material
 
             si.SetShadingGeometry(dpdu, dpdv, si.ShadingGeometry.Dndu, si.ShadingGeometry.Dndv, false);
         }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Sqr(float x) => x * x;
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SchlickWeight(float cosTheta)
+        {
+            var m = Clamp(0, 1, 1 - cosTheta);
+            return m * m * (m * m) * m;
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float FrSchlick(float R0, float cosTheta) => Lerp(R0, 1f, SchlickWeight(cosTheta));
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Spectrum FrSchlick(in Spectrum R0, float cosTheta) =>
+            Spectrum.Lerp(R0, Spectrum.One, SchlickWeight(cosTheta));
+
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SchlickR0FromEta(float eta) => Sqr(eta - 1f) / Sqr(eta + 1f);
     }
 }

@@ -30,11 +30,10 @@ namespace Octans.Reflection
             return _fresnel.Evaluate(CosTheta(in wi)) * R / AbsCosTheta(in wi);
         }
 
-        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => Utilities.Rho(this, in wo, nSamples, in u);
+        public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => this.RhoValue(in wo, nSamples, in u);
 
-        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => Utilities.Rho(this, nSamples, in u1, in u2);
+        public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => this.RhoValue(nSamples, in u1, in u2);
 
-        public float Pdf(in Vector wo, in Vector wi) =>
-            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
+        public float Pdf(in Vector wo, in Vector wi) => this.LambertianPdfValue(in wo, in wi);
     }
 }
