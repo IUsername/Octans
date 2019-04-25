@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Numerics;
 using static System.MathF;
 using static System.Single;
 using static Octans.Utilities;
@@ -8,39 +9,42 @@ namespace Octans
 {
     public class EFloat : IEquatable<EFloat>
     {
+        private readonly Vector3 _data;
+
         public EFloat(float v, float err = 0f)
         {
-            V = v;
-            if (err == 0f)
-            {
-                Low = High = v;
-            }
-            else
-            {
-                Low = NextFloatDown(v - err);
-                High = NextFloatUp(v + err);
-            }
+            //V = v;
+            _data = err == 0f 
+                ? new Vector3(v,v,v) 
+                : new Vector3(v,  NextFloatUp(v + err), NextFloatDown(v - err));
         }
 
-        public EFloat(in EFloat ef)
-        {
-            V = ef.V;
-            Low = ef.Low;
-            High = ef.High;
-        }
+        //public EFloat(in EFloat ef)
+        //{
+        //    //V = ef.V;
+        //    //Low = ef.Low;
+        //    //High = ef.High;
+        //    _data = new Vector3(ef.V,  ef.High, ef.Low);
+        //}
 
         private EFloat(float v, float high, float low)
         {
-            V = v;
-            Low = low;
-            High = high;
+            //V = v;
+            //Low = low;
+            //High = high;
+            _data = new Vector3(v, high, low);
         }
 
-        public float V { get; }
+        //private EFloat(in Vector3 data)
+        //{
+        //    _data = data;
+        //}
 
-        private float High { get; }
+        public float V => _data.X;
 
-        private float Low { get; }
+        private float High => _data.Y;
+
+        private float Low => _data.Z;
 
         public bool Equals(EFloat other)
         {
@@ -57,52 +61,77 @@ namespace Octans
         public float LowerBound() => Low;
 
         [Pure]
-        public EFloat Add(in EFloat ef) =>
-            new EFloat(V + ef.V,
-                       NextFloatUp(High + ef.High),
-                       NextFloatDown(Low + ef.Low));
+        public EFloat Add(in EFloat ef)
+        {
+            var r = Vector3.Add(_data, ef._data);
+            return new EFloat(r.X, NextFloatUp(r.Y), NextFloatDown(r.Z));
+        }
 
         [Pure]
-        public EFloat Subtract(in EFloat ef) =>
-            new EFloat(V - ef.V,
-                       NextFloatUp(High - ef.Low),
-                       NextFloatDown(Low - ef.High));
+        public EFloat Subtract(in EFloat ef)
+        {
+            var r = Vector3.Subtract(_data, ef._data);
+            return new EFloat(r.X, NextFloatUp(r.Y), NextFloatDown(r.Z));
+        }
 
         [Pure]
         public EFloat Multiply(in EFloat ef)
         {
-            var newV = V * ef.V;
-            var prod = new[]
-            {
-                Low * ef.Low,
-                High * ef.Low,
-                Low * ef.High,
-                High * ef.High
-            };
-            var newLow = NextFloatDown(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
-            var newHigh = NextFloatUp(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
-            return new EFloat(newV, newHigh, newLow);
+            var r = Vector3.Multiply(_data,ef._data);
+            var o = new Vector3(0,High * ef.Low, Low * ef.High);
+            var min = Vector3.Min(r, o);
+            var max = Vector3.Max(r, o);
+            var low = NextFloatDown(Min(min.Y, min.Z));
+            var high = NextFloatUp(Max(max.Y, max.Z));
+            return new EFloat(r.X, high, low);
+
+
+            //var newV = V * ef.V;
+            //var prod = new[]
+            //{
+            //    Low * ef.Low,
+            //    High * ef.Low,
+            //    Low * ef.High,
+            //    High * ef.High
+            //};
+     
+           
+            //var newLow = NextFloatDown(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
+            //var newHigh = NextFloatUp(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
+            //return new EFloat(newV, newHigh, newLow);
         }
 
         [Pure]
         public EFloat Divide(in EFloat ef)
         {
-            var newV = V / ef.V;
             if (ef.Low < 0 && ef.High > 0)
             {
-                return new EFloat(newV, PositiveInfinity, NegativeInfinity);
+                return new EFloat(V / ef.V, PositiveInfinity, NegativeInfinity);
             }
+            var r = Vector3.Divide(_data, ef._data);
+            var o = new Vector3(0, High / ef.Low, Low / ef.High);
+            var min = Vector3.Min(r, o);
+            var max = Vector3.Max(r, o);
+            var low = NextFloatDown(Min(min.Y, min.Z));
+            var high = NextFloatUp(Max(max.Y, max.Z));
+            return new EFloat(r.X, high, low);
 
-            var prod = new[]
-            {
-                Low / ef.Low,
-                High / ef.Low,
-                Low / ef.High,
-                High / ef.High
-            };
-            var newLow = NextFloatDown(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
-            var newHigh = NextFloatUp(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
-            return new EFloat(newV, newHigh, newLow);
+            //var newV = V / ef.V;
+            //if (ef.Low < 0 && ef.High > 0)
+            //{
+            //    return new EFloat(newV, PositiveInfinity, NegativeInfinity);
+            //}
+
+            //var prod = new[]
+            //{
+            //    Low / ef.Low,
+            //    High / ef.Low,
+            //    Low / ef.High,
+            //    High / ef.High
+            //};
+            //var newLow = NextFloatDown(Min(Min(prod[0], prod[1]), Min(prod[2], prod[3])));
+            //var newHigh = NextFloatUp(Max(Max(prod[0], prod[1]), Max(prod[2], prod[3])));
+            //return new EFloat(newV, newHigh, newLow);
         }
 
         [Pure]
@@ -112,10 +141,11 @@ namespace Octans
         public float GetAbsoluteError() => High - Low;
 
         [Pure]
-        public static EFloat Sqrt(in EFloat ef) =>
-            new EFloat(System.MathF.Sqrt(ef.V),
-                       NextFloatUp(System.MathF.Sqrt(ef.High)),
-                       NextFloatDown(System.MathF.Sqrt(ef.Low)));
+        public static EFloat Sqrt(in EFloat ef)
+        {
+            var r = Vector3.SquareRoot(ef._data);
+            return new EFloat(r.X, NextFloatUp(r.Y), NextFloatDown(r.Z));
+        }
 
         [Pure]
         public static EFloat Abs(in EFloat ef)

@@ -5,7 +5,7 @@
         private static void Main(string[] args)
         {
             //CornellBox.TestRender(100, 800);
-            IntegratorTests.TestRender(64, 300);
+            IntegratorTests.TestRender(256, 600);
             //TestScenes.ColRowTestRender();
             //TestScenes.RowMetal(100);
             //TestScenes.RowPlastic(1000);

@@ -34,7 +34,7 @@ namespace Octans.Integrator
             var sampleBounds = _camera.Film.GetSampleBounds();
             var sampleExtent = sampleBounds.Diagonal();
 
-            const int tileSize = 13;
+            const int tileSize = 16;
             var nTiles = new PixelCoordinate(
                 (sampleExtent.X + tileSize - 1) / tileSize,
                 (sampleExtent.Y + tileSize - 1) / tileSize);
@@ -100,8 +100,8 @@ namespace Octans.Integrator
                     var rayWeight = camera.GenerateRayDifferential(cameraSample, out var ray);
                     ray.ScaleDifferentials(1f / Sqrt(tileSampler.SamplesPerPixel));
 
-                    var L = Spectrum.Zero;
-                    ;
+                    var L = arena.Create<SpectrumAccumulator>().Clear();
+
                     if (rayWeight > 0f)
                     {
                         L = Li(ray, scene, tileSampler, arena);
@@ -110,20 +110,20 @@ namespace Octans.Integrator
                     if (L.HasNaN())
                     {
                         Debug.Print("Not-a-number encountered in radiance value.");
-                        L = Spectrum.Zero;
+                        L.Clear();
                     }
                     else if (L.YComponent() < -1e-5f)
                     {
                         Debug.Print("Negative luminance encountered.");
-                        L = Spectrum.Zero;
+                        L.Clear();
                     }
                     else if (float.IsInfinity(L.YComponent()))
                     {
                         Debug.Print("Infinite luminance encountered.");
-                        L = Spectrum.Zero;
+                        L.Clear();
                     }
 
-                    filmTile.AddSample(cameraSample.FilmPoint, L, rayWeight);
+                    filmTile.AddSample(cameraSample.FilmPoint, L.ToSpectrum(arena), rayWeight);
 
                     arena.Reset();
                 } while (tileSampler.StartNextSample());
@@ -132,7 +132,7 @@ namespace Octans.Integrator
             camera.Film.MergeFilmTile(filmTile);
         }
 
-        protected abstract Spectrum Li(in RayDifferential ray,
+        protected abstract SpectrumAccumulator Li(in RayDifferential ray,
                                        IScene scene,
                                        ISampler2 tileSampler,
                                        IObjectArena arena,
@@ -140,7 +140,7 @@ namespace Octans.Integrator
 
         protected abstract void Preprocess(in IScene scene, ISampler2 sampler);
 
-        protected Spectrum SpecularReflect(RayDifferential ray,
+        protected SpectrumAccumulator SpecularReflect(RayDifferential ray,
                                            SurfaceInteraction si,
                                            IScene scene,
                                            ISampler2 sampler,
@@ -176,13 +176,13 @@ namespace Octans.Integrator
                     rd.RyDirection = wi - dwody + 2f * (Vector) (wo % ns * dndy + dDNdy * ns);
                 }
 
-                return f * Li(rd, scene, sampler, arena, depth + 1) * System.MathF.Abs(wi % ns) / pdf;
+                return Li(rd, scene, sampler, arena, depth + 1) * f * System.MathF.Abs(wi % ns) / pdf;
             }
 
-            return Spectrum.Zero;
+            return arena.Create<SpectrumAccumulator>().Clear();
         }
 
-        protected Spectrum SpecularTransmit(in RayDifferential ray,
+        protected SpectrumAccumulator SpecularTransmit(in RayDifferential ray,
                                             SurfaceInteraction si,
                                             IScene scene,
                                             ISampler2 sampler,
@@ -194,7 +194,7 @@ namespace Octans.Integrator
             var bsdf = si.BSDF;
             var f = bsdf.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf,
                                   BxDFType.Transmission | BxDFType.Specular, out _);
-            var L = Spectrum.Zero;
+            var L = arena.Create<SpectrumAccumulator>().Clear();
             var ns = si.ShadingGeometry.N;
             if (pdf > 0f && !f.IsBlack() && Vector.AbsDot(wi, ns) != 0f)
             {
@@ -232,7 +232,7 @@ namespace Octans.Integrator
                     rd.RyDirection = wi - eta * dwody + (Vector) (mu * dndy + dmudy * ns);
                 }
 
-                L = f * Li(rd, scene, sampler, arena, depth + 1) * Vector.AbsDot(wi, ns) / pdf;
+                L = Li(rd, scene, sampler, arena, depth + 1) * f * Vector.AbsDot(wi, ns) / pdf;
             }
 
             return L;

@@ -13,14 +13,14 @@ namespace Octans.Integrator
             _maxDepth = maxDepth;
         }
 
-        protected override Spectrum Li(in RayDifferential ray,
+        protected override SpectrumAccumulator Li(in RayDifferential ray,
                                        IScene scene,
                                        ISampler2 sampler,
                                        IObjectArena arena,
                                        int depth = 0)
         {
             var cr = ray;
-            var L = Spectrum.Zero;
+            var L = arena.Create<SpectrumAccumulator>().Clear();
             var si = new SurfaceInteraction();
             while (true)
             {

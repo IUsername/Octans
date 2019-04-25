@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Numerics;
 using static System.MathF;
 using static System.Numerics.Vector;
@@ -28,9 +27,9 @@ namespace Octans
         public static readonly Spectrum Zero;
         public static readonly Spectrum One;
 
-        private static readonly Spectrum X;
-        private static readonly Spectrum Y;
-        private static readonly Spectrum Z;
+        internal static readonly Spectrum X;
+        internal static readonly Spectrum Y;
+        internal static readonly Spectrum Z;
 
         private static readonly Spectrum RGBRefl2SpectWhite;
         private static readonly Spectrum RGBRefl2SpectCyan;
@@ -97,12 +96,14 @@ namespace Octans
             _c = new float[Samples];
         }
 
-        private Spectrum(float[] c)
+        internal Spectrum(float[] c)
         {
             _c = c;
         }
 
         protected ref readonly float[] C => ref _c;
+
+        internal float[] Components => _c;
 
         [Pure]
         public float this[int index] => _c[index];
@@ -184,6 +185,21 @@ namespace Octans
         [Pure]
         public Spectrum Add(in Spectrum other)
         {
+            if (Samples == 3)
+            {
+                //_c[0] += other._c[0];
+                //_c[1] += other._c[1];
+                //_c[2] += other._c[2];
+                //return this;
+
+                return new Spectrum(new[]
+                {
+                    _c[0] + other._c[0],
+                    _c[1] + other._c[1],
+                    _c[2] + other._c[2]
+                });
+            }
+
             int i;
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
@@ -284,6 +300,15 @@ namespace Octans
         [Pure]
         public Spectrum Multiply(float scalar)
         {
+            if (Samples == 3)
+            {
+                //_c[0] *= scalar;
+                //_c[1] *= scalar;
+                //_c[2] *= scalar;
+                //return this;
+                return new Spectrum(new[] {_c[0] * scalar, _c[1] * scalar, _c[2] * scalar});
+            }
+
             int i;
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)

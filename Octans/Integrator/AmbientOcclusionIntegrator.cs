@@ -23,9 +23,9 @@ namespace Octans.Integrator
         public bool CosSample { get; }
         public int NSamples { get; }
 
-        protected override Spectrum Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
+        protected override SpectrumAccumulator Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
         {
-            var L = Spectrum.Zero;
+            var L = arena.Create<SpectrumAccumulator>().Clear();
             var r =  ray;
             var hit = false;
             var si = new SurfaceInteraction();

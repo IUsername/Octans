@@ -7,7 +7,7 @@ namespace Octans
 {
     public class SpectralInformation
     {
-        public int Samples => 60;
+        public int Samples => 8;
         public int SampledLambdaEnd => 700;
         public int SampledLambdaStart => 400;
 

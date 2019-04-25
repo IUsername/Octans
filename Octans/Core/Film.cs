@@ -213,16 +213,16 @@ namespace Octans
             private readonly float Pad; // Align struct
         }
 
-        internal class TilePixel
+        internal struct TilePixel
         {
             public float FilterWeightSum { get; set; }
-            public Spectrum ContributionSum { get; set; }
+            public SpectrumAccumulator ContributionSum { get; set; }
 
-            public TilePixel()
-            {
-                FilterWeightSum = 0f;
-                ContributionSum = Spectrum.Zero;
-            }
+            //public TilePixel()
+            //{
+            //    FilterWeightSum = 0f;
+            //    ContributionSum = Spectrum.Zero;
+            //}
         }
 
         public class FilmTile
@@ -247,7 +247,16 @@ namespace Octans
                 var p = ArrayPool<TilePixel>.Shared.Rent(pixelBounds.Area());
                 for (var i = 0; i < p.Length; i++)
                 {
-                    p[i] = new TilePixel();
+                    if (p[i].ContributionSum is null)
+                    {
+                        p[i].ContributionSum = new SpectrumAccumulator();
+                    }
+                    else
+                    {
+                        p[i].ContributionSum.Clear();
+                    }
+
+                    p[i].FilterWeightSum = 0f;
                 }
 
                 _pixels = p;
@@ -277,6 +286,7 @@ namespace Octans
                     ify[y - p0.Y] = Math.Min((int) System.MathF.Floor(fy), _filterTableWidth - 1);
                 }
 
+              
                 for (var y = p0.Y; y < p1.Y; y++)
                 {
                     for (var x = p0.X; x < p1.X; x++)
