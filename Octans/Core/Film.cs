@@ -295,7 +295,7 @@ namespace Octans
                         var filterWeight = _filterTable[offset];
 
                         ref var pixel = ref GetPixel(new PixelCoordinate(x, y));
-                        pixel.ContributionSum += L * sampleWeight * filterWeight;
+                        pixel.ContributionSum += L * (sampleWeight * filterWeight);
                         pixel.FilterWeightSum += filterWeight;
                     }
                 }

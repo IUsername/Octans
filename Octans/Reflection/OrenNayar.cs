@@ -32,7 +32,7 @@ namespace Octans.Reflection
                 ? (sinThetaO, sinThetaI / AbsCosTheta(in wi))
                 : (sinThetaI, sinThetaO / AbsCosTheta(in wo));
 
-            return R * InvPi * (A + B * maxCos * sinAlpha * tanBeta);
+            return R * (InvPi * (A + B * maxCos * sinAlpha * tanBeta));
         }
 
         public Spectrum SampleF(in Vector wo,

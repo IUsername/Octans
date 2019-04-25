@@ -34,7 +34,7 @@ namespace Octans.Reflection
             var F = Fresnel.Evaluate(wi % wh);
             var D = Distribution.D(in wh);
             var G = Distribution.G(in wo, in wi);
-            return R * D * G * F / (4f * cosThetaI * cosThetaO);
+            return R * (D * G * F / (4f * cosThetaI * cosThetaO));
         }
 
         public Spectrum SampleF(in Vector wo,

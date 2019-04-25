@@ -69,7 +69,7 @@
             return I;
         }
 
-        public Spectrum Power() => 4 * System.MathF.PI * I;
+        public Spectrum Power() => I * (4 * System.MathF.PI);
 
         public void Pdf_Le(Ray ray, Normal nLight, out float pdfPos, out float pdfDir)
         {

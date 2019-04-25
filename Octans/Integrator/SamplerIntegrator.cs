@@ -176,7 +176,7 @@ namespace Octans.Integrator
                     rd.RyDirection = wi - dwody + 2f * (Vector) (wo % ns * dndy + dDNdy * ns);
                 }
 
-                return Li(rd, scene, sampler, arena, depth + 1) * f * System.MathF.Abs(wi % ns) / pdf;
+                return Li(rd, scene, sampler, arena, depth + 1) * f * (System.MathF.Abs(wi % ns) / pdf);
             }
 
             return arena.Create<SpectrumAccumulator>().Clear();
@@ -232,7 +232,7 @@ namespace Octans.Integrator
                     rd.RyDirection = wi - eta * dwody + (Vector) (mu * dndy + dmudy * ns);
                 }
 
-                L = Li(rd, scene, sampler, arena, depth + 1) * f * Vector.AbsDot(wi, ns) / pdf;
+                L = Li(rd, scene, sampler, arena, depth + 1) * f * (Vector.AbsDot(wi, ns) / pdf);
             }
 
             return L;

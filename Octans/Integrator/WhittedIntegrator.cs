@@ -14,10 +14,10 @@ namespace Octans.Integrator
         }
 
         protected override SpectrumAccumulator Li(in RayDifferential ray,
-                                       IScene scene,
-                                       ISampler2 sampler,
-                                       IObjectArena arena,
-                                       int depth = 0)
+                                                  IScene scene,
+                                                  ISampler2 sampler,
+                                                  IObjectArena arena,
+                                                  int depth = 0)
         {
             var cr = ray;
             var L = arena.Create<SpectrumAccumulator>().Clear();
@@ -57,7 +57,7 @@ namespace Octans.Integrator
                     var f = si.BSDF.F(in wo, in wi);
                     if (!f.IsBlack() && visibility.Unoccluded(scene))
                     {
-                        L += f * Li * Abs(wi % n) / pdf;
+                        L += f * Li * (Abs(wi % n) / pdf);
                     }
                 }
 

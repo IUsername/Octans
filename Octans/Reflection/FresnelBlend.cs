@@ -33,12 +33,16 @@ namespace Octans.Reflection
             // ReSharper restore CompareOfFloatsByEqualityOperator
 
             wh = wh.Normalize();
-            var diffuse = 28f / (23f * PI) * Rd * (Spectrum.One - Rs) *
+
+            var diffuse = 28f / (23f * PI)  *
                           (1f - Pow5(1f - 0.5f * AbsCosTheta(in wi))) *
-                          (1f - Pow5(1f - 0.5f * AbsCosTheta(in wo)));
+                          (1f - Pow5(1f - 0.5f * AbsCosTheta(in wo))) * 
+                          Rd * (Spectrum.One - Rs);
+
             var specular = Distribution.D(in wh) /
                            (4f * AbsDot(in wi, in wh) * Max(AbsCosTheta(in wi), AbsCosTheta(in wo))) *
                            SchlickFresnelFunction(wi % wh);
+
             return diffuse + specular;
         }
 

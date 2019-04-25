@@ -34,7 +34,7 @@ namespace Octans.Reflection
             var rParallel = (etaT * cosThetaI - etaI * cosThetaT) /
                             (etaT * cosThetaI + etaI * cosThetaT);
 
-            var rPerpendicular = (etaI * cosThetaI - etaT * cosThetaT) / 
+            var rPerpendicular = (etaI * cosThetaI - etaT * cosThetaT) /
                                  (etaI * cosThetaI + etaT * cosThetaT);
             return (rParallel * rParallel + rPerpendicular * rPerpendicular) / 2f;
         }
@@ -58,12 +58,11 @@ namespace Octans.Reflection
             var rPerpendicular = (t1 - t2) / (t1 + t2);
             var t3 = cosThetaI2 * a2Pb2 + sinThetaI2 * sinThetaI2;
             var t4 = t2 * sinThetaI2;
-            var rParallel = rPerpendicular * (t3 - t4) / (t3 + t4);
+            var rParallel = rPerpendicular * ((t3 - t4) / (t3 + t4));
 
             return 0.5f * (rParallel + rPerpendicular);
         }
 
-      
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -114,9 +113,6 @@ namespace Octans.Reflection
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AnyFlag(this IBxDF bxdf, BxDFType flag)
-        {
-            return (bxdf.Type & flag) != BxDFType.None;
-        }
+        public static bool AnyFlag(this IBxDF bxdf, BxDFType flag) => (bxdf.Type & flag) != BxDFType.None;
     }
 }
