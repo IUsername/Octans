@@ -115,6 +115,6 @@ namespace Octans.Reflection.Microfacet
         }
 
         [Pure]
-        public static float RoughnessToAlpha(in float roughness) => BxDFExtensions.RoughnessToAlpha(roughness);
+        public static float RoughnessToAlpha(in float roughness) => roughness.RoughnessToAlpha();
     }
 }

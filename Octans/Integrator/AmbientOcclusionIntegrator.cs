@@ -23,9 +23,9 @@ namespace Octans.Integrator
         public bool CosSample { get; }
         public int NSamples { get; }
 
-        protected override SpectrumAccumulator Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
+        protected override void Li(SpectrumAccumulator L, in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
         {
-            var L = arena.Create<SpectrumAccumulator>().Clear();
+          //  var L = arena.Create<SpectrumAccumulator>().Zero();
             var r =  ray;
             var hit = false;
             var si = new SurfaceInteraction();
@@ -33,7 +33,8 @@ namespace Octans.Integrator
             {
                 if (!scene.Intersect(r, ref si))
                 {
-                    return L;
+                    break;
+                    //return L;
                 }
 
                 si.ComputeScatteringFunctions(r, arena, true);
@@ -76,7 +77,7 @@ namespace Octans.Integrator
                     //nRay.TMax = 100f;
                     if (!scene.IntersectP(nRay))
                     {
-                        L += (wi % n) / (pdf * NSamples);
+                        L.Contribute((wi % n) / (pdf * NSamples));
 
                         //L += Spectrum.FromRGB(new []{invL, invL, invL}, SpectrumType.Illuminant);
                     }
@@ -85,7 +86,7 @@ namespace Octans.Integrator
 
            
 
-            return L;
+        //    return L;
         }
 
         protected override void Preprocess(in IScene scene, ISampler2 sampler)

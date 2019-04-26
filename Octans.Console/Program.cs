@@ -5,7 +5,9 @@
         private static void Main(string[] args)
         {
             //CornellBox.TestRender(100, 800);
-            IntegratorTests.TestRender(12, 600);
+            //DisneyMaterialTests.TestRender(24, 300);
+            DisneyMaterialTests.PlasticToMetal(128);
+            //IntegratorTests.TestRender(12, 600);
             //TestScenes.ColRowTestRender();
             //TestScenes.RowMetal(100);
             //TestScenes.RowPlastic(1000);

@@ -57,8 +57,8 @@ namespace Octans.Material
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SchlickWeight(float cosTheta)
         {
-            var m = Clamp(0, 1, 1 - cosTheta);
-            return m * m * (m * m) * m;
+            var m = Clamp(0f, 1f, 1f - cosTheta);
+            return (m * m) * (m * m) * m;
         }
 
         [Pure]

@@ -60,7 +60,7 @@ namespace Octans.Reflection
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float LambertianPdfValue(this IBxDF bxdf, in Vector wo, in Vector wi) =>
-            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
+            IsInSameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0f;
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -21,19 +21,20 @@ namespace Octans.Integrator
             _delta = _maxDist - _minDist;
         }
 
-        protected override SpectrumAccumulator Li(in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
+        protected override void Li(SpectrumAccumulator L, in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
         {
             var r = ray;
             var si = new SurfaceInteraction();
             if (!scene.Intersect(r, ref si))
             {
-                return arena.Create<SpectrumAccumulator>().Clear();
+                return;// arena.Create<SpectrumAccumulator>().Zero();
             }
 
             var dist = Point.Distance(si.P, ray.Origin);
             var v = MathF.Clamp(_minDist, _maxDist, dist);
             var x = 1f - (v - _minDist) / _delta;
-            return arena.Create<SpectrumAccumulator>().FromSpectrum(Spectrum.FromRGB(new[] {x, x, x}, SpectrumType.Illuminant));
+            L.Contribute(Spectrum.FromRGB(new[] { x, x, x }, SpectrumType.Illuminant));
+         //   return arena.Create<SpectrumAccumulator>().FromSpectrum(Spectrum.FromRGB(new[] {x, x, x}, SpectrumType.Illuminant));
         }
 
         protected override void Preprocess(in IScene scene, ISampler2 sampler)

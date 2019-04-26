@@ -1,5 +1,4 @@
-﻿using System;
-using Octans.Reflection.Microfacet;
+﻿using Octans.Reflection.Microfacet;
 using static System.MathF;
 using static Octans.MathF;
 
@@ -56,7 +55,25 @@ namespace Octans.Reflection
                                 ref Vector wi,
                                 in Point2D u,
                                 out float pdf,
-                                BxDFType sampleType = BxDFType.None) => throw new NotImplementedException();
+                                BxDFType sampleType = BxDFType.None)
+        {
+            if (wo.Z == 0f)
+            {
+                pdf = 0f;
+                return Spectrum.Zero;
+            }
+
+            var wh = Distribution.SampleWh(in wo, in u);
+            var eta = CosTheta(in wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
+            if (!Refract(wo, (Normal) wh, eta, ref wi))
+            {
+                pdf = 0f;
+                return Spectrum.Zero;
+            }
+
+            pdf = Pdf(wo, wi);
+            return F(wo, wi);
+        }
 
         public Spectrum Rho(in Vector wo, int nSamples, in Point2D[] u) => this.RhoValue(in wo, nSamples, in u);
 

@@ -177,7 +177,7 @@ namespace Octans.Material
 
             // Diffuse fresnel - go from 1 at normal incidence to .5 at grazing.
             // Burley 2015, eq (4).
-            return R * (InvPi * (1f - fo / 2f) * (1f - fi / 2f));
+            return InvPi * (1f - fo / 2f) * (1f - fi / 2f) * R;
         }
 
         public Spectrum SampleF(in Vector wo,

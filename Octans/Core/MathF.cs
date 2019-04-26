@@ -16,6 +16,8 @@ namespace Octans
 
         public const float PiOver4 = PI / 4f;
 
+        public const float TwoPi = PI * 2f;
+
         private const float OneEightyOverPi = 180f / PI;
 
         private const float PiOver180 = PI / 180f;

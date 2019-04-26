@@ -19,12 +19,12 @@ namespace Octans.Reflection
 
             // Handle degenerate cases.
             // ReSharper disable CompareOfFloatsByEqualityOperator
-            if (cosThetaI == 0 || cosThetaO == 0)
+            if (cosThetaI == 0f || cosThetaO == 0f)
             {
                 return Spectrum.Zero;
             }
 
-            if (wh.X == 0 && wh.Y == 0 && wh.Z == 0)
+            if (wh.X == 0f && wh.Y == 0f && wh.Z == 0f)
             {
                 return Spectrum.Zero;
             }

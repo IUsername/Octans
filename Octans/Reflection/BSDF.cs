@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.MathF;
 using static Octans.MathF;
 
@@ -140,7 +141,8 @@ namespace Octans.Reflection
                 _ss.Y * v.X + _ts.Y * v.Y + _ns.Y * v.Z,
                 _ss.Z * v.X + _ts.Z * v.Y + _ns.Z * v.Z);
 
-        public Spectrum Sample_F(in Vector woWorld,
+        public void Sample_F(SpectrumAccumulator f,
+                                 in Vector woWorld,
                                  out Vector wiWorld,
                                  Point2D u,
                                  out float pdf,
@@ -153,7 +155,7 @@ namespace Octans.Reflection
                 pdf = 0f;
                 wiWorld = Vectors.Zero;
                 sampledType = BxDFType.None;
-                return Spectrum.Zero;
+                return;// Spectrum.Zero;
             }
 
             var comp = Math.Min((int) Floor(u[0] * matching), matching - 1);
@@ -176,18 +178,18 @@ namespace Octans.Reflection
                 pdf = 0;
                 wiWorld = Vectors.Zero;
                 sampledType = BxDFType.None;
-                return Spectrum.Zero;
+                return;// Spectrum.Zero;
             }
 
             sampledType = bxdf.Type;
             var wi = new Vector();
-            var f = bxdf.SampleF(wo, ref wi, uRemapped, out pdf, sampledType);
+            var fx = bxdf.SampleF(wo, ref wi, uRemapped, out pdf, sampledType);
             if (pdf == 0f)
             {
                 pdf = 0;
                 wiWorld = Vectors.Zero;
                 sampledType = BxDFType.None;
-                return Spectrum.Zero;
+                return;// Spectrum.Zero;
             }
 
             wiWorld = LocalToWorld(wi);
@@ -196,7 +198,7 @@ namespace Octans.Reflection
             {
                 for (var i = 0; i < _nBxDFs; ++i)
                 {
-                    if (_bxdf[i] != bxdf && _bxdf[i].AnyFlag(type))
+                    if (!ReferenceEquals(_bxdf[i], bxdf) && _bxdf[i].AnyFlag(type))
                     {
                         pdf += _bxdf[i].Pdf(wo, wi);
                     }
@@ -211,19 +213,23 @@ namespace Octans.Reflection
             if (!bxdf.AnyFlag(BxDFType.Specular))
             {
                 var reflect = wiWorld % _ng * woWorld % _ng > 0f;
-                f = Spectrum.Zero;
+               // f = Spectrum.Zero;
+               //f.Zero();
                 for (var i = 0; i < _nBxDFs; ++i)
                 {
                     if (_bxdf[i].AnyFlag(type) &&
                         (reflect && _bxdf[i].AnyFlag(BxDFType.Reflection) ||
                          !reflect && _bxdf[i].AnyFlag(BxDFType.Transmission)))
                     {
-                        f += _bxdf[i].F(wo, wi);
+                        f.Contribute(_bxdf[i].F(wo, wi));
+                        //f += _bxdf[i].F(wo, wi);
                     }
                 }
+
+                return;
             }
 
-            return f;
+            f.Contribute(fx);
         }
     }
 }

@@ -369,9 +369,14 @@ namespace Octans.Accelerator
                 {
                     b = nBuckets - 1;
                 }
+                Debug.Assert(b >= 0);
+                Debug.Assert(b < nBuckets);
 
                 return b <= minCostSplitBucket;
             });
+           
+            Debug.Assert(mid > start);
+            Debug.Assert(mid < end);
 
             node.InitInterior(dim,
                               BuildUpperSAH(arena, treeletRoots, start, mid, ref totalNodes),

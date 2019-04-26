@@ -113,7 +113,7 @@ namespace Octans.Reflection.Microfacet
             if (cosTheta > 0.9999f)
             {
                 var r = Sqrt(u1 / (1f - u1));
-                var phi = PI * 2f * u2;
+                var phi = TwoPi * u2;
                 slopeX = r * Cos(phi);
                 slopeY = r * Sin(phi);
                 return;

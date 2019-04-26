@@ -100,27 +100,27 @@ namespace Octans.Integrator
                     var rayWeight = camera.GenerateRayDifferential(cameraSample, out var ray);
                     ray.ScaleDifferentials(1f / Sqrt(tileSampler.SamplesPerPixel));
 
-                    var L = arena.Create<SpectrumAccumulator>().Clear();
+                    var L = arena.Create<SpectrumAccumulator>().Zero();
 
                     if (rayWeight > 0f)
                     {
-                        L = Li(ray, scene, tileSampler, arena);
+                        Li(L, ray, scene, tileSampler, arena);
                     }
 
                     if (L.HasNaN())
                     {
                         Debug.Print("Not-a-number encountered in radiance value.");
-                        L.Clear();
+                        L.Zero();
                     }
                     else if (L.YComponent() < -1e-5f)
                     {
                         Debug.Print("Negative luminance encountered.");
-                        L.Clear();
+                        L.Zero();
                     }
                     else if (float.IsInfinity(L.YComponent()))
                     {
                         Debug.Print("Infinite luminance encountered.");
-                        L.Clear();
+                        L.Zero();
                     }
 
                     filmTile.AddSample(cameraSample.FilmPoint, L.ToSpectrum(arena), rayWeight);
@@ -132,24 +132,29 @@ namespace Octans.Integrator
             camera.Film.MergeFilmTile(filmTile);
         }
 
-        protected abstract SpectrumAccumulator Li(in RayDifferential ray,
-                                       IScene scene,
-                                       ISampler2 tileSampler,
-                                       IObjectArena arena,
-                                       int depth = 0);
+        protected abstract void Li(
+            SpectrumAccumulator L,
+            in RayDifferential ray,
+            IScene scene,
+            ISampler2 tileSampler,
+            IObjectArena arena,
+            int depth = 0);
 
         protected abstract void Preprocess(in IScene scene, ISampler2 sampler);
 
-        protected SpectrumAccumulator SpecularReflect(RayDifferential ray,
-                                           SurfaceInteraction si,
-                                           IScene scene,
-                                           ISampler2 sampler,
-                                           IObjectArena arena,
-                                           in int depth)
+        protected void SpecularReflect(
+            SpectrumAccumulator L,
+            RayDifferential ray,
+            SurfaceInteraction si,
+            IScene scene,
+            ISampler2 sampler,
+            IObjectArena arena,
+            in int depth)
         {
             var wo = si.Wo;
             var type = BxDFType.Reflection | BxDFType.Specular;
-            var f = si.BSDF.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf, type, out _);
+            var f = arena.Create<SpectrumAccumulator>().Zero();
+            si.BSDF.Sample_F(f, wo, out var wi, sampler.Get2D(), out var pdf, type, out _);
 
             var ns = si.ShadingGeometry.N;
             if (pdf > 0f && !f.IsBlack() && System.MathF.Abs(wi % ns) != 0f)
@@ -176,25 +181,37 @@ namespace Octans.Integrator
                     rd.RyDirection = wi - dwody + 2f * (Vector) (wo % ns * dndy + dDNdy * ns);
                 }
 
-                return Li(rd, scene, sampler, arena, depth + 1) * f * (System.MathF.Abs(wi % ns) / pdf);
+                var nL = arena.Create<SpectrumAccumulator>().Zero();
+                Li(nL, rd, scene, sampler, arena, depth + 1);
+                if (!nL.IsBlack())
+                {
+                    nL.Scale(System.MathF.Abs(wi % ns) / pdf);
+                    nL.Scale(f);
+                    L.Contribute(nL);
+                }
+
+                //return L;
             }
 
-            return arena.Create<SpectrumAccumulator>().Clear();
+            //return arena.Create<SpectrumAccumulator>().Zero();
         }
 
-        protected SpectrumAccumulator SpecularTransmit(in RayDifferential ray,
-                                            SurfaceInteraction si,
-                                            IScene scene,
-                                            ISampler2 sampler,
-                                            IObjectArena arena,
-                                            in int depth)
+        protected void SpecularTransmit(
+            SpectrumAccumulator L,
+            in RayDifferential ray,
+            SurfaceInteraction si,
+            IScene scene,
+            ISampler2 sampler,
+            IObjectArena arena,
+            in int depth)
         {
             var wo = si.Wo;
             var p = si.P;
             var bsdf = si.BSDF;
-            var f = bsdf.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf,
+            var f = arena.Create<SpectrumAccumulator>().Zero();
+            bsdf.Sample_F(f, wo, out var wi, sampler.Get2D(), out var pdf,
                                   BxDFType.Transmission | BxDFType.Specular, out _);
-            var L = arena.Create<SpectrumAccumulator>().Clear();
+
             var ns = si.ShadingGeometry.N;
             if (pdf > 0f && !f.IsBlack() && Vector.AbsDot(wi, ns) != 0f)
             {
@@ -232,10 +249,20 @@ namespace Octans.Integrator
                     rd.RyDirection = wi - eta * dwody + (Vector) (mu * dndy + dmudy * ns);
                 }
 
-                L = Li(rd, scene, sampler, arena, depth + 1) * f * (Vector.AbsDot(wi, ns) / pdf);
+                var nL = arena.Create<SpectrumAccumulator>().Zero();
+                Li(nL, rd, scene, sampler, arena, depth + 1);
+                if (!nL.IsBlack())
+                {
+                    nL.Scale(f);
+                    nL.Scale(Vector.AbsDot(wi, ns) / pdf);
+                    L.Contribute(nL);
+                }
+
+                //  return L;
+                //  L = Li(rd, scene, sampler, arena, depth + 1) * f * (Vector.AbsDot(wi, ns) / pdf);
             }
 
-            return L;
+            //  return arena.Create<SpectrumAccumulator>().Zero();
         }
     }
 }

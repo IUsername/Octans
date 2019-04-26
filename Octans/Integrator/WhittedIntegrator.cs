@@ -13,14 +13,14 @@ namespace Octans.Integrator
             _maxDepth = maxDepth;
         }
 
-        protected override SpectrumAccumulator Li(in RayDifferential ray,
+        protected override void Li(SpectrumAccumulator L, in RayDifferential ray,
                                                   IScene scene,
                                                   ISampler2 sampler,
                                                   IObjectArena arena,
                                                   int depth = 0)
         {
             var cr = ray;
-            var L = arena.Create<SpectrumAccumulator>().Clear();
+         //   var L = arena.Create<SpectrumAccumulator>().Zero();
             var si = new SurfaceInteraction();
             while (true)
             {
@@ -28,10 +28,10 @@ namespace Octans.Integrator
                 {
                     foreach (var light in scene.Lights)
                     {
-                        L += light.Le(cr);
+                        L.Contribute(light.Le(cr));
                     }
 
-                    return L;
+                    return;// L;
                 }
 
                 var n = si.ShadingGeometry.N;
@@ -44,7 +44,7 @@ namespace Octans.Integrator
                     continue;
                 }
 
-                L += si.Le(wo);
+                L.Contribute(si.Le(wo));
 
                 foreach (var light in scene.Lights)
                 {
@@ -57,17 +57,19 @@ namespace Octans.Integrator
                     var f = si.BSDF.F(in wo, in wi);
                     if (!f.IsBlack() && visibility.Unoccluded(scene))
                     {
-                        L += f * Li * (Abs(wi % n) / pdf);
+                        L.Contribute(f * Li * (Abs(wi % n) / pdf));
                     }
                 }
 
                 if (depth + 1 < _maxDepth)
                 {
-                    L += SpecularReflect(cr, si, scene, sampler, arena, depth);
-                    L += SpecularTransmit(cr, si, scene, sampler, arena, depth);
+                    SpecularReflect(L, cr, si, scene, sampler, arena, depth);
+                    SpecularTransmit(L, cr, si, scene, sampler, arena, depth);
+                    //L.Add(SpecularReflect(L, cr, si, scene, sampler, arena, depth));
+                    //L.Add(SpecularTransmit(L, cr, si, scene, sampler, arena, depth));
                 }
 
-                return L;
+            //    return L;
             }
         }
 

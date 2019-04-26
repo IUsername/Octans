@@ -253,7 +253,7 @@ namespace Octans
                     }
                     else
                     {
-                        p[i].ContributionSum.Clear();
+                        p[i].ContributionSum.Zero();
                     }
 
                     p[i].FilterWeightSum = 0f;
@@ -295,7 +295,7 @@ namespace Octans
                         var filterWeight = _filterTable[offset];
 
                         ref var pixel = ref GetPixel(new PixelCoordinate(x, y));
-                        pixel.ContributionSum += L * (sampleWeight * filterWeight);
+                        pixel.ContributionSum.Contribute(L * (sampleWeight * filterWeight));
                         pixel.FilterWeightSum += filterWeight;
                     }
                 }
