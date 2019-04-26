@@ -1,5 +1,5 @@
-﻿using System;
-using Octans.Sampling;
+﻿using Octans.Sampling;
+using static System.Math;
 
 namespace Octans.Pipeline
 {
@@ -15,7 +15,7 @@ namespace Octans.Pipeline
         public Color Gather(in PixelInformation pixel, ISampler sampler, IPixelRenderSegment segment)
         {
             var total = Colors.Black;
-            var index = (ulong) Math.Abs(pixel.Coordinate.GetHashCode());
+            var index = (ulong) Abs(pixel.Coordinate.GetHashCode());
             var local = sampler.Create(index);
             for (var i = 0; i < SamplesPerPixel; i++)
             {
@@ -23,6 +23,7 @@ namespace Octans.Pipeline
                 var sample = new PixelSample(in pixel, in uv);
                 total += segment.Render(in sample, sampler.Create(Index(in sample)));
             }
+
             return total / SamplesPerPixel;
         }
 
@@ -32,7 +33,7 @@ namespace Octans.Pipeline
             hashCode = (hashCode * 397) ^ sample.Pixel.Coordinate.Y;
             hashCode = (hashCode * 397) ^ sample.UV.U.GetHashCode();
             hashCode = (hashCode * 397) ^ sample.UV.V.GetHashCode();
-            return (ulong) Math.Abs(hashCode);
+            return (ulong) Abs(hashCode);
         }
     }
 }

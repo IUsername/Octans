@@ -100,7 +100,9 @@ namespace Octans.Material
                     else
                     {
                         si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(Spectrum.One, 1f, e, mode));
-                        // TODO: Add DisneyBSSRDF
+                        si.BSSRDF =  arena.Create<DisneyBSSRDF>().Initialize(c * diffuseWeight, sd, si, e, this, mode);
+                        // TOOD: Add directly to si?
+                        //si.BSDF.Add(arena.Create<SeparatableBSSRDFAdapter>().Initialize(bssrdf));
                     }
                 }
 
@@ -472,5 +474,73 @@ namespace Octans.Material
         }
 
         public override float G(in Vector wo, in Vector wi) => G1(wo) * G1(wi);
+    }
+
+    public sealed class DisneyBSSRDF : SeparatableBSSRDF
+    {
+        public DisneyBSSRDF Initialize(Spectrum r,
+                                       Spectrum d,
+                                       SurfaceInteraction po,
+                                       float eta,
+                                       IMaterial material,
+                                       TransportMode mode)
+        {
+            base.Initialize(po, eta, material, mode);
+            R = r;
+            D = d * 0.2f;
+            return this;
+        }
+
+        public override Spectrum S(SurfaceInteraction pi, in Vector wi)
+        {
+            var a = (pi.P - PO.P).Normalize();
+            var fade = 1f;
+            var n = (Vector) PO.ShadingGeometry.N;
+            var cosTheta = a % n;
+            if (cosTheta > 0f)
+            {
+                var sinTheta = Sqrt(Max(0f, 1f - cosTheta * cosTheta));
+                var a2 = n * sinTheta - (a - n * cosTheta) * cosTheta / sinTheta;
+                fade = Max(0f, PO.ShadingGeometry.N % a2);
+            }
+
+            var fo = SchlickWeight(AbsCosTheta(PO.Wo));
+            var fi = SchlickWeight(AbsCosTheta(wi));
+
+            return fade * (1 - fo / 2f) * (1f - fi / 2f) * Sp(pi) / PI;
+        }
+
+        public Spectrum D { get; private set; }
+
+        public Spectrum R { get; private set; }
+
+        public override float SampleSr(in int ch, float u)
+        {
+            if (u < 0.25f)
+            {
+                u = Min(u * 4f, OneMinusEpsilon);
+                return D[ch] * Log(1f / (1f - u));
+            }
+
+            u = Min((u - 0.25f) / 0.75f, OneMinusEpsilon);
+            return 3f * D[ch] * Log(1f / (1f - u));
+        }
+
+        public override float PdfSr(in int ch, float r)
+        {
+            if (r < 1e-6f) r = 1e-6f;
+
+            // Weight the two individual PDFs as per the sampling frequency in
+            // Sample_Sr().
+            return (0.25f * Exp(-r / D[ch]) / (2f * PI * D[ch] * r) +
+                    0.75f * Exp(-r / (3f * D[ch])) / (6f * PI * D[ch] * r));
+        }
+
+        public override Spectrum Sr(float r)
+        {
+            if (r < 1e-6f) r = 1e-6f;
+            var rS = new Spectrum(r);
+            return R * ((-rS / D).Exp() + (-rS / (3f * D)).Exp()) / (8f * PI * D * rS);
+        }
     }
 }

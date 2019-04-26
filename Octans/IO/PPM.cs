@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using static System.MathF;
+using static Octans.Math;
 
 namespace Octans.IO
 {
@@ -35,13 +37,12 @@ namespace Octans.IO
             return sb.ToString();
         }
 
-        private static void AppendPixelData(PixelVector resolution, ReadOnlySpan<float> lrgb, StringBuilder sb, int maxLineWidth)
+        private static void AppendPixelData(PixelVector resolution,
+                                            ReadOnlySpan<float> lrgb,
+                                            StringBuilder sb,
+                                            int maxLineWidth)
         {
-            static int ToByte(float v)
-            {
-               return Math.Clamp((int)(MaxValue * Utilities.GammaCorrect(v) + 0.5f), 0, MaxValue);
-               //return Math.Clamp((int)(MaxValue * v + 0.5f), 0, MaxValue);
-            }
+            static int ToByte(float v) => Clamp(0, MaxValue, (int) (MaxValue * Utilities.GammaCorrect(v) + 0.5f));
 
             var k = 0;
             for (var j = 0; j < resolution.Y; ++j)
@@ -50,11 +51,11 @@ namespace Octans.IO
                 for (var i = 0; i < resolution.X; ++i)
                 {
                     var offset = i * 3;
-                    parts[offset] = ToByte(lrgb[k++]);// Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
-                    parts[offset+1] = ToByte(lrgb[k++]);//Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
-                    parts[offset+2] = ToByte(lrgb[k++]);//Math.Clamp((int)(lrgb[k++] * 100), 0, MaxValue);
-
+                    parts[offset] = ToByte(lrgb[k++]);
+                    parts[offset + 1] = ToByte(lrgb[k++]);
+                    parts[offset + 2] = ToByte(lrgb[k++]);
                 }
+
                 foreach (var line in ColorValuesToStrings(parts, maxLineWidth))
                 {
                     sb.AppendLine(line);
@@ -87,9 +88,9 @@ namespace Octans.IO
         {
             var c1 = c * MaxValue;
             return (
-                r: Clamp((int) System.MathF.Round(c1.Red), 0, MaxValue),
-                g: Clamp((int) System.MathF.Round(c1.Green), 0, MaxValue),
-                b: Clamp((int) System.MathF.Round(c1.Blue), 0, MaxValue));
+                r: Clamp(0, MaxValue, (int) Round(c1.Red)),
+                g: Clamp(0, MaxValue, (int) Round(c1.Green)),
+                b: Clamp(0, MaxValue, (int) Round(c1.Blue)));
         }
 
         private static IEnumerable<string> ColorValuesToStrings(IEnumerable<int> values, int maxLength)
@@ -109,16 +110,13 @@ namespace Octans.IO
             }
         }
 
-        // TODO: Move to MathFunctions
-        private static int Clamp(int v, int min, int max) => Math.Min(max, Math.Max(min, v));
-
         public static void ToFile(Canvas c, string folderPath, string fileName)
         {
             // TODO: File streaming
             File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), CanvasToPPM(c));
         }
 
-        public static void ToFile(ReadOnlySpan<float> lrgb,  PixelVector resolution, string folderPath, string fileName)
+        public static void ToFile(ReadOnlySpan<float> lrgb, PixelVector resolution, string folderPath, string fileName)
         {
             // TODO: File streaming
             File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), LRGBToPPM(lrgb, resolution));

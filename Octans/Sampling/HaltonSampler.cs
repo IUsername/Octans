@@ -81,7 +81,7 @@ namespace Octans.Sampling
                 var b = i == 0 ? 2 : 3;
                 var scale = 1;
                 var exp = 0;
-                while (scale < Math.Min(res[i], KMaxResolution))
+                while (scale < System.Math.Min(res[i], KMaxResolution))
                 {
                     scale *= b;
                     ++exp;

@@ -1,4 +1,5 @@
-﻿using Octans.Primitive;
+﻿using Octans.Material;
+using Octans.Primitive;
 using Octans.Reflection;
 using static System.MathF;
 using static System.Single;
@@ -27,6 +28,7 @@ namespace Octans
         public Vector Dpdx { get; private set; }
         public Vector Dpdy { get; private set; }
         public IPrimitive Primitive { get; set; }
+        public IBSSRDF BSSRDF { get; set; }
 
         public SurfaceInteraction Initialize(in Point p,
                                              in Vector pError,
@@ -60,6 +62,7 @@ namespace Octans
             }
 
             BSDF.Initialize(this);
+            BSSRDF = null;
 
             return this;
         }
@@ -79,6 +82,7 @@ namespace Octans
             ShadingGeometry = other.ShadingGeometry;
             Primitive = other.Primitive;
             BSDF.Initialize(other);
+            BSSRDF = null;
             return this;
         }
 
@@ -111,6 +115,7 @@ namespace Octans
             Shape = other.Shape;
             Primitive = other.Primitive;
             ShadingGeometry.N = Normal.FaceForward(ShadingGeometry.N, N);
+            BSSRDF = other.BSSRDF;
             BSDF.Initialize(this);
             return this;
         }
@@ -293,6 +298,13 @@ namespace Octans
             var o = OffsetRayOrigin(P, PError, N, it.P - P);
             var t = OffsetRayOrigin(it.P, it.PError, it.N, o - it.P);
             var d = t - o;
+            return new Ray(o, d, 1 - MathF.ShadowEpsilon);
+        }
+
+        public Ray SpawnRayTo(in Point p)
+        {
+            var d = p - P;
+            var o = OffsetRayOrigin(P, PError, N, d);
             return new Ray(o, d, 1 - MathF.ShadowEpsilon);
         }
     }

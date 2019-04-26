@@ -41,13 +41,13 @@ namespace Octans.Reflection
             _ts = Vector.Cross(_ns, _ss);
             Eta = eta;
             _nBxDFs = 0;
-            //_nBxDFs = si.BSDF._nBxDFs;
-            //for (var i = 0; i < _nBxDFs; i++)
-            //{
-            //    _bxdf[i] = si.BSDF._bxdf[i];
-            //}
+            _nBxDFs = si.BSDF._nBxDFs;
+            for (var i = 0; i < _nBxDFs; i++)
+            {
+                _bxdf[i] = si.BSDF._bxdf[i];
+            }
 
-            //si.BSDF = this;
+           // si.BSDF = this;
             return this;
         }
 
@@ -158,7 +158,7 @@ namespace Octans.Reflection
                 return;// Spectrum.Zero;
             }
 
-            var comp = Math.Min((int) Floor(u[0] * matching), matching - 1);
+            var comp = System.Math.Min((int) Floor(u[0] * matching), matching - 1);
 
             IBxDF bxdf = null;
             var count = comp;

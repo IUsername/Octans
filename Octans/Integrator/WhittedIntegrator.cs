@@ -13,14 +13,14 @@ namespace Octans.Integrator
             _maxDepth = maxDepth;
         }
 
-        protected override void Li(SpectrumAccumulator L, in RayDifferential ray,
-                                                  IScene scene,
-                                                  ISampler2 sampler,
-                                                  IObjectArena arena,
-                                                  int depth = 0)
+        protected override void Li(SpectrumAccumulator L,
+                                   in RayDifferential ray,
+                                   IScene scene,
+                                   ISampler2 sampler,
+                                   IObjectArena arena,
+                                   int depth = 0)
         {
             var cr = ray;
-         //   var L = arena.Create<SpectrumAccumulator>().Zero();
             var si = new SurfaceInteraction();
             while (true)
             {
@@ -31,7 +31,7 @@ namespace Octans.Integrator
                         L.Contribute(light.Le(cr));
                     }
 
-                    return;// L;
+                    return;
                 }
 
                 var n = si.ShadingGeometry.N;
@@ -65,11 +65,9 @@ namespace Octans.Integrator
                 {
                     SpecularReflect(L, cr, si, scene, sampler, arena, depth);
                     SpecularTransmit(L, cr, si, scene, sampler, arena, depth);
-                    //L.Add(SpecularReflect(L, cr, si, scene, sampler, arena, depth));
-                    //L.Add(SpecularTransmit(L, cr, si, scene, sampler, arena, depth));
                 }
 
-            //    return L;
+                return;
             }
         }
 

@@ -151,12 +151,12 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "p_to_m", (f,i) =>
             {
                 var color = i % 2 == 0
-                    ? Spectrum.FromRGB(new[] {0.9f, 0.0f, 0f}, SpectrumType.Reflectance)
-                    : Spectrum.FromRGB(new[] {0.9f, 0.8f, 0.0f}, SpectrumType.Reflectance);
+                    ? Spectrum.FromRGB(new[] {0.9f, 0.9f, 0.9f}, SpectrumType.Reflectance)
+                    : Spectrum.FromRGB(new[] {0.2f, 0.2f, 0.8f}, SpectrumType.Reflectance);
                 return new DisneyMaterial(
                     color: new ConstantTexture<Spectrum>(color),
                     metallic: new ConstantTexture<float>(f),
-                    eta: new ConstantTexture<float>(0.1f),
+                    eta: new ConstantTexture<float>(0.2f),
                     roughness: new ConstantTexture<float>(0.4f),
                     specularTint: new ConstantTexture<float>(0f),
                     anisotropic: new ConstantTexture<float>(0f),
@@ -215,15 +215,15 @@ namespace Octans.ConsoleApp
                                   "row_" + fileSuffix));
 
             var lt = Transform.Translate(mid.X-60, 100, -40);
-            var s = Spectrum.FromBlackbodyT(5500) * 30000f;
+            var s = Spectrum.FromBlackbodyT(4500) * 30000f;
             var pl1 = new PointLight2(lt, s);
 
             lt = Transform.Translate(mid.X + 100, 100, -300);
-            s = Spectrum.FromBlackbodyT(6500) * 20000f;
+            s = Spectrum.FromBlackbodyT(2700) * 20000f;
             var pl2 = new PointLight2(lt, s);
 
             lt = Transform.Translate(mid.X, -20, 100);
-            s = Spectrum.FromBlackbodyT(7500) * 20000f;
+            s = Spectrum.FromBlackbodyT(7000) * 5000f;
             var pl3 = new PointLight2(lt, s);
 
             var scene = new Scene(bvh, new ILight2[] {pl1, pl2, pl3});

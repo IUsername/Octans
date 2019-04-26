@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Numerics;
+using static System.MathF;
 
 namespace Octans
 {
@@ -97,13 +98,13 @@ namespace Octans
         [Pure]
         public static PixelCoordinate Max(in PixelCoordinate a, in PixelCoordinate b)
         {
-            return new PixelCoordinate(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y));
+            return new PixelCoordinate(System.Math.Max(a.X, b.X), System.Math.Max(a.Y, b.Y));
         }
 
         [Pure]
         public static PixelCoordinate Min(in PixelCoordinate a, in PixelCoordinate b)
         {
-            return new PixelCoordinate(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y));
+            return new PixelCoordinate(System.Math.Min(a.X, b.X), System.Math.Min(a.Y, b.Y));
         }
     }
 }

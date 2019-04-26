@@ -276,14 +276,14 @@ namespace Octans
                 for (var x = p0.X; x < p1.X; x++)
                 {
                     var fx = System.MathF.Abs((x - discrete.X) * _inverseFilterRadius.X * _filterTableWidth);
-                    ifx[x - p0.X] = Math.Min((int) System.MathF.Floor(fx), _filterTableWidth - 1);
+                    ifx[x - p0.X] = System.Math.Min((int) System.MathF.Floor(fx), _filterTableWidth - 1);
                 }
 
                 var ify = new int[p1.Y - p0.Y];
                 for (var y = p0.Y; y < p1.Y; y++)
                 {
                     var fy = System.MathF.Abs((y - discrete.Y) * _inverseFilterRadius.Y * _filterTableWidth);
-                    ify[y - p0.Y] = Math.Min((int) System.MathF.Floor(fy), _filterTableWidth - 1);
+                    ify[y - p0.Y] = System.Math.Min((int) System.MathF.Floor(fy), _filterTableWidth - 1);
                 }
 
               

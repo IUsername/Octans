@@ -175,7 +175,7 @@ namespace Octans
                 return false;
             }
 
-            var rootDiscriminant = Math.Sqrt(discriminant);
+            var rootDiscriminant = System.Math.Sqrt(discriminant);
             var floatRootDiscriminant = new EFloat((float) rootDiscriminant, (float) (MathF.MachineEpsilon * rootDiscriminant));
 
             EFloat q;

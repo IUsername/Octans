@@ -126,15 +126,15 @@ namespace Octans
 
         public static SubPixel Center(in SubPixel a, in SubPixel b)
         {
-            var div = Math.Max(a.Divisions << 1, b.Divisions << 1);
+            var div = System.Math.Max(a.Divisions << 1, b.Divisions << 1);
             var utl = ToDivResolution(in a, div);
             var ubr = ToDivResolution(in b, div);
             var xl = utl.X * div + utl.Dx;
             var xr = ubr.X * div + ubr.Dx;
             var yt = utl.Y * div + utl.Dy;
             var yb = ubr.Y * div + ubr.Dy;
-            var dx = Math.Min(xl, xr) + Math.Abs(xr - xl) / 2;
-            var dy = Math.Min(yt, yb) + Math.Abs(yb - yt) / 2;
+            var dx = System.Math.Min(xl, xr) + System.Math.Abs(xr - xl) / 2;
+            var dy = System.Math.Min(yt, yb) + System.Math.Abs(yb - yt) / 2;
             var x = dx / div;
             dx -= x * div;
             var y = dy / div;
