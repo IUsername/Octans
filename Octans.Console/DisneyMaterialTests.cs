@@ -148,22 +148,22 @@ namespace Octans.ConsoleApp
         public static void PlasticToMetal(int spp)
         {
             // ReSharper disable ArgumentsStyleOther
-            RowTestByDelegate(spp, "p_to_m", (f,i) =>
+            RowTestByDelegate(spp, "disn", (f,i) =>
             {
                 var color = i % 2 == 0
                     ? Spectrum.FromRGB(new[] {0.9f, 0.9f, 0.9f}, SpectrumType.Reflectance)
                     : Spectrum.FromRGB(new[] {0.2f, 0.2f, 0.8f}, SpectrumType.Reflectance);
                 return new DisneyMaterial(
                     color: new ConstantTexture<Spectrum>(color),
-                    metallic: new ConstantTexture<float>(f),
-                    eta: new ConstantTexture<float>(0.2f),
-                    roughness: new ConstantTexture<float>(0.4f),
+                    metallic: new ConstantTexture<float>(0f),
+                    eta: new ConstantTexture<float>(0.74f),
+                    roughness: new ConstantTexture<float>(f),
                     specularTint: new ConstantTexture<float>(0f),
                     anisotropic: new ConstantTexture<float>(0f),
-                    sheen: new ConstantTexture<float>(0f),
+                    sheen: new ConstantTexture<float>(f),
                     sheenTint: new ConstantTexture<float>(0f),
-                    clearcoat: new ConstantTexture<float>(0.0f),
-                    clearcoatGloss: new ConstantTexture<float>(0.7f),
+                    clearcoat: new ConstantTexture<float>(1f - f),
+                    clearcoatGloss: new ConstantTexture<float>(1f),
                     specTrans: new ConstantTexture<float>(0f),
                     scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
                     false,
@@ -204,12 +204,15 @@ namespace Octans.ConsoleApp
 
             var transform = Transform.Translate(mid.X, 0f, -50f);
             var dist = Point.Distance(from, to);
-            var filter = new MitchellFilter(new Vector2(1.75f, 1.75f), 0.9f, 0.05f);
+            var filter = new MitchellFilter(new Vector2(2.25f, 2.25f), 0.9f, 0.05f);
             var film = new Film(new PixelVector(width, height), new Bounds2D(0, 0, 1, 1), filter, 20f, 1f);
             var camera = PerspectiveCamera.Create(transform, aspectRatio, 0.0f, dist, fov, film);
 
-            var integrator = new WhittedIntegrator(2, camera, new HaltonSampler(spp, film.GetSampleBounds()),
-                                                   film.CroppedBounds);
+            //var integrator = new WhittedIntegrator(2, camera, new HaltonSampler(spp, film.GetSampleBounds()),
+            //                                       film.CroppedBounds);
+
+            var integrator = new PathIntegrator(2, camera, new HaltonSampler(spp, film.GetSampleBounds()),
+                                                   film.CroppedBounds, 3f, LightSampleStrategy.Spatial);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                                   "row_" + fileSuffix));
@@ -218,8 +221,8 @@ namespace Octans.ConsoleApp
             var s = Spectrum.FromBlackbodyT(4500) * 30000f;
             var pl1 = new PointLight2(lt, s);
 
-            lt = Transform.Translate(mid.X + 100, 100, -300);
-            s = Spectrum.FromBlackbodyT(2700) * 20000f;
+            lt = Transform.Translate(mid.X + 100, 100, -200);
+            s = Spectrum.FromBlackbodyT(2200) * 100000f;
             var pl2 = new PointLight2(lt, s);
 
             lt = Transform.Translate(mid.X, -20, 100);

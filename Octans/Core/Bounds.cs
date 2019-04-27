@@ -327,5 +327,16 @@ namespace Octans
 
             return tMin < ray.TMax && tMax > 0;
         }
+
+        [Pure]
+        public Vector Diagonal() => Max - Min;
+
+        [Pure]
+        public Point Lerp(in Point t) =>
+            new Point(
+                MathF.Lerp(Min.X, Max.X, t.X),
+                MathF.Lerp(Min.Y, Max.Y, t.Y),
+                MathF.Lerp(Min.Z, Max.Z, t.Z)
+            );
     }
 }

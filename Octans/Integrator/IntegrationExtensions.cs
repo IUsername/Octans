@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using Octans.Reflection;
 using Octans.Sampling;
+using static Octans.Sampling.Utilities;
 
 namespace Octans.Integrator
 {
@@ -10,8 +14,8 @@ namespace Octans.Integrator
                                                      IScene scene,
                                                      IObjectArena arena,
                                                      ISampler2 sampler,
-                                                     bool handleMedia,
-                                                     Distribution1D lightDistribution)
+                                                     bool handleMedia = false,
+                                                     Distribution1D lightDistribution = null)
         {
             var nLights = scene.Lights.Length;
             if (nLights == 0)
@@ -24,10 +28,10 @@ namespace Octans.Integrator
             if (!(lightDistribution is null))
             {
                 lightNum = lightDistribution.SampleDiscrete(sampler.Get1D(), out lightPdf, out _);
-                if (lightNum == 0)
-                {
-                    return Spectrum.Zero;
-                }
+                //if (lightNum == 0)
+                //{
+                //    return Spectrum.Zero;
+                //}
             }
             else
             {
@@ -48,7 +52,7 @@ namespace Octans.Integrator
                                                IScene scene,
                                                ISampler2 sampler,
                                                IObjectArena arena,
-                                               in bool handleMedia,
+                                               in bool handleMedia = false,
                                                bool specular = false)
         {
             var bsdfFlags = specular ? BxDFType.All : BxDFType.All & ~BxDFType.Specular;
@@ -61,13 +65,12 @@ namespace Octans.Integrator
                 Spectrum f = Spectrum.Zero;
                 if (it.IsSurfaceInteraction)
                 {
-                    var si = it as SurfaceInteraction;
-                    if (si is null)
+                    if (!(it is SurfaceInteraction si))
                     {
                         throw new InvalidOperationException("Expecting a Surface Interaction for 'it'.");
                     }
 
-                    f = si.BSDF.F(si.Wo, wi, bsdfFlags);
+                    f = si.BSDF.F(si.Wo, wi, bsdfFlags) * System.MathF.Abs(wi % si.ShadingGeometry.N);
                     scatteringPdf = si.BSDF.Pdf(si.Wo, wi, bsdfFlags);
                 }
 
@@ -93,7 +96,7 @@ namespace Octans.Integrator
                         }
                         else
                         {
-                            var weight = Sampling.Utilities.PowerHeuristic(1, lightPdf, 1, scatteringPdf);
+                            var weight = PowerHeuristic(1, lightPdf, 1, scatteringPdf);
                             Ld += f * Li * (weight / lightPdf);
                         }
                     }
@@ -106,8 +109,7 @@ namespace Octans.Integrator
                 var sampledSpecular = false;
                 if (it.IsSurfaceInteraction)
                 {
-                    var si = it as SurfaceInteraction;
-                    if (si is null)
+                    if (!(it is SurfaceInteraction si))
                     {
                         throw new InvalidOperationException("Expecting a Surface Interaction for 'it'.");
                     }
@@ -129,7 +131,7 @@ namespace Octans.Integrator
                             return Ld;
                         }
 
-                        weight = Sampling.Utilities.PowerHeuristic(1, scatteringPdf, 1, lightPdf);
+                        weight = PowerHeuristic(1, scatteringPdf, 1, lightPdf);
                     }
 
                     var lightIsect = new SurfaceInteraction();
@@ -159,6 +161,14 @@ namespace Octans.Integrator
             }
 
             return Ld;
+        }
+
+        [Pure]
+        public static Distribution1D ComputeLightPowerDistribution(this IScene scene)
+        {
+            if (scene.Lights.Length == 0) return null;
+            var lightPower = scene.Lights.Select(light => light.Power().YComponent()).ToList();
+            return new Distribution1D(lightPower.ToArray(), lightPower.Count);
         }
     }
 }

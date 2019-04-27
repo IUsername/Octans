@@ -9,7 +9,7 @@ namespace Octans.Reflection
     {
         Spectrum S(SurfaceInteraction pi, in Vector wi);
 
-        Spectrum SampleS(IScene scene, float u1, Point2D u2, IObjectArena arena, SurfaceInteraction si, out float pdf);
+        Spectrum SampleS(IScene scene, float u1, Point2D u2, IObjectArena arena, ref SurfaceInteraction si, out float pdf);
     }
 
     public static class BSSRDFTools
@@ -45,7 +45,7 @@ namespace Octans.Reflection
     //    public SurfaceInteraction SI { get; private set; }
     //}
 
-    public abstract class SeparatableBSSRDF : IBSSRDF
+    public abstract class SeparableBSSRDF : IBSSRDF
     {
         public float Eta { get; private set; }
 
@@ -71,10 +71,10 @@ namespace Octans.Reflection
                                 float u1,
                                 Point2D u2,
                                 IObjectArena arena,
-                                SurfaceInteraction si,
+                                ref SurfaceInteraction si,
                                 out float pdf)
         {
-            var Sp = SampleSp(scene, u1, u2, arena, si, out pdf);
+            var Sp = SampleSp(scene, u1, u2, arena, ref si, out pdf);
             if (Sp.IsBlack())
             {
                 return Sp;
@@ -90,7 +90,7 @@ namespace Octans.Reflection
                                   float u1,
                                   in Point2D u2,
                                   IObjectArena arena,
-                                  SurfaceInteraction pi,
+                                  ref SurfaceInteraction pi,
                                   out float pdf)
         {
             Vector vx, vy, vz;
@@ -146,25 +146,27 @@ namespace Octans.Reflection
             var pTarget = b.P + 1 * vz;
 
             var chain = arena.Create<IntersectionChain>();
-
+            chain.Si = new SurfaceInteraction();
+            var ptr = chain;
             var nFound = 0;
             while (true)
             {
                 var ray = b.SpawnRayTo(pTarget);
-                if (ray.Direction == Vectors.Zero || !scene.Intersect(ray, ref chain.Si))
+                if (ray.Direction == Vectors.Zero || !scene.Intersect(ray, ref ptr.Si))
                 {
                     break;
                 }
 
-                b = chain.Si;
-                if (!ReferenceEquals(chain.Si.Primitive.Material, Material))
+                b = ptr.Si;
+                if (!ReferenceEquals(ptr.Si.Primitive.Material, Material))
                 {
                     continue;
                 }
 
                 var next = arena.Create<IntersectionChain>();
-                chain.Next = next;
-                chain = next;
+                next.Si = new SurfaceInteraction();
+                ptr.Next = next;
+                ptr = next;
                 nFound++;
             }
 
@@ -217,7 +219,7 @@ namespace Octans.Reflection
 
         public abstract float PdfSr(in int ch, float r);
 
-        protected SeparatableBSSRDF Initialize(SurfaceInteraction po, float eta, IMaterial material, TransportMode mode)
+        protected SeparableBSSRDF Initialize(SurfaceInteraction po, float eta, IMaterial material, TransportMode mode)
         {
             PO = po;
             Eta = eta;
@@ -249,7 +251,7 @@ namespace Octans.Reflection
 
     public class SeparatableBSSRDFAdapter : IBxDF
     {
-        public SeparatableBSSRDF BSSRDF { get; private set; }
+        public SeparableBSSRDF BSSRDF { get; private set; }
         public BxDFType Type => BxDFType.Reflection | BxDFType.Diffuse;
 
         public Spectrum F(in Vector wo, in Vector wi)
@@ -276,7 +278,7 @@ namespace Octans.Reflection
 
         public float Pdf(in Vector wo, in Vector wi) => this.LambertianPdfValue(wo, wi);
 
-        public IBxDF Initialize(SeparatableBSSRDF bssrdf)
+        public IBxDF Initialize(SeparableBSSRDF bssrdf)
         {
             BSSRDF = bssrdf;
             return this;

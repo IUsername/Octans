@@ -101,8 +101,6 @@ namespace Octans.Material
                     {
                         si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(Spectrum.One, 1f, e, mode));
                         si.BSSRDF =  arena.Create<DisneyBSSRDF>().Initialize(c * diffuseWeight, sd, si, e, this, mode);
-                        // TOOD: Add directly to si?
-                        //si.BSDF.Add(arena.Create<SeparatableBSSRDFAdapter>().Initialize(bssrdf));
                     }
                 }
 
@@ -476,7 +474,7 @@ namespace Octans.Material
         public override float G(in Vector wo, in Vector wi) => G1(wo) * G1(wi);
     }
 
-    public sealed class DisneyBSSRDF : SeparatableBSSRDF
+    public sealed class DisneyBSSRDF : SeparableBSSRDF
     {
         public DisneyBSSRDF Initialize(Spectrum r,
                                        Spectrum d,

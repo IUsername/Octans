@@ -149,5 +149,6 @@ namespace Octans
         public static Normal YPos = new Normal(0,1,0);
         public static Normal YNeg = new Normal(0,-1,0);
         public static Normal ZPos = new Normal(0,0,1);
+        public static Normal Zero = new Normal(0,0,0);
     }
 }

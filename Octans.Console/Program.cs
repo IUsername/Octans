@@ -6,7 +6,7 @@
         {
             //CornellBox.TestRender(100, 800);
             //DisneyMaterialTests.TestRender(24, 300);
-            DisneyMaterialTests.PlasticToMetal(512);
+            DisneyMaterialTests.PlasticToMetal(1024);
             //IntegratorTests.TestRender(12, 600);
             //TestScenes.ColRowTestRender();
             //TestScenes.RowMetal(100);

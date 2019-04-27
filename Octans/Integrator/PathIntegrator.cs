@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Octans.Reflection;
 using Octans.Sampling;
+using static System.MathF;
 
 namespace Octans.Integrator
 {
@@ -88,7 +89,7 @@ namespace Octans.Integrator
                     break;
                 }
 
-                beta *= f * System.MathF.Abs(wi % si.ShadingGeometry.N) / pdf;
+                beta *= f * Abs(wi % si.ShadingGeometry.N) / pdf;
                 Debug.Assert(beta.YComponent() >= 0f);
                 Debug.Assert(!float.IsInfinity(beta.YComponent()));
                 specularBounce = (flags & BxDFType.Specular) != BxDFType.None;
@@ -103,7 +104,7 @@ namespace Octans.Integrator
                 if (!(si.BSSRDF is null) && flags.HasFlag(BxDFType.Transmission))
                 {
                     var pi = new SurfaceInteraction();
-                    var S = si.BSSRDF.SampleS(scene, sampler.Get1D(), sampler.Get2D(), arena, pi, out pdf);
+                    var S = si.BSSRDF.SampleS(scene, sampler.Get1D(), sampler.Get2D(), arena, ref pi, out pdf);
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                     if (S.IsBlack() || pdf == 0f)
                     {
@@ -119,7 +120,7 @@ namespace Octans.Integrator
                         break;
                     }
 
-                    beta *= f * System.MathF.Abs(wi % pi.ShadingGeometry.N) / pdf;
+                    beta *= f * Abs(wi % pi.ShadingGeometry.N) / pdf;
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                     specularBounce = flags.HasFlag(BxDFType.Specular);
                     r = new RayDifferential(pi.SpawnRay(wi));
@@ -128,7 +129,7 @@ namespace Octans.Integrator
                 var rrBeta = beta * etaScale;
                 if (Spectrum.MaxComponent(rrBeta) < _rrThreshold && bounces > 3)
                 {
-                    var q = System.MathF.Max(0.05f, 1f - Spectrum.MaxComponent(rrBeta));
+                    var q = Max(0.05f, 1f - Spectrum.MaxComponent(rrBeta));
                     if (sampler.Get1D() < q)
                     {
                         break;
