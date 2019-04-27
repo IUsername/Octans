@@ -38,10 +38,11 @@ namespace Octans.Integrator
             var beta = Spectrum.One;
             var etaScale = 1f;
             var r = ray;
+            var si = new SurfaceInteraction();
 
             for (bounces = 0;; ++bounces)
             {
-                var si = new SurfaceInteraction();
+                si.Reset();
                 var foundIntersection = scene.Intersect(r, ref si);
 
                 if (bounces == 0 || specularBounce)

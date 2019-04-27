@@ -248,6 +248,14 @@ namespace Octans
             var area = Primitive.AreaLight;
             return area is null ? Spectrum.Zero : area.L(this, w);
         }
+
+        public void Reset()
+        {
+            BSSRDF = null;
+            BSDF.Reset();
+            Primitive = null;
+            Shape = null;
+        }
     }
 
     public struct ShadingGeometry

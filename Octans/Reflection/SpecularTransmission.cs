@@ -31,6 +31,10 @@ namespace Octans.Reflection
             }
 
             var ft = T * (Spectrum.One - Fresnel.Evaluate(CosTheta(in wi)));
+            if (Mode == TransportMode.Radiance)
+            {
+                ft *= (etaI * etaI) / (etaT * etaT);
+            }
             return ft / AbsCosTheta(in wi);
         }
 
@@ -38,7 +42,7 @@ namespace Octans.Reflection
 
         public Spectrum Rho(int nSamples, in Point2D[] u1, in Point2D[] u2) => this.RhoValue(nSamples, in u1, in u2);
 
-        public float Pdf(in Vector wo, in Vector wi) => this.LambertianPdfValue(in wo, in wi);
+        public float Pdf(in Vector wo, in Vector wi) => 0f;
 
         public SpecularTransmission Initialize(in Spectrum t, float etaA, float etaB, TransportMode mode)
         {

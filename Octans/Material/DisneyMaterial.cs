@@ -84,6 +84,8 @@ namespace Octans.Material
 
             if (diffuseWeight > 0f)
             {
+               
+
                 if (IsThin)
                 {
                     var flat = Flatness.Evaluate(si);
@@ -99,11 +101,14 @@ namespace Octans.Material
                     }
                     else
                     {
-                        si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(Spectrum.One, 1f, e, mode));
-                        si.BSSRDF =  arena.Create<DisneyBSSRDF>().Initialize(c * diffuseWeight, sd, si, e, this, mode);
+                        // The line below was the original code but produces some odd results.
+                        //si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(Spectrum.One, 1f, e, mode));
+                        si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(c, 1f, e, mode));
+                        si.BSSRDF =  arena.Create<DisneyBSSRDF>().Initialize(diffuseWeight * c, sd, si, e, this, mode);
                     }
                 }
 
+                // Retro-reflection.
                 si.BSDF.Add(arena.Create<DisneyRetro>().Initialize(diffuseWeight * c, rough));
 
                 var sheenWeight = Sheen.Evaluate(si);
@@ -537,8 +542,8 @@ namespace Octans.Material
         public override Spectrum Sr(float r)
         {
             if (r < 1e-6f) r = 1e-6f;
-            var rS = new Spectrum(r);
-            return R * ((-rS / D).Exp() + (-rS / (3f * D)).Exp()) / (8f * PI * D * rS);
+            var rS = new Spectrum(-r);
+            return R * ((rS / D).Exp() + (rS / (3f * D)).Exp()) / (8f * PI * D * r);
         }
     }
 }

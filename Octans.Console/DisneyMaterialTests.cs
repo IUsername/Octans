@@ -156,20 +156,37 @@ namespace Octans.ConsoleApp
                 return new DisneyMaterial(
                     color: new ConstantTexture<Spectrum>(color),
                     metallic: new ConstantTexture<float>(0f),
-                    eta: new ConstantTexture<float>(0.74f),
-                    roughness: new ConstantTexture<float>(f),
+                    eta: new ConstantTexture<float>(1.5f),
+                    roughness: new ConstantTexture<float>(0.5f),
                     specularTint: new ConstantTexture<float>(0f),
                     anisotropic: new ConstantTexture<float>(0f),
-                    sheen: new ConstantTexture<float>(f),
-                    sheenTint: new ConstantTexture<float>(0f),
-                    clearcoat: new ConstantTexture<float>(1f - f),
+                    sheen: new ConstantTexture<float>(1f),
+                    sheenTint: new ConstantTexture<float>(0.5f),
+                    clearcoat: new ConstantTexture<float>(0f),
                     clearcoatGloss: new ConstantTexture<float>(1f),
-                    specTrans: new ConstantTexture<float>(0f),
-                    scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                    specTrans: new ConstantTexture<float>(0.0f),
+                    scatterDistance: new ConstantTexture<Spectrum>(new Spectrum(f)),
                     false,
                     flatness: new ConstantTexture<float>(0f),
-                    diffTrans: new ConstantTexture<float>(0f),
+                    diffTrans: new ConstantTexture<float>(1f),
                     null);
+                //return new DisneyMaterial(
+                //    color: new ConstantTexture<Spectrum>(color),
+                //    metallic: new ConstantTexture<float>(0f),
+                //    eta: new ConstantTexture<float>(0.74f),
+                //    roughness: new ConstantTexture<float>(f),
+                //    specularTint: new ConstantTexture<float>(0f),
+                //    anisotropic: new ConstantTexture<float>(0f),
+                //    sheen: new ConstantTexture<float>(f),
+                //    sheenTint: new ConstantTexture<float>(0f),
+                //    clearcoat: new ConstantTexture<float>(1f - f),
+                //    clearcoatGloss: new ConstantTexture<float>(1f),
+                //    specTrans: new ConstantTexture<float>(0f),
+                //    scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                //    false,
+                //    flatness: new ConstantTexture<float>(0f),
+                //    diffTrans: new ConstantTexture<float>(0f),
+                //    null);
             });
             // ReSharper restore ArgumentsStyleOther
         }
@@ -212,21 +229,21 @@ namespace Octans.ConsoleApp
             //                                       film.CroppedBounds);
 
             var integrator = new PathIntegrator(2, camera, new HaltonSampler(spp, film.GetSampleBounds()),
-                                                   film.CroppedBounds, 3f, LightSampleStrategy.Spatial);
+                                                   film.CroppedBounds, 6f, LightSampleStrategy.Spatial);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                                   "row_" + fileSuffix));
 
             var lt = Transform.Translate(mid.X-60, 100, -40);
-            var s = Spectrum.FromBlackbodyT(4500) * 30000f;
+            var s = Spectrum.FromBlackbodyT(4500) * 90000f;
             var pl1 = new PointLight2(lt, s);
 
             lt = Transform.Translate(mid.X + 100, 100, -200);
-            s = Spectrum.FromBlackbodyT(2200) * 100000f;
+            s = Spectrum.FromBlackbodyT(2200) * 50000f;
             var pl2 = new PointLight2(lt, s);
 
             lt = Transform.Translate(mid.X, -20, 100);
-            s = Spectrum.FromBlackbodyT(7000) * 5000f;
+            s = Spectrum.FromBlackbodyT(7000) * 20000f;
             var pl3 = new PointLight2(lt, s);
 
             var scene = new Scene(bvh, new ILight2[] {pl1, pl2, pl3});

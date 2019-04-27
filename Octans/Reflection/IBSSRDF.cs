@@ -99,6 +99,7 @@ namespace Octans.Reflection
                 vx = SS;
                 vy = TS;
                 vz = (Vector) NS;
+                u1 *= 2f;
             }
             else if (u1 < 0.75f)
             {
@@ -116,7 +117,7 @@ namespace Octans.Reflection
             }
 
             // Choose spectral channel
-            var ch = Clamp(0, Spectrum.Samples, (int) (u1 * Spectrum.Samples));
+            var ch = Clamp(0, Spectrum.Samples - 1, (int) (u1 * Spectrum.Samples));
             u1 = u1 * Spectrum.Samples - ch;
 
             // Sample BSSRDF profile in polar coordinates
@@ -141,9 +142,12 @@ namespace Octans.Reflection
 
 
             // Compute BSSRDF sampling ray segment
-            var b = new Interaction(PO.P + r * (vx * Cos(phi) + vy * Sin(phi)) - l * vz * 0.5f);
+            var b = new Interaction
+            {
+                P = PO.P + r * (vx * Cos(phi) + vy * Sin(phi)) - l * vz * 0.5f
+            };
             // TODO: time
-            var pTarget = b.P + 1 * vz;
+            var pTarget = b.P + l * vz;
 
             var chain = arena.Create<IntersectionChain>();
             chain.Si = new SurfaceInteraction();
@@ -204,7 +208,7 @@ namespace Octans.Reflection
             };
 
             var pdf = 0f;
-            var axisProb = new[] {0.25f, 0.25f, 0.25f};
+            var axisProb = new[] {0.25f, 0.25f, 0.5f};
             var chProb = 1f / Spectrum.Samples;
             for (var axis = 0; axis < 3; ++axis)
             {

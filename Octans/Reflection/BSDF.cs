@@ -258,5 +258,10 @@ namespace Octans.Reflection
 
             return matching > 0 ? pdf / matching : 0f;
         }
+
+        public void Reset()
+        {
+            _nBxDFs = 0;
+        }
     }
 }
