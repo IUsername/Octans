@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Octans.Primitive;
+using Octans.Sampling;
 
 namespace Octans
 {
@@ -38,5 +39,7 @@ namespace Octans
         {
             return Aggregate.IntersectP(ref r);
         }
+
+        public bool IntersectTr(Ray ray, ISampler2 sampler, ref SurfaceInteraction si, out Spectrum tr) => throw new System.NotImplementedException();
     }
 }

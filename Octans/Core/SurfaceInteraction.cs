@@ -1,5 +1,4 @@
-﻿using Octans.Material;
-using Octans.Primitive;
+﻿using Octans.Primitive;
 using Octans.Reflection;
 using static System.MathF;
 using static System.Single;

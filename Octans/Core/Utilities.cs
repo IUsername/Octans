@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using static System.MathF;
@@ -124,6 +125,29 @@ namespace Octans
             x0 = (A[1][1] * B[0] - A[0][1] * B[1]) / det;
             x1 = (A[0][0] * B[1] - A[1][0] * B[0]) / det;
             return !IsNaN(x0) && !IsNaN(x1);
+        }
+
+        [Pure]
+        public static int FindInterval(int size, Predicate<int> predicate)
+        {
+            int first = 0;
+            var len = size;
+            while (len > 0)
+            {
+                int half = len >> 1;
+                var middle = first + half;
+                if (predicate(middle))
+                {
+                    first = middle + 1;
+                    len -= half + 1;
+                }
+                else
+                {
+                    len = half;
+                }
+            }
+
+            return Math.Clamp(0, size - 2, first - 1);
         }
     }
 }

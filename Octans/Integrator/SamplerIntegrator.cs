@@ -153,8 +153,7 @@ namespace Octans.Integrator
         {
             var wo = si.Wo;
             var type = BxDFType.Reflection | BxDFType.Specular;
-            var f = arena.Create<SpectrumAccumulator>().Zero();
-            si.BSDF.Sample_F(f, wo, out var wi, sampler.Get2D(), out var pdf, type, out _);
+            var f = si.BSDF.Sample_F(wo, out var wi, sampler.Get2D(), out var pdf, type, out _);
 
             var ns = si.ShadingGeometry.N;
             if (!(pdf > 0f) || f.IsBlack() || System.MathF.Abs(wi % ns) == 0f)
@@ -206,8 +205,7 @@ namespace Octans.Integrator
             var wo = si.Wo;
             var p = si.P;
             var bsdf = si.BSDF;
-            var f = arena.Create<SpectrumAccumulator>().Zero();
-            bsdf.Sample_F(f, wo, out var wi, sampler.Get2D(), out var pdf,
+            var f = bsdf.Sample_F( wo, out var wi, sampler.Get2D(), out var pdf,
                           BxDFType.Transmission | BxDFType.Specular, out _);
 
             var ns = si.ShadingGeometry.N;

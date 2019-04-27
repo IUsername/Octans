@@ -1,4 +1,6 @@
-﻿namespace Octans
+﻿using Octans.Sampling;
+
+namespace Octans
 {
     public interface ILight
     {
@@ -16,7 +18,7 @@
 
         LightType Type { get; }
         Spectrum Le(in RayDifferential ray);
-        Spectrum Sample_Li(SurfaceInteraction si, Point2D u, out Vector wi, out float pdf, out VisibilityTester visibility);
+        Spectrum Sample_Li(Interaction it, Point2D u, out Vector wi, out float pdf, out VisibilityTester visibility);
         Spectrum Sample_Le(in Point2D u1, in Point2D u2, out Ray ray, out Normal nLight, out float pdfPos, out float pdfDir);
 
         Spectrum Power();
@@ -51,12 +53,12 @@
 
         public Spectrum Le(in RayDifferential ray) => Spectrum.Zero;
 
-        public Spectrum Sample_Li(SurfaceInteraction si, Point2D u, out Vector wi, out float pdf, out VisibilityTester visibility)
+        public Spectrum Sample_Li(Interaction it, Point2D u, out Vector wi, out float pdf, out VisibilityTester visibility)
         {
-            wi = (_pLight - si.P).Normalize();
+            wi = (_pLight - it.P).Normalize();
             pdf = 1f;
-            visibility = new VisibilityTester(si, new Interaction(_pLight));
-            var d2 = Point.DistanceSqr(_pLight, si.P);
+            visibility = new VisibilityTester(it, new Interaction(_pLight));
+            var d2 = Point.DistanceSqr(_pLight, it.P);
             return I / d2;
         }
 
@@ -94,6 +96,35 @@
         public bool Unoccluded(IScene scene)
         {
             return !scene.IntersectP(P0.SpawnRayTo(P1));
+        }
+
+        public Spectrum Tr(IScene scene, ISampler2 sampler)
+        {
+            var ray = P0.SpawnRayTo(P1);
+            Spectrum tr = Spectrum.One;
+            while (true)
+            {
+                var si = new SurfaceInteraction();
+                var hitSurface = scene.Intersect(ray, ref si);
+                if (hitSurface && !(si.Primitive.Material is null))
+                {
+                    return Spectrum.Zero;
+                }
+
+                if (!(ray.Medium is null))
+                {
+                    tr *= ray.Medium.Tr(ray, sampler);
+                }
+
+                if (!hitSurface)
+                {
+                    break;
+                }
+                ray = si.SpawnRayTo(P1);
+            }
+
+            return tr;
+
         }
     }
 

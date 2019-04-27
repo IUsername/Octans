@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
+using Octans.Sampling;
 using static System.Single;
 
 namespace Octans
@@ -19,8 +20,14 @@ namespace Octans
         }
 
         public float TMax { get; set; }
+        public IMedium Medium { get; set; }
 
         public Point Position(float t) => Origin + Direction * t;
+    }
+
+    public interface IMedium
+    {
+        Spectrum Tr(Ray ray, ISampler2 sampler);
     }
 
     public class RayDifferential : Ray

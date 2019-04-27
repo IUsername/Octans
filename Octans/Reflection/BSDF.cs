@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using static System.MathF;
 using static Octans.MathF;
 
@@ -47,7 +46,7 @@ namespace Octans.Reflection
                 _bxdf[i] = si.BSDF._bxdf[i];
             }
 
-           // si.BSDF = this;
+            // si.BSDF = this;
             return this;
         }
 
@@ -81,6 +80,7 @@ namespace Octans.Reflection
             {
                 return Spectrum.Zero;
             }
+
             var reflect = wiW % _ng * (woW % _ng) > 0f;
             var f = Spectrum.Zero;
             for (var i = 0; i < _nBxDFs; ++i)
@@ -141,13 +141,13 @@ namespace Octans.Reflection
                 _ss.Y * v.X + _ts.Y * v.Y + _ns.Y * v.Z,
                 _ss.Z * v.X + _ts.Z * v.Y + _ns.Z * v.Z);
 
-        public void Sample_F(SpectrumAccumulator f,
-                                 in Vector woWorld,
-                                 out Vector wiWorld,
-                                 Point2D u,
-                                 out float pdf,
-                                 in BxDFType type,
-                                 out BxDFType sampledType)
+        public Spectrum Sample_F(
+                             in Vector woWorld,
+                             out Vector wiWorld,
+                             Point2D u,
+                             out float pdf,
+                             in BxDFType type,
+                             out BxDFType sampledType)
         {
             var matching = NumberOfComponents(type);
             if (matching == 0)
@@ -155,7 +155,7 @@ namespace Octans.Reflection
                 pdf = 0f;
                 wiWorld = Vectors.Zero;
                 sampledType = BxDFType.None;
-                return;// Spectrum.Zero;
+                return Spectrum.Zero;
             }
 
             var comp = System.Math.Min((int) Floor(u[0] * matching), matching - 1);
@@ -178,7 +178,7 @@ namespace Octans.Reflection
                 pdf = 0;
                 wiWorld = Vectors.Zero;
                 sampledType = BxDFType.None;
-                return;// Spectrum.Zero;
+                return  Spectrum.Zero;
             }
 
             sampledType = bxdf.Type;
@@ -189,7 +189,7 @@ namespace Octans.Reflection
                 pdf = 0;
                 wiWorld = Vectors.Zero;
                 sampledType = BxDFType.None;
-                return;// Spectrum.Zero;
+                return  Spectrum.Zero;
             }
 
             wiWorld = LocalToWorld(wi);
@@ -213,23 +213,51 @@ namespace Octans.Reflection
             if (!bxdf.AnyFlag(BxDFType.Specular))
             {
                 var reflect = wiWorld % _ng * woWorld % _ng > 0f;
-               // f = Spectrum.Zero;
-               //f.Zero();
+                var f = Spectrum.Zero;
+                //f.Zero();
                 for (var i = 0; i < _nBxDFs; ++i)
                 {
                     if (_bxdf[i].AnyFlag(type) &&
                         (reflect && _bxdf[i].AnyFlag(BxDFType.Reflection) ||
                          !reflect && _bxdf[i].AnyFlag(BxDFType.Transmission)))
                     {
-                        f.Contribute(_bxdf[i].F(wo, wi));
-                        //f += _bxdf[i].F(wo, wi);
+                        //f.Contribute(_bxdf[i].F(wo, wi));
+                        f += _bxdf[i].F(wo, wi);
                     }
                 }
 
-                return;
+                return f;
             }
 
-            f.Contribute(fx);
+            return fx;
+        }
+
+        public float Pdf(in Vector woWorld, in Vector wiWorld, BxDFType flags = BxDFType.All)
+        {
+            if (_nBxDFs == 0f)
+            {
+                return 0f;
+            }
+
+            var wo = WorldToLocal(woWorld);
+            if (wo.Z == 0f)
+            {
+                return 0f;
+            }
+
+            var wi = WorldToLocal(wiWorld);
+            var pdf = 0f;
+            var matching = 0;
+            for (var i = 0; i < _nBxDFs; ++i)
+            {
+                if (_bxdf[i].AnyFlag(flags))
+                {
+                    ++matching;
+                    pdf += _bxdf[i].Pdf(in wo, in wi);
+                }
+            }
+
+            return matching > 0 ? pdf / matching : 0f;
         }
     }
 }
