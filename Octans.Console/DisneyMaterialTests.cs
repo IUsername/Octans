@@ -6,6 +6,7 @@ using Octans.Accelerator;
 using Octans.Camera;
 using Octans.Filter;
 using Octans.Integrator;
+using Octans.Light;
 using Octans.Material;
 using Octans.Primitive;
 using Octans.Sampling;
@@ -106,7 +107,7 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "disn_roughness_p", (f, i) =>
             {
                 var color = i % 2 == 0
-                    ? Spectrum.FromRGB(new[] { 0.9f, 0.2f, 0.2f }, SpectrumType.Reflectance)
+                    ? Spectrum.FromRGB(new[] { 0.9f, 0.0f, 0.0f }, SpectrumType.Reflectance)
                     : Spectrum.FromRGB(new[] { 0.8f, 0.8f, 0.8f }, SpectrumType.Reflectance);
                 return new DisneyMaterial(
                     color: new ConstantTexture<Spectrum>(color),
@@ -319,21 +320,21 @@ namespace Octans.ConsoleApp
 
             var lt = Transform.Translate(mid.X-60, 200, -80);
             var s = Spectrum.FromBlackbodyT(4500) * 100000f;
-            var pl1 = new PointLight2(lt, s);
+            var pl1 = new PointLight(lt, s);
 
             lt = Transform.Translate(mid.X + 100, 100, -200);
             s = Spectrum.FromBlackbodyT(2200) * 50000f;
-            var pl2 = new PointLight2(lt, s);
+            var pl2 = new PointLight(lt, s);
 
             lt = Transform.Translate(mid.X, -200, 300);
             s = Spectrum.FromBlackbodyT(7000) * 10000f;
-            var pl3 = new PointLight2(lt, s);
+            var pl3 = new PointLight(lt, s);
 
             lt = Transform.Translate(mid.X, 10, -300);
             s = Spectrum.FromBlackbodyT(5500) * 100000f;
-            var pl4 = new PointLight2(lt, s);
+            var pl4 = new PointLight(lt, s);
 
-            var scene = new Scene(bvh, new ILight2[] {pl1, pl2,  pl3, pl4});
+            var scene = new Scene(bvh, new ILight[] {pl1, pl2,  pl3, pl4});
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();

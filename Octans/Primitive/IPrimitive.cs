@@ -1,6 +1,4 @@
-﻿using Octans.Light;
-
-namespace Octans.Primitive
+﻿namespace Octans.Primitive
 {
     public interface IPrimitive
     {

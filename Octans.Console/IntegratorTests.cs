@@ -6,6 +6,7 @@ using Octans.Camera;
 using Octans.Filter;
 using Octans.Integrator;
 using Octans.IO;
+using Octans.Light;
 using Octans.Material;
 using Octans.Primitive;
 using Octans.Sampling;
@@ -122,9 +123,9 @@ namespace Octans.ConsoleApp
 
             var lt = Transform.Translate(400, 900, -800);
             var s = Spectrum.FromBlackbodyT(5500) * 2000000f;
-            var pointLight = new PointLight2(lt, s);
+            var pointLight = new PointLight(lt, s);
 
-            return new Scene(bvh, new ILight2[] {pointLight});
+            return new Scene(bvh, new ILight[] {pointLight});
         }
     }
 

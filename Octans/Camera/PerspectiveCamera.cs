@@ -36,7 +36,7 @@ namespace Octans.Camera
             var pFilm = new Point(sample.FilmPoint.X, sample.FilmPoint.Y, 0);
             var pCamera = RasterToCamera * pFilm;
             var dir = ((Vector) pCamera).Normalize();
-            var r = new RayDifferential(new Point(),dir);
+            var r = new RayDifferential(new Point(), dir);
             if (LensRadius > 0f)
             {
                 var pLens = LensRadius * ConcentricSampleDisk(sample.LensPoint);
@@ -48,13 +48,13 @@ namespace Octans.Camera
 
                 var dx = ((Vector) (pCamera + _dxCamera)).Normalize();
                 ft = FocalDistance / dx.Z;
-                pFocus = new Point(0,0,0) +(ft * dx);
+                pFocus = new Point(0, 0, 0) + ft * dx;
                 r.RxOrigin = new Point(pLens.X, pLens.Y, 0f);
                 r.RxDirection = (pFocus - r.RxOrigin).Normalize();
 
-                var dy = ((Vector)(pCamera + _dyCamera)).Normalize();
+                var dy = ((Vector) (pCamera + _dyCamera)).Normalize();
                 ft = FocalDistance / dy.Z;
-                pFocus = new Point(0, 0, 0) + (ft * dy);
+                pFocus = new Point(0, 0, 0) + ft * dy;
                 r.RyOrigin = new Point(pLens.X, pLens.Y, 0f);
                 r.RyDirection = (pFocus - r.RyOrigin).Normalize();
             }
@@ -65,7 +65,7 @@ namespace Octans.Camera
                 r.RxDirection = ((Vector) pCamera + _dxCamera).Normalize();
                 r.RyDirection = ((Vector) pCamera + _dyCamera).Normalize();
             }
-           
+
             ray = CameraToWorld * r;
             ray.HasDifferentials = true;
             return 1f;
@@ -97,9 +97,9 @@ namespace Octans.Camera
                                                float fov,
                                                Film film)
         {
-            var screen = aspectRatio > 1f 
-                ? new Bounds2D(-aspectRatio, -1f, aspectRatio, 1f) 
-                : new Bounds2D(-1f, -1f/aspectRatio, 1f, 1f/aspectRatio);
+            var screen = aspectRatio > 1f
+                ? new Bounds2D(-aspectRatio, -1f, aspectRatio, 1f)
+                : new Bounds2D(-1f, -1f / aspectRatio, 1f, 1f / aspectRatio);
 
             return new PerspectiveCamera(cameraToWorld, screen, lensRadius, focalDistance, fov, film);
         }

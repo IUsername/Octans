@@ -1,14 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using FluentAssertions;
-using Octans.Camera;
+﻿using FluentAssertions;
 using Octans.Geometry;
 using Octans.IO;
-using Octans.Light;
-using Octans.Pipeline;
-using Octans.Shading;
-using Octans.Texture;
 using Xunit;
 
 namespace Octans.Test.IO

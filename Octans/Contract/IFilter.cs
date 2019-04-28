@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Octans.Filter
+namespace Octans
 {
     public interface IFilter
     {

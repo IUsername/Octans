@@ -24,4 +24,10 @@
     <ProjectReference Include="..\Octans\Octans.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Camera\" />
+    <Folder Include="Light\" />
+    <Folder Include="Shading\" />
+  </ItemGroup>
+
 </Project>

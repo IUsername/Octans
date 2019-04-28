@@ -83,14 +83,14 @@ namespace Octans.Accelerator
             }
         }
 
-        public static int Partition<T>(this T[] A, int left, int right, Predicate<T> pred)
+        public static int Partition<T>(this T[] A, int left, int right, Predicate<T> predicate)
         {
             Debug.Assert(left < right);
 
             var end = right - 1;
             for (var i = left; i < end;)
             {
-                if (pred(A[i]))
+                if (predicate(A[i]))
                 {
                     ++i;
                 }
@@ -104,14 +104,14 @@ namespace Octans.Accelerator
             return end;
         }
 
-        public static int Partition<T>(this IList<T> A, int left, int right, Predicate<T> pred)
+        public static int Partition<T>(this IList<T> A, int left, int right, Predicate<T> predicate)
         {
             Debug.Assert(left < right);
 
             var end = right - 1;
             for (var i = left; i < end;)
             {
-                if (pred(A[i]))
+                if (predicate(A[i]))
                 {
                     ++i;
                 }

@@ -47,7 +47,7 @@ namespace Octans.Integrator
 
         private static Spectrum EstimateDirect(Interaction it,
                                                in Point2D uScattering,
-                                               ILight2 light,
+                                               ILight light,
                                                in Point2D uLight,
                                                IScene scene,
                                                ISampler2 sampler,
