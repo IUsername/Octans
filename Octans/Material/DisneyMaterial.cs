@@ -84,8 +84,6 @@ namespace Octans.Material
 
             if (diffuseWeight > 0f)
             {
-               
-
                 if (IsThin)
                 {
                     var flat = Flatness.Evaluate(si);
@@ -102,15 +100,15 @@ namespace Octans.Material
                     else
                     {
                         // The line below was the original code but produces some odd results.
-                        //si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(Spectrum.One, 1f, e, mode));
-                        si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(c, 1f, e, mode));
-                        si.BSSRDF =  arena.Create<DisneyBSSRDF>().Initialize(diffuseWeight * c, sd, si, e, this, mode);
+                        si.BSDF.Add(arena.Create<SpecularTransmission>().Initialize(Spectrum.One, 1f, e, mode));
+                        si.BSSRDF = arena.Create<DisneyBSSRDF>().Initialize(diffuseWeight * c, sd, si, e, this, mode);
                     }
                 }
 
                 // Retro-reflection.
                 si.BSDF.Add(arena.Create<DisneyRetro>().Initialize(diffuseWeight * c, rough));
 
+                // Sheen
                 var sheenWeight = Sheen.Evaluate(si);
                 if (sheenWeight > 0f)
                 {
@@ -481,6 +479,10 @@ namespace Octans.Material
 
     public sealed class DisneyBSSRDF : SeparableBSSRDF
     {
+        public Spectrum D { get; private set; }
+
+        public Spectrum R { get; private set; }
+
         public DisneyBSSRDF Initialize(Spectrum r,
                                        Spectrum d,
                                        SurfaceInteraction po,
@@ -513,10 +515,6 @@ namespace Octans.Material
             return fade * (1 - fo / 2f) * (1f - fi / 2f) * Sp(pi) / PI;
         }
 
-        public Spectrum D { get; private set; }
-
-        public Spectrum R { get; private set; }
-
         public override float SampleSr(in int ch, float u)
         {
             if (u < 0.25f)
@@ -531,17 +529,24 @@ namespace Octans.Material
 
         public override float PdfSr(in int ch, float r)
         {
-            if (r < 1e-6f) r = 1e-6f;
+            if (r < 1e-6f)
+            {
+                r = 1e-6f;
+            }
 
             // Weight the two individual PDFs as per the sampling frequency in
             // Sample_Sr().
-            return (0.25f * Exp(-r / D[ch]) / (2f * PI * D[ch] * r) +
-                    0.75f * Exp(-r / (3f * D[ch])) / (6f * PI * D[ch] * r));
+            return 0.25f * Exp(-r / D[ch]) / (2f * PI * D[ch] * r) +
+                   0.75f * Exp(-r / (3f * D[ch])) / (6f * PI * D[ch] * r);
         }
 
         public override Spectrum Sr(float r)
         {
-            if (r < 1e-6f) r = 1e-6f;
+            if (r < 1e-6f)
+            {
+                r = 1e-6f;
+            }
+
             var rS = new Spectrum(-r);
             return R * ((rS / D).Exp() + (rS / (3f * D)).Exp()) / (8f * PI * D * r);
         }

@@ -36,7 +36,13 @@ namespace Octans.Reflection
             // ReSharper restore CompareOfFloatsByEqualityOperator
 
             var eta = CosTheta(in wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
-            var wh = (wo + wi * eta).Normalize();
+            var wh = (wo + wi * eta);
+            if (wh.X == 0f && wh.Y == 0f && wh.Z == 0f)
+            {
+                return Spectrum.Zero;
+            }
+
+            wh = wh.Normalize();
             if (wh.Z < 0)
             {
                 wh = -wh;
@@ -47,7 +53,7 @@ namespace Octans.Reflection
             var factor = Mode == TransportMode.Radiance ? 1f / eta : 1f;
 
             return (Spectrum.One - F) * T * Abs(Distribution.D(in wh) * Distribution.G(in wo, in wi) * eta * eta *
-                                                AbsDot(in wo, in wh) * factor * factor /
+                                                Abs(wi % wh) * Abs(wo % wh) * factor * factor /
                                                 (cosThetaI * cosThetaO * sqtDenom * sqtDenom));
         }
 
@@ -64,7 +70,7 @@ namespace Octans.Reflection
             }
 
             var wh = Distribution.SampleWh(in wo, in u);
-            var eta = CosTheta(in wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
+            var eta = CosTheta(in wo) > 0f ? EtaA / EtaB : EtaB / EtaA;
             if (!Refract(wo, (Normal) wh, eta, ref wi))
             {
                 pdf = 0f;
@@ -87,8 +93,13 @@ namespace Octans.Reflection
             }
 
             var eta = CosTheta(wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
-            var wh = (wo + wi * eta).Normalize();
+            var wh = (wo + wi * eta);
+            if (wh.X == 0f && wh.Y == 0f && wh.Z == 0f)
+            {
+                return 0f;
+            }
 
+            wh = wh.Normalize();
             var sqrtDenom = wo % wh + eta * wi % wh;
             var dwh_dwi = Abs(eta * eta * wi % wh) / (sqrtDenom * sqrtDenom);
             return Distribution.Pdf(wo, wh) * dwh_dwi;

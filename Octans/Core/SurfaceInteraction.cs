@@ -249,12 +249,35 @@ namespace Octans
             return area is null ? Spectrum.Zero : area.L(this, w);
         }
 
-        public void Reset()
+        public SurfaceInteraction Reset()
         {
             BSSRDF = null;
             BSDF.Reset();
             Primitive = null;
             Shape = null;
+            return this;
+        }
+
+        public void ApplyTransform(Transform t)
+        {
+            // TODO: Timing, medium, face index, and bssrdf not applied.
+            P = Transform.Apply(in t, P, PError, out var pError);
+            PError = pError;
+            N = (t * N).Normalize();
+            Wo = (t * Wo).Normalize();
+            Dpdu = t * Dpdu;
+            Dpdv = t * Dpdv;
+            Dndu = t * Dndu;
+            Dndv = t * Dndv;
+            ShadingGeometry = new ShadingGeometry
+            {
+                N = t * ShadingGeometry.N,
+                Dpdu = t * ShadingGeometry.Dpdu,
+                Dpdv = t * ShadingGeometry.Dpdv,
+                Dndu = t * ShadingGeometry.Dndu,
+                Dndv = t * ShadingGeometry.Dndv
+            };
+            ShadingGeometry.N = Normal.FaceForward(ShadingGeometry.N, N);
         }
     }
 

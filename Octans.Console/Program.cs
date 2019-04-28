@@ -5,8 +5,15 @@
         private static void Main(string[] args)
         {
             //CornellBox.TestRender(100, 800);
-            //DisneyMaterialTests.TestRender(24, 300);
-            DisneyMaterialTests.PlasticToMetal(512);
+            //DisneyMaterialTests.SubSurfaceDepth(24);
+            //DisneyMaterialTests.PlasticToMetal(128);
+            //DisneyMaterialTests.Clearcoat(128);
+            //DisneyMaterialTests.RoughnessMetal(128);
+            DisneyMaterialTests.RoughnessPlastic(128);
+            //DisneyMaterialTests.Translucency(1024);
+            //DisneyMaterialTests.Flatness(24);
+            //DisneyMaterialTests.Anisotropic(256);
+            //DisneyMaterialTests.Sheen(32);
             //IntegratorTests.TestRender(12, 600);
             //TestScenes.ColRowTestRender();
             //TestScenes.RowMetal(100);

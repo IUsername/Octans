@@ -156,8 +156,13 @@ namespace Octans.Primitive
 
             var pError = Gamma(5) * Vector.Abs((Vector) pHit);
 
-            si = ObjectToWorld *
-                 si.Initialize(pHit, pError, new Point2D(u, v), -ray.Direction, dpdu, dpdv, dndu, dndv, this);
+            //si = ObjectToWorld *
+            //     si.Initialize(pHit, pError, new Point2D(u, v), -ray.Direction, dpdu, dpdv, dndu, dndv, this);
+
+            var siN = new SurfaceInteraction();
+            siN.Initialize(pHit, pError, new Point2D(u, v), -ray.Direction, dpdu, dpdv, dndu, dndv, this);
+            siN.ApplyTransform(ObjectToWorld);
+            si = siN;
 
             tHit = (float) tShapeHit;
             return true;

@@ -38,11 +38,11 @@ namespace Octans.Integrator
             var beta = Spectrum.One;
             var etaScale = 1f;
             var r = ray;
-            var si = new SurfaceInteraction();
+            var si = arena.Create<SurfaceInteraction>().Reset();
 
             for (bounces = 0;; ++bounces)
             {
-                si.Reset();
+                //si.Reset();
                 var foundIntersection = scene.Intersect(r, ref si);
 
                 if (bounces == 0 || specularBounce)
@@ -104,13 +104,14 @@ namespace Octans.Integrator
 
                 if (!(si.BSSRDF is null) && flags.HasFlag(BxDFType.Transmission))
                 {
-                    var pi = new SurfaceInteraction();
+                    var pi = arena.Create<SurfaceInteraction>().Reset();
                     var S = si.BSSRDF.SampleS(scene, sampler.Get1D(), sampler.Get2D(), arena, ref pi, out pdf);
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                     if (S.IsBlack() || pdf == 0f)
                     {
-                        beta *= S / pdf;
+                        break;
                     }
+                    beta *= S / pdf;
 
                     L.Contribute(beta * pi.UniformSampleOneLight(scene, arena, sampler, false,
                                                                  _lightDistribution.Lookup(pi.P)));

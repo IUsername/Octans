@@ -1,5 +1,4 @@
-﻿using System;
-using static System.MathF;
+﻿using static System.MathF;
 using static Octans.Math;
 using static Octans.MathF;
 
@@ -9,7 +8,12 @@ namespace Octans.Reflection
     {
         Spectrum S(SurfaceInteraction pi, in Vector wi);
 
-        Spectrum SampleS(IScene scene, float u1, Point2D u2, IObjectArena arena, ref SurfaceInteraction si, out float pdf);
+        Spectrum SampleS(IScene scene,
+                         float u1,
+                         Point2D u2,
+                         IObjectArena arena,
+                         ref SurfaceInteraction si,
+                         out float pdf);
     }
 
     public static class BSSRDFTools
@@ -150,7 +154,7 @@ namespace Octans.Reflection
             var pTarget = b.P + l * vz;
 
             var chain = arena.Create<IntersectionChain>();
-            chain.Si = new SurfaceInteraction();
+            chain.Si = arena.Create<SurfaceInteraction>().Reset();
             var ptr = chain;
             var nFound = 0;
             while (true)
@@ -161,17 +165,22 @@ namespace Octans.Reflection
                     break;
                 }
 
+                var temp = b.P;
                 b = ptr.Si;
-                if (!ReferenceEquals(ptr.Si.Primitive.Material, Material))
+                if (b.P.X == temp.X && b.P.Y == temp.Y && b.P.Z == temp.Z)
                 {
-                    continue;
+                    // Evaluation is stuck. Nudge it toward the target.
+                    b.P = ray.Position(0.0001f);
                 }
 
-                var next = arena.Create<IntersectionChain>();
-                next.Si = new SurfaceInteraction();
-                ptr.Next = next;
-                ptr = next;
-                nFound++;
+                if (ReferenceEquals(ptr.Si.Primitive.Material, Material))
+                {
+                    var next = arena.Create<IntersectionChain>();
+                    next.Si = arena.Create<SurfaceInteraction>().Reset();
+                    ptr.Next = next;
+                    ptr = next;
+                    nFound++;
+                }
             }
 
             if (nFound == 0)
