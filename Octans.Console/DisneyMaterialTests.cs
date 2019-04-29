@@ -325,9 +325,9 @@ namespace Octans.ConsoleApp
             s = Spectrum.FromBlackbodyT(2200) * 50000f;
             var pl2 = new PointLight(lt, s);
 
-            lt = Transform.Translate(mid.X, -100f, 500);
-            s = Spectrum.FromBlackbodyT(7000) * 400000f;
-            var pl3 = new PointLight(lt, s);
+            lt = Transform.Translate(mid.X, 1000f, 0);
+            s = Spectrum.FromBlackbodyT(7000) * 5f;
+            var pl3 = new DistantLight(lt, s, new Vector(0,-0.5f,1));
 
             lt = Transform.Translate(mid.X, 10, -300);
             s = Spectrum.FromBlackbodyT(5500) * 100000f;

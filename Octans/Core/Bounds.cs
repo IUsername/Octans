@@ -338,5 +338,11 @@ namespace Octans
                 MathF.Lerp(Min.Y, Max.Y, t.Y),
                 MathF.Lerp(Min.Z, Max.Z, t.Z)
             );
+
+        public void BoundingSphere(out Point center, out float radius)
+        {
+            center = (Min + (Vector) Max) / 2f;
+            radius = ContainsPoint(center) ? Point.Distance(center, Max) : 0f;
+        }
     }
 }
