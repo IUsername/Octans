@@ -49,13 +49,13 @@ namespace Octans.Integrator
                 {
                     if (foundIntersection)
                     {
-                        L.Contribute(beta * si.Le(-r.Direction));
+                        L.Contribute(beta, si.Le(-r.Direction));
                     }
                     else
                     {
                         foreach (var light in scene.InfiniteLights)
                         {
-                            L.Contribute(beta * light.Le(in r));
+                            L.Contribute(beta, light.Le(in r));
                         }
                     }
                 }
@@ -78,9 +78,11 @@ namespace Octans.Integrator
                 const BxDFType nonSpecular = BxDFType.All & ~BxDFType.Specular;
                 if (si.BSDF.NumberOfComponents(nonSpecular) > 0)
                 {
-                    var Ld = beta * si.UniformSampleOneLight(scene, arena, sampler, false, distribution);
-                    Debug.Assert(Ld.YComponent() >= 0f);
-                    L.Contribute(Ld);
+                    //var Ld = beta * si.UniformSampleOneLight(scene, arena, sampler, false, distribution);
+                    //Debug.Assert(Ld.YComponent() >= 0f);
+                    //L.Contribute(Ld);
+
+                    L.Contribute(beta, si.UniformSampleOneLight(scene, arena, sampler, false, distribution));
                 }
 
                 var wo = -ray.Direction;
@@ -89,8 +91,10 @@ namespace Octans.Integrator
                 {
                     break;
                 }
-
-                beta *= f * Abs(wi % si.ShadingGeometry.N) / pdf;
+               
+                //beta *= f * Abs(wi % si.ShadingGeometry.N) / pdf;
+                beta = Spectrum.FusedMultiply(beta, f, Abs(wi % si.ShadingGeometry.N) / pdf);
+                //beta.Scale(f * (Abs(wi % si.ShadingGeometry.N) / pdf));
                 Debug.Assert(beta.YComponent() >= 0f);
                 Debug.Assert(!float.IsInfinity(beta.YComponent()));
                 specularBounce = (flags & BxDFType.Specular) != BxDFType.None;
@@ -112,8 +116,9 @@ namespace Octans.Integrator
                         break;
                     }
                     beta *= S / pdf;
+                    //beta.Scale(S / pdf);
 
-                    L.Contribute(beta * pi.UniformSampleOneLight(scene, arena, sampler, false,
+                    L.Contribute(beta, pi.UniformSampleOneLight(scene, arena, sampler, false,
                                                                  _lightDistribution.Lookup(pi.P)));
 
                     f = pi.BSDF.Sample_F(pi.Wo, out wi, sampler.Get2D(), out pdf, BxDFType.All, out flags);
@@ -122,7 +127,9 @@ namespace Octans.Integrator
                         break;
                     }
 
-                    beta *= f * Abs(wi % pi.ShadingGeometry.N) / pdf;
+                    beta = Spectrum.FusedMultiply(beta, f, Abs(wi % pi.ShadingGeometry.N) / pdf);
+                    //beta *= f * Abs(wi % pi.ShadingGeometry.N) / pdf;
+                    //beta.Scale(f * Abs(wi % pi.ShadingGeometry.N) / pdf);
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                     specularBounce = flags.HasFlag(BxDFType.Specular);
                     r = new RayDifferential(pi.SpawnRay(wi));
@@ -138,6 +145,7 @@ namespace Octans.Integrator
                     }
 
                     beta /= 1f - q;
+                    //beta.Scale(1f/ (1f - q));
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                 }
             }

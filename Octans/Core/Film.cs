@@ -264,7 +264,7 @@ namespace Octans
 
             public PixelArea PixelBounds { get; }
 
-            public void AddSample(in Point2D p, Spectrum L, float sampleWeight = 1f)
+            public void AddSample(in Point2D p, SpectrumAccumulator L, float sampleWeight = 1f)
             {
                 var discrete = p - new Vector2(0.5f, 0.5f);
                 var p0 = (PixelCoordinate) Point2D.Ceiling(discrete - _filterRadius);
@@ -273,29 +273,34 @@ namespace Octans
                 p1 = PixelCoordinate.Min(p1, PixelBounds.Max);
 
                 var ifx = new int[p1.X - p0.X];
-                for (var x = p0.X; x < p1.X; x++)
+                for (var x = p0.X; x < p1.X; ++x)
                 {
                     var fx = System.MathF.Abs((x - discrete.X) * _inverseFilterRadius.X * _filterTableWidth);
                     ifx[x - p0.X] = System.Math.Min((int) System.MathF.Floor(fx), _filterTableWidth - 1);
                 }
 
                 var ify = new int[p1.Y - p0.Y];
-                for (var y = p0.Y; y < p1.Y; y++)
+                for (var y = p0.Y; y < p1.Y; ++y)
                 {
                     var fy = System.MathF.Abs((y - discrete.Y) * _inverseFilterRadius.Y * _filterTableWidth);
                     ify[y - p0.Y] = System.Math.Min((int) System.MathF.Floor(fy), _filterTableWidth - 1);
                 }
 
-              
-                for (var y = p0.Y; y < p1.Y; y++)
+                bool isBlack = L.IsBlack();
+                for (var y = p0.Y; y < p1.Y; ++y)
                 {
-                    for (var x = p0.X; x < p1.X; x++)
+                    var yOffset = ify[y - p0.Y] * _filterTableWidth;
+                    for (var x = p0.X; x < p1.X; ++x)
                     {
-                        var offset = ify[y - p0.Y] * _filterTableWidth + ifx[x - p0.X];
+                        var offset = yOffset + ifx[x - p0.X];
                         var filterWeight = _filterTable[offset];
 
                         ref var pixel = ref GetPixel(new PixelCoordinate(x, y));
-                        pixel.ContributionSum.Contribute(L * (sampleWeight * filterWeight));
+                        if (!isBlack)
+                        {
+                            pixel.ContributionSum.Contribute(L, (sampleWeight * filterWeight));
+                        }
+
                         pixel.FilterWeightSum += filterWeight;
                     }
                 }

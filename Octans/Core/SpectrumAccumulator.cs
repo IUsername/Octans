@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Numerics;
+using System.Runtime.Intrinsics;
 
 namespace Octans
 {
@@ -57,7 +58,7 @@ namespace Octans
 
         public SpectrumAccumulator FromSpectrum(Spectrum s)
         {
-            Array.Copy(s.Components, _c, Samples);
+            Array.Copy(s.Channels, _c, Samples);
             return this;
         }
 
@@ -70,9 +71,9 @@ namespace Octans
         [Pure]
         public Spectrum ToSpectrum(IObjectArena arena)
         {
-            var s = arena.Create<Spectrum>();
-            Array.Copy(_c, s.Components, Samples);
-            return s;
+            var c = new float[_c.Length];
+            Array.Copy(_c, c, _c.Length);
+            return arena.Create<Spectrum>().Initialize(c);
         }
 
         protected ref readonly float[] C => ref _c;
@@ -176,13 +177,62 @@ namespace Octans
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
                 var a = new Vector<float>(_c, i);
-                var b = new Vector<float>(other.Components, i);
+                var b = new Vector<float>(other.Channels, i);
                 System.Numerics.Vector.Add(a, b).CopyTo(_c, i);
             }
 
             for (; i < Samples; i++)
             {
-                _c[i] += other.Components[i];
+                _c[i] += other.Channels[i];
+            }
+        }
+
+        public void Contribute(in Spectrum other, float scale)
+        {
+            int i;
+            for (i = 0; i < RemainderIndex; i += SimdLength)
+            {
+                var a = new Vector<float>(_c, i);
+                var b = new Vector<float>(other.Channels, i);
+                System.Numerics.Vector.Add(a, System.Numerics.Vector.Multiply(b, scale)).CopyTo(_c, i);
+            }
+
+            for (; i < Samples; i++)
+            {
+                _c[i] += other.Channels[i] * scale;
+            }
+        }
+
+        public void Contribute(in SpectrumAccumulator other, float scale)
+        {
+            int i;
+            for (i = 0; i < RemainderIndex; i += SimdLength)
+            {
+                var a = new Vector<float>(_c, i);
+                var b = new Vector<float>(other._c, i);
+                System.Numerics.Vector.Add(a, System.Numerics.Vector.Multiply(b, scale)).CopyTo(_c, i);
+            }
+
+            for (; i < Samples; i++)
+            {
+                _c[i] += other._c[i] * scale;
+            }
+        }
+
+        public void Contribute(in Spectrum other, in Spectrum scale)
+        {
+            int i;
+            for (i = 0; i < RemainderIndex; i += SimdLength)
+            {
+                var a = new Vector<float>(_c, i);
+                var b = new Vector<float>(other.Channels, i);
+                var c = new Vector<float>(scale.Channels, i);
+                System.Numerics.Vector.Add(a, System.Numerics.Vector.Multiply(b, c)).CopyTo(_c, i);
+            }
+
+            for (; i < Samples; i++)
+            {
+                _c[i] += other.Channels[i] * scale.Channels[i];
             }
         }
 
@@ -265,13 +315,13 @@ namespace Octans
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
                 var a = new Vector<float>(_c, i);
-                var b = new Vector<float>(other.Components, i);
+                var b = new Vector<float>(other.Channels, i);
                 System.Numerics.Vector.Multiply(a, b).CopyTo(_c, i);
             }
 
             for (; i < Samples; i++)
             {
-                _c[i] *= other.Components[i];
+                _c[i] *= other.Channels[i];
             }
         }
 
@@ -470,9 +520,9 @@ namespace Octans
             var xyz = new float[3];
             for (var i = 0; i < Samples; i++)
             {
-                xyz[0] += Spectrum.X.Components[i] * C[i];
-                xyz[1] += Spectrum.Y.Components[i] * C[i];
-                xyz[2] += Spectrum.Z.Components[i] * C[i];
+                xyz[0] += Spectrum.X.Channels[i] * C[i];
+                xyz[1] += Spectrum.Y.Channels[i] * C[i];
+                xyz[2] += Spectrum.Z.Channels[i] * C[i];
             }
 
             var scale = (Spectrum.SampledLambdaEnd - Spectrum.SampledLambdaStart) / (CIE_Data.CIE_Y_integral * Samples);
@@ -488,7 +538,7 @@ namespace Octans
             var yy = 0f;
             for (var i = 0; i < Samples; i++)
             {
-                yy += Spectrum.Y.Components[i] * C[i];
+                yy += Spectrum.Y.Channels[i] * C[i];
             }
 
             return yy * (Spectrum.SampledLambdaEnd - Spectrum.SampledLambdaStart) / (CIE_Data.CIE_Y_integral * Samples);

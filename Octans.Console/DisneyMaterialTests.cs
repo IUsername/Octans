@@ -252,17 +252,17 @@ namespace Octans.ConsoleApp
             RowTestByDelegate(spp, "disn_sheen", (f, i) =>
             {
                 var color = i % 2 == 0
-                    ? Spectrum.FromRGB(new[] { 0.9f, 0.2f, 0.2f }, SpectrumType.Reflectance)
-                    : Spectrum.FromRGB(new[] { 0.8f, 0.8f, 0.8f }, SpectrumType.Reflectance);
+                    ? Spectrum.FromRGB(new[] { 0.8f, 0.8f, 0.8f }, SpectrumType.Reflectance)
+                    : Spectrum.FromRGB(new[] { 0.3f, 0.3f, 0.3f }, SpectrumType.Reflectance);
                 return new DisneyMaterial(
                     color: new ConstantTexture<Spectrum>(color),
                     metallic: new ConstantTexture<float>(0f),
                     eta: new ConstantTexture<float>(1.5f),
-                    roughness: new ConstantTexture<float>(0.3f),
+                    roughness: new ConstantTexture<float>(0.8f),
                     specularTint: new ConstantTexture<float>(0.5f),
                     anisotropic: new ConstantTexture<float>(0f),
                     sheen: new ConstantTexture<float>(f),
-                    sheenTint: new ConstantTexture<float>(0.5f),
+                    sheenTint: new ConstantTexture<float>(0f),
                     clearcoat: new ConstantTexture<float>(0f),
                     clearcoatGloss: new ConstantTexture<float>(1f),
                     specTrans: new ConstantTexture<float>(0f),
@@ -315,8 +315,7 @@ namespace Octans.ConsoleApp
             var integrator = new PathIntegrator(4, camera, new HaltonSampler(spp, film.GetSampleBounds()),
                                                    film.CroppedBounds, 6f, LightSampleStrategy.Spatial);
 
-            film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                                  "row_" + fileSuffix));
+            film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "row_" + fileSuffix));
 
             var lt = Transform.Translate(mid.X-60, 200, -80);
             var s = Spectrum.FromBlackbodyT(4500) * 100000f;
@@ -326,8 +325,8 @@ namespace Octans.ConsoleApp
             s = Spectrum.FromBlackbodyT(2200) * 50000f;
             var pl2 = new PointLight(lt, s);
 
-            lt = Transform.Translate(mid.X, -200, 300);
-            s = Spectrum.FromBlackbodyT(7000) * 10000f;
+            lt = Transform.Translate(mid.X, -100f, 500);
+            s = Spectrum.FromBlackbodyT(7000) * 400000f;
             var pl3 = new PointLight(lt, s);
 
             lt = Transform.Translate(mid.X, 10, -300);

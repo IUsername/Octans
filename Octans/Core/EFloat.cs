@@ -7,38 +7,20 @@ using static Octans.Utilities;
 
 namespace Octans
 {
-    public class EFloat : IEquatable<EFloat>
+    public readonly struct EFloat : IEquatable<EFloat>
     {
         private readonly Vector3 _data;
 
         public EFloat(float v, float err = 0f)
         {
-            //V = v;
             _data = err == 0f 
-                ? new Vector3(v,v,v) 
+                ? new Vector3(v) 
                 : new Vector3(v,  NextFloatUp(v + err), NextFloatDown(v - err));
         }
-
-        //public EFloat(in EFloat ef)
-        //{
-        //    //V = ef.V;
-        //    //Low = ef.Low;
-        //    //High = ef.High;
-        //    _data = new Vector3(ef.V,  ef.High, ef.Low);
-        //}
-
         private EFloat(float v, float high, float low)
         {
-            //V = v;
-            //Low = low;
-            //High = high;
             _data = new Vector3(v, high, low);
         }
-
-        //private EFloat(in Vector3 data)
-        //{
-        //    _data = data;
-        //}
 
         public float V => _data.X;
 
@@ -48,12 +30,7 @@ namespace Octans
 
         public bool Equals(EFloat other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-
-            return ReferenceEquals(this, other) || V.Equals(other.V);
+            return  V.Equals(other.V);
         }
 
         public float UpperBound() => High;
@@ -231,11 +208,6 @@ namespace Octans
             if (obj is null)
             {
                 return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
             }
 
             return obj.GetType() == GetType() && Equals((EFloat) obj);

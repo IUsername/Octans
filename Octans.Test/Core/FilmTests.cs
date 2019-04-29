@@ -61,7 +61,8 @@ namespace Octans.Test
             film.SetSink(testSink);
             var tileArea = new PixelArea(0, 0, 16, 16);
             var tile = film.CreateFilmTile(in tileArea);
-            var l = new Spectrum(1f);
+            var l = new SpectrumAccumulator();
+            l.Contribute(Spectrum.One);
             
             tile.AddSample(new Point2D(0.5f,0.5f), l);
             film.MergeFilmTile(tile);

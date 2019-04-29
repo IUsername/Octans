@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Numerics;
 using static System.MathF;
@@ -16,7 +17,7 @@ namespace Octans
     }
 
 
-    public class Spectrum : IEquatable<Spectrum>
+    public struct Spectrum : IEquatable<Spectrum>
     {
         private static readonly int SimdLength;
         private static readonly int RemainderIndex;
@@ -45,8 +46,6 @@ namespace Octans
         private static readonly Spectrum RGBIllum2SpectRed;
         private static readonly Spectrum RGBIllum2SpectGreen;
         private static readonly Spectrum RGBIllum2SpectBlue;
-
-        private readonly float[] _c;
 
         static Spectrum()
         {
@@ -78,54 +77,53 @@ namespace Octans
             RGBIllum2SpectGreen = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectGreen));
             RGBIllum2SpectBlue = new Spectrum(spectral.GetRGBSpectrum(CIE_Data.RGBIllum2SpectBlue));
 
-            Zero = new Spectrum();
+            Zero = new Spectrum(0f);
             One = new Spectrum(1f);
         }
 
         public Spectrum(float v)
         {
-            _c = new float[Samples];
-            for (var i = 0; i < Samples; i++)
-            {
-                _c[i] = v;
-            }
+            Channels = new float[Samples];
+            Array.Fill(Channels, v);
+            //for (var i = 0; i < Samples; i++)
+            //{
+            //    Channels[i] = v;
+            //}
         }
 
-        public Spectrum()
-        {
-            _c = new float[Samples];
-        }
+
+        //public Spectrum()
+        //{
+        //    _c = new float[Samples];
+        //}
 
         internal Spectrum(float[] c)
         {
-            _c = c;
+            Channels = c;
         }
 
-        protected ref readonly float[] C => ref _c;
+        internal Spectrum Initialize(float[] c)
+        {
+            Debug.Assert(c.Length == Samples);
+            Channels = c;
+            return this;
+        }
 
-        internal float[] Components => _c;
+        //internal ref readonly float[] C => ref _c;
+
+        internal float[] Channels { get; private set; }
 
         [Pure]
-        public float this[int index] => _c[index];
+        public float this[int index] => Channels[index];
 
         [Pure]
         public bool Equals(Spectrum other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
             int i;
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
-                var b = new Vector<float>(other._c, i);
+                var a = new Vector<float>(Channels, i);
+                var b = new Vector<float>(other.Channels, i);
                 if (!EqualsAll(a, b))
                 {
                     return false;
@@ -134,7 +132,7 @@ namespace Octans
 
             for (; i < Samples; i++)
             {
-                if (_c[i].Equals(other._c[i]))
+                if (Channels[i].Equals(other.Channels[i]))
                 {
                     return false;
                 }
@@ -150,7 +148,7 @@ namespace Octans
             int i;
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var vector = new Vector<float>(_c, i);
+                var vector = new Vector<float>(Channels, i);
                 if (!EqualsAll(vector, Vector<float>.Zero))
                 {
                     return false;
@@ -159,7 +157,7 @@ namespace Octans
 
             for (; i < Samples; i++)
             {
-                if (_c[i] != 0f)
+                if (Channels[i] != 0f)
                 {
                     return false;
                 }
@@ -173,7 +171,7 @@ namespace Octans
         {
             for (var i = 0; i < Samples; i++)
             {
-                if (float.IsNaN(_c[i]))
+                if (float.IsNaN(Channels[i]))
                 {
                     return true;
                 }
@@ -185,33 +183,33 @@ namespace Octans
         [Pure]
         public Spectrum Add(in Spectrum other)
         {
-            if (Samples == 3)
-            {
-                //_c[0] += other._c[0];
-                //_c[1] += other._c[1];
-                //_c[2] += other._c[2];
-                //return this;
+            //if (Samples == 3)
+            //{
+            //    //_c[0] += other._c[0];
+            //    //_c[1] += other._c[1];
+            //    //_c[2] += other._c[2];
+            //    //return this;
 
-                return new Spectrum(new[]
-                {
-                    _c[0] + other._c[0],
-                    _c[1] + other._c[1],
-                    _c[2] + other._c[2]
-                });
-            }
+            //    return new Spectrum(new[]
+            //    {
+            //        Channels[0] + other.Channels[0],
+            //        Channels[1] + other.Channels[1],
+            //        Channels[2] + other.Channels[2]
+            //    });
+            //}
 
             int i;
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
-                var b = new Vector<float>(other._c, i);
+                var a = new Vector<float>(Channels, i);
+                var b = new Vector<float>(other.Channels, i);
                 System.Numerics.Vector.Add(a, b).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] + other._c[i];
+                results[i] = Channels[i] + other.Channels[i];
             }
 
             return new Spectrum(results);
@@ -224,14 +222,14 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
+                var a = new Vector<float>(Channels, i);
                 var b = new Vector<float>(scalar);
                 System.Numerics.Vector.Add(a, b).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] + scalar;
+                results[i] = Channels[i] + scalar;
             }
 
             return new Spectrum(results);
@@ -244,14 +242,14 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
-                var b = new Vector<float>(other._c, i);
+                var a = new Vector<float>(Channels, i);
+                var b = new Vector<float>(other.Channels, i);
                 System.Numerics.Vector.Subtract(a, b).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] - other._c[i];
+                results[i] = Channels[i] - other.Channels[i];
             }
 
             return new Spectrum(results);
@@ -264,14 +262,14 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
+                var a = new Vector<float>(Channels, i);
                 var b = new Vector<float>(scalar);
                 System.Numerics.Vector.Subtract(a, b).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] - scalar;
+                results[i] = Channels[i] - scalar;
             }
 
             return new Spectrum(results);
@@ -284,14 +282,14 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
-                var b = new Vector<float>(other._c, i);
+                var a = new Vector<float>(Channels, i);
+                var b = new Vector<float>(other.Channels, i);
                 System.Numerics.Vector.Multiply(a, b).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] * other._c[i];
+                results[i] = Channels[i] * other.Channels[i];
             }
 
             return new Spectrum(results);
@@ -300,30 +298,89 @@ namespace Octans
         [Pure]
         public Spectrum Multiply(float scalar)
         {
-            if (Samples == 3)
-            {
-                //_c[0] *= scalar;
-                //_c[1] *= scalar;
-                //_c[2] *= scalar;
-                //return this;
-                return new Spectrum(new[] {_c[0] * scalar, _c[1] * scalar, _c[2] * scalar});
-            }
+            //if (Samples == 3)
+            //{
+            //    //_c[0] *= scalar;
+            //    //_c[1] *= scalar;
+            //    //_c[2] *= scalar;
+            //    //return this;
+            //    return new Spectrum(new[] {Channels[0] * scalar, Channels[1] * scalar, Channels[2] * scalar});
+            //}
 
             int i;
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
+                var a = new Vector<float>(Channels, i);
                 System.Numerics.Vector.Multiply(a, scalar).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] * scalar;
+                results[i] = Channels[i] * scalar;
+            }
+
+            //var results = new float[Samples];
+            //for (var i = 0; i < Samples; i++)
+            //{
+            //    results[i] = Channels[i] * scalar;
+            //}
+
+            return new Spectrum(results);
+        }
+
+        [Pure]
+        public static Spectrum FusedMultiply(Spectrum a, Spectrum b, float c)
+        {
+            int i;
+            var results = new float[Samples];
+            for (i = 0; i < RemainderIndex; i += SimdLength)
+            {
+                var aC = new Vector<float>(a.Channels, i);
+                var bC = new Vector<float>(b.Channels, i);
+
+                System.Numerics.Vector.Multiply(aC, System.Numerics.Vector.Multiply(bC, c))
+                      .CopyTo(results, i);
+            }
+
+            for (; i < Samples; i++)
+            {
+                results[i] = a.Channels[i] * b.Channels[i] * c;
             }
 
             return new Spectrum(results);
         }
+
+        //public void Scale(float scalar)
+        //{
+        //    int i;
+        //    for (i = 0; i < RemainderIndex; i += SimdLength)
+        //    {
+        //        var a = new Vector<float>(Channels, i);
+        //        System.Numerics.Vector.Multiply(a, scalar).CopyTo(Channels, i);
+        //    }
+
+        //    for (; i < Samples; i++)
+        //    {
+        //        Channels[i] *= scalar;
+        //    }
+        //}
+
+        //public void Scale(Spectrum s)
+        //{
+        //    int i;
+        //    for (i = 0; i < RemainderIndex; i += SimdLength)
+        //    {
+        //        var a = new Vector<float>(Channels, i);
+        //        var b = new Vector<float>(s.Channels, i);
+        //        System.Numerics.Vector.Multiply(a, b).CopyTo(Channels, i);
+        //    }
+
+        //    for (; i < Samples; i++)
+        //    {
+        //        Channels[i] *= s.Channels[i];
+        //    }
+        //}
 
         [Pure]
         public Spectrum Divide(in Spectrum other)
@@ -332,14 +389,14 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
-                var b = new Vector<float>(other._c, i);
+                var a = new Vector<float>(Channels, i);
+                var b = new Vector<float>(other.Channels, i);
                 System.Numerics.Vector.Divide(a, b).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] / other._c[i];
+                results[i] = Channels[i] / other.Channels[i];
             }
 
             return new Spectrum(results);
@@ -353,13 +410,13 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
+                var a = new Vector<float>(Channels, i);
                 System.Numerics.Vector.Multiply(a, inv).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = _c[i] * inv;
+                results[i] = Channels[i] * inv;
             }
 
             return new Spectrum(results);
@@ -372,13 +429,13 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(_c, i);
+                var a = new Vector<float>(Channels, i);
                 SquareRoot(a).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = System.MathF.Sqrt(_c[i]);
+                results[i] = System.MathF.Sqrt(Channels[i]);
             }
 
             return new Spectrum(results);
@@ -390,7 +447,7 @@ namespace Octans
             var s = new float[Samples];
             for (var i = 0; i < Samples; i++)
             {
-                s[i] = System.MathF.Pow(_c[i], y);
+                s[i] = System.MathF.Pow(Channels[i], y);
             }
 
             return new Spectrum(s);
@@ -402,7 +459,7 @@ namespace Octans
             var s = new float[Samples];
             for (var i = 0; i < Samples; i++)
             {
-                s[i] = System.MathF.Exp(_c[i]);
+                s[i] = System.MathF.Exp(Channels[i]);
             }
 
             return new Spectrum(s);
@@ -418,13 +475,13 @@ namespace Octans
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(spectrum._c, i);
+                var a = new Vector<float>(spectrum.Channels, i);
                 System.Numerics.Vector.Negate(a).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = -spectrum._c[i];
+                results[i] = -spectrum.Channels[i];
             }
 
             return new Spectrum(results);
@@ -434,20 +491,21 @@ namespace Octans
         public static Spectrum Lerp(in Spectrum s0, in Spectrum s1, float t)
         {
             int i;
+            var oneMinusT = 1f - t;
             var results = new float[Samples];
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(s0._c, i);
-                var b = new Vector<float>(s1._c, i);
+                var a = new Vector<float>(s0.Channels, i);
+                var b = new Vector<float>(s1.Channels, i);
                 System.Numerics.Vector.Add(
-                          System.Numerics.Vector.Multiply(a, 1f - t),
+                          System.Numerics.Vector.Multiply(a, oneMinusT),
                           System.Numerics.Vector.Multiply(b, t))
                       .CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = MathF.Lerp(s0._c[i], s1._c[i], t);
+                results[i] = MathF.Lerp(s0.Channels[i], s1.Channels[i], t);
             }
 
             return new Spectrum(results);
@@ -462,13 +520,13 @@ namespace Octans
             var h = new Vector<float>(high);
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(spectrum._c, i);
+                var a = new Vector<float>(spectrum.Channels, i);
                 Min(Max(a, l), h).CopyTo(results, i);
             }
 
             for (; i < Samples; i++)
             {
-                results[i] = MathF.Clamp(low, high, spectrum._c[i]);
+                results[i] = MathF.Clamp(low, high, spectrum.Channels[i]);
             }
 
             return new Spectrum(results);
@@ -481,7 +539,7 @@ namespace Octans
             var vMax = new Vector<float>(float.MinValue);
             for (i = 0; i < RemainderIndex; i += SimdLength)
             {
-                var a = new Vector<float>(spectrum._c, i);
+                var a = new Vector<float>(spectrum.Channels, i);
                 vMax = Max(a, vMax);
             }
 
@@ -493,7 +551,7 @@ namespace Octans
 
             for (; i < Samples; i++)
             {
-                max = Max(spectrum._c[i], max);
+                max = Max(spectrum.Channels[i], max);
             }
 
             return max;
@@ -505,9 +563,9 @@ namespace Octans
             var xyz = new float[3];
             for (var i = 0; i < Samples; i++)
             {
-                xyz[0] += X.C[i] * C[i];
-                xyz[1] += Y.C[i] * C[i];
-                xyz[2] += Z.C[i] * C[i];
+                xyz[0] += X.Channels[i] * Channels[i];
+                xyz[1] += Y.Channels[i] * Channels[i];
+                xyz[2] += Z.Channels[i] * Channels[i];
             }
 
             var scale = (SampledLambdaEnd - SampledLambdaStart) / (CIE_Data.CIE_Y_integral * Samples);
@@ -523,7 +581,7 @@ namespace Octans
             var yy = 0f;
             for (var i = 0; i < Samples; i++)
             {
-                yy += Y.C[i] * C[i];
+                yy += Y.Channels[i] * Channels[i];
             }
 
             return yy * (SampledLambdaEnd - SampledLambdaStart) / (CIE_Data.CIE_Y_integral * Samples);
@@ -725,7 +783,7 @@ namespace Octans
         public static Spectrum operator -(Spectrum s) => Negate(in s);
 
         [Pure]
-        public static bool Equals(Spectrum x, Spectrum y) => !(x is null) && x.Equals(y);
+        public static bool Equals(Spectrum x, Spectrum y) => x.Equals(y);
 
         [Pure]
         public static bool operator ==(Spectrum left, Spectrum right) => Equals(left, right);
@@ -741,15 +799,15 @@ namespace Octans
                 return false;
             }
 
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
+            //if (ReferenceEquals(this, obj))
+            //{
+            //    return true;
+            //}
 
             return obj.GetType() == GetType() && Equals((Spectrum) obj);
         }
 
         [Pure]
-        public override int GetHashCode() => _c.GetHashCode();
+        public override int GetHashCode() => Channels.GetHashCode();
     }
 }

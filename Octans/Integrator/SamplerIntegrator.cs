@@ -53,16 +53,16 @@ namespace Octans.Integrator
                     queue.Enqueue(new PixelArea(min, max));
                 }
             }
-//#if DEBUG
-//            foreach (var a in queue)
-//            {
-//                RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value);
-//            }
-//#else
+#if DEBUG
+            foreach (var a in queue)
+            {
+                RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value);
+            }
+#else
             Parallel.ForEach(
                 queue, a => RenderTile(a, nTiles.X, _sampler, _camera, scene, _pixelBounds, _perThreadArena.Value));
 
-//#endif
+#endif
             foreach (var arena in _perThreadArena.Values)
             {
                 arena.Clear();
@@ -123,7 +123,7 @@ namespace Octans.Integrator
                         L.Zero();
                     }
 
-                    filmTile.AddSample(cameraSample.FilmPoint, L.ToSpectrum(arena), rayWeight);
+                    filmTile.AddSample(cameraSample.FilmPoint, L, rayWeight);
 
                     arena.Reset();
                 } while (tileSampler.StartNextSample());
