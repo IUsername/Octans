@@ -490,20 +490,24 @@ namespace Octans
         [Pure]
         public static Spectrum Lerp(in Spectrum s0, in Spectrum s1, float t)
         {
-            int i;
-            var oneMinusT = 1f - t;
-            var results = new float[Samples];
-            for (i = 0; i < RemainderIndex; i += SimdLength)
-            {
-                var a = new Vector<float>(s0.Channels, i);
-                var b = new Vector<float>(s1.Channels, i);
-                System.Numerics.Vector.Add(
-                          System.Numerics.Vector.Multiply(a, oneMinusT),
-                          System.Numerics.Vector.Multiply(b, t))
-                      .CopyTo(results, i);
-            }
+            if (t == 0f) return s0;
+            if (t == 1f) return s1;
 
-            for (; i < Samples; i++)
+            //int i;
+            //var oneMinusT = 1f - t;
+            //var results = new float[Samples];
+            //for (i = 0; i < RemainderIndex; i += SimdLength)
+            //{
+            //    var a = new Vector<float>(s0.Channels, i);
+            //    var b = new Vector<float>(s1.Channels, i);
+            //    System.Numerics.Vector.Add(
+            //              System.Numerics.Vector.Multiply(a, oneMinusT),
+            //              System.Numerics.Vector.Multiply(b, t))
+            //          .CopyTo(results, i);
+            //}
+
+            var results = new float[Samples];
+            for (var i=0; i < Samples; i++)
             {
                 results[i] = MathF.Lerp(s0.Channels[i], s1.Channels[i], t);
             }

@@ -11,6 +11,9 @@ namespace Octans.Accelerator
 {
     public sealed class BVH : IPrimitive
     {
+        private readonly ThreadLocal<IntersectionInfo> _info =
+            new ThreadLocal<IntersectionInfo>(() => new IntersectionInfo());
+
         private readonly LinearBVHNode[] _nodes;
         private readonly IPrimitive[] _p;
         private readonly object _padlock = new object();
@@ -41,6 +44,7 @@ namespace Octans.Accelerator
 
             var offset = 0;
             FlattenBVHTree(root, ref offset);
+            arena.Clear();
         }
 
         public SplitMethod SplitMethod { get; }
@@ -56,15 +60,11 @@ namespace Octans.Accelerator
                 return false;
             }
 
-            var hit = false;
-            var dirIsNeg = DirIsNeg(r);
-            var toVisitOffset = 0;
-            var currentNodeIndex = 0;
-            var nodesToVisit = new int[64];
+            var info = _info.Value.Initialize(in r);
             while (true)
             {
-                var node = _nodes[currentNodeIndex];
-                if (node.Bounds.IntersectP(r, dirIsNeg))
+                var node = _nodes[info.CurrentNodeIndex];
+                if (node.Bounds.IntersectP(r, info.DirIsNegative))
                 {
                     if (node.NPrimitives > 0)
                     {
@@ -72,43 +72,43 @@ namespace Octans.Accelerator
                         {
                             if (_p[node.PrimitivesOffset + i].Intersect(ref r, ref si))
                             {
-                                hit = true;
+                                info.Hit = true;
                             }
                         }
 
-                        if (toVisitOffset == 0)
+                        if (info.ToVisitOffset == 0)
                         {
                             break;
                         }
 
-                        currentNodeIndex = nodesToVisit[--toVisitOffset];
+                        info.CurrentNodeIndex = info.NodesToVisit[--info.ToVisitOffset];
                     }
                     else
                     {
-                        if (dirIsNeg[node.Axis] == 1)
+                        if (info.DirIsNegative[node.Axis] == 1)
                         {
-                            nodesToVisit[toVisitOffset++] = currentNodeIndex + 1;
-                            currentNodeIndex = node.SecondChildOffset;
+                            info.NodesToVisit[info.ToVisitOffset++] = info.CurrentNodeIndex + 1;
+                            info.CurrentNodeIndex = node.SecondChildOffset;
                         }
                         else
                         {
-                            nodesToVisit[toVisitOffset++] = node.SecondChildOffset;
-                            currentNodeIndex += 1;
+                            info.NodesToVisit[info.ToVisitOffset++] = node.SecondChildOffset;
+                            info.CurrentNodeIndex += 1;
                         }
                     }
                 }
                 else
                 {
-                    if (toVisitOffset == 0)
+                    if (info.ToVisitOffset == 0)
                     {
                         break;
                     }
 
-                    currentNodeIndex = nodesToVisit[--toVisitOffset];
+                    info.CurrentNodeIndex = info.NodesToVisit[--info.ToVisitOffset];
                 }
             }
 
-            return hit;
+            return info.Hit;
         }
 
         public bool IntersectP(ref Ray r)
@@ -118,14 +118,11 @@ namespace Octans.Accelerator
                 return false;
             }
 
-            var dirIsNeg = DirIsNeg(r);
-            var toVisitOffset = 0;
-            var currentNodeIndex = 0;
-            var nodesToVisit = new int[64];
+            var info = _info.Value.Initialize(in r);
             while (true)
             {
-                var node = _nodes[currentNodeIndex];
-                if (node.Bounds.IntersectP(r, dirIsNeg))
+                var node = _nodes[info.CurrentNodeIndex];
+                if (node.Bounds.IntersectP(r, info.DirIsNegative))
                 {
                     if (node.NPrimitives > 0)
                     {
@@ -137,35 +134,35 @@ namespace Octans.Accelerator
                             }
                         }
 
-                        if (toVisitOffset == 0)
+                        if (info.ToVisitOffset == 0)
                         {
                             break;
                         }
 
-                        currentNodeIndex = nodesToVisit[--toVisitOffset];
+                        info.CurrentNodeIndex = info.NodesToVisit[--info.ToVisitOffset];
                     }
                     else
                     {
-                        if (dirIsNeg[node.Axis] == 1)
+                        if (info.DirIsNegative[node.Axis] == 1)
                         {
-                            nodesToVisit[toVisitOffset++] = currentNodeIndex + 1;
-                            currentNodeIndex = node.SecondChildOffset;
+                            info.NodesToVisit[info.ToVisitOffset++] = info.CurrentNodeIndex + 1;
+                            info.CurrentNodeIndex = node.SecondChildOffset;
                         }
                         else
                         {
-                            nodesToVisit[toVisitOffset++] = node.SecondChildOffset;
-                            currentNodeIndex += 1;
+                            info.NodesToVisit[info.ToVisitOffset++] = node.SecondChildOffset;
+                            info.CurrentNodeIndex += 1;
                         }
                     }
                 }
                 else
                 {
-                    if (toVisitOffset == 0)
+                    if (info.ToVisitOffset == 0)
                     {
                         break;
                     }
 
-                    currentNodeIndex = nodesToVisit[--toVisitOffset];
+                    info.CurrentNodeIndex = info.NodesToVisit[--info.ToVisitOffset];
                 }
             }
 
@@ -182,17 +179,6 @@ namespace Octans.Accelerator
                                                in bool allowMultipleLobes)
         {
             throw new NotImplementedException();
-        }
-
-        private static int[] DirIsNeg(Ray r)
-        {
-            var dirIsNeg = new[]
-            {
-                r.InverseDirection.X < 0f ? 1 : 0,
-                r.InverseDirection.Y < 0f ? 1 : 0,
-                r.InverseDirection.Z < 0f ? 1 : 0
-            };
-            return dirIsNeg;
         }
 
         private int FlattenBVHTree(BVHBuildNode node, ref int offset)
@@ -369,12 +355,19 @@ namespace Octans.Accelerator
                 {
                     b = nBuckets - 1;
                 }
+
                 Debug.Assert(b >= 0);
                 Debug.Assert(b < nBuckets);
 
                 return b <= minCostSplitBucket;
             });
-           
+
+            // If all the costs are equal we may not find a mid partition.
+            if (mid == start && cost[start] == cost[start + 1])
+            {
+                mid++;
+            }
+
             Debug.Assert(mid > start);
             Debug.Assert(mid < end);
 
@@ -628,6 +621,33 @@ namespace Octans.Accelerator
                               RecursiveBuild(arena, primitiveInfo, mid, end, ref totalNodes, ordered));
 
             return node;
+        }
+
+        private class IntersectionInfo
+        {
+            public readonly int[] DirIsNegative = new int[3];
+
+            public readonly int[] NodesToVisit = new int[64];
+
+            public int CurrentNodeIndex;
+
+            public bool Hit;
+
+            public int ToVisitOffset;
+
+            public IntersectionInfo Initialize(in Ray r)
+            {
+                DirIsNegative[0] = r.InverseDirection.X < 0f ? 1 : 0;
+                DirIsNegative[1] = r.InverseDirection.Y < 0f ? 1 : 0;
+                DirIsNegative[2] = r.InverseDirection.Z < 0f ? 1 : 0;
+
+                Array.Fill(NodesToVisit, 0);
+
+                ToVisitOffset = 0;
+                CurrentNodeIndex = 0;
+                Hit = false;
+                return this;
+            }
         }
     }
 

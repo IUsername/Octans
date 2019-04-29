@@ -7,7 +7,7 @@ namespace Octans.Integrator
     {
         private readonly int _maxDepth;
 
-        public WhittedIntegrator(int maxDepth, ICamera camera, ISampler2 sampler, in PixelArea pixelBounds) : base(
+        public WhittedIntegrator(int maxDepth, ICamera camera, ISampler sampler, in PixelArea pixelBounds) : base(
             camera, sampler, in pixelBounds)
         {
             _maxDepth = maxDepth;
@@ -16,7 +16,7 @@ namespace Octans.Integrator
         protected override void Li(SpectrumAccumulator L,
                                    in RayDifferential ray,
                                    IScene scene,
-                                   ISampler2 sampler,
+                                   ISampler sampler,
                                    IObjectArena arena,
                                    int depth = 0)
         {
@@ -71,7 +71,7 @@ namespace Octans.Integrator
             }
         }
 
-        protected override void Preprocess(in IScene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler sampler)
         {
         }
     }

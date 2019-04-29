@@ -11,43 +11,74 @@ namespace Octans.Sampling
             () => QuasiRandom.ComputeRadicalInversePermutations(new Random(63)),
             LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private readonly PixelCoordinate _baseExponents;
-        private readonly PixelCoordinate _baseScales;
-        private readonly long[] _multiplicativeInv = new long[2];
-        private readonly int _sampleStride;
+        private PixelCoordinate _baseExponents;
+        private PixelCoordinate _baseScales;
+        private long[] _multiplicativeInv = new long[2];
+        private int _sampleStride;
         private long _offsetForCurrentPixel;
         private PixelCoordinate _pixelForOffset = new PixelCoordinate(int.MaxValue, int.MinValue);
 
         public HaltonSampler(int samplesPerPixel, in PixelArea sampleBounds) : base(samplesPerPixel)
         {
             SampleBounds = sampleBounds;
-          
+
             FindScalesAndExponentsForArea(in sampleBounds, out _baseScales, out _baseExponents);
             _sampleStride = Stride(in _baseScales);
             _multiplicativeInv[0] = MultiplicativeInverse(_baseScales.Y, _baseScales.X);
             _multiplicativeInv[1] = MultiplicativeInverse(_baseScales.X, _baseScales.Y);
         }
 
-        private HaltonSampler(in HaltonSampler other) : base(other.SamplesPerPixel)
+        //private HaltonSampler(in HaltonSampler other) : base(other.SamplesPerPixel)
+        //{
+        //    SampleBounds = other.SampleBounds;
+        //    _baseScales = other._baseScales;
+        //    _baseExponents = other._baseExponents;
+        //    _sampleStride = other._sampleStride;
+        //    _multiplicativeInv = other._multiplicativeInv;
+
+        //    foreach (var row in other.Samples1D)
+        //    {
+        //        Samples1D.Add(new float[row.Length]);
+        //    }
+
+        //    foreach (var row in other.Samples2D)
+        //    {
+        //        Samples2D.Add(new Point2D[row.Length]);
+        //    }
+        //}
+
+        public HaltonSampler() : base(0)
+        { }
+
+        private HaltonSampler Initialize(in HaltonSampler other)
         {
+            base.SamplesPerPixel = other.SamplesPerPixel;
             SampleBounds = other.SampleBounds;
             _baseScales = other._baseScales;
             _baseExponents = other._baseExponents;
             _sampleStride = other._sampleStride;
             _multiplicativeInv = other._multiplicativeInv;
 
-            foreach (var row in other.Samples1D)
+            if (Samples1D.Count != other.Samples1D.Count)
             {
-                Samples1D.Add(new float[row.Length]);
+                foreach (var row in other.Samples1D)
+                {
+                    Samples1D.Add(new float[row.Length]);
+                }
             }
 
-            foreach (var row in other.Samples2D)
+            if (Samples2D.Count != other.Samples2D.Count)
             {
-                Samples2D.Add(new Point2D[row.Length]);
+                foreach (var row in other.Samples2D)
+                {
+                    Samples2D.Add(new Point2D[row.Length]);
+                }
             }
+
+            return this;
         }
 
-        public PixelArea SampleBounds { get; }
+        public PixelArea SampleBounds { get; private set; }
 
         private static ushort[] RadicalInversePermutations => LazyPermutations.Value;
 
@@ -164,6 +195,10 @@ namespace Octans.Sampling
             }
         }
 
-        public override ISampler2 Clone(int seed) => new HaltonSampler(this);
+        public override ISampler Clone(int seed, IObjectArena arena)
+        {
+            return arena.Create<HaltonSampler>().Initialize(this);
+            //return new HaltonSampler(this);
+        }
     }
 }

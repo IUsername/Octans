@@ -177,6 +177,25 @@ namespace Octans
             return new Ray(o, d, tMax);
         }
 
+        public static void ApplyInPlace(in Transform t, in Ray r)
+        {
+            var o = Apply(t, r.Origin, out var oError);
+            var d = Apply(t, r.Direction);
+            var len2 = d.MagSqr();
+            var tMax = r.TMax;
+            if (len2 > 0)
+            {
+                var dt = Vector.Abs(in d) % oError / len2;
+                o += d * dt;
+                tMax -= dt;
+            }
+
+            r.Origin = o;
+            r.Direction = d;
+            r.InverseDirection = 1f / d;
+            r.TMax = tMax;
+        }
+
         [Pure]
         private static RayDifferential Apply(in Transform t, in RayDifferential r)
         {
@@ -190,6 +209,21 @@ namespace Octans
                 RyDirection = t * r.RyDirection
             };
             return rd;
+        }
+
+      
+        public static void ApplyInPlace(in Transform t, in RayDifferential r)
+        {
+          //  var hasDiff = r.HasDifferentials;
+            ApplyInPlace(t, (Ray)r);
+         //   r.HasDifferentials = hasDiff;
+            if (r.HasDifferentials)
+            {
+                r.RxOrigin = t * r.RxOrigin;
+                r.RyOrigin = t * r.RyOrigin;
+                r.RxDirection = t * r.RxDirection;
+                r.RyDirection = t * r.RyDirection;
+            }
         }
 
         [Pure]

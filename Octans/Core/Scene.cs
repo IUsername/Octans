@@ -40,6 +40,6 @@ namespace Octans
             return Aggregate.IntersectP(ref r);
         }
 
-        public bool IntersectTr(Ray ray, ISampler2 sampler, ref SurfaceInteraction si, out Spectrum tr) => throw new System.NotImplementedException();
+        public bool IntersectTr(Ray ray, ISampler sampler, ref SurfaceInteraction si, out Spectrum tr) => throw new System.NotImplementedException();
     }
 }

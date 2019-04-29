@@ -4,33 +4,62 @@ namespace Octans.Sampling
 {
     public class RandomSampler : SamplerBase
     {
-        private readonly Random _rand;
+        private Random _rand;
 
         public RandomSampler(long samplesPerPixel, int seed) : base(samplesPerPixel)
         {
             _rand = new Random(seed);
         }
 
-        private RandomSampler(RandomSampler other, int seed) : base(other.SamplesPerPixel)
+        public RandomSampler() : base(0) { }
+
+        //private RandomSampler(RandomSampler other, int seed) : base(other.SamplesPerPixel)
+        //{
+        //    _rand = new Random(seed);
+
+        //    foreach (var row in other.Samples1D)
+        //    {
+        //        Samples1D.Add(new float[row.Length]);
+        //    }
+
+        //    foreach (var row in other.Samples2D)
+        //    {
+        //        Samples2D.Add(new Point2D[row.Length]);
+        //    }
+        //}
+
+        public RandomSampler Initialize(RandomSampler other, int seed)
         {
             _rand = new Random(seed);
 
-            foreach (var row in other.Samples1D)
+            if (Samples1D.Count != other.Samples1D.Count)
             {
-                Samples1D.Add(new float[row.Length]);
+                foreach (var row in other.Samples1D)
+                {
+                    Samples1D.Add(new float[row.Length]);
+                }
             }
 
-            foreach (var row in other.Samples2D)
+            if (Samples2D.Count != other.Samples2D.Count)
             {
-                Samples2D.Add(new Point2D[row.Length]);
+                foreach (var row in other.Samples2D)
+                {
+                    Samples2D.Add(new Point2D[row.Length]);
+                }
             }
+
+            return this;
         }
 
         public override Point2D Get2D() => new Point2D((float) _rand.NextDouble(), (float) _rand.NextDouble());
 
         public override float Get1D() => (float) _rand.NextDouble();
 
-        public override ISampler2 Clone(int seed) => new RandomSampler(this, seed);
+        public override ISampler Clone(int seed, IObjectArena arena)
+        {
+            return arena.Create<RandomSampler>().Initialize(this, seed);
+           // return new RandomSampler(this, seed);
+        }
 
         public override void StartPixel(in PixelCoordinate p)
         {

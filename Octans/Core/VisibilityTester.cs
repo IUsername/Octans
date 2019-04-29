@@ -18,7 +18,7 @@ namespace Octans
             return !scene.IntersectP(P0.SpawnRayTo(P1));
         }
 
-        public Spectrum Tr(IScene scene, ISampler2 sampler)
+        public Spectrum Tr(IScene scene, ISampler sampler)
         {
             var ray = P0.SpawnRayTo(P1);
             Spectrum tr = Spectrum.One;

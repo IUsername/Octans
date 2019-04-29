@@ -13,7 +13,7 @@ namespace Octans.Integrator
         public static Spectrum UniformSampleOneLight(this Interaction it,
                                                      IScene scene,
                                                      IObjectArena arena,
-                                                     ISampler2 sampler,
+                                                     ISampler sampler,
                                                      bool handleMedia = false,
                                                      Distribution1D lightDistribution = null)
         {
@@ -50,7 +50,7 @@ namespace Octans.Integrator
                                                ILight light,
                                                in Point2D uLight,
                                                IScene scene,
-                                               ISampler2 sampler,
+                                               ISampler sampler,
                                                IObjectArena arena,
                                                in bool handleMedia = false,
                                                bool specular = false)

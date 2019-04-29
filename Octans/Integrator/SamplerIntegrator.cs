@@ -18,9 +18,9 @@ namespace Octans.Integrator
             new ThreadLocal<ObjectArena>(() => new ObjectArena(), true);
 
         private readonly PixelArea _pixelBounds;
-        private readonly ISampler2 _sampler;
+        private readonly ISampler _sampler;
 
-        protected SamplerIntegrator(ICamera camera, ISampler2 sampler, in PixelArea pixelBounds)
+        protected SamplerIntegrator(ICamera camera, ISampler sampler, in PixelArea pixelBounds)
         {
             _camera = camera;
             _sampler = sampler;
@@ -73,14 +73,14 @@ namespace Octans.Integrator
 
         private void RenderTile(in PixelArea tile,
                                 int nTilesX,
-                                ISampler2 sampler,
+                                ISampler sampler,
                                 ICamera camera,
                                 IScene scene,
                                 PixelArea pixelBounds,
                                 ObjectArena arena)
         {
             var seed = tile.Min.Y * nTilesX + tile.Min.X;
-            var tileSampler = sampler.Clone(seed);
+            var tileSampler = sampler.Clone(seed, arena);
 
             var filmTile = camera.Film.CreateFilmTile(tile);
 
@@ -95,9 +95,9 @@ namespace Octans.Integrator
 
                 do
                 {
-                    var cameraSample = tileSampler.GetCameraSample(in pixel);
+                    var cameraSample = tileSampler.GetCameraSample(in pixel, arena);
 
-                    var rayWeight = camera.GenerateRayDifferential(cameraSample, out var ray);
+                    var rayWeight = camera.GenerateRayDifferential(cameraSample, arena, out var ray);
                     ray.ScaleDifferentials(1f / Sqrt(tileSampler.SamplesPerPixel));
 
                     var L = arena.Create<SpectrumAccumulator>().Zero();
@@ -136,18 +136,18 @@ namespace Octans.Integrator
             SpectrumAccumulator L,
             in RayDifferential ray,
             IScene scene,
-            ISampler2 tileSampler,
+            ISampler tileSampler,
             IObjectArena arena,
             int depth = 0);
 
-        protected abstract void Preprocess(in IScene scene, ISampler2 sampler);
+        protected abstract void Preprocess(in IScene scene, ISampler sampler);
 
         protected void SpecularReflect(
             SpectrumAccumulator L,
             RayDifferential ray,
             SurfaceInteraction si,
             IScene scene,
-            ISampler2 sampler,
+            ISampler sampler,
             IObjectArena arena,
             in int depth)
         {
@@ -198,7 +198,7 @@ namespace Octans.Integrator
             in RayDifferential ray,
             SurfaceInteraction si,
             IScene scene,
-            ISampler2 sampler,
+            ISampler sampler,
             IObjectArena arena,
             in int depth)
         {

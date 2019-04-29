@@ -13,7 +13,7 @@ namespace Octans.Integrator
 
         public PathIntegrator(int maxDepth,
                               ICamera camera,
-                              ISampler2 sampler,
+                              ISampler sampler,
                               in PixelArea pixelBounds,
                               float rrThreshold,
                               LightSampleStrategy lightSampleStrategy) 
@@ -29,7 +29,7 @@ namespace Octans.Integrator
         protected override void Li(SpectrumAccumulator L,
                                    in RayDifferential ray,
                                    IScene scene,
-                                   ISampler2 sampler,
+                                   ISampler sampler,
                                    IObjectArena arena,
                                    int depth = 0)
         {
@@ -68,7 +68,8 @@ namespace Octans.Integrator
                 si.ComputeScatteringFunctions(r, arena);
                 if (si.BSDF.NumberOfComponents() == 0)
                 {
-                    r = new RayDifferential(si.SpawnRay(r.Direction));
+                    r = arena.Create<RayDifferential>().Initialize(si.SpawnRay(r.Direction));
+                 //   r = new RayDifferential(si.SpawnRay(r.Direction));
                     bounces--;
                     continue;
                 }
@@ -104,7 +105,8 @@ namespace Octans.Integrator
                     etaScale *= wo % si.N > 0f ? eta * eta : 1f / (eta * eta);
                 }
 
-                r = new RayDifferential(si.SpawnRay(wi));
+                //r = new RayDifferential(si.SpawnRay(wi));
+                r = arena.Create<RayDifferential>().Initialize(si.SpawnRay(wi));
 
                 if (!(si.BSSRDF is null) && flags.HasFlag(BxDFType.Transmission))
                 {
@@ -132,7 +134,8 @@ namespace Octans.Integrator
                     //beta.Scale(f * Abs(wi % pi.ShadingGeometry.N) / pdf);
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                     specularBounce = flags.HasFlag(BxDFType.Specular);
-                    r = new RayDifferential(pi.SpawnRay(wi));
+                    //r = new RayDifferential(pi.SpawnRay(wi));
+                    r = arena.Create<RayDifferential>().Initialize(si.SpawnRay(wi));
                 }
 
                 var rrBeta = beta * etaScale;
@@ -151,7 +154,7 @@ namespace Octans.Integrator
             }
         }
 
-        protected override void Preprocess(in IScene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler sampler)
         {
             _lightDistribution = LightDistribution.CreateLightSampleDistribution(_lightSampleStrategy, scene);
         }

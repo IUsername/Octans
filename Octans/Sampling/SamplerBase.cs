@@ -4,13 +4,13 @@ using System.Numerics;
 
 namespace Octans.Sampling
 {
-    public interface ISampler2
+    public interface ISampler
     {
         void StartPixel(in PixelCoordinate p);
         bool StartNextSample();
-        ISampler2 Clone(int seed);
+        ISampler Clone(int seed, IObjectArena arena);
         bool SetSampleNumber(long sampleNumber);
-        CameraSample GetCameraSample(in PixelCoordinate raster);
+        CameraSample GetCameraSample(in PixelCoordinate raster, IObjectArena arena);
         int RoundCount(int n);
         void Request2DArray(int n);
         Point2D[] Get2DArray(int n);
@@ -19,7 +19,7 @@ namespace Octans.Sampling
         float Get1D();
     }
 
-    public abstract class SamplerBase : ISampler2
+    public abstract class SamplerBase : ISampler
     {
         private readonly List<float[]> _samples1D = new List<float[]>();
         private readonly List<Point2D[]> _samples2D = new List<Point2D[]>();
@@ -38,7 +38,7 @@ namespace Octans.Sampling
 
         protected IList<Point2D[]> Samples2D => _samples2D;
 
-        public long SamplesPerPixel { get; }
+        public long SamplesPerPixel { get; protected set; }
 
         public abstract Point2D Get2D();
 
@@ -94,7 +94,7 @@ namespace Octans.Sampling
             return ++CurrentPixelSampleIndex < SamplesPerPixel;
         }
 
-        public abstract ISampler2 Clone(int seed);
+        public abstract ISampler Clone(int seed, IObjectArena arena);
 
         public virtual bool SetSampleNumber(long sampleNumber)
         {
@@ -103,13 +103,11 @@ namespace Octans.Sampling
             return CurrentPixelSampleIndex < SamplesPerPixel;
         }
 
-        public CameraSample GetCameraSample(in PixelCoordinate raster)
+        public CameraSample GetCameraSample(in PixelCoordinate raster, IObjectArena arena)
         {
-            var cs = new CameraSample
-            {
-                FilmPoint = Get2D() + (Vector2) raster,
-                LensPoint = Get2D()
-            };
+            var cs = arena.Create<CameraSample>();
+            cs.FilmPoint = Get2D() + (Vector2) raster;
+            cs.LensPoint = Get2D();
             return cs;
         }
 

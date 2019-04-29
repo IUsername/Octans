@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Octans.Memory;
 using Octans.Sampling;
 using Xunit;
 
@@ -21,8 +22,9 @@ namespace Octans.Test.Sampling
             var end = new PixelCoordinate(100, 100);
             var area = new PixelArea(start, end);
             var hs = new HaltonSampler(10, area);
+            var arena = new ObjectArena();
             hs.StartPixel(in start);
-            var cs = hs.GetCameraSample(in start);
+            var cs = hs.GetCameraSample(in start, arena);
             cs.FilmPoint.X.Should().BeInRange(0f, 1f);
             cs.FilmPoint.Y.Should().BeInRange(0f, 1f);
             cs.LensPoint.X.Should().BeInRange(0f, 1f);
@@ -30,7 +32,7 @@ namespace Octans.Test.Sampling
 
             var next = new PixelCoordinate(1,0);
             hs.StartPixel(in next);
-            var csn = hs.GetCameraSample(in next);
+            var csn = hs.GetCameraSample(in next, arena);
             csn.FilmPoint.X.Should().BeInRange(1f, 2f);
             csn.FilmPoint.Y.Should().BeInRange(0f, 1f);
             csn.LensPoint.X.Should().BeInRange(0f, 1f);

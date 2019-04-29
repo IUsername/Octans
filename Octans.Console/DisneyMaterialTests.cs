@@ -290,7 +290,7 @@ namespace Octans.ConsoleApp
                 prims.Add(s1g);
             }
 
-            var bvh = new BVH(prims.ToArray(), SplitMethod.EqualCounts);
+            var bvh = new BVH(prims.ToArray(), SplitMethod.HLBVH);
 
             var mid = bvh.WorldBounds.Centroid;
 
@@ -305,7 +305,7 @@ namespace Octans.ConsoleApp
 
             var transform = Transform.Translate(mid.X, 0f, -50f);
             var dist = Point.Distance(from, to);
-            var filter = new MitchellFilter(new Vector2(2.5f, 2.5f), 0.9f, 0.05f);
+            var filter = new MitchellFilter(new Vector2(2.5f, 2.5f), 0.7f, 0.15f);
             var film = new Film(new PixelVector(width, height), new Bounds2D(0, 0, 1, 1), filter, 20f, 1f);
             var camera = PerspectiveCamera.Create(transform, aspectRatio, 0.0f, dist, fov, film);
 

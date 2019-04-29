@@ -12,7 +12,7 @@ namespace Octans.Integrator
             float minDist,
             float maxDist,
             ICamera camera,
-            ISampler2 sampler,
+            ISampler sampler,
             in PixelArea pixelBounds)
             : base(camera, sampler, in pixelBounds)
         {
@@ -21,7 +21,7 @@ namespace Octans.Integrator
             _delta = _maxDist - _minDist;
         }
 
-        protected override void Li(SpectrumAccumulator L, in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
+        protected override void Li(SpectrumAccumulator L, in RayDifferential ray, IScene scene, ISampler tileSampler, IObjectArena arena, int depth = 0)
         {
             var r = ray;
             var si = new SurfaceInteraction();
@@ -37,7 +37,7 @@ namespace Octans.Integrator
          //   return arena.Create<SpectrumAccumulator>().FromSpectrum(Spectrum.FromRGB(new[] {x, x, x}, SpectrumType.Illuminant));
         }
 
-        protected override void Preprocess(in IScene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler sampler)
         {
         }
     }

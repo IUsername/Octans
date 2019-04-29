@@ -6,7 +6,7 @@ namespace Octans.Integrator
     {
         public NormalIntegrator(
             ICamera camera,
-            ISampler2 sampler,
+            ISampler sampler,
             in PixelArea pixelBounds)
             : base(camera, sampler, in pixelBounds)
         {
@@ -14,7 +14,7 @@ namespace Octans.Integrator
 
         protected override void Li(SpectrumAccumulator L, in RayDifferential ray,
                                        IScene scene,
-                                       ISampler2 tileSampler,
+                                       ISampler tileSampler,
                                        IObjectArena arena,
                                        int depth = 0)
         {
@@ -35,7 +35,7 @@ namespace Octans.Integrator
            // return arena.Create<SpectrumAccumulator>().FromSpectrum(Spectrum.FromRGB(rgb, SpectrumType.Reflectance));
         }
 
-        protected override void Preprocess(in IScene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler sampler)
         {
         }
     }

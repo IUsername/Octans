@@ -10,7 +10,7 @@ namespace Octans.Integrator
         public AmbientOcclusionIntegrator(bool cosSample,
                                           int nSamples,
                                           ICamera camera,
-                                          ISampler2 sampler,
+                                          ISampler sampler,
                                           in PixelArea pixelBounds)
             : base(camera, sampler, in pixelBounds)
         {
@@ -23,7 +23,7 @@ namespace Octans.Integrator
         public bool CosSample { get; }
         public int NSamples { get; }
 
-        protected override void Li(SpectrumAccumulator L, in RayDifferential ray, IScene scene, ISampler2 tileSampler, IObjectArena arena, int depth = 0)
+        protected override void Li(SpectrumAccumulator L, in RayDifferential ray, IScene scene, ISampler tileSampler, IObjectArena arena, int depth = 0)
         {
           //  var L = arena.Create<SpectrumAccumulator>().Zero();
             var r =  ray;
@@ -89,7 +89,7 @@ namespace Octans.Integrator
         //    return L;
         }
 
-        protected override void Preprocess(in IScene scene, ISampler2 sampler)
+        protected override void Preprocess(in IScene scene, ISampler sampler)
         {
         }
     }

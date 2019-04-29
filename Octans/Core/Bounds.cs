@@ -145,7 +145,7 @@ namespace Octans
 
         public static Bounds Unit => new Bounds(new Point(-1, -1, -1), new Point(1, 1, 1));
 
-        public Point Centroid => Min * 0.5f + (Vector) Max * 0.5f;
+        public Point Centroid => (Min + (Vector) Max) * 0.5f;
 
         public static Bounds Add(in Bounds a, in Bounds b)
         {

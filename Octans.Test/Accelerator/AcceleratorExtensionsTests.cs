@@ -19,6 +19,18 @@ namespace Octans.Test.Accelerator
         }
 
         [Fact]
+        public void Partition2()
+        {
+            var data = new[] { 3,2,1,4,5,8 };
+            var pivot = data.Partition(0, data.Length, i => i <= 1);
+            pivot.Should().Be(1);
+            var before = data[..pivot];
+            before.Should().OnlyContain(i => i <= 1);
+            var after = data[pivot + 1..];
+            after.Should().OnlyContain(i => i > 1);
+        }
+
+        [Fact]
         public void NthElement()
         {
             var data = new[] {3, 4, 1, 7, 2, 9, 0, 16, 3};

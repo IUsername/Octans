@@ -7,9 +7,9 @@ namespace Octans
     public class Ray
     {
         public static Ray Undefined = new Ray(new Point(), new Vector(), 0f);
-        public readonly Vector Direction;
-        public readonly Vector InverseDirection;
-        public readonly Point Origin;
+        public Vector Direction { get; set; }
+        public Vector InverseDirection { get; set; }
+        public Point Origin { get; set; }
 
         public Ray(Point origin, Vector direction, float tMax = PositiveInfinity)
         {
@@ -27,10 +27,10 @@ namespace Octans
 
     public interface IMedium
     {
-        Spectrum Tr(Ray ray, ISampler2 sampler);
+        Spectrum Tr(Ray ray, ISampler sampler);
     }
 
-    public class RayDifferential : Ray
+    public sealed class RayDifferential : Ray
     {
         public new static RayDifferential Undefined = new RayDifferential(new Point(), new Vector(), 0f);
 
@@ -42,6 +42,31 @@ namespace Octans
 
         public RayDifferential(Ray ray) : this(ray.Origin, ray.Direction, ray.TMax)
         {
+        }
+
+        public RayDifferential() : base(Point.Zero, Vectors.Zero)
+        {
+            HasDifferentials = false;
+        }
+
+        public RayDifferential Initialize(in Ray ray)
+        {
+            HasDifferentials = false;
+            base.Origin = ray.Origin;
+            base.Direction = ray.Direction;
+            base.InverseDirection = ray.InverseDirection;
+            TMax = PositiveInfinity;
+            return this;
+        }
+
+        public RayDifferential Initialize(in Point p, in Vector d)
+        {
+            HasDifferentials = false;
+            base.Origin = p;
+            base.Direction = d;
+            base.InverseDirection = 1f / d;
+            TMax = PositiveInfinity;
+            return this;
         }
 
         public bool HasDifferentials { get; set; }

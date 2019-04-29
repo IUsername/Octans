@@ -264,11 +264,14 @@ namespace Octans
 
             public PixelArea PixelBounds { get; }
 
+            private static readonly Vector2 HalfOffset = new Vector2(0.5f,0.5f);
+            private static readonly PixelVector OnePixelOffset = new PixelVector(1,1);
+
             public void AddSample(in Point2D p, SpectrumAccumulator L, float sampleWeight = 1f)
             {
-                var discrete = p - new Vector2(0.5f, 0.5f);
+                var discrete = p - HalfOffset;
                 var p0 = (PixelCoordinate) Point2D.Ceiling(discrete - _filterRadius);
-                var p1 = (PixelCoordinate) Point2D.Floor(discrete + _filterRadius) + new PixelVector(1, 1);
+                var p1 = (PixelCoordinate) Point2D.Floor(discrete + _filterRadius) + OnePixelOffset;
                 p0 = PixelCoordinate.Max(p0, PixelBounds.Min);
                 p1 = PixelCoordinate.Min(p1, PixelBounds.Max);
 

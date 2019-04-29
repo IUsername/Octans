@@ -31,12 +31,12 @@ namespace Octans.Camera
         private double A { get; }
 
 
-        public override float GenerateRayDifferential(in CameraSample sample, out RayDifferential ray)
+        public override float GenerateRayDifferential(in CameraSample sample, IObjectArena arena, out RayDifferential ray)
         {
             var pFilm = new Point(sample.FilmPoint.X, sample.FilmPoint.Y, 0);
             var pCamera = RasterToCamera * pFilm;
             var dir = ((Vector) pCamera).Normalize();
-            var r = new RayDifferential(new Point(), dir);
+            var r =  arena.Create<RayDifferential>().Initialize(Point.Zero, dir);
             if (LensRadius > 0f)
             {
                 var pLens = LensRadius * ConcentricSampleDisk(sample.LensPoint);
@@ -66,8 +66,9 @@ namespace Octans.Camera
                 r.RyDirection = ((Vector) pCamera + _dyCamera).Normalize();
             }
 
-            ray = CameraToWorld * r;
-            ray.HasDifferentials = true;
+            r.HasDifferentials = true;
+            ApplyInPlace(CameraToWorld, r);
+            ray = r;
             return 1f;
         }
 
