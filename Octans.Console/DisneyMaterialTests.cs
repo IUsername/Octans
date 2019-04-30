@@ -368,10 +368,9 @@ namespace Octans.ConsoleApp
             s = Spectrum.FromBlackbodyT(5500) * 100000f;
             var pl4 = new PointLight(lt, null, s);
 
-            var splt = Transform.Translate(mid.X, 0, -40).RotateX(MathF.Rad(0));
-            var test = Transform.LookAt(new Point(mid.X, 0, -40), new Point(mid.X, 0, 0), Vectors.Up);
+            var splt = Transform.RotateX(MathF.Rad(18f)).RotateY(MathF.Rad(75)).Translate(0,10, -8);
             s = Spectrum.FromBlackbodyT(5500) * 100000f;
-            var sl = new SpotLight(splt, null, s, 2f, 1.5f);
+            var sl = new SpotLight(splt, null, s, 5f, 2f);
 
             var scene = new Scene(bvh, new ILight[] {pl1, pl2,  pl3, pl4, dl, sl});
             //var scene = new Scene(bvh, new ILight[] { dl });

@@ -68,6 +68,17 @@ namespace Octans
             }
         }
 
+        private Matrix(in Matrix m)
+        {
+            Rows = 4;
+            Columns = 4;
+            _data = new float[4,4];
+            for(var i=0; i<4; ++i)
+            {
+                Array.Copy(m._data, i * 4, _data, i*4, 4);
+            }
+        }
+
         private Matrix(int rows, int columns)
         {
             Rows = rows;
@@ -233,30 +244,117 @@ namespace Octans
         // ReSharper disable once CompareOfFloatsByEqualityOperator
         public static bool IsInvertible(in Matrix m) => Determinant(m) != 0.0f;
 
+        //[Pure]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static Matrix Inverse(in Matrix m)
+        //{
+        //    var det = Determinant(m);
+        //    // ReSharper disable once CompareOfFloatsByEqualityOperator
+        //    if (det == 0.0f)
+        //    {
+        //        throw new InvalidOperationException("Matrix is not invertible.");
+        //    }
+
+        //    var detInv = 1f / det;
+        //    var m2 = new Matrix(m.Columns, m.Rows);
+        //    for (var r = 0; r < m.Rows; r++)
+        //    {
+        //        for (var c = 0; c < m.Columns; c++)
+        //        {
+        //            var cf = Cofactor(m, r, c);
+        //            // Transpose
+        //            m2._data[c, r] = cf * detInv;
+        //        }
+        //    }
+
+        //    return m2;
+        //}
+
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix Inverse(in Matrix m)
         {
-            var det = Determinant(m);
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (det == 0.0f)
+            var ipiv = new[] {0,0,0,0};
+            var indxc = new int[4];
+            var indxr = new int[4];
+            var mI = new Matrix(m);
+            for(var i = 0; i<4; i++)
             {
-                throw new InvalidOperationException("Matrix is not invertible.");
+                var iRow = 0;
+                var iCol = 0;
+                var big = 0f;
+                for (var j = 0; j < 4; j++)
+                {
+                    if (ipiv[j] != 1)
+                    {
+                        for (var k = 0; k < 4; k++)
+                        {
+                            if (ipiv[k] == 0)
+                            {
+                                if (Abs(mI[j,k]) >= big)
+                                {
+                                    big = Abs(mI[j, k]);
+                                    iRow = j;
+                                    iCol = k;
+                                }
+                            }else if(ipiv[k] > 1)
+                            {
+                                throw new InvalidOperationException("Singular matrix in Inverse");
+                            }
+                        }
+                    }
+                }
+
+                ++ipiv[iCol];
+                if (iRow != iCol)
+                {
+                    for (var k = 0; k < 4; ++k)
+                    {
+                        (mI._data[iRow, k], mI._data[iCol, k]) = (mI._data[iCol, k], mI._data[iRow, k]);
+                    }
+                }
+
+                indxr[i] = iRow;
+                indxc[i] = iCol;
+                if(mI[iCol, iCol] == 0f)
+                {
+                    throw new InvalidOperationException("Singular matrix in Inverse");
+                }
+
+                var pivinv = 1f / mI[iCol, iRow];
+                mI._data[iCol, iCol] = 1f;
+                for (var j = 0; j < 4; j++)
+                {
+                    mI._data[iCol, j] *= pivinv;
+                }
+
+                for (var j = 0; j < 4; j++)
+                {
+                    if (j != iCol)
+                    {
+                        var save = mI[j, iCol];
+                        mI._data[j, iCol] = 0f;
+                        for(var k=0; k<4; k++)
+                        {
+                            mI._data[j, k] -= mI[iCol, k] * save;
+                        }
+                    }
+                }
+
             }
 
-            var detInv = 1f / det;
-            var m2 = new Matrix(m.Columns, m.Rows);
-            for (var r = 0; r < m.Rows; r++)
+            for (var j = 3; j >= 0; j--)
             {
-                for (var c = 0; c < m.Columns; c++)
+                if (indxr[j] != indxc[j])
                 {
-                    var cf = Cofactor(m, r, c);
-                    // Transpose
-                    m2._data[c, r] = cf * detInv;
+                    for (var k = 0; k < 4; k++)
+                    {
+                        (mI._data[k, indxr[j]], mI._data[k,indxc[j]]) = (mI._data[k, indxc[j]], mI._data[k, indxr[j]]);
+                    }
                 }
             }
 
-            return m2;
+            return mI;
+
         }
 
         public Matrix Inverse() => Inverse(this);
