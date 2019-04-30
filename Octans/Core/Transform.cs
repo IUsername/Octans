@@ -165,7 +165,7 @@ namespace Octans
         {
             var o = Apply(t, r.Origin, out var oError);
             var d = Apply(t, r.Direction);
-            var len2 = d.MagSqr();
+            var len2 = d.LengthSquared();
             var tMax = r.TMax;
             if (len2 > 0)
             {
@@ -181,7 +181,7 @@ namespace Octans
         {
             var o = Apply(t, r.Origin, out var oError);
             var d = Apply(t, r.Direction);
-            var len2 = d.MagSqr();
+            var len2 = d.LengthSquared();
             var tMax = r.TMax;
             if (len2 > 0)
             {
@@ -231,7 +231,7 @@ namespace Octans
         {
             var o = Apply(t, r.Origin, out oError);
             var d = Apply(t, r.Direction, out dError);
-            var len2 = d.MagSqr();
+            var len2 = d.LengthSquared();
             var tMax = r.TMax;
             if (len2 > 0)
             {

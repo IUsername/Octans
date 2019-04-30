@@ -49,7 +49,7 @@ namespace Octans.Light
 
             var v = pShape.P - reference.P;
 
-            if (v.MagSqr() == 0f)
+            if (v.LengthSquared() == 0f)
             {
                 pdf = 0;
                 wi = Vectors.Zero;

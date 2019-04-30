@@ -28,6 +28,7 @@ namespace Octans
         public Vector Dpdy { get; private set; }
         public IPrimitive Primitive { get; set; }
         public IBSSRDF BSSRDF { get; set; }
+        public int FaceIndex { get; set; }
 
         public SurfaceInteraction Initialize(in Point p,
                                              in Vector pError,
@@ -64,6 +65,44 @@ namespace Octans
             BSDF.Initialize(this);
             BSSRDF = null;
             MediumInterface = null;
+            return this;
+        }
+
+        public SurfaceInteraction Initialize(in Point p,
+                                             in Vector pError,
+                                             in Point2D uv,
+                                             in Vector wo,
+                                             in Vector dpdu,
+                                             in Vector dpdv,
+                                             in Normal dndu,
+                                             in Normal dndv,
+                                             IShape shape,
+                                             int faceIndex)
+        {
+            base.Initialize(in p, ((Normal) Vector.Cross(in dpdu, in dpdv)).Normalize(), in pError, in wo);
+
+            UV = uv;
+            Wo = wo;
+            Dpdu = dpdu;
+            Dpdv = dpdv;
+            Dndu = dndu;
+            Dndv = dndv;
+            Shape = shape;
+            ShadingGeometry.N = N;
+            ShadingGeometry.Dpdu = dpdu;
+            ShadingGeometry.Dpdv = dpdv;
+            ShadingGeometry.Dndu = dndu;
+            ShadingGeometry.Dndv = dndv;
+
+            if (!(shape is null) && shape.ReverseOrientation ^ shape.TransformSwapsHandedness)
+            {
+                N *= -1;
+                ShadingGeometry.N *= -1;
+            }
+
+            BSDF.Initialize(this);
+            BSSRDF = null;
+            FaceIndex = faceIndex;
             return this;
         }
 

@@ -35,6 +35,12 @@ namespace Octans
         }
 
         [Pure]
+        public static Point2D Sum(in Point2D a, in Point2D b, in Point2D c)
+        {
+            return new Point2D(a.X + b.X + c.X, a.Y + b.Y + c.Y);
+        }
+
+        [Pure]
         public static Point2D Floor(in Point2D p) => new Point2D(System.MathF.Floor(p.X), System.MathF.Floor(p.Y));
 
         [Pure]
@@ -53,6 +59,11 @@ namespace Octans
 
         [Pure]
         public static Point2D operator -(Point2D left, Vector2 right) => Subtract(in left, in right);
+
+        [Pure]
+        public static Vector2 operator -(Point2D left, Point2D right) =>
+            new Vector2(left.X - right.X, left.Y - right.Y);
+
 
         [Pure]
         public static Point2D operator *(Point2D left, float right) => new Point2D(left.X*right, left.Y*right);

@@ -50,7 +50,7 @@
         {
             var interaction = Sample(u, out pdf);
             var wi = interaction.P - refP.P;
-            if (wi.MagSqr() == 0f)
+            if (wi.LengthSquared() == 0f)
             {
                 pdf = 0f;
             }

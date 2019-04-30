@@ -89,5 +89,12 @@ namespace Octans.Sampling
             var phi = u[1] * 2f * PI;
             return new Vector(Cos(phi) * sinTheta, Sin(phi) * sinTheta, cosTheta);
         }
+
+        [Pure]
+        public static Point2D UniformSampleTriangle(in Point2D u)
+        {
+            var su0 = Sqrt(u[0]);
+            return new Point2D(1f - su0, u[1] * su0);
+        }
     }
 }

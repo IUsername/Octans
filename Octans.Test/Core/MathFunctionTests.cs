@@ -33,9 +33,9 @@ namespace Octans.Test
             var n = new Normal(1f,1f,1f).Normalize();
             var (v1, v2) = MathF.OrthonormalPosZ(in n);
             var v3 = (Vector) n;
-            v1.Magnitude().Should().BeApproximately(1f, 0.0001f);
-            v2.Magnitude().Should().BeApproximately(1f, 0.0001f);
-            v3.Magnitude().Should().BeApproximately(1f, 0.0001f);
+            v1.Length().Should().BeApproximately(1f, 0.0001f);
+            v2.Length().Should().BeApproximately(1f, 0.0001f);
+            v3.Length().Should().BeApproximately(1f, 0.0001f);
             (v1 % v2).Should().BeApproximately(0.0f, 0.0001f);
             (v2 % v3).Should().BeApproximately(0.0f, 0.0001f);
             (v1 % v3).Should().BeApproximately(0.0f, 0.0001f);

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 
 namespace Octans
 {
-    public readonly struct Point : IEquatable<Point>
+    public struct Point : IEquatable<Point>
     {
         private const float Epsilon = 0.0001f;
 
-        public readonly float X;
-        public readonly float Y;
-        public readonly float Z;
+        public float X;
+        public float Y;
+        public float Z;
 
         public Point(float x, float y, float z)
         {
@@ -40,6 +39,11 @@ namespace Octans
         }
 
         public Point Add(in Vector t) => new Point(X + t.X, Y + t.Y, Z + t.Z);
+
+        public static Point Sum(in Point a, in Point b) => new Point(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+
+        public static Point Sum(in Point a, in Point b, in Point c) =>
+            new Point(a.X + b.X + c.X, a.Y + b.Y + c.Y, a.Z + b.Z + c.Z);
 
         public Vector Subtract(in Point t) => new Vector(X - t.X, Y - t.Y, Z - t.Z);
 
@@ -76,10 +80,10 @@ namespace Octans
         }
 
         [Pure]
-        public static float Distance(in Point a, in Point b) => (a - b).Magnitude();
+        public static float Distance(in Point a, in Point b) => (a - b).Length();
 
         [Pure]
-        public static float DistanceSqr(in Point a, in Point b) => (a - b).MagSqr();
+        public static float DistanceSqr(in Point a, in Point b) => (a - b).LengthSquared();
 
         [Pure]
         public static Point operator +(Point left, Vector right) => left.Add(in right);
@@ -122,5 +126,11 @@ namespace Octans
 
         [Pure]
         public static float Max(in Point t) => System.MathF.Max(t.X, System.MathF.Max(t.Y, t.Z));
+
+        [Pure]
+        public static Point Permute(in Point p, in int kx, in int ky, in int kz)
+        {
+            return new Point(p[kx], p[ky], p[kz]);
+        }
     }
 }

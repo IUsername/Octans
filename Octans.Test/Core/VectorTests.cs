@@ -54,16 +54,16 @@ namespace Octans.Test
         public void Magnitude()
         {
             var v = new Vector(1, 0, 0);
-            v.Magnitude().Should().BeApproximately(1.0f, 0.0001f);
+            v.Length().Should().BeApproximately(1.0f, 0.0001f);
 
             v = new Vector(0, 1, 0);
-            v.Magnitude().Should().BeApproximately(1.0f, 0.0001f);
+            v.Length().Should().BeApproximately(1.0f, 0.0001f);
 
             v = new Vector(1, 2, 3);
-            v.Magnitude().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
+            v.Length().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
 
             v = new Vector(-1, -2, -3);
-            v.Magnitude().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
+            v.Length().Should().BeApproximately(System.MathF.Sqrt(14), 0.0001f);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Octans.Test
             v = new Vector(1, 2, 3);
             v.Normalize().Should().BeEquivalentTo(new Vector(0.26726f, 0.53452f, 0.80178f));
 
-            v.Normalize().Magnitude().Should().BeApproximately(1.0f, 0.0001f);
+            v.Normalize().Length().Should().BeApproximately(1.0f, 0.0001f);
         }
 
         [Fact]

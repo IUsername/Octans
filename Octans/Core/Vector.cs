@@ -56,13 +56,13 @@ namespace Octans
 
         public Vector Fraction(float scalar) => new Vector(scalar / X, scalar / Y, scalar / Z);
 
-        public float Magnitude() => Sqrt(MagSqr());
+        public float Length() => Sqrt(LengthSquared());
 
-        public float MagSqr() => FusedMultiplyAdd(X, X, FusedMultiplyAdd(Y, Y, Z * Z));
+        public float LengthSquared() => FusedMultiplyAdd(X, X, FusedMultiplyAdd(Y, Y, Z * Z));
 
         public Vector Normalize()
         {
-            var m = Magnitude();
+            var m = Length();
             return Divide(m);
         }
 
@@ -170,6 +170,21 @@ namespace Octans
         }
 
         [Pure]
+        public static Vector Cross(in Vector a, in Normal b)
+        {
+            double aX = a.X, aY = a.Y, aZ = a.Z;
+            double bX = b.X, bY = b.Y, bZ = b.Z;
+            return new Vector((float)(aY * bZ - aZ * bY),
+                              (float)(aZ * bX - aX * bZ),
+                              (float)(aX * bY - aY * bX));
+
+            ////// TODO: Are we still getting enough accuracy?
+            //return new Vector(FusedMultiplyAdd(a.Y, b.Z, -a.Z * b.Y),
+            //                  FusedMultiplyAdd(a.Z, b.X, -a.X * b.Z),
+            //                  FusedMultiplyAdd(a.X, b.Y, -a.Y * b.X));
+        }
+
+        [Pure]
         public static Vector Reflect(in Vector @in, in Normal normal) => @in - (Vector) normal * 2f * (@in % normal);
 
         [Pure]
@@ -178,5 +193,17 @@ namespace Octans
 
         [Pure]
         public static float Max(in Vector t) => System.MathF.Max(t.X, System.MathF.Max(t.Y, t.Z));
+
+        [Pure]
+        public static int MaxDimension(Vector v)
+        {
+            return v.X > v.Y && v.X > v.Z ? 0 : v.Y > v.Z ? 1 : 2;
+        }
+
+        [Pure]
+        public static Vector Permute(in Vector v, in int kx, in int ky, in int kz)
+        {
+            return new Vector(v[kx],v[ky],v[kz]);
+        }
     }
 }
