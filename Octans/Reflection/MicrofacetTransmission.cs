@@ -49,7 +49,7 @@ namespace Octans.Reflection
             }
 
             var F = Fresnel.Evaluate(wo % wh);
-            var sqtDenom = wo % wh + eta * (wi % wh);
+            var sqtDenom = (wo % wh) + eta * (wi % wh);
             var factor = Mode == TransportMode.Radiance ? 1f / eta : 1f;
 
             return (Spectrum.One - F) * T * Abs(Distribution.D(in wh) * Distribution.G(in wo, in wi) * eta * eta *
@@ -100,8 +100,8 @@ namespace Octans.Reflection
             }
 
             wh = wh.Normalize();
-            var sqrtDenom = wo % wh + eta * wi % wh;
-            var dwh_dwi = Abs(eta * eta * wi % wh) / (sqrtDenom * sqrtDenom);
+            var sqrtDenom = (wo % wh) + eta * (wi % wh);
+            var dwh_dwi = Abs(eta * eta * (wi % wh)) / (sqrtDenom * sqrtDenom);
             return Distribution.Pdf(wo, wh) * dwh_dwi;
         }
 

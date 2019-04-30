@@ -15,7 +15,6 @@ namespace Octans.Reflection
         {
             var cosThetaO = AbsCosTheta(in wo);
             var cosThetaI = AbsCosTheta(in wi);
-            var wh = wi + wo;
 
             // Handle degenerate cases.
             // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -24,6 +23,7 @@ namespace Octans.Reflection
                 return Spectrum.Zero;
             }
 
+            var wh = wi + wo;
             if (wh.X == 0f && wh.Y == 0f && wh.Z == 0f)
             {
                 return Spectrum.Zero;
@@ -34,6 +34,7 @@ namespace Octans.Reflection
             var F = Fresnel.Evaluate(wi % wh);
             var D = Distribution.D(in wh);
             var G = Distribution.G(in wo, in wi);
+            //return (D * F * G) / (4f * cosThetaI * cosThetaO);
             return Spectrum.FusedMultiply(F, R, (D * G / (4f * cosThetaI * cosThetaO)));
            // return  (D * G / (4f * cosThetaI * cosThetaO)) * (R * F);
         }
@@ -58,7 +59,7 @@ namespace Octans.Reflection
                 return Spectrum.Zero;
             }
 
-            pdf = Distribution.Pdf(wo, wh) / (4f * wo % wh);
+            pdf = Distribution.Pdf(wo, wh) / (4f * (wo % wh));
             return F(wo, wi);
         }
 
@@ -74,7 +75,7 @@ namespace Octans.Reflection
             }
 
             var wh = (wo + wi).Normalize();
-            return Distribution.Pdf(wo, wi) / (4f * wo % wh);
+            return Distribution.Pdf(wo, wi) / (4f * (wo % wh));
         }
 
         public MicrofacetReflection Initialize(in Spectrum r, IMicrofacetDistribution distribution, IFresnel fresnel)

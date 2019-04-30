@@ -3,7 +3,7 @@ using static Octans.MathF;
 
 namespace Octans.Primitive
 {
-    public class Sphere : Shape
+    public sealed class Sphere : Shape
     {
         public Sphere(Transform objectToWorld,
                       Transform worldToObject,
@@ -30,10 +30,30 @@ namespace Octans.Primitive
         public float ZMax { get; }
         public float PhiMax { get; }
 
-        //public override Interaction Sample(Point2D u, out float pdf) => throw new System.NotImplementedException();
-
         public override Bounds ObjectBounds =>
             new Bounds(new Point(-Radius, -Radius, ZMin), new Point(Radius, Radius, ZMax));
+
+        //public override Interaction Sample(Point2D u, out float pdf) => throw new System.NotImplementedException();
+
+        public override Interaction Sample(in Point2D u, out float pdf)
+        {
+            var pObj = Point.Zero + Radius * Sampling.Utilities.UniformSampleSphere(u);
+            var it = new Interaction
+            {
+                N = (ObjectToWorld * new Normal(pObj.X, pObj.Y, pObj.Z)).Normalize()
+            };
+            if (ReverseOrientation)
+            {
+                it.N *= -1f;
+            }
+
+            pObj *= Radius / Point.Distance(pObj, Point.Zero);
+            var pObjError = Gamma(5) * Vector.Abs((Vector) pObj);
+            it.P = Transform.Apply(ObjectToWorld, pObj, pObjError, out var pError);
+            it.PError = pError;
+            pdf = 1f / Area();
+            return it;
+        }
 
         public override float Area() => PhiMax * Radius * (ZMax - ZMin);
 
@@ -182,7 +202,7 @@ namespace Octans.Primitive
 
             var a = dx * dx + dy * dy + dz * dz;
             var b = 2 * (dx * ox + dy * oy + dz * oz);
-            var c = ox * ox + oy * oy + oz * oz - (EFloat)Radius * (EFloat)Radius;
+            var c = ox * ox + oy * oy + oz * oz - (EFloat) Radius * (EFloat) Radius;
 
             if (!EFloat.Quadratic(a, b, c, out var t0, out var t1))
             {
@@ -204,7 +224,7 @@ namespace Octans.Primitive
                 }
             }
 
-            var pHit = ray.Position((float)tShapeHit);
+            var pHit = ray.Position((float) tShapeHit);
             pHit *= Radius / Point.Distance(pHit, Point.Zero);
             if (pHit.X == 0f && pHit.Y == 0f)
             {
@@ -231,7 +251,7 @@ namespace Octans.Primitive
 
                 tShapeHit = t1;
 
-                pHit = ray.Position((float)tShapeHit);
+                pHit = ray.Position((float) tShapeHit);
                 pHit *= Radius / Point.Distance(pHit, Point.Zero);
                 if (pHit.X == 0f && pHit.Y == 0f)
                 {
@@ -251,6 +271,20 @@ namespace Octans.Primitive
             }
 
             return true;
+        }
+
+        public override float Pdf(Interaction r, in Vector wi)
+        {
+            var pCenter = ObjectToWorld * Point.Zero;
+            var pOrigin = Utilities.OffsetRayOrigin(r.P, r.PError, r.N, pCenter - r.P);
+            if (Point.DistanceSqr(pOrigin, pCenter) <= Radius * Radius)
+            {
+                return base.Pdf(r,wi);
+            }
+
+            var sinThetaMax2 = Radius * Radius / Point.DistanceSqr(r.P, pCenter);
+            var cosThetaMax = Sqrt(Max(0f, 1f - sinThetaMax2));
+            return Sampling.Utilities.UniformConePdf(cosThetaMax);
         }
     }
 }

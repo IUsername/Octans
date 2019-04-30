@@ -61,7 +61,7 @@ namespace Octans.Reflection
             var count = 0;
             for (var i = 0; i < _nBxDFs; i++)
             {
-                if (_bxdf[i].AnyFlag(flags))
+                if (_bxdf[i].MatchesFlags(flags))
                 {
                     ++count;
                 }
@@ -80,12 +80,12 @@ namespace Octans.Reflection
                 return Spectrum.Zero;
             }
 
-            var reflect = wiW % _ng * (woW % _ng) > 0f;
+            var reflect = (wiW % _ng) * (woW % _ng) > 0f;
             var f = Spectrum.Zero;
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var b = _bxdf[i];
-                if (b.AnyFlag(flags) &&
+                if (b.MatchesFlags(flags) &&
                     (reflect && b.AnyFlag(BxDFType.Reflection) ||
                      !reflect && b.AnyFlag(BxDFType.Transmission)))
                 {
@@ -103,7 +103,7 @@ namespace Octans.Reflection
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var current = _bxdf[i];
-                if (current.AnyFlag(flags))
+                if (current.MatchesFlags(flags))
                 {
                     ret += current.Rho(in wo, nSamples, in u);
                 }
@@ -119,7 +119,7 @@ namespace Octans.Reflection
             for (var i = 0; i < _nBxDFs; ++i)
             {
                 var current = _bxdf[i];
-                if (current.AnyFlag(flags))
+                if (current.MatchesFlags(flags))
                 {
                     ret += current.Rho(nSamples, in u1, in u2);
                 }
@@ -163,7 +163,7 @@ namespace Octans.Reflection
             var count = comp;
             for (var i = 0; i < _nBxDFs; ++i)
             {
-                if (_bxdf[i].AnyFlag(type) && count-- == 0)
+                if (_bxdf[i].MatchesFlags(type) && count-- == 0)
                 {
                     bxdf = _bxdf[i];
                     break;
@@ -182,7 +182,7 @@ namespace Octans.Reflection
 
             sampledType = bxdf.Type;
             var wi = new Vector();
-            var fx = bxdf.SampleF(wo, ref wi, uRemapped, out pdf, sampledType);
+            var f = bxdf.SampleF(wo, ref wi, uRemapped, out pdf, sampledType);
             if (pdf == 0f)
             {
                 pdf = 0;
@@ -197,7 +197,7 @@ namespace Octans.Reflection
             {
                 for (var i = 0; i < _nBxDFs; ++i)
                 {
-                    if (!ReferenceEquals(_bxdf[i], bxdf) && _bxdf[i].AnyFlag(type))
+                    if (!ReferenceEquals(_bxdf[i], bxdf) && _bxdf[i].MatchesFlags(type))
                     {
                         pdf += _bxdf[i].Pdf(wo, wi);
                     }
@@ -211,12 +211,12 @@ namespace Octans.Reflection
 
             if (!bxdf.AnyFlag(BxDFType.Specular))
             {
-                var reflect = wiWorld % _ng * woWorld % _ng > 0f;
-                var f = Spectrum.Zero;
+                var reflect = (wiWorld % _ng) * (woWorld % _ng) > 0f;
+                f = Spectrum.Zero;
                 //f.Zero();
                 for (var i = 0; i < _nBxDFs; ++i)
                 {
-                    if (_bxdf[i].AnyFlag(type) &&
+                    if (_bxdf[i].MatchesFlags(type) &&
                         (reflect && _bxdf[i].AnyFlag(BxDFType.Reflection) ||
                          !reflect && _bxdf[i].AnyFlag(BxDFType.Transmission)))
                     {
@@ -225,10 +225,10 @@ namespace Octans.Reflection
                     }
                 }
 
-                return f;
+               
             }
+            return f;
 
-            return fx;
         }
 
         public float Pdf(in Vector woWorld, in Vector wiWorld, BxDFType flags = BxDFType.All)
@@ -249,7 +249,7 @@ namespace Octans.Reflection
             var matching = 0;
             for (var i = 0; i < _nBxDFs; ++i)
             {
-                if (_bxdf[i].AnyFlag(flags))
+                if (_bxdf[i].MatchesFlags(flags))
                 {
                     ++matching;
                     pdf += _bxdf[i].Pdf(in wo, in wi);

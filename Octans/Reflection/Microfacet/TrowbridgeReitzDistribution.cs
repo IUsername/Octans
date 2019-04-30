@@ -30,15 +30,19 @@ namespace Octans.Reflection.Microfacet
 
         public override float D(in Vector wh)
         {
-            var tan2Theta = Tan2Theta(in wh);
-            if (IsInfinity(tan2Theta))
-            {
-                return 0f;
-            }
+            var a2 = _alphaX * _alphaX;
+            var e = (Cos2Theta(in wh) * (a2 - 1f) + 1f);
+            return a2 / ((PI) * (e * e));
+        
+            //var tan2Theta = Tan2Theta(in wh);
+            //if (IsInfinity(tan2Theta))
+            //{
+            //    return 0f;
+            //}
 
-            var cos4Theta = Cos2Theta(in wh) * Cos2Theta(in wh);
-            var e = (Cos2Phi(in wh) / (_alphaX * _alphaX) + Sin2Phi(in wh) / (_alphaY * _alphaY)) * tan2Theta;
-            return 1f / (PI * _alphaX * _alphaY * cos4Theta * (1f + e) * (1f + e));
+            //var cos4Theta = Cos2Theta(in wh) * Cos2Theta(in wh);
+            //var e = (Cos2Phi(in wh) / (_alphaX * _alphaX) + Sin2Phi(in wh) / (_alphaY * _alphaY)) * tan2Theta;
+            //return 1f / (PI * _alphaX * _alphaY * cos4Theta * (1f + e) * (1f + e));
         }
 
         public override float Lambda(in Vector w)
@@ -50,7 +54,7 @@ namespace Octans.Reflection.Microfacet
             }
 
             var alpha = Sqrt(Cos2Phi(in w) * _alphaX * _alphaX + Sin2Phi(in w) * _alphaY * _alphaY);
-            var alpha2Tan2Theta = alpha * absTanTheta * (alpha * absTanTheta);
+            var alpha2Tan2Theta = (alpha * absTanTheta) * (alpha * absTanTheta);
             return (-1f + Sqrt(1f + alpha2Tan2Theta)) / 2f;
         }
 

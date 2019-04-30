@@ -42,7 +42,6 @@ namespace Octans.Integrator
 
             for (bounces = 0;; ++bounces)
             {
-                //si.Reset();
                 var foundIntersection = scene.Intersect(r, ref si);
 
                 if (bounces == 0 || specularBounce)
@@ -98,11 +97,11 @@ namespace Octans.Integrator
                 //beta.Scale(f * (Abs(wi % si.ShadingGeometry.N) / pdf));
                 Debug.Assert(beta.YComponent() >= 0f);
                 Debug.Assert(!float.IsInfinity(beta.YComponent()));
-                specularBounce = (flags & BxDFType.Specular) != BxDFType.None;
+                specularBounce = (flags & BxDFType.Specular) == BxDFType.Specular;
                 if (flags.HasFlag(BxDFType.Specular) && flags.HasFlag(BxDFType.Transmission))
                 {
                     var eta = si.BSDF.Eta;
-                    etaScale *= wo % si.N > 0f ? eta * eta : 1f / (eta * eta);
+                    etaScale *= (wo % si.N) > 0f ? eta * eta : 1f / (eta * eta);
                 }
 
                 //r = new RayDifferential(si.SpawnRay(wi));
@@ -129,8 +128,8 @@ namespace Octans.Integrator
                         break;
                     }
 
-                    beta = Spectrum.FusedMultiply(beta, f, Abs(wi % pi.ShadingGeometry.N) / pdf);
-                    //beta *= f * Abs(wi % pi.ShadingGeometry.N) / pdf;
+                    //beta = Spectrum.FusedMultiply(beta, f, Abs(wi % pi.ShadingGeometry.N) / pdf);
+                    beta *= f * Abs(wi % pi.ShadingGeometry.N) / pdf;
                     //beta.Scale(f * Abs(wi % pi.ShadingGeometry.N) / pdf);
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                     specularBounce = flags.HasFlag(BxDFType.Specular);

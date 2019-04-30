@@ -76,6 +76,12 @@ namespace Octans.Sampling
             var g = ng * gPdf;
             return f * f / (f * f + g * g);
         }
+
+        [Pure]
+        public static float UniformConePdf(in float cosThetaMax)
+        {
+            return 1f / (2f * PI * (1f - cosThetaMax));
+        }
     }
 
     public class Distribution1D

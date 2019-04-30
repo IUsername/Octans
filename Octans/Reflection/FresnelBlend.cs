@@ -65,7 +65,7 @@ namespace Octans.Reflection
 
             var wh = (wo + wi).Normalize();
             var pdf_wh = Distribution.Pdf(wo, wh);
-            return 0.5f * (AbsCosTheta(wi) * InvPi + pdf_wh / (4f * wo % wh));
+            return 0.5f * (AbsCosTheta(wi) * InvPi + pdf_wh / (4f * (wo % wh)));
         }
 
         public Spectrum SchlickFresnelFunction(float cosTheta)

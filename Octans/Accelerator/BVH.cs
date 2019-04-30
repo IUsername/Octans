@@ -363,7 +363,7 @@ namespace Octans.Accelerator
             });
 
             // If all the costs are equal we may not find a mid partition.
-            if (mid == start && cost[start] == cost[start + 1])
+            if (mid == start && Array.TrueForAll(cost, f => cost[0] == f))
             {
                 mid++;
             }

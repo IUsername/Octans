@@ -169,7 +169,7 @@ namespace Octans
             var tMax = r.TMax;
             if (len2 > 0)
             {
-                var dt = Vector.Abs(in d) % oError / len2;
+                var dt = (Vector.Abs(in d) % oError) / len2;
                 o += d * dt;
                 tMax -= dt;
             }
@@ -185,7 +185,7 @@ namespace Octans
             var tMax = r.TMax;
             if (len2 > 0)
             {
-                var dt = Vector.Abs(in d) % oError / len2;
+                var dt = (Vector.Abs(in d) % oError) / len2;
                 o += d * dt;
                 tMax -= dt;
             }
@@ -235,7 +235,7 @@ namespace Octans
             var tMax = r.TMax;
             if (len2 > 0)
             {
-                var dt = Vector.Abs(in d) % oError / len2;
+                var dt = (Vector.Abs(in d) % oError) / len2;
                 o += d * dt;
                 //tMax -= dt;
             }

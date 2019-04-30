@@ -176,11 +176,11 @@ namespace Octans.Integrator
 
                 var dwodx = -ray.RxDirection - wo;
                 var dwody = -ray.RyDirection - wo;
-                var dDNdx = dwodx % ns + wo % dndx;
-                var dDNdy = dwody % ns + wo % dndy;
+                var dDNdx = (dwodx % ns) + (wo % dndx);
+                var dDNdy = (dwody % ns) + (wo % dndy);
 
-                rd.RxDirection = wi - dwodx + 2f * (Vector) (wo % ns * dndx + dDNdx * ns);
-                rd.RyDirection = wi - dwody + 2f * (Vector) (wo % ns * dndy + dDNdy * ns);
+                rd.RxDirection = wi - dwodx + 2f * (Vector) ((wo % ns) * dndx + dDNdx * ns);
+                rd.RyDirection = wi - dwody + 2f * (Vector) ((wo % ns) * dndy + dDNdy * ns);
             }
 
             var nL = arena.Create<SpectrumAccumulator>().Zero();
@@ -227,7 +227,7 @@ namespace Octans.Integrator
                            si.ShadingGeometry.Dndv * si.Dvdy;
 
                 var eta = 1f / bsdf.Eta;
-                if (wo % ns < 0f)
+                if ((wo % ns) < 0f)
                 {
                     eta = 1f / eta;
                     ns = -ns;
@@ -237,12 +237,12 @@ namespace Octans.Integrator
 
                 var dwodx = -ray.RxDirection - wo;
                 var dwody = -ray.RyDirection - wo;
-                var dDNdx = dwodx % ns + wo % dndx;
-                var dDNdy = dwody % ns + wo % dndy;
+                var dDNdx = (dwodx % ns) + (wo % dndx);
+                var dDNdy = (dwody % ns) + (wo % dndy);
 
-                var mu = eta * wo % ns - Vector.AbsDot(wi, ns);
-                var dmudx = (eta - eta * eta * wo % ns) / Vector.AbsDot(wi, ns) * dDNdx;
-                var dmudy = (eta - eta * eta * wo % ns) / Vector.AbsDot(wi, ns) * dDNdy;
+                var mu = eta * (wo % ns) - Vector.AbsDot(wi, ns);
+                var dmudx = (eta - eta * eta * (wo % ns)) / Vector.AbsDot(wi, ns) * dDNdx;
+                var dmudy = (eta - eta * eta * (wo % ns)) / Vector.AbsDot(wi, ns) * dDNdy;
 
                 rd.RxDirection = wi - eta * dwodx + (Vector) (mu * dndx + dmudx * ns);
                 rd.RyDirection = wi - eta * dwody + (Vector) (mu * dndy + dmudy * ns);

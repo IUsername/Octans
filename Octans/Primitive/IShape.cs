@@ -15,11 +15,17 @@
 
         //Interaction Sample(ref Interaction r, Point2D u, out float pdf);
         //Interaction Sample(Point2D u, out float pdf);
-        //float Pdf(ref Interaction r, in Vector wi);
-        //float Pdf(ref Interaction r);
+  
+      
 
         Bounds ObjectBounds { get; }
 
         Bounds WorldBounds { get; }
+
+        Interaction Sample(Interaction refP, in Point2D u, out float pdf);
+
+        Interaction Sample(in Point2D u, out float pdf);
+        float Pdf(Interaction r);
+        float Pdf(Interaction r, in Vector wi);
     }
 }

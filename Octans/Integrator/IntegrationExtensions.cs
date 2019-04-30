@@ -28,10 +28,10 @@ namespace Octans.Integrator
             if (!(lightDistribution is null))
             {
                 lightNum = lightDistribution.SampleDiscrete(sampler.Get1D(), out lightPdf, out _);
-                //if (lightNum == 0)
-                //{
-                //    return Spectrum.Zero;
-                //}
+                if (lightPdf == 0f)
+                {
+                    return Spectrum.Zero;
+                }
             }
             else
             {
@@ -72,6 +72,13 @@ namespace Octans.Integrator
 
                     f = si.BSDF.F(si.Wo, wi, bsdfFlags) * System.MathF.Abs(wi % si.ShadingGeometry.N);
                     scatteringPdf = si.BSDF.Pdf(si.Wo, wi, bsdfFlags);
+                }
+                else
+                {
+                    //var mi = it as MediumInteraction;
+                    //var p = mi.Phase.P(mi.Wo, wi);
+                    //f = new Spectrum(p);
+                    //scatteringPdf = p;
                 }
 
                 if (!f.IsBlack())
@@ -118,6 +125,13 @@ namespace Octans.Integrator
                     f = si.BSDF.Sample_F(si.Wo, out wi, uScattering, out scatteringPdf, bsdfFlags, out var sampledType);
                     f *= System.MathF.Abs(wi % si.ShadingGeometry.N);
                     sampledSpecular = (sampledType & BxDFType.Specular) != BxDFType.None;
+                }
+                else
+                {
+                    //var mi = it as MediumInteraction;
+                    //var p = mi.Phase.SampleP(mi.Wo, wi, uScattering);
+                    //f = new Spectrum(p);
+                    //scatteringPdf = p;
                 }
 
                 if (!f.IsBlack() && scatteringPdf > 0f)

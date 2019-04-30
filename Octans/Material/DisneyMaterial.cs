@@ -418,7 +418,7 @@ namespace Octans.Material
             // distribution for wh converted to a measure with respect to the
             // surface normal.
             var Dr = GTR1(AbsCosTheta(wh), Gloss);
-            return Dr * AbsCosTheta(wh) / (4f * wo % wh);
+            return Dr * AbsCosTheta(wh) / (4f * (wo % wh));
         }
 
         public DisneyClearcoat Initialize(float weight, float gloss)

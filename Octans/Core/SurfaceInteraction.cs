@@ -37,9 +37,10 @@ namespace Octans
                                              in Vector dpdv,
                                              in Normal dndu,
                                              in Normal dndv,
-                                             IShape shape)
+                                             IShape shape,
+                                             IMedium medium = null)
         {
-            base.Initialize(in p, ((Normal) Vector.Cross(in dpdu, in dpdv)).Normalize(), in pError, in wo);
+            base.Initialize(in p, ((Normal) Vector.Cross(in dpdu, in dpdv)).Normalize(), in pError, in wo, medium);
 
             UV = uv;
             Wo = wo;
@@ -62,7 +63,7 @@ namespace Octans
 
             BSDF.Initialize(this);
             BSSRDF = null;
-
+            MediumInterface = null;
             return this;
         }
 
@@ -82,6 +83,7 @@ namespace Octans
             Primitive = other.Primitive;
             BSDF.Initialize(other);
             BSSRDF = null;
+            MediumInterface = other.MediumInterface;
             return this;
         }
 
@@ -246,7 +248,7 @@ namespace Octans
         public Spectrum Le(in Vector w)
         {
             var area = Primitive.AreaLight;
-            return area is null ? Spectrum.Zero : area.L(this, w);
+            return area?.L(this, w) ?? Spectrum.Zero;
         }
 
         public SurfaceInteraction Reset()
@@ -255,6 +257,7 @@ namespace Octans
             BSDF.Reset();
             Primitive = null;
             Shape = null;
+            MediumInterface = null;
             return this;
         }
 
@@ -308,12 +311,15 @@ namespace Octans
 
         public bool IsSurfaceInteraction => !Wo.Equals(Vectors.Zero);
 
-        public Interaction Initialize(in Point p, in Normal n, in Vector pError, in Vector wo)
+        public IMedium MediumInterface { get; set; }
+
+        public Interaction Initialize(in Point p, in Normal n, in Vector pError, in Vector wo, IMedium medium = null)
         {
             P = p;
             N = n;
             PError = pError;
             Wo = wo.Normalize();
+            MediumInterface = medium;
             return this;
         }
 

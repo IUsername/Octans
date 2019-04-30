@@ -2,6 +2,6 @@
 {
     public interface IAreaLight : ILight
     {
-        Spectrum L(SurfaceInteraction si, in Vector w);
+        Spectrum L(Interaction intr, in Vector w);
     }
 }

@@ -114,6 +114,35 @@ namespace Octans.ConsoleApp
                     metallic: new ConstantTexture<float>(0f),
                     eta: new ConstantTexture<float>(1.5f),
                     roughness: new ConstantTexture<float>(f),
+                    specularTint: new ConstantTexture<float>(1f),
+                    anisotropic: new ConstantTexture<float>(0f),
+                    sheen: new ConstantTexture<float>(0f),
+                    sheenTint: new ConstantTexture<float>(0.5f),
+                    clearcoat: new ConstantTexture<float>(0f),
+                    clearcoatGloss: new ConstantTexture<float>(1f),
+                    specTrans: new ConstantTexture<float>(0f),
+                    scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                    false,
+                    flatness: new ConstantTexture<float>(0f),
+                    diffTrans: new ConstantTexture<float>(0.5f),
+                    null);
+            });
+            // ReSharper restore ArgumentsStyleOther
+        }
+
+        public static void EtaTest(int spp)
+        {
+            // ReSharper disable ArgumentsStyleOther
+            RowTestByDelegate(spp, "disn_eta", (f, i) =>
+            {
+                var color = i % 2 == 0
+                    ? Spectrum.FromRGB(new[] { 0.9f, 0.0f, 0.0f }, SpectrumType.Reflectance)
+                    : Spectrum.FromRGB(new[] { 0.8f, 0.8f, 0.8f }, SpectrumType.Reflectance);
+                return new DisneyMaterial(
+                    color: new ConstantTexture<Spectrum>(color),
+                    metallic: new ConstantTexture<float>(0f),
+                    eta: new ConstantTexture<float>(2f - f),
+                    roughness: new ConstantTexture<float>(0.2f),
                     specularTint: new ConstantTexture<float>(0.5f),
                     anisotropic: new ConstantTexture<float>(0f),
                     sheen: new ConstantTexture<float>(0f),
@@ -290,6 +319,13 @@ namespace Octans.ConsoleApp
                 prims.Add(s1g);
             }
 
+            var slt = Transform.Translate(5, 2, -4);
+            var slg = new Sphere(slt, Transform.Invert(slt), false, 0.5f, -0.5f, 0.5f, 360);
+            var ls = Spectrum.FromBlackbodyT(7500);
+            var dl = new DiffuseAreaLight(slt, null, ls*100, 20, slg);
+            var sg = new GeometricPrimitive(slg, new MatteMaterial(new ConstantTexture<Spectrum>(ls), new ConstantTexture<float>(0f), null ), dl);
+            prims.Add(sg);
+
             var bvh = new BVH(prims.ToArray(), SplitMethod.HLBVH);
 
             var mid = bvh.WorldBounds.Centroid;
@@ -302,17 +338,16 @@ namespace Octans.ConsoleApp
             var fov = 5.6f;
             var aspectRatio = (float) width / height;
 
-
             var transform = Transform.Translate(mid.X, 0f, -50f);
             var dist = Point.Distance(from, to);
             var filter = new MitchellFilter(new Vector2(2.5f, 2.5f), 0.7f, 0.15f);
             var film = new Film(new PixelVector(width, height), new Bounds2D(0, 0, 1, 1), filter, 20f, 1f);
             var camera = PerspectiveCamera.Create(transform, aspectRatio, 0.0f, dist, fov, film);
 
-            //var integrator = new WhittedIntegrator(2, camera, new HaltonSampler(spp, film.GetSampleBounds()),
+            //var integrator = new WhittedIntegrator(4, camera, new HaltonSampler(spp, film.GetSampleBounds()),
             //                                       film.CroppedBounds);
 
-            var integrator = new PathIntegrator(4, camera, new HaltonSampler(spp, film.GetSampleBounds()),
+            var integrator = new PathIntegrator(3, camera, new HaltonSampler(spp, film.GetSampleBounds()),
                                                    film.CroppedBounds, 6f, LightSampleStrategy.Spatial);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "row_" + fileSuffix));
@@ -333,7 +368,8 @@ namespace Octans.ConsoleApp
             s = Spectrum.FromBlackbodyT(5500) * 100000f;
             var pl4 = new PointLight(lt, s);
 
-            var scene = new Scene(bvh, new ILight[] {pl1, pl2,  pl3, pl4});
+            var scene = new Scene(bvh, new ILight[] {pl1, pl2,  pl3, pl4, dl});
+            //var scene = new Scene(bvh, new ILight[] { dl });
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
             var stopwatch = new Stopwatch();

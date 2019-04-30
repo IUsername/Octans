@@ -1,6 +1,4 @@
-﻿using Octans.Sampling;
-
-namespace Octans.Primitive
+﻿namespace Octans.Primitive
 {
     public abstract class Shape : IShape
     {
@@ -48,48 +46,48 @@ namespace Octans.Primitive
         //    return (float) (solidAngle / nSamples);
         //}
 
-        //public virtual Interaction Sample(ref Interaction r, Point2D u, out float pdf)
-        //{
-        //    var interaction = Sample(u, out pdf);
-        //    var wi = interaction.P - r.P;
-        //    if (wi.MagSqr() == 0f)
-        //    {
-        //        pdf = 0f;
-        //    }
-        //    else
-        //    {
-        //        wi = wi.Normalize();
-        //        pdf *= Point.DistanceSqr(r.P, interaction.P) / MathF.AbsDot(interaction.N, -wi);
-        //        if (float.IsInfinity(pdf))
-        //        {
-        //            pdf = 0f;
-        //        }
-        //    }
+        public virtual Interaction Sample(Interaction refP, in Point2D u, out float pdf)
+        {
+            var interaction = Sample(u, out pdf);
+            var wi = interaction.P - refP.P;
+            if (wi.MagSqr() == 0f)
+            {
+                pdf = 0f;
+            }
+            else
+            {
+                wi = wi.Normalize();
+                pdf *= Point.DistanceSqr(refP.P, interaction.P) / System.MathF.Abs(interaction.N % -wi);
+                if (float.IsInfinity(pdf))
+                {
+                    pdf = 0f;
+                }
+            }
 
-        //    return interaction;
-        //}
+            return interaction;
+        }
 
-        //public abstract Interaction Sample(Point2D u, out float pdf);
+        public abstract Interaction Sample(in Point2D u, out float pdf);
 
-        //public virtual float Pdf(ref Interaction r, in Vector wi)
-        //{
-        //    var ray = r.SpawnRay(wi);
-        //    var isectLight = new SurfaceInteraction();
-        //    if (!Intersect(ref ray, out _, ref isectLight, false))
-        //    {
-        //        return 0f;
-        //    }
+        public virtual float Pdf(Interaction r, in Vector wi)
+        {
+            var ray = r.SpawnRay(wi);
+            var isectLight = new SurfaceInteraction();
+            if (!Intersect(ray, out _, ref isectLight, false))
+            {
+                return 0f;
+            }
 
-        //    var pdf = Point.DistanceSqr(r.P, isectLight.P) / (MathF.AbsDot(isectLight.N, -wi) * Area());
-        //    if (float.IsInfinity(pdf))
-        //    {
-        //        pdf = 0f;
-        //    }
+            var pdf = Point.DistanceSqr(r.P, isectLight.P) / (System.MathF.Abs(isectLight.N % -wi) * Area());
+            if (float.IsInfinity(pdf))
+            {
+                pdf = 0f;
+            }
 
-        //    return pdf;
-        //}
+            return pdf;
+        }
 
-        //public virtual float Pdf(ref Interaction r) => 1f / Area();
+        public virtual float Pdf(Interaction r) => 1f / Area();
 
         public abstract Bounds ObjectBounds { get; }
 

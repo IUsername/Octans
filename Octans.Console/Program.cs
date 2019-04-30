@@ -6,10 +6,11 @@
         {
             //CornellBox.TestRender(100, 800);
             //DisneyMaterialTests.SubSurfaceDepth(2048);
-            DisneyMaterialTests.PlasticToMetal(128);
+            //DisneyMaterialTests.PlasticToMetal(128);
             //DisneyMaterialTests.Clearcoat(128);
-            DisneyMaterialTests.RoughnessMetal(128);
-            //DisneyMaterialTests.RoughnessPlastic(128);
+            //DisneyMaterialTests.RoughnessMetal(128);
+            //DisneyMaterialTests.RoughnessPlastic(512);
+            //DisneyMaterialTests.EtaTest(1024);
             //DisneyMaterialTests.Translucency(2048);
             //DisneyMaterialTests.Flatness(24);
             //DisneyMaterialTests.Anisotropic(256);

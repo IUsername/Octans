@@ -66,6 +66,10 @@ namespace Octans.Reflection
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AnyFlag(this IBxDF bxdf, BxDFType flag) => (bxdf.Type & flag) != BxDFType.None;
 
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool MatchesFlags(this IBxDF bxdf, BxDFType flag) => (bxdf.Type & flag) == bxdf.Type;
+
         public static Spectrum CosineSampleHemisphereF(this IBxDF bxdf,
                                                        in Vector wo,
                                                        ref Vector wi,
