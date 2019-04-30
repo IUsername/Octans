@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using Octans.Integrator;
@@ -50,9 +49,11 @@ namespace Octans
 
     public sealed class SpatialLightDistribution : LightDistribution
     {
-        private readonly ConcurrentDictionary<ulong, HashEntry> _hashTable;
-        private readonly ulong _hashTableSize;
+        private const ulong InvalidPackedPos = 0xffffffffffffffff;
+        private readonly HashEntry[] _hashTable;
         private readonly int[] _nVoxels;
+        private readonly object _padlock = new object();
+        private IScene _scene;
 
         public SpatialLightDistribution(in IScene scene, int maxVoxels = 64) : base(scene)
         {
@@ -66,8 +67,18 @@ namespace Octans
                 Debug.Assert(_nVoxels[i] <= 1 << 20);
             }
 
-            _hashTableSize = (ulong) (4 * _nVoxels[0] * _nVoxels[1] * _nVoxels[2]);
-            _hashTable = new ConcurrentDictionary<ulong, HashEntry>();
+            var hashTableSize = 4 * _nVoxels[0] * _nVoxels[1] * _nVoxels[2];
+            _hashTable = new HashEntry[hashTableSize];
+            for (var i = 0; i < hashTableSize; ++i)
+            {
+                _hashTable[i] = new HashEntry
+                {
+                    PackedPos = InvalidPackedPos,
+                    Distribution = null
+                };
+            }
+
+            _scene = scene;
         }
 
         public override Distribution1D Lookup(in Point p)
@@ -79,7 +90,10 @@ namespace Octans
                 pi[i] = Math.Clamp(0, _nVoxels[i] - 1, (int) (offset[i] * _nVoxels[i]));
             }
 
+            var size = (ulong) _hashTable.Length;
+
             var packedPos = ((ulong) pi[0] << 40) | ((ulong) pi[1] << 20) | (ulong) pi[2];
+            Debug.Assert(packedPos != InvalidPackedPos);
 
             var hash = packedPos;
             hash ^= hash >> 31;
@@ -87,30 +101,43 @@ namespace Octans
             hash ^= hash >> 27;
             hash *= 0x81dadef4bc2dd44d;
             hash ^= hash >> 33;
-            hash %= _hashTableSize;
+            hash %= size;
 
             var step = 1;
-            var nProbes = 0;
             while (true)
             {
-                var entry = _hashTable.GetOrAdd(hash, k =>
-                {
-                    var dist = ComputeDistribution(pi);
-                    return new HashEntry {Distribution = dist, PackedPos = packedPos};
-                });
-
+                ref var entry = ref _hashTable[hash];
                 if (entry.PackedPos == packedPos)
                 {
                     return entry.Distribution;
                 }
 
-                hash += (ulong) (step * step);
-                if (hash > _hashTableSize)
+                if (entry.PackedPos != InvalidPackedPos)
                 {
-                    hash %= _hashTableSize;
-                }
+                    hash += (ulong) (step * step);
+                    if (hash > size)
+                    {
+                        hash %= size;
+                    }
 
-                ++step;
+                    ++step;
+                }
+                else
+                {
+                    lock (_padlock)
+                    {
+                        entry = ref _hashTable[hash];
+                        if (entry.PackedPos != InvalidPackedPos)
+                        {
+                            continue;
+                        }
+
+                        var dist = ComputeDistribution(pi);
+                        entry.Distribution = dist;
+                        entry.PackedPos = packedPos;
+                        return dist;
+                    }
+                }
             }
         }
 
@@ -134,21 +161,23 @@ namespace Octans
             var lightContrib = new float[Scene.Lights.Length];
             for (var i = 0; i < nSamples; ++i)
             {
-                var po = voxelBounds.Lerp(new Point(
-                                              RadicalInverse(0, i),
-                                              RadicalInverse(1, i),
-                                              RadicalInverse(2, i)));
+                var rp = new Point(
+                    RadicalInverse(0, (ulong) i),
+                    RadicalInverse(1, (ulong)i),
+                    RadicalInverse(2, (ulong)i));
+                var po = voxelBounds.Lerp(rp);
 
                 var intr = new Interaction();
                 intr.Initialize(po, Normals.Zero, Vectors.Zero, Vectors.XAxis);
 
-                var u = new Point2D(RadicalInverse(3, i), RadicalInverse(4, i));
+                var u = new Point2D(RadicalInverse(i, 3), RadicalInverse(i, 4));
                 for (var j = 0; j < Scene.Lights.Length; ++j)
                 {
-                    var Li = Scene.Lights[j].Sample_Li(intr, u, out _, out var pdf, out _);
+                    var Li = Scene.Lights[j].Sample_Li(intr, u, out _, out var pdf, out var vis);
                     if (pdf > 0f)
                     {
-                        lightContrib[j] += Li.YComponent() / pdf;
+                        var factor = vis.Unoccluded(_scene) ? 1f : 0.1f;
+                        lightContrib[j] += factor * Li.YComponent() / pdf;
                     }
                 }
             }

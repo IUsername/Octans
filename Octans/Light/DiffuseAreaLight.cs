@@ -5,15 +5,13 @@ using static Octans.Sampling.Utilities;
 
 namespace Octans.Light
 {
-    public sealed class DiffuseAreaLight : IAreaLight
+    public sealed class DiffuseAreaLight : AreaLight
     {
         private readonly float _area;
         private readonly Spectrum _lemit;
         private readonly IMedium _mediumInterface;
         private readonly IShape _shape;
         private readonly bool _twoSided;
-        private readonly Transform _lightToWorld;
-        private readonly Transform _worldToLight;
 
         public DiffuseAreaLight(Transform lightToWorld,
                                 IMedium mediumInterface,
@@ -21,10 +19,9 @@ namespace Octans.Light
                                 int nSamples,
                                 IShape shape,
                                 bool twoSided = false)
+            : base(lightToWorld, mediumInterface, nSamples)
         {
-            _lightToWorld = lightToWorld;
             _mediumInterface = mediumInterface;
-            _worldToLight = Transform.Invert(lightToWorld);
             _lemit = Lemit;
             _shape = shape;
             _twoSided = twoSided;
@@ -33,21 +30,15 @@ namespace Octans.Light
             // TODO: Check for scale
         }
 
-        public void Preprocess(IScene scene)
-        {
-        }
-
-        public LightType Type => LightType.Area;
-
         public Spectrum Le(in RayDifferential ray) => Spectrum.Zero;
 
-        public Spectrum Sample_Li(Interaction it,
-                                  Point2D u,
-                                  out Vector wi,
-                                  out float pdf,
-                                  out VisibilityTester visibility)
+        public override Spectrum Sample_Li(Interaction reference,
+                                           Point2D u,
+                                           out Vector wi,
+                                           out float pdf,
+                                           out VisibilityTester visibility)
         {
-            var pShape = _shape.Sample(it, u, out pdf);
+            var pShape = _shape.Sample(reference, u, out pdf);
             pShape.MediumInterface = _mediumInterface;
             if (pdf == 0f)
             {
@@ -55,7 +46,8 @@ namespace Octans.Light
                 visibility = null;
                 return Spectrum.Zero;
             }
-            var v = pShape.P - it.P;
+
+            var v = pShape.P - reference.P;
 
             if (v.MagSqr() == 0f)
             {
@@ -66,16 +58,16 @@ namespace Octans.Light
             }
 
             wi = v.Normalize();
-            visibility = new VisibilityTester(it, pShape);
+            visibility = new VisibilityTester(reference, pShape);
             return L(pShape, -wi);
         }
 
-        public Spectrum Sample_Le(in Point2D u1,
-                                  in Point2D u2,
-                                  out Ray ray,
-                                  out Normal nLight,
-                                  out float pdfPos,
-                                  out float pdfDir)
+        public override Spectrum Sample_Le(in Point2D u1,
+                                           in Point2D u2,
+                                           out Ray ray,
+                                           out Normal nLight,
+                                           out float pdfPos,
+                                           out float pdfDir)
         {
             var pShape = _shape.Sample(u1, out pdfPos);
             pShape.MediumInterface = _mediumInterface;
@@ -111,9 +103,9 @@ namespace Octans.Light
             return L(pShape, w);
         }
 
-        public Spectrum Power() => (_twoSided ? 2f : 1f) * _lemit * _area * PI;
+        public override Spectrum Power() => (_twoSided ? 2f : 1f) * _lemit * _area * PI;
 
-        public void Pdf_Le(Ray ray, Normal nLight, out float pdfPos, out float pdfDir)
+        public override void Pdf_Le(Ray ray, Normal nLight, out float pdfPos, out float pdfDir)
         {
             var it = new Interaction();
             it.Initialize(ray.Origin, nLight, Vectors.Zero, (Vector) nLight, _mediumInterface);
@@ -123,9 +115,9 @@ namespace Octans.Light
                 : CosineHemispherePdf(nLight % ray.Direction);
         }
 
-        public float Pdf_Li(Interaction i, in Vector wi) => _shape.Pdf(i, wi);
+        public override float Pdf_Li(Interaction i, in Vector wi) => _shape.Pdf(i, wi);
 
-        public Spectrum L(Interaction intr, in Vector w) =>
-            _twoSided || (intr.N % w) > 0f ? _lemit : Spectrum.Zero;
+        public override Spectrum L(Interaction intr, in Vector w) =>
+            _twoSided || intr.N % w > 0f ? _lemit : Spectrum.Zero;
     }
 }

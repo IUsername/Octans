@@ -2,12 +2,22 @@
 {
     public interface ILight
     {
-        void Preprocess(IScene scene);
-
         LightType Type { get; }
+        void Preprocess(IScene scene);
         Spectrum Le(in RayDifferential ray);
-        Spectrum Sample_Li(Interaction it, Point2D u, out Vector wi, out float pdf, out VisibilityTester visibility);
-        Spectrum Sample_Le(in Point2D u1, in Point2D u2, out Ray ray, out Normal nLight, out float pdfPos, out float pdfDir);
+
+        Spectrum Sample_Li(Interaction reference,
+                           Point2D u,
+                           out Vector wi,
+                           out float pdf,
+                           out VisibilityTester visibility);
+
+        Spectrum Sample_Le(in Point2D u1,
+                           in Point2D u2,
+                           out Ray ray,
+                           out Normal nLight,
+                           out float pdfPos,
+                           out float pdfDir);
 
         Spectrum Power();
 

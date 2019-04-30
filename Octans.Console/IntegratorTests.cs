@@ -123,7 +123,7 @@ namespace Octans.ConsoleApp
 
             var lt = Transform.Translate(400, 900, -800);
             var s = Spectrum.FromBlackbodyT(5500) * 2000000f;
-            var pointLight = new PointLight(lt, s);
+            var pointLight = new PointLight(lt, null, s);
 
             return new Scene(bvh, new ILight[] {pointLight});
         }

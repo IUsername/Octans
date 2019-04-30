@@ -304,6 +304,12 @@ namespace Octans
             P = p;
         }
 
+        public Interaction(in Point p, IMedium m)
+        {
+            P = p;
+            MediumInterface = m;
+        }
+
         public Point P { get; set; }
         public Normal N { get; set; }
         public Vector PError { get; set; }

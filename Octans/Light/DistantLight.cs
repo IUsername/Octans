@@ -1,45 +1,44 @@
 ﻿namespace Octans.Light
 {
-    public sealed class DistantLight : ILight
+    public sealed class DistantLight : Light
     {
         private readonly Spectrum _l;
         private readonly Vector _wLight;
         private Point _worldCenter;
         private float _worldRadius;
 
-        public DistantLight(Transform lightToWorld, in Spectrum L, in Vector wLight)
+        public DistantLight(Transform lightToWorld, in Spectrum L, in Vector wLight) : base(
+            LightType.DeltaDirection, lightToWorld, null)
         {
             _l = L;
             _wLight = (lightToWorld * wLight).Normalize();
         }
 
-        public void Preprocess(IScene scene)
+        public override void Preprocess(IScene scene)
         {
             scene.WorldBounds.BoundingSphere(out _worldCenter, out _worldRadius);
         }
 
-        public LightType Type => LightType.DeltaDirection;
-        public Spectrum Le(in RayDifferential ray) => Spectrum.Zero;
 
-        public Spectrum Sample_Li(Interaction it,
-                                  Point2D u,
-                                  out Vector wi,
-                                  out float pdf,
-                                  out VisibilityTester visibility)
+        public override Spectrum Sample_Li(Interaction reference,
+                                           Point2D u,
+                                           out Vector wi,
+                                           out float pdf,
+                                           out VisibilityTester visibility)
         {
             wi = _wLight;
             pdf = 1f;
-            var pOutside = it.P + _wLight * (2f * _worldRadius);
-            visibility = new VisibilityTester(it, new Interaction(pOutside));
+            var pOutside = reference.P + _wLight * (2f * _worldRadius);
+            visibility = new VisibilityTester(reference, new Interaction(pOutside));
             return _l;
         }
 
-        public Spectrum Sample_Le(in Point2D u1,
-                                  in Point2D u2,
-                                  out Ray ray,
-                                  out Normal nLight,
-                                  out float pdfPos,
-                                  out float pdfDir)
+        public override Spectrum Sample_Le(in Point2D u1,
+                                           in Point2D u2,
+                                           out Ray ray,
+                                           out Normal nLight,
+                                           out float pdfPos,
+                                           out float pdfDir)
         {
             var (v1, v2) = MathF.OrthonormalPosZ((Normal) _wLight);
             var cd = Sampling.Utilities.ConcentricSampleDisk(u1);
@@ -51,14 +50,14 @@
             return _l;
         }
 
-        public Spectrum Power() => _l * (System.MathF.PI * _worldRadius * _worldRadius);
+        public override Spectrum Power() => _l * (System.MathF.PI * _worldRadius * _worldRadius);
 
-        public void Pdf_Le(Ray ray, Normal nLight, out float pdfPos, out float pdfDir)
+        public override void Pdf_Le(Ray ray, Normal nLight, out float pdfPos, out float pdfDir)
         {
             pdfPos = 1f / (System.MathF.PI * _worldRadius * _worldRadius);
             pdfDir = 0f;
         }
 
-        public float Pdf_Li(Interaction i, in Vector wi) => 0f;
+        public override float Pdf_Li(Interaction i, in Vector wi) => 0f;
     }
 }

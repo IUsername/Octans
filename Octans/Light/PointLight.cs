@@ -1,36 +1,38 @@
 ﻿namespace Octans.Light
 {
-    public sealed class PointLight : ILight
+    public sealed class PointLight : Light
     {
-        public Transform Light2World { get; }
         private readonly Point _pLight;
+
+        public PointLight(Transform lightToWorld, IMedium m, Spectrum i) 
+            : base(LightType.DeltaPosition, lightToWorld, m)
+        {
+            I = i;
+            _pLight = lightToWorld * Point.Zero;
+        }
+
         public Spectrum I { get; }
 
-        public PointLight(Transform light2World, Spectrum i)
-        {
-            Light2World = light2World;
-            I = i;
-            _pLight = Light2World * Point.Zero;
-        }
-        public void Preprocess(IScene scene)
-        {
-           
-        }
 
-        public LightType Type => LightType.DeltaPosition;
-
-        public Spectrum Le(in RayDifferential ray) => Spectrum.Zero;
-
-        public Spectrum Sample_Li(Interaction it, Point2D u, out Vector wi, out float pdf, out VisibilityTester visibility)
+        public override Spectrum Sample_Li(Interaction reference,
+                                           Point2D u,
+                                           out Vector wi,
+                                           out float pdf,
+                                           out VisibilityTester visibility)
         {
-            wi = (_pLight - it.P).Normalize();
+            wi = (_pLight - reference.P).Normalize();
             pdf = 1f;
-            visibility = new VisibilityTester(it, new Interaction(_pLight));
-            var d2 = Point.DistanceSqr(_pLight, it.P);
+            visibility = new VisibilityTester(reference, new Interaction(_pLight));
+            var d2 = Point.DistanceSqr(_pLight, reference.P);
             return I / d2;
         }
 
-        public Spectrum Sample_Le(in Point2D u1, in Point2D u2, out Ray ray, out Normal nLight, out float pdfPos, out float pdfDir)
+        public override Spectrum Sample_Le(in Point2D u1,
+                                           in Point2D u2,
+                                           out Ray ray,
+                                           out Normal nLight,
+                                           out float pdfPos,
+                                           out float pdfDir)
         {
             ray = new Ray(_pLight, Sampling.Utilities.UniformSampleSphere(u1));
             nLight = (Normal) ray.Direction;
@@ -39,14 +41,14 @@
             return I;
         }
 
-        public Spectrum Power() => I * (4 * System.MathF.PI);
+        public override Spectrum Power() => I * (4 * System.MathF.PI);
 
-        public void Pdf_Le(Ray ray, Normal nLight, out float pdfPos, out float pdfDir)
+        public override void Pdf_Le(Ray ray, Normal nLight, out float pdfPos, out float pdfDir)
         {
             pdfPos = 0f;
             pdfDir = Sampling.Utilities.UniformSpherePdf();
         }
 
-        public float Pdf_Li(Interaction i, in Vector wi) => 0f;
+        public override float Pdf_Li(Interaction i, in Vector wi) => 0f;
     }
 }

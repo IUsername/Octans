@@ -126,40 +126,44 @@ namespace Octans.Sampling
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float RadicalInverse(ulong n, int dimension)
+        public static float RadicalInverse(int dimension, ulong a)
         {
             Debug.Assert(dimension < PrimesTable.Length);
+            if (dimension == 0)
+            {
+                return RadicalInverseBase2(a);
+            }
             var b = PrimesTable[dimension];
             var bInv = PrimesInv[dimension];
             ulong reversedDigits = 0;
             var invBaseN = 1f;
-            while (n > 0)
+            while (a > 0)
             {
-                var next = n / b;
-                var digit = n - next * b;
+                var next = a / b;
+                var digit = a - next * b;
                 reversedDigits = reversedDigits * b + digit;
                 invBaseN *= bInv;
-                n = next;
+                a = next;
             }
 
             return System.MathF.Min(reversedDigits * invBaseN, MathF.OneMinusEpsilon);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float RadicalInverseScrambled(ulong n, int dimension, ReadOnlySpan<ushort> permutations)
+        public static float RadicalInverseScrambled(int dimension, ulong a, ReadOnlySpan<ushort> permutations)
         {
             Debug.Assert(dimension < PrimesTable.Length);
             var b = PrimesTable[dimension];
             var invBase = PrimesInv[dimension];
             ulong reversedDigits = 0;
             var invBaseN = 1f;
-            while (n > 0)
+            while (a > 0)
             {
-                var next = n / b;
-                var digit = n - next * b;
+                var next = a / b;
+                var digit = a - next * b;
                 reversedDigits = reversedDigits * b + permutations[(int) digit];
                 invBaseN *= invBase;
-                n = next;
+                a = next;
             }
 
             return System.MathF.Min(invBaseN * (reversedDigits + invBase * permutations[0] / (1 - invBase)),

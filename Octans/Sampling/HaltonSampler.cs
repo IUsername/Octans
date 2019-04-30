@@ -188,10 +188,10 @@ namespace Octans.Sampling
                 case 0:
                     return QuasiRandom.RadicalInverseBase2((ulong) (index >> _baseExponents.X));
                 case 1:
-                    return QuasiRandom.RadicalInverse((ulong) (index / _baseExponents.Y), 1);
+                    return QuasiRandom.RadicalInverse(1, (ulong) (index / _baseExponents.Y));
                 default:
                     var permutations = QuasiRandom.PermutationsForDimension(RadicalInversePermutations, dimension);
-                    return QuasiRandom.RadicalInverseScrambled((ulong) index, dimension, permutations);
+                    return QuasiRandom.RadicalInverseScrambled(dimension, (ulong) index, permutations);
             }
         }
 

@@ -354,11 +354,11 @@ namespace Octans.ConsoleApp
 
             var lt = Transform.Translate(mid.X-60, 200, -80);
             var s = Spectrum.FromBlackbodyT(4500) * 100000f;
-            var pl1 = new PointLight(lt, s);
+            var pl1 = new PointLight(lt, null, s);
 
             lt = Transform.Translate(mid.X + 100, 100, -200);
             s = Spectrum.FromBlackbodyT(2200) * 50000f;
-            var pl2 = new PointLight(lt, s);
+            var pl2 = new PointLight(lt, null, s);
 
             lt = Transform.Translate(mid.X, 1000f, 0);
             s = Spectrum.FromBlackbodyT(7000) * 5f;
@@ -366,9 +366,14 @@ namespace Octans.ConsoleApp
 
             lt = Transform.Translate(mid.X, 10, -300);
             s = Spectrum.FromBlackbodyT(5500) * 100000f;
-            var pl4 = new PointLight(lt, s);
+            var pl4 = new PointLight(lt, null, s);
 
-            var scene = new Scene(bvh, new ILight[] {pl1, pl2,  pl3, pl4, dl});
+            var splt = Transform.Translate(mid.X, 0, -40).RotateX(MathF.Rad(0));
+            var test = Transform.LookAt(new Point(mid.X, 0, -40), new Point(mid.X, 0, 0), Vectors.Up);
+            s = Spectrum.FromBlackbodyT(5500) * 100000f;
+            var sl = new SpotLight(splt, null, s, 2f, 1.5f);
+
+            var scene = new Scene(bvh, new ILight[] {pl1, pl2,  pl3, pl4, dl, sl});
             //var scene = new Scene(bvh, new ILight[] { dl });
 
             Console.WriteLine("Rendering at {0}x{1}...", width, height);
