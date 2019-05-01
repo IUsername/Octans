@@ -4,10 +4,11 @@
     {
         private static void Main(string[] args)
         {
+            TriangleTests.TestRender(64, 400);
             //CornellBox.TestRender(100, 800);
             //DisneyMaterialTests.SubSurfaceDepth(1024);
             //DisneyMaterialTests.PlasticToMetal(128);
-            DisneyMaterialTests.Clearcoat(128);
+            //DisneyMaterialTests.Clearcoat(128);
             //DisneyMaterialTests.RoughnessMetal(128);
             //DisneyMaterialTests.RoughnessPlastic(128);
             //DisneyMaterialTests.EtaTest(1024);

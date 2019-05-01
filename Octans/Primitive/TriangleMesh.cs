@@ -5,8 +5,8 @@ namespace Octans.Primitive
 {
     public class TriangleMesh
     {
-        private readonly int _nTriangles;
-        private readonly int _nVertices;
+        //private readonly int _nTriangles;
+        //private readonly int _nVertices;
         private readonly int[] _vertexIndices;
 
         public TriangleMesh(Transform objectToWorld,
@@ -21,10 +21,10 @@ namespace Octans.Primitive
                             ITexture2<float> shadowAlphaMask,
                             int[] faceIndices)
         {
-            _nTriangles = nTriangles;
+            //_nTriangles = nTriangles;
             _vertexIndices = new int[nTriangles * 3];
             Array.Copy(vertexIndices, _vertexIndices, nTriangles * 3);
-            _nVertices = nVertices;
+            //_nVertices = nVertices;
             AlphaMask = alphaMask;
             HasAlphaMask = !(alphaMask is null);
             ShadowAlphaMask = shadowAlphaMask;
@@ -63,7 +63,8 @@ namespace Octans.Primitive
                 }
             }
 
-            if (!(faceIndices is null))
+            HasFaceIndices = !(faceIndices is null) && faceIndices.Length > 0f;
+            if (HasFaceIndices)
             {
                 FaceIndices = new int[nTriangles];
                 Array.Copy(faceIndices, FaceIndices, nTriangles);
@@ -80,6 +81,7 @@ namespace Octans.Primitive
         public ITexture2<float> ShadowAlphaMask { get; }
         public bool HasN { get; }
         public bool HasS { get; }
+        public bool HasFaceIndices { get; }
         public Vector[] S { get; }
         public bool HasUV { get; }
 

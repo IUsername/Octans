@@ -295,6 +295,7 @@ namespace Octans.Accelerator
             }
 
             var dim = centroidBounds.MaximumExtent();
+            Debug.Assert(centroidBounds.Max[dim] != centroidBounds.Min[dim]);
 
             const int nBuckets = 12;
             var buckets = new BucketInfo[nBuckets];
@@ -359,14 +360,9 @@ namespace Octans.Accelerator
                 Debug.Assert(b >= 0);
                 Debug.Assert(b < nBuckets);
 
-                return b <= minCostSplitBucket;
+                bool isMin = b <= minCostSplitBucket;
+                return isMin;
             });
-
-            // If all the costs are equal we may not find a mid partition.
-            if (mid == start && Array.TrueForAll(cost, f => cost[0] == f))
-            {
-                mid++;
-            }
 
             Debug.Assert(mid > start);
             Debug.Assert(mid < end);

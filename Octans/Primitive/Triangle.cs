@@ -21,7 +21,7 @@ namespace Octans.Primitive
         {
             _mesh = mesh;
             _v = mesh.VertexIndicesSpan(triNumber);
-            _faceIndex = mesh.FaceIndices.Length > 0 ? mesh.FaceIndices[triNumber] : 0;
+            _faceIndex = mesh.HasFaceIndices ? mesh.FaceIndices[triNumber] : 0;
         }
 
         public override Bounds ObjectBounds

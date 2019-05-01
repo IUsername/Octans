@@ -88,7 +88,8 @@ namespace Octans.Accelerator
             Debug.Assert(left < right);
 
             var end = right - 1;
-            for (var i = left; i < end;)
+            var i = left;
+            for (; i <= end;)
             {
                 if (predicate(A[i]))
                 {
@@ -101,28 +102,7 @@ namespace Octans.Accelerator
                 }
             }
 
-            return end;
-        }
-
-        public static int Partition<T>(this IList<T> A, int left, int right, Predicate<T> predicate)
-        {
-            Debug.Assert(left < right);
-
-            var end = right - 1;
-            for (var i = left; i < end;)
-            {
-                if (predicate(A[i]))
-                {
-                    ++i;
-                }
-                else
-                {
-                    A.Swap(i, end);
-                    end--;
-                }
-            }
-
-            return end;
+            return i;
         }
 
         public static void NthElement<T>(this T[] A, int left, int right, int nth, Comparison<T> comp)
