@@ -86,7 +86,7 @@ namespace Octans.Primitive
         public bool HasUV { get; }
 
         public ReadOnlyMemory<int> VertexIndicesSpan(in int triNumber) =>
-            new ReadOnlyMemory<int>(_vertexIndices, triNumber, 3);
+            new ReadOnlyMemory<int>(_vertexIndices, triNumber * 3, 3);
 
 
         public static IEnumerable<IShape> CreateTriangleMesh(Transform objectToWorld,

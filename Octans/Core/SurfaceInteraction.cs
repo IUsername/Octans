@@ -370,7 +370,8 @@ namespace Octans
 
         public Ray SpawnRay(in Vector d)
         {
-            var o = OffsetRayOrigin(P, PError, N, in d);
+         //   var o = OffsetRayOrigin(P, PError, N, in d);
+         var o = P;//  + d.Normalize() * 0.0001f;
             return new Ray(o, d);
         }
 
@@ -379,7 +380,9 @@ namespace Octans
             var o = OffsetRayOrigin(P, PError, N, it.P - P);
             var t = OffsetRayOrigin(it.P, it.PError, it.N, o - it.P);
             var d = t - o;
-            return new Ray(o, d, 1 - MathF.ShadowEpsilon);
+
+            return new Ray(P, d, 1 - MathF.ShadowEpsilon);
+            //return new Ray(o, d, 1 - MathF.ShadowEpsilon);
         }
 
         public Ray SpawnRayTo(in Point p)

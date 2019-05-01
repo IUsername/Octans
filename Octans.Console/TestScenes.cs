@@ -6,7 +6,7 @@ namespace Octans.ConsoleApp
 {
     internal static class TestScenes
     {
-        private static string GetExecutionPath()
+        public static string GetExecutionPath()
         {
             var path = AppDomain.CurrentDomain.BaseDirectory;
             var pathItems = path.Split(Path.DirectorySeparatorChar);

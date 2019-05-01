@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Octans.Accelerator;
 using Octans.Camera;
 using Octans.Filter;
@@ -29,7 +27,7 @@ namespace Octans.ConsoleApp
 
             //var transform = Transform.LookAt2(from, to, Vectors.Up);
             var transform = Transform.Translate(278, 278, -800);
-            var dist = Point.Distance(@from, to);
+            var dist = Point.Distance(from, to);
 
             var filter = new MitchellFilter(new Vector2(2f, 2f), 0.5f, 0.25f);
             var film = new Film(new PixelVector(width, height), new Bounds2D(0, 0, 1, 1), filter, 20f, 1f);
@@ -42,14 +40,14 @@ namespace Octans.ConsoleApp
             //var integrator = new DepthIntegrator(700f, 1000f, camera, new HaltonSampler(spp, film.GetSampleBounds()),
             //                                                film.CroppedBounds);
 
-            //var integrator = new NormalIntegrator(camera, new HaltonSampler(spp, film.GetSampleBounds()),
-            //                                                film.CroppedBounds);
+            var integrator = new NormalIntegrator(camera, new HaltonSampler(spp, film.GetSampleBounds()),
+                                                            film.CroppedBounds);
 
             //var integrator = new WhittedIntegrator(5, camera, new HaltonSampler(spp, film.GetSampleBounds()),
             //                                       film.CroppedBounds);
 
-            var integrator = new PathIntegrator(3, camera, new HaltonSampler(spp, film.GetSampleBounds()),
-                                                film.CroppedBounds, 0.1f, LightSampleStrategy.Spatial);
+            //var integrator = new PathIntegrator(3, camera, new HaltonSampler(spp, film.GetSampleBounds()),
+            //                                    film.CroppedBounds, 0.1f, LightSampleStrategy.Spatial);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "tri"));
 
@@ -72,113 +70,113 @@ namespace Octans.ConsoleApp
 
             var red =
                 new DisneyMaterial(
-                    color: new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 0.9f, 0f, 0f }, SpectrumType.Reflectance)),
-                    metallic: new ConstantTexture<float>(0f),
-                    eta: new ConstantTexture<float>(1.5f),
-                    roughness: new ConstantTexture<float>(0.8f),
-                    specularTint: new ConstantTexture<float>(0f),
-                    anisotropic: new ConstantTexture<float>(0f),
-                    sheen: new ConstantTexture<float>(0f),
-                    sheenTint: new ConstantTexture<float>(0f),
-                    clearcoat: new ConstantTexture<float>(0f),
-                    clearcoatGloss: new ConstantTexture<float>(0.9f),
-                    specTrans: new ConstantTexture<float>(0f),
-                    scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                    new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0.9f, 0f, 0f}, SpectrumType.Reflectance)),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(1.5f),
+                    new ConstantTexture<float>(0.8f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0.9f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<Spectrum>(Spectrum.Zero),
                     false,
-                    flatness: new ConstantTexture<float>(0f),
-                    diffTrans: new ConstantTexture<float>(0.5f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0.5f),
                     null);
 
             var yellow =
                 new DisneyMaterial(
-                    color: new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 1f, 1f, 0f }, SpectrumType.Reflectance)),
-                    metallic: new ConstantTexture<float>(0f),
-                    eta: new ConstantTexture<float>(1.5f),
-                    roughness: new ConstantTexture<float>(1f),
-                    specularTint: new ConstantTexture<float>(0f),
-                    anisotropic: new ConstantTexture<float>(0f),
-                    sheen: new ConstantTexture<float>(0f),
-                    sheenTint: new ConstantTexture<float>(0f),
-                    clearcoat: new ConstantTexture<float>(0f),
-                    clearcoatGloss: new ConstantTexture<float>(0.9f),
-                    specTrans: new ConstantTexture<float>(0f),
-                    scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                    new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {1f, 1f, 0f}, SpectrumType.Reflectance)),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(1.5f),
+                    new ConstantTexture<float>(1f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0.9f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<Spectrum>(Spectrum.Zero),
                     false,
-                    flatness: new ConstantTexture<float>(0f),
-                    diffTrans: new ConstantTexture<float>(0.5f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0.5f),
                     null);
 
             var cyan =
                 new DisneyMaterial(
-                    color: new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 0f, 1f, 1f }, SpectrumType.Reflectance)),
-                    metallic: new ConstantTexture<float>(0f),
-                    eta: new ConstantTexture<float>(1.8f),
-                    roughness: new ConstantTexture<float>(0.1f),
-                    specularTint: new ConstantTexture<float>(0f),
-                    anisotropic: new ConstantTexture<float>(0f),
-                    sheen: new ConstantTexture<float>(1f),
-                    sheenTint: new ConstantTexture<float>(0f),
-                    clearcoat: new ConstantTexture<float>(1f),
-                    clearcoatGloss: new ConstantTexture<float>(0.9f),
-                    specTrans: new ConstantTexture<float>(0f),
-                    scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                    new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0f, 1f, 1f}, SpectrumType.Reflectance)),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(1.8f),
+                    new ConstantTexture<float>(0.1f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(1f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(1f),
+                    new ConstantTexture<float>(0.9f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<Spectrum>(Spectrum.Zero),
                     false,
-                    flatness: new ConstantTexture<float>(0f),
-                    diffTrans: new ConstantTexture<float>(0.5f),
+                    new ConstantTexture<float>(0f),
+                    new ConstantTexture<float>(0.5f),
                     null);
 
             var metal = new DisneyMaterial(
-                color: new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 0.5f, 0.5f, 0.5f }, SpectrumType.Reflectance)),
-                metallic: new ConstantTexture<float>(1f),
-                eta: new ConstantTexture<float>(1.5f),
-                roughness: new ConstantTexture<float>(0.4f),
-                specularTint: new ConstantTexture<float>(0f),
-                anisotropic: new ConstantTexture<float>(0f),
-                sheen: new ConstantTexture<float>(0f),
-                sheenTint: new ConstantTexture<float>(0f),
-                clearcoat: new ConstantTexture<float>(0f),
-                clearcoatGloss: new ConstantTexture<float>(1f),
-                specTrans: new ConstantTexture<float>(0f),
-                scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0.5f, 0.5f, 0.5f}, SpectrumType.Reflectance)),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(1.5f),
+                new ConstantTexture<float>(0.4f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<Spectrum>(Spectrum.Zero),
                 false,
-                flatness: new ConstantTexture<float>(0f),
-                diffTrans: new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0.5f),
                 null);
 
             var mirror = new DisneyMaterial(
-                color: new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 0.7f, 0.7f, 0.8f }, SpectrumType.Reflectance)),
-                metallic: new ConstantTexture<float>(1f),
-                eta: new ConstantTexture<float>(1.5f),
-                roughness: new ConstantTexture<float>(0.1f),
-                specularTint: new ConstantTexture<float>(0.5f),
-                anisotropic: new ConstantTexture<float>(0f),
-                sheen: new ConstantTexture<float>(0f),
-                sheenTint: new ConstantTexture<float>(0f),
-                clearcoat: new ConstantTexture<float>(0f),
-                clearcoatGloss: new ConstantTexture<float>(1f),
-                specTrans: new ConstantTexture<float>(0f),
-                scatterDistance: new ConstantTexture<Spectrum>(Spectrum.Zero),
+                new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0.7f, 0.7f, 0.8f}, SpectrumType.Reflectance)),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(1.5f),
+                new ConstantTexture<float>(0.1f),
+                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<Spectrum>(Spectrum.Zero),
                 false,
-                flatness: new ConstantTexture<float>(0f),
-                diffTrans: new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0.5f),
                 null);
 
             var trans = new DisneyMaterial(
-                color: new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 0.9f, 0.8f, 0.7f }, SpectrumType.Illuminant)),
-                metallic: new ConstantTexture<float>(0.5f),
-                eta: new ConstantTexture<float>(2.5f),
-                roughness: new ConstantTexture<float>(0.1f),
-                specularTint: new ConstantTexture<float>(0.5f),
-                anisotropic: new ConstantTexture<float>(0f),
-                sheen: new ConstantTexture<float>(0.5f),
-                sheenTint: new ConstantTexture<float>(0f),
-                clearcoat: new ConstantTexture<float>(0f),
-                clearcoatGloss: new ConstantTexture<float>(1f),
-                specTrans: new ConstantTexture<float>(1f),
-                scatterDistance: new ConstantTexture<Spectrum>(new Spectrum(0f)),
+                new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0.9f, 0.8f, 0.7f}, SpectrumType.Illuminant)),
+                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(2.5f),
+                new ConstantTexture<float>(0.1f),
+                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<Spectrum>(new Spectrum(0f)),
                 false,
-                flatness: new ConstantTexture<float>(0f),
-                diffTrans: new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
                 null);
 
             var px = 3000;
@@ -191,22 +189,22 @@ namespace Octans.ConsoleApp
                 2,
                 new[] {0, 1, 2, 3, 2, 1},
                 4,
-                new Point[]
+                new[]
                 {
                     new Point(0, 0, 0),
                     new Point(0, 0, pz),
                     new Point(px, 0, 0),
-                    new Point(px,0 , pz ), 
+                    new Point(px, 0, pz)
                 },
-                null,
+                null,  
                 null, null, null, null, null);
 
             var prims = new List<IPrimitive>();
+
             foreach (var tri in tris)
             {
                 prims.Add(new GeometricPrimitive(tri, red, null));
             }
-
 
             var s1t = Transform.Translate(278, 278, 100);
             var s1 = new Sphere(s1t, Transform.Invert(s1t), false, 100f, -100, 100, 360);
@@ -245,7 +243,7 @@ namespace Octans.ConsoleApp
                     new ConstantTexture<float>(0), null);
             var s6t = Transform.Translate(400, 188, -230);
             var s6 = new Sphere(s6t, Transform.Invert(s6t), false, 10f, -10, 10, 360);
-            var dl = new DiffuseAreaLight(s6t, null, Spectrum.FromBlackbodyT(temp) * 60f, 12, s6 );
+            var dl = new DiffuseAreaLight(s6t, null, Spectrum.FromBlackbodyT(temp) * 60f, 12, s6);
             var s6g = new GeometricPrimitive(s6, lightMatte, dl);
             prims.Add(s6g);
 
@@ -255,7 +253,7 @@ namespace Octans.ConsoleApp
             var s = Spectrum.FromBlackbodyT(4000) * 500000f;
             var spot = new SpotLight(lt, null, s, 120, 20);
 
-            return new Scene(bvh, new ILight[] { dl, spot});
+            return new Scene(bvh, new ILight[] {dl, spot});
         }
     }
 }

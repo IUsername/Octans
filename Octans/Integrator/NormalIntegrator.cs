@@ -25,7 +25,7 @@ namespace Octans.Integrator
                 return Spectrum.Zero;// arena.Create<SpectrumAccumulator>().Zero();
             }
 
-            var n = (si.N + new Normal(1f, 1f, 1f)) * 0.5f;
+            var n = (si.ShadingGeometry.N + new Normal(1f, 1f, 1f)) * 0.5f;
             var rgb = new float[3];
             rgb[0] = Utilities.InvGammaCorrect(n.X);
             rgb[1] = Utilities.InvGammaCorrect(n.Y);

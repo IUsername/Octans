@@ -73,11 +73,10 @@ namespace Octans.Integrator
                     continue;
                 }
 
-                var distribution = _lightDistribution.Lookup(si.P);
-
                 const BxDFType nonSpecular = BxDFType.All & ~BxDFType.Specular;
                 if (si.BSDF.NumberOfComponents(nonSpecular) > 0)
                 {
+                    var distribution = _lightDistribution.Lookup(si.P);
                     var Ld = beta * si.UniformSampleOneLight(scene, arena, sampler, false, distribution);
                     Debug.Assert(Ld.YComponent() >= 0f);
                     L += Ld;
@@ -92,7 +91,7 @@ namespace Octans.Integrator
                     break;
                 }
 
-                beta *= f * Abs(wi % si.ShadingGeometry.N) / pdf;
+                beta *= f * (Abs(wi % si.ShadingGeometry.N) / pdf);
                 //beta = Spectrum.FusedMultiply(beta, f, Abs(wi % si.ShadingGeometry.N) / pdf);
                 //beta.Scale(f * (Abs(wi % si.ShadingGeometry.N) / pdf));
                 Debug.Assert(beta.YComponent() >= 0f);
