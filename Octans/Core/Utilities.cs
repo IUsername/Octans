@@ -79,34 +79,36 @@ namespace Octans
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float NextFloatUp(float value)
         {
-            if (IsPositiveInfinity(value))
-            {
-                return value;
-            }
+            return BitIncrement(value);
+            //if (IsPositiveInfinity(value))
+            //{
+            //    return value;
+            //}
 
-            if (value == -0f)
-            {
-                value = 0f;
-            }
+            //if (value == -0f)
+            //{
+            //    value = 0f;
+            //}
 
-            return value >= 0f ? BitIncrement(value) : BitDecrement(value);
+            //return value >= 0f ? BitIncrement(value) : BitDecrement(value);
         }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float NextFloatDown(float value)
         {
-            if (IsNegativeInfinity(value))
-            {
-                return value;
-            }
+            return BitDecrement(value);
+            //if (IsNegativeInfinity(value))
+            //{
+            //    return value;
+            //}
 
-            if (value == 0f)
-            {
-                value = -0f;
-            }
+            //if (value == 0f)
+            //{
+            //    value = -0f;
+            //}
 
-            return value >= 0f ? BitDecrement(value) : BitIncrement(value);
+            //return value >= 0f ? BitDecrement(value) : BitIncrement(value);
         }
 
         public static bool SolveLinearSystem2x2(float[][] A, float[] B, out float x0, out float x1)

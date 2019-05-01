@@ -22,16 +22,16 @@ namespace Octans.ConsoleApp
         {
             var aspectRatio = 1f;
             var width = (int) (height * aspectRatio);
-            var from = new Point(278, 278, -800f);
+            var from = new Point(278, 278, -700f);
             var to = new Point(278, 278, 0);
 
             var fov = MathF.Deg(278f / 400f);
 
             //var transform = Transform.LookAt2(from, to, Vectors.Up);
-            var transform = Transform.Translate(278, 278, -800);
+            var transform = Transform.Translate(278, 278, -700);
             var dist = Point.Distance(@from, to);
 
-            var filter = new MitchellFilter(new Vector2(2f, 2f), 0.5f, 0.25f);
+            var filter = new MitchellFilter(new Vector2(2.5f, 2.5f), 0.8f, 0.1f);
             var film = new Film(new PixelVector(width, height), new Bounds2D(0, 0, 1, 1), filter, 20f, 1f);
             var camera = PerspectiveCamera.Create(transform, aspectRatio, 0.8f, dist, fov, film);
 
@@ -49,7 +49,7 @@ namespace Octans.ConsoleApp
             //                                       film.CroppedBounds);
 
             var integrator = new PathIntegrator(5, camera, new HaltonSampler(spp, film.GetSampleBounds()),
-                                                film.CroppedBounds, 0.1f, LightSampleStrategy.Uniform);
+                                                film.CroppedBounds, 0.5f, LightSampleStrategy.Uniform);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "tri"));
 
@@ -73,12 +73,12 @@ namespace Octans.ConsoleApp
             var red =
                 new DisneyMaterial(
                     color: new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 0.9f, 0f, 0f }, SpectrumType.Reflectance)),
-                    metallic: new ConstantTexture<float>(0f),
+                    metallic: new ConstantTexture<float>(1f),
                     eta: new ConstantTexture<float>(1.5f),
-                    roughness: new ConstantTexture<float>(0.8f),
+                    roughness: new ConstantTexture<float>(0.4f),
                     specularTint: new ConstantTexture<float>(0f),
                     anisotropic: new ConstantTexture<float>(0f),
-                    sheen: new ConstantTexture<float>(0f),
+                    sheen: new ConstantTexture<float>(1f),
                     sheenTint: new ConstantTexture<float>(0f),
                     clearcoat: new ConstantTexture<float>(0f),
                     clearcoatGloss: new ConstantTexture<float>(0.9f),
@@ -179,11 +179,11 @@ namespace Octans.ConsoleApp
 
             var prims = new List<IPrimitive>();
 
-            var tt = Transform.Scale(10).RotateX(MathF.Rad(-90)).RotateY(MathF.Rad(25)).Translate(278f, 178f, -120f);
+            var tt = Transform.Scale(10).RotateX(MathF.Rad(-90)).RotateY(MathF.Rad(25)).Translate(278f, 175f, -120f);
             var teapot= data.Meshes[0].BuildShape(tt, Transform.Invert(tt), false);
             foreach (var tri in teapot)
             {
-                prims.Add(new GeometricPrimitive(tri, white, null));
+                prims.Add(new GeometricPrimitive(tri, metal, null));
             }
 
 
@@ -210,7 +210,7 @@ namespace Octans.ConsoleApp
            
             foreach (var tri in tris)
             {
-                prims.Add(new GeometricPrimitive(tri, yellow, null));
+                prims.Add(new GeometricPrimitive(tri, red, null));
             }
 
 
@@ -244,6 +244,17 @@ namespace Octans.ConsoleApp
             //var s7g = new GeometricPrimitive(s7, trans, null);
             //prims.Add(s7g);
 
+            var temp = 6500f;
+            var lightMatte =
+                new MatteMaterial(
+                    new ConstantTexture<Spectrum>(Spectrum.FromBlackbodyT(temp)),
+                    new ConstantTexture<float>(0), null);
+            var s6t = Transform.Translate(400, 188, -230);
+            var s6 = new Sphere(s6t, Transform.Invert(s6t), false, 10f, -10, 10, 360);
+            var dl = new DiffuseAreaLight(s6t, null, Spectrum.FromBlackbodyT(temp) * 60f, 12, s6);
+            var s6g = new GeometricPrimitive(s6, lightMatte, dl);
+            prims.Add(s6g);
+
 
 
             var bvh = new BVH(prims.ToArray(), SplitMethod.HLBVH);
@@ -252,7 +263,7 @@ namespace Octans.ConsoleApp
             var s = Spectrum.FromBlackbodyT(4000) * 500000f;
             var spot = new SpotLight(lt, null, s, 120, 20);
 
-            return new Scene(bvh, new ILight[] {  spot});
+            return new Scene(bvh, new ILight[] { dl, spot});
         }
     }
 }
