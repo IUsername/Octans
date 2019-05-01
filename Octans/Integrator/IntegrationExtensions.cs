@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Octans.Reflection;
@@ -62,7 +61,7 @@ namespace Octans.Integrator
             var Li = light.Sample_Li(it, uLight, out var wi, out var lightPdf, out var visibility);
             if (lightPdf > 0f && !Li.IsBlack())
             {
-                Spectrum f = Spectrum.Zero;
+                var f = Spectrum.Zero;
                 if (it.IsSurfaceInteraction)
                 {
                     if (!(it is SurfaceInteraction si))
@@ -112,7 +111,7 @@ namespace Octans.Integrator
 
             if (!light.IsDeltaLight())
             {
-                Spectrum f = Spectrum.Zero;
+                var f = Spectrum.Zero;
                 var sampledSpecular = false;
                 if (it.IsSurfaceInteraction)
                 {
@@ -149,12 +148,13 @@ namespace Octans.Integrator
                     }
 
                     var lightIsect = new SurfaceInteraction();
-                    var ray = new RayDifferential(it.SpawnRay(wi));
+                    var ray = arena.Create<RayDifferential>().Initialize(it.SpawnRay(wi));
                     var tr = Spectrum.One;
                     var foundSurfaceInteraction = handleMedia
                         ? scene.IntersectTr(ray, sampler, ref lightIsect, out tr)
                         : scene.Intersect(ray, ref lightIsect);
 
+                    Li = Spectrum.Zero;
                     if (foundSurfaceInteraction)
                     {
                         if (ReferenceEquals(lightIsect.Primitive.AreaLight, light))
@@ -180,7 +180,11 @@ namespace Octans.Integrator
         [Pure]
         public static Distribution1D ComputeLightPowerDistribution(this IScene scene)
         {
-            if (scene.Lights.Length == 0) return null;
+            if (scene.Lights.Length == 0)
+            {
+                return null;
+            }
+
             var lightPower = scene.Lights.Select(light => light.Power().YComponent()).ToList();
             return new Distribution1D(lightPower.ToArray(), lightPower.Count);
         }

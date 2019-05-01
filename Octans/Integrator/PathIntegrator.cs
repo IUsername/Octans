@@ -16,7 +16,7 @@ namespace Octans.Integrator
                               ISampler sampler,
                               in PixelArea pixelBounds,
                               float rrThreshold,
-                              LightSampleStrategy lightSampleStrategy) 
+                              LightSampleStrategy lightSampleStrategy)
             : base(camera, sampler, in pixelBounds)
         {
             _rrThreshold = rrThreshold;
@@ -26,16 +26,16 @@ namespace Octans.Integrator
 
         public int MaxDepth { get; }
 
-        protected override void Li(SpectrumAccumulator L,
-                                   in RayDifferential ray,
-                                   IScene scene,
-                                   ISampler sampler,
-                                   IObjectArena arena,
-                                   int depth = 0)
+        protected override Spectrum Li(in RayDifferential ray,
+                                       IScene scene,
+                                       ISampler sampler,
+                                       IObjectArena arena,
+                                       int depth = 0)
         {
             var specularBounce = false;
             int bounces;
             var beta = Spectrum.One;
+            var L = Spectrum.Zero;
             var etaScale = 1f;
             var r = ray;
             var si = arena.Create<SurfaceInteraction>().Reset();
@@ -48,13 +48,13 @@ namespace Octans.Integrator
                 {
                     if (foundIntersection)
                     {
-                        L.Contribute(beta, si.Le(-r.Direction));
+                        L += beta * si.Le(-r.Direction);
                     }
                     else
                     {
                         foreach (var light in scene.InfiniteLights)
                         {
-                            L.Contribute(beta, light.Le(in r));
+                            L += beta * light.Le(in r);
                         }
                     }
                 }
@@ -68,7 +68,7 @@ namespace Octans.Integrator
                 if (si.BSDF.NumberOfComponents() == 0)
                 {
                     r = arena.Create<RayDifferential>().Initialize(si.SpawnRay(r.Direction));
-                 //   r = new RayDifferential(si.SpawnRay(r.Direction));
+                    //   r = new RayDifferential(si.SpawnRay(r.Direction));
                     bounces--;
                     continue;
                 }
@@ -80,7 +80,7 @@ namespace Octans.Integrator
                 {
                     var Ld = beta * si.UniformSampleOneLight(scene, arena, sampler, false, distribution);
                     Debug.Assert(Ld.YComponent() >= 0f);
-                    L.Contribute(Ld);
+                    L += Ld;
 
                     //L.Contribute(beta, si.UniformSampleOneLight(scene, arena, sampler, false, distribution));
                 }
@@ -91,17 +91,18 @@ namespace Octans.Integrator
                 {
                     break;
                 }
-               
+
                 beta *= f * Abs(wi % si.ShadingGeometry.N) / pdf;
                 //beta = Spectrum.FusedMultiply(beta, f, Abs(wi % si.ShadingGeometry.N) / pdf);
                 //beta.Scale(f * (Abs(wi % si.ShadingGeometry.N) / pdf));
                 Debug.Assert(beta.YComponent() >= 0f);
                 Debug.Assert(!float.IsInfinity(beta.YComponent()));
-                specularBounce = (flags & BxDFType.Specular) == BxDFType.Specular;
-                if (flags.HasFlag(BxDFType.Specular) && flags.HasFlag(BxDFType.Transmission))
+                specularBounce = (flags & BxDFType.Specular) != BxDFType.None;
+                if ((flags & BxDFType.Specular) == BxDFType.Specular &&
+                    (flags & BxDFType.Transmission) == BxDFType.Transmission)
                 {
                     var eta = si.BSDF.Eta;
-                    etaScale *= (wo % si.N) > 0f ? eta * eta : 1f / (eta * eta);
+                    etaScale *= wo % si.N > 0f ? eta * eta : 1f / (eta * eta);
                 }
 
                 //r = new RayDifferential(si.SpawnRay(wi));
@@ -116,11 +117,11 @@ namespace Octans.Integrator
                     {
                         break;
                     }
+
                     beta *= S / pdf;
                     //beta.Scale(S / pdf);
 
-                    L.Contribute(beta, pi.UniformSampleOneLight(scene, arena, sampler, false,
-                                                                 _lightDistribution.Lookup(pi.P)));
+                    L += beta * pi.UniformSampleOneLight(scene, arena, sampler, false, _lightDistribution.Lookup(pi.P));
 
                     f = pi.BSDF.Sample_F(pi.Wo, out wi, sampler.Get2D(), out pdf, BxDFType.All, out flags);
                     if (f.IsBlack() || pdf == 0f)
@@ -128,8 +129,8 @@ namespace Octans.Integrator
                         break;
                     }
 
-                    beta = Spectrum.FusedMultiply(beta, f, Abs(wi % pi.ShadingGeometry.N) / pdf);
-                    //beta *= f * Abs(wi % pi.ShadingGeometry.N) / pdf;
+                    //beta = Spectrum.FusedMultiply(beta, f, Abs(wi % pi.ShadingGeometry.N) / pdf);
+                    beta *= f * Abs(wi % pi.ShadingGeometry.N) / pdf;
                     //beta.Scale(f * Abs(wi % pi.ShadingGeometry.N) / pdf);
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                     specularBounce = flags.HasFlag(BxDFType.Specular);
@@ -138,6 +139,7 @@ namespace Octans.Integrator
                 }
 
                 var rrBeta = beta * etaScale;
+                // Russian roulette test
                 if (Spectrum.MaxComponent(rrBeta) < _rrThreshold && bounces > 3)
                 {
                     var q = Max(0.05f, 1f - Spectrum.MaxComponent(rrBeta));
@@ -151,6 +153,8 @@ namespace Octans.Integrator
                     Debug.Assert(!float.IsInfinity(beta.YComponent()));
                 }
             }
+
+            return L;
         }
 
         protected override void Preprocess(in IScene scene, ISampler sampler)

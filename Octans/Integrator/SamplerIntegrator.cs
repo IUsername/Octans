@@ -100,27 +100,27 @@ namespace Octans.Integrator
                     var rayWeight = camera.GenerateRayDifferential(cameraSample, arena, out var ray);
                     ray.ScaleDifferentials(1f / Sqrt(tileSampler.SamplesPerPixel));
 
-                    var L = arena.Create<SpectrumAccumulator>().Zero();
+                    var L = Spectrum.Zero;
 
                     if (rayWeight > 0f)
                     {
-                        Li(L, ray, scene, tileSampler, arena);
+                        L = Li(ray, scene, tileSampler, arena);
                     }
 
                     if (L.HasNaN())
                     {
                         Debug.Print("Not-a-number encountered in radiance value.");
-                        L.Zero();
+                        L = Spectrum.Zero;
                     }
                     else if (L.YComponent() < -1e-5f)
                     {
                         Debug.Print("Negative luminance encountered.");
-                        L.Zero();
+                        L = Spectrum.Zero;
                     }
                     else if (float.IsInfinity(L.YComponent()))
                     {
                         Debug.Print("Infinite luminance encountered.");
-                        L.Zero();
+                        L = Spectrum.Zero;
                     }
 
                     filmTile.AddSample(cameraSample.FilmPoint, L, rayWeight);
@@ -132,8 +132,7 @@ namespace Octans.Integrator
             camera.Film.MergeFilmTile(filmTile);
         }
 
-        protected abstract void Li(
-            SpectrumAccumulator L,
+        protected abstract Spectrum Li(
             in RayDifferential ray,
             IScene scene,
             ISampler tileSampler,
@@ -142,8 +141,7 @@ namespace Octans.Integrator
 
         protected abstract void Preprocess(in IScene scene, ISampler sampler);
 
-        protected void SpecularReflect(
-            SpectrumAccumulator L,
+        protected Spectrum SpecularReflect(
             RayDifferential ray,
             SurfaceInteraction si,
             IScene scene,
@@ -158,7 +156,7 @@ namespace Octans.Integrator
             var ns = si.ShadingGeometry.N;
             if (!(pdf > 0f) || f.IsBlack() || System.MathF.Abs(wi % ns) == 0f)
             {
-                return;
+                return Spectrum.Zero;
             }
 
             var rd = new RayDifferential(si.SpawnRay(wi));
@@ -183,18 +181,10 @@ namespace Octans.Integrator
                 rd.RyDirection = wi - dwody + 2f * (Vector) ((wo % ns) * dndy + dDNdy * ns);
             }
 
-            var nL = arena.Create<SpectrumAccumulator>().Zero();
-            Li(nL, rd, scene, sampler, arena, depth + 1);
-            if (!nL.IsBlack())
-            {
-                nL.Scale(System.MathF.Abs(wi % ns) / pdf);
-                nL.Scale(f);
-                L.Contribute(nL);
-            }
+            return f * Li(rd, scene, sampler, arena, depth + 1) * System.MathF.Abs(wi % ns) / pdf;
         }
 
-        protected void SpecularTransmit(
-            SpectrumAccumulator L,
+        protected Spectrum SpecularTransmit(
             in RayDifferential ray,
             SurfaceInteraction si,
             IScene scene,
@@ -211,7 +201,7 @@ namespace Octans.Integrator
             var ns = si.ShadingGeometry.N;
             if (!(pdf > 0f) || f.IsBlack() || Vector.AbsDot(wi, ns) == 0f)
             {
-                return;
+                return Spectrum.Zero;
             }
 
             var rd = new RayDifferential(si.SpawnRay(wi));
@@ -248,14 +238,7 @@ namespace Octans.Integrator
                 rd.RyDirection = wi - eta * dwody + (Vector) (mu * dndy + dmudy * ns);
             }
 
-            var nL = arena.Create<SpectrumAccumulator>().Zero();
-            Li(nL, rd, scene, sampler, arena, depth + 1);
-            if (!nL.IsBlack())
-            {
-                nL.Scale(f);
-                nL.Scale(Vector.AbsDot(wi, ns) / pdf);
-                L.Contribute(nL);
-            }
+            return f * Li(rd, scene, sampler, arena, depth + 1) * System.MathF.Abs(wi % ns) / pdf;
         }
     }
 }

@@ -267,7 +267,7 @@ namespace Octans
             private static readonly Vector2 HalfOffset = new Vector2(0.5f,0.5f);
             private static readonly PixelVector OnePixelOffset = new PixelVector(1,1);
 
-            public void AddSample(in Point2D p, SpectrumAccumulator L, float sampleWeight = 1f)
+            public void AddSample(in Point2D p, Spectrum L, float sampleWeight = 1f)
             {
                 var discrete = p - HalfOffset;
                 var p0 = (PixelCoordinate) Point2D.Ceiling(discrete - _filterRadius);

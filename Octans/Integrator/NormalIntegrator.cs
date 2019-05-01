@@ -12,7 +12,7 @@ namespace Octans.Integrator
         {
         }
 
-        protected override void Li(SpectrumAccumulator L, in RayDifferential ray,
+        protected override Spectrum Li(in RayDifferential ray,
                                        IScene scene,
                                        ISampler tileSampler,
                                        IObjectArena arena,
@@ -22,7 +22,7 @@ namespace Octans.Integrator
             var si = new SurfaceInteraction();
             if (!scene.Intersect(r, ref si))
             {
-                return;// arena.Create<SpectrumAccumulator>().Zero();
+                return Spectrum.Zero;// arena.Create<SpectrumAccumulator>().Zero();
             }
 
             var n = (si.N + new Normal(1f, 1f, 1f)) * 0.5f;
@@ -31,7 +31,7 @@ namespace Octans.Integrator
             rgb[1] = Utilities.InvGammaCorrect(n.Y);
             rgb[2] = Utilities.InvGammaCorrect(1f - n.Z);
 
-            L.Contribute(Spectrum.FromRGB(rgb, SpectrumType.Reflectance));
+            return Spectrum.FromRGB(rgb, SpectrumType.Reflectance);
            // return arena.Create<SpectrumAccumulator>().FromSpectrum(Spectrum.FromRGB(rgb, SpectrumType.Reflectance));
         }
 

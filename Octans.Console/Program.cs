@@ -4,9 +4,9 @@
     {
         private static void Main(string[] args)
         {
-            TriangleTests.TestRender(64, 400);
+            //TriangleTests.TestRender(2048, 400);
             //CornellBox.TestRender(100, 800);
-            //DisneyMaterialTests.SubSurfaceDepth(1024);
+            DisneyMaterialTests.SubSurfaceDepth(3000);
             //DisneyMaterialTests.PlasticToMetal(128);
             //DisneyMaterialTests.Clearcoat(128);
             //DisneyMaterialTests.RoughnessMetal(128);

@@ -173,11 +173,13 @@ namespace Octans
                 var u = new Point2D(RadicalInverse(i, 3), RadicalInverse(i, 4));
                 for (var j = 0; j < Scene.Lights.Length; ++j)
                 {
-                    var Li = Scene.Lights[j].Sample_Li(intr, u, out _, out var pdf, out var vis);
+                    var Li = Scene.Lights[j].Sample_Li(intr, u, out _, out var pdf, out _);
                     if (pdf > 0f)
                     {
-                        var factor = vis.Unoccluded(_scene) ? 1f : 0.1f;
-                        lightContrib[j] += factor * Li.YComponent() / pdf;
+                        //var factor = vis.Unoccluded(_scene) ? 1f : 0.1f;
+                        //lightContrib[j] += factor * Li.YComponent() / pdf;
+
+                        lightContrib[j] +=  Li.YComponent() / pdf;
                     }
                 }
             }

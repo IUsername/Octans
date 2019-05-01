@@ -13,7 +13,7 @@ namespace Octans.Integrator
             _maxDepth = maxDepth;
         }
 
-        protected override void Li(SpectrumAccumulator L,
+        protected override Spectrum Li(
                                    in RayDifferential ray,
                                    IScene scene,
                                    ISampler sampler,
@@ -22,16 +22,17 @@ namespace Octans.Integrator
         {
             var cr = ray;
             var si = new SurfaceInteraction();
+            var L = Spectrum.Zero;
             while (true)
             {
                 if (!scene.Intersect(cr, ref si))
                 {
                     foreach (var light in scene.Lights)
                     {
-                        L.Contribute(light.Le(cr));
+                        L += light.Le(cr);
                     }
 
-                    return;
+                    return L;
                 }
 
                 var n = si.ShadingGeometry.N;
@@ -44,7 +45,7 @@ namespace Octans.Integrator
                     continue;
                 }
 
-                L.Contribute(si.Le(wo));
+                L += si.Le(wo);
 
                 foreach (var light in scene.Lights)
                 {
@@ -57,17 +58,17 @@ namespace Octans.Integrator
                     var f = si.BSDF.F(in wo, in wi);
                     if (!f.IsBlack() && visibility.Unoccluded(scene))
                     {
-                        L.Contribute(f * Li * (Abs(wi % n) / pdf));
+                        L += f * Li * (Abs(wi % n) / pdf);
                     }
                 }
 
                 if (depth + 1 < _maxDepth)
                 {
-                    SpecularReflect(L, cr, si, scene, sampler, arena, depth);
-                    SpecularTransmit(L, cr, si, scene, sampler, arena, depth);
+                    L += SpecularReflect(cr, si, scene, sampler, arena, depth);
+                    L += SpecularTransmit(cr, si, scene, sampler, arena, depth);
                 }
 
-                return;
+                return L;
             }
         }
 

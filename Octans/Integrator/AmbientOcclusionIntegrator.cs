@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Octans.Sampling;
+﻿using Octans.Sampling;
 using static System.MathF;
 using static Octans.Sampling.Utilities;
 
@@ -23,12 +22,17 @@ namespace Octans.Integrator
         public bool CosSample { get; }
         public int NSamples { get; }
 
-        protected override void Li(SpectrumAccumulator L, in RayDifferential ray, IScene scene, ISampler tileSampler, IObjectArena arena, int depth = 0)
+        protected override Spectrum Li(in RayDifferential ray,
+                                       IScene scene,
+                                       ISampler tileSampler,
+                                       IObjectArena arena,
+                                       int depth = 0)
         {
-          //  var L = arena.Create<SpectrumAccumulator>().Zero();
-            var r =  ray;
+            //  var L = arena.Create<SpectrumAccumulator>().Zero();
+            var r = ray;
             var hit = false;
             var si = new SurfaceInteraction();
+            var L = Spectrum.Zero;
             while (!hit)
             {
                 if (!scene.Intersect(r, ref si))
@@ -37,7 +41,7 @@ namespace Octans.Integrator
                     //return L;
                 }
 
-                si.ComputeScatteringFunctions(r, arena, true);
+                si.ComputeScatteringFunctions(r, arena);
                 if (si.BSDF.NumberOfComponents() == 0)
                 {
                     r = new RayDifferential(si.SpawnRay(r.Direction));
@@ -77,16 +81,15 @@ namespace Octans.Integrator
                     //nRay.TMax = 100f;
                     if (!scene.IntersectP(nRay))
                     {
-                        L.Contribute((wi % n) / (pdf * NSamples));
+                        L += wi % n / (pdf * NSamples);
 
                         //L += Spectrum.FromRGB(new []{invL, invL, invL}, SpectrumType.Illuminant);
                     }
                 }
             }
 
-           
 
-        //    return L;
+            return L;
         }
 
         protected override void Preprocess(in IScene scene, ISampler sampler)

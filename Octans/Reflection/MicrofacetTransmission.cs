@@ -37,11 +37,6 @@ namespace Octans.Reflection
 
             var eta = CosTheta(in wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
             var wh = (wo + wi * eta);
-            if (wh.X == 0f && wh.Y == 0f && wh.Z == 0f)
-            {
-                return Spectrum.Zero;
-            }
-
             wh = wh.Normalize();
             if (wh.Z < 0)
             {
@@ -94,11 +89,6 @@ namespace Octans.Reflection
 
             var eta = CosTheta(wo) > 0f ? EtaB / EtaA : EtaA / EtaB;
             var wh = (wo + wi * eta);
-            if (wh.X == 0f && wh.Y == 0f && wh.Z == 0f)
-            {
-                return 0f;
-            }
-
             wh = wh.Normalize();
             var sqrtDenom = (wo % wh) + eta * (wi % wh);
             var dwh_dwi = Abs(eta * eta * (wi % wh)) / (sqrtDenom * sqrtDenom);
