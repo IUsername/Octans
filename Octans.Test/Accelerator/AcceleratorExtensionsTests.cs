@@ -11,10 +11,10 @@ namespace Octans.Test.Accelerator
         {
             var data = new[] {3, 4, 1, 7, 2, 9, 0, 16, 3};
             var pivot = data.Partition(0, data.Length, i => i < 5);
-            pivot.Should().Be(5);
+            pivot.Should().Be(6);
             var lessThanFive = data[..pivot];
             lessThanFive.Should().OnlyContain(i => i < 5);
-            var fiveOrGreater = data[pivot + 1..];
+            var fiveOrGreater = data[pivot..];
             fiveOrGreater.Should().OnlyContain(i => i >= 5);
         }
 
@@ -26,7 +26,7 @@ namespace Octans.Test.Accelerator
             pivot.Should().Be(1);
             var before = data[..pivot];
             before.Should().OnlyContain(i => i <= 1);
-            var after = data[pivot + 1..];
+            var after = data[pivot..];
             after.Should().OnlyContain(i => i > 1);
         }
 
@@ -38,8 +38,8 @@ namespace Octans.Test.Accelerator
             data[5].Should().Be(4);
             var lessOrEqToNth = data[..5];
             lessOrEqToNth.Should().OnlyContain(i => i <= 4);
-            var greaterThanNth = data[5 + 1..];
-            greaterThanNth.Should().OnlyContain(i => i > 4);
+            var greaterThanNth = data[5..];
+            greaterThanNth.Should().OnlyContain(i => i >= 4);
         }
 
         [Fact]

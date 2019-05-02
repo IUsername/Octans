@@ -448,7 +448,7 @@ namespace Octans.Accelerator
         }
 
 
-        private BVHBuildNode RecursiveBuild(ObjectArena arena,
+        private BVHBuildNode RecursiveBuild(IObjectArena arena,
                                             BVHPrimitiveInfo[] primitiveInfo,
                                             int start,
                                             in int end,
@@ -498,9 +498,9 @@ namespace Octans.Accelerator
                 return node;
             }
 
-            static Comparison<BVHPrimitiveInfo> Comp(int dim)
+            static Comparison<BVHPrimitiveInfo> Comp(int d)
             {
-                return (a, b) => a.Centroid[dim].CompareTo(b.Centroid[dim]);
+                return (a, b) => a.Centroid[d].CompareTo(b.Centroid[d]);
             }
 
             switch (SplitMethod)
