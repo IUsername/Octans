@@ -58,8 +58,8 @@ namespace Octans.Accelerator
                 foreach (var mp in @in)
                 {
                     var bucket = (mp.MortonCode >> lowBit) & bitMask;
-                    //Debug.Assert(bucket > 0);
-                    //Debug.Assert(bucket < nBuckets);
+                    Debug.Assert(bucket >= 0);
+                    Debug.Assert(bucket < nBuckets);
                     ++bucketCount[bucket];
                 }
 
@@ -79,7 +79,9 @@ namespace Octans.Accelerator
 
             if ((nPasses & 1) == 1)
             {
-                Array.Copy(v, temp, v.Length);
+                var tt = temp;
+                temp = v;
+                v = tt;
             }
         }
 

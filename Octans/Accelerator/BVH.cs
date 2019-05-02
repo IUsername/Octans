@@ -202,7 +202,7 @@ namespace Octans.Accelerator
             return myOffset;
         }
 
-        private BVHBuildNode HLBVHBuild(ObjectArena arena,
+        private BVHBuildNode HLBVHBuild(IObjectArena arena,
                                         BVHPrimitiveInfo[] primitiveInfo,
                                         out int totalNodes,
                                         IList<IPrimitive> ordered)
@@ -266,7 +266,7 @@ namespace Octans.Accelerator
             return BuildUpperSAH(arena, finishedTreelets, 0, finishedTreelets.Length, ref totalNodes);
         }
 
-        private static BVHBuildNode BuildUpperSAH(ObjectArena arena,
+        private static BVHBuildNode BuildUpperSAH(IObjectArena arena,
                                                   BVHBuildNode[] treeletRoots,
                                                   int start,
                                                   in int end,

@@ -196,7 +196,7 @@ namespace Octans.ConsoleApp
                                            .RotateY(MathF.Rad(26))
                                            .Translate(272f, 175f, -123f);
             var teapot = data.Meshes[0].BuildShape(teapotTransform, Transform.Invert(teapotTransform), false);
-            var primitives = teapot.Select(tri => new GeometricPrimitive(tri, trans, null)).Cast<IPrimitive>().ToList();
+            var primitives = teapot.Select(tri => new GeometricPrimitive(tri, metal, null)).Cast<IPrimitive>().ToList();
 
             var plane = TestScenes.CreatePlane(new Point(-1500, 178, -800), new Point(1500, 178, 2500));
 
@@ -208,7 +208,7 @@ namespace Octans.ConsoleApp
             var spectrum = Spectrum.FromBlackbodyT(4000) * 500000f;
             var spotLight = new SpotLight(transform, null, spectrum, 120, 20);
 
-            transform = Transform.Translate(272,200, -123);
+            transform = Transform.Translate(402,300, 200);
             spectrum = Spectrum.FromBlackbodyT(7500) * 20000f;
             var pointLight = new PointLight(transform, null, spectrum);
 

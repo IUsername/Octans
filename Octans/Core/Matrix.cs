@@ -309,7 +309,9 @@ namespace Octans
                 {
                     for (var k = 0; k < 4; ++k)
                     {
-                        (mI._data[iRow, k], mI._data[iCol, k]) = (mI._data[iCol, k], mI._data[iRow, k]);
+                        var t = mI._data[iRow, k];
+                        mI._data[iRow, k] = mI._data[iCol, k];
+                        mI._data[iCol, k] = t;
                     }
                 }
 
@@ -320,7 +322,7 @@ namespace Octans
                     throw new InvalidOperationException("Singular matrix in Inverse");
                 }
 
-                var pivinv = 1f / mI[iCol, iRow];
+                var pivinv = 1f / mI[iCol, iCol];
                 mI._data[iCol, iCol] = 1f;
                 for (var j = 0; j < 4; j++)
                 {
