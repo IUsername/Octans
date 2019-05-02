@@ -40,14 +40,14 @@ namespace Octans.ConsoleApp
             //var integrator = new DepthIntegrator(700f, 1000f, camera, new HaltonSampler(spp, film.GetSampleBounds()),
             //                                                film.CroppedBounds);
 
-            var integrator = new NormalIntegrator(camera, new HaltonSampler(spp, film.GetSampleBounds()),
-                                                            film.CroppedBounds);
+            //var integrator = new NormalIntegrator(camera, new HaltonSampler(spp, film.GetSampleBounds()),
+            //                                                film.CroppedBounds);
 
             //var integrator = new WhittedIntegrator(5, camera, new HaltonSampler(spp, film.GetSampleBounds()),
             //                                       film.CroppedBounds);
 
-            //var integrator = new PathIntegrator(3, camera, new HaltonSampler(spp, film.GetSampleBounds()),
-            //                                    film.CroppedBounds, 0.1f, LightSampleStrategy.Spatial);
+            var integrator = new PathIntegrator(5, camera, new HaltonSampler(spp, film.GetSampleBounds()),
+                                                film.CroppedBounds, 1f, LightSampleStrategy.Uniform);
 
             film.SetSink(new Sink(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "tri"));
 
@@ -65,8 +65,26 @@ namespace Octans.ConsoleApp
         {
             var white =
                 new MatteMaterial(
-                    new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {1f, 1f, 1f}, SpectrumType.Illuminant)),
+                    new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0.6f, 0f, 0.9f}, SpectrumType.Illuminant)),
                     new ConstantTexture<float>(0), null);
+
+            var sss = new DisneyMaterial(
+                new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] { 0.9f, 0.9f, 0.9f }, SpectrumType.Reflectance)),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(1.5f),
+                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<Spectrum>(new Spectrum(40f)),
+                false,
+                new ConstantTexture<float>(0f),
+                new ConstantTexture<float>(0.5f),
+                null);
 
             var red =
                 new DisneyMaterial(
@@ -162,17 +180,17 @@ namespace Octans.ConsoleApp
                 null);
 
             var trans = new DisneyMaterial(
-                new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0.9f, 0.8f, 0.7f}, SpectrumType.Illuminant)),
-                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<Spectrum>(Spectrum.FromRGB(new[] {0.0f, 0.8f, 0.0f}, SpectrumType.Illuminant)),
+                new ConstantTexture<float>(0f),
                 new ConstantTexture<float>(2.5f),
-                new ConstantTexture<float>(0.1f),
+                new ConstantTexture<float>(0.01f),
                 new ConstantTexture<float>(0.5f),
                 new ConstantTexture<float>(0f),
-                new ConstantTexture<float>(0.5f),
+                new ConstantTexture<float>(1f),
                 new ConstantTexture<float>(0f),
                 new ConstantTexture<float>(0f),
                 new ConstantTexture<float>(1f),
-                new ConstantTexture<float>(1f),
+                new ConstantTexture<float>(0f),
                 new ConstantTexture<Spectrum>(new Spectrum(0f)),
                 false,
                 new ConstantTexture<float>(0f),
@@ -208,10 +226,10 @@ namespace Octans.ConsoleApp
 
             var s1t = Transform.Translate(278, 278, 100);
             var s1 = new Sphere(s1t, Transform.Invert(s1t), false, 100f, -100, 100, 360);
-            var s1g = new GeometricPrimitive(s1, mirror, null);
+            var s1g = new GeometricPrimitive(s1, sss, null);
             prims.Add(s1g);
 
-            var s2t = Transform.Translate(390, 225, 30);
+            var s2t = Transform.Translate(390, 228, 30);
             var s2 = new Sphere(s2t, Transform.Invert(s2t), false, 50f, -50, 50, 360);
             var s2g = new GeometricPrimitive(s2, cyan, null);
             prims.Add(s2g);
@@ -236,24 +254,28 @@ namespace Octans.ConsoleApp
             var s7g = new GeometricPrimitive(s7, trans, null);
             prims.Add(s7g);
 
-            var temp = 5000f;
-            var lightMatte =
-                new MatteMaterial(
-                    new ConstantTexture<Spectrum>(Spectrum.FromBlackbodyT(temp)),
-                    new ConstantTexture<float>(0), null);
-            var s6t = Transform.Translate(400, 188, -230);
-            var s6 = new Sphere(s6t, Transform.Invert(s6t), false, 10f, -10, 10, 360);
-            var dl = new DiffuseAreaLight(s6t, null, Spectrum.FromBlackbodyT(temp) * 60f, 12, s6);
-            var s6g = new GeometricPrimitive(s6, lightMatte, dl);
-            prims.Add(s6g);
+            //var temp = 5000f;
+            //var lightMatte =
+            //    new MatteMaterial(
+            //        new ConstantTexture<Spectrum>(Spectrum.FromBlackbodyT(temp)),
+            //        new ConstantTexture<float>(0), null);
+            //var s6t = Transform.Translate(400, 188, -230);
+            //var s6 = new Sphere(s6t, Transform.Invert(s6t), false, 10f, -10, 10, 360);
+            //var dl = new DiffuseAreaLight(s6t, null, Spectrum.FromBlackbodyT(temp) * 60f, 12, s6);
+            //var s6g = new GeometricPrimitive(s6, lightMatte, dl);
+            //prims.Add(s6g);
 
             var bvh = new BVH(prims.ToArray(), SplitMethod.HLBVH);
 
             var lt = Transform.RotateX(MathF.Rad(75)).Translate(278, 600, -120);
-            var s = Spectrum.FromBlackbodyT(4000) * 500000f;
+            var s = Spectrum.FromBlackbodyT(4500) * 400000f;
             var spot = new SpotLight(lt, null, s, 120, 20);
 
-            return new Scene(bvh, new ILight[] {dl, spot});
+            lt = Transform.RotateX(MathF.Rad(75)).Translate(278, 300, -300);
+            s = Spectrum.FromBlackbodyT(6500) * 55000f;
+            var point = new PointLight(lt, null, s);
+
+            return new Scene(bvh, new ILight[] {spot, point});
         }
     }
 }

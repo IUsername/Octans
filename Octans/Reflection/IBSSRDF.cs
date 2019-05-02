@@ -1,4 +1,5 @@
-﻿using static System.MathF;
+﻿using System;
+using static System.MathF;
 using static Octans.Math;
 using static Octans.MathF;
 
@@ -160,27 +161,29 @@ namespace Octans.Reflection
             while (true)
             {
                 var ray = b.SpawnRayTo(pTarget);
+                
                 if (ray.Direction == Vectors.Zero || !scene.Intersect(ray, ref ptr.Si))
                 {
                     break;
                 }
 
-                var temp = b.P;
-                b = ptr.Si;
-                if (b.P.X == temp.X && b.P.Y == temp.Y && b.P.Z == temp.Z)
+                // TODO: Remove
+                if (ptr.Si.P == b.P)
                 {
-                    // Evaluation is stuck. Nudge it toward the target.
-                    b.P = ray.Position(0.0001f);
+                    break;
+                }
+                b = ptr.Si;
+
+                if (!ReferenceEquals(ptr.Si.Primitive.Material, Material))
+                {
+                    continue;
                 }
 
-                if (ReferenceEquals(ptr.Si.Primitive.Material, Material))
-                {
-                    var next = arena.Create<IntersectionChain>();
-                    next.Si = arena.Create<SurfaceInteraction>().Reset();
-                    ptr.Next = next;
-                    ptr = next;
-                    nFound++;
-                }
+                var next = arena.Create<IntersectionChain>();
+                next.Si = arena.Create<SurfaceInteraction>().Reset();
+                ptr.Next = next;
+                ptr = next;
+                nFound++;
             }
 
             if (nFound == 0)
