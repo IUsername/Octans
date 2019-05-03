@@ -24,44 +24,7 @@ namespace Octans.IO
             AppendPixelData(c, sb, MaxLineWidth);
             return sb.ToString();
         }
-
-        public static string LRGBToPPM(ReadOnlySpan<float> lrgb, PixelVector resolution)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine(string.Format(
-                              CultureInfo.InstalledUICulture,
-                              @"P3
-{0} {1}
-{2}", resolution.X, resolution.Y, MaxValue));
-            AppendPixelData(resolution, lrgb, sb, MaxLineWidth);
-            return sb.ToString();
-        }
-
-        private static void AppendPixelData(PixelVector resolution,
-                                            ReadOnlySpan<float> lrgb,
-                                            StringBuilder sb,
-                                            int maxLineWidth)
-        {
-            static int ToByte(float v) => Clamp(0, MaxValue, (int) (MaxValue * Utilities.GammaCorrect(v) + 0.5f));
-
-            var k = 0;
-            for (var j = 0; j < resolution.Y; ++j)
-            {
-                var parts = new int[resolution.X * 3];
-                for (var i = 0; i < resolution.X; ++i)
-                {
-                    var offset = i * 3;
-                    parts[offset] = ToByte(lrgb[k++]);
-                    parts[offset + 1] = ToByte(lrgb[k++]);
-                    parts[offset + 2] = ToByte(lrgb[k++]);
-                }
-
-                foreach (var line in ColorValuesToStrings(parts, maxLineWidth))
-                {
-                    sb.AppendLine(line);
-                }
-            }
-        }
+       
 
         private static ReadOnlySpan<char> PixelDataSpan(int yStart, int yDelta,
             PixelVector resolution,
