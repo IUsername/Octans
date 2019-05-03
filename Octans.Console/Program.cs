@@ -4,14 +4,14 @@
     {
         private static void Main(string[] args)
         {
-            ObjTests.TestRender(16, 800);
+            ObjTests.TestRender(64, 800);
             //TriangleTests.TestRender(4096, 400);
             //CornellBox.TestRender(100, 800);
             //DisneyMaterialTests.SubSurfaceDepth(3000);
-            DisneyMaterialTests.PlasticToMetal(128);
-            DisneyMaterialTests.Clearcoat(128);
-            DisneyMaterialTests.RoughnessMetal(128);
-            DisneyMaterialTests.RoughnessPlastic(128);
+            //DisneyMaterialTests.PlasticToMetal(128);
+            //DisneyMaterialTests.Clearcoat(128);
+            //DisneyMaterialTests.RoughnessMetal(128);
+            //DisneyMaterialTests.RoughnessPlastic(128);
             //DisneyMaterialTests.EtaTest(128);
             //DisneyMaterialTests.Translucency(128);
             //DisneyMaterialTests.Flatness(24);
