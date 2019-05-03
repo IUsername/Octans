@@ -69,6 +69,7 @@ namespace Octans.Integrator
             }
 
             _camera.Film.WriteFile(1f);
+            _camera.Film.Return();
         }
 
         private void RenderTile(in PixelArea tile,

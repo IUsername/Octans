@@ -142,7 +142,7 @@ namespace Octans.ConsoleApp
 
         public void Write(in ReadOnlySpan<float> rgb, in PixelArea area, in PixelVector fullResolution)
         {
-            PPM.ToFile(rgb, fullResolution, _path, _fileName);
+            PPM.ToFileStream(rgb, fullResolution, _path, _fileName);
         }
     }
 }

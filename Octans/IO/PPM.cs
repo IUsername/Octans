@@ -63,6 +63,34 @@ namespace Octans.IO
             }
         }
 
+        private static ReadOnlySpan<char> PixelDataSpan(int yStart, int yDelta,
+            PixelVector resolution,
+            ReadOnlySpan<float> lrgb,
+            int maxLineWidth)
+        {
+            static int ToByte(float v) => Clamp(0, MaxValue, (int) (MaxValue * Utilities.GammaCorrect(v) + 0.5f));
+
+            var k = yStart * resolution.X * 3;
+            var sb = new StringBuilder();
+            for (var j = yStart; j < resolution.Y && j < yStart + yDelta; ++j)
+            {
+                var parts = new int[resolution.X * 3];
+                for (var i = 0; i < resolution.X; ++i)
+                {
+                    var offset = i * 3;
+                    parts[offset] = ToByte(lrgb[k++]);
+                    parts[offset + 1] = ToByte(lrgb[k++]);
+                    parts[offset + 2] = ToByte(lrgb[k++]);
+                }
+                foreach (var line in ColorValuesToStrings(parts, maxLineWidth))
+                {
+                    sb.AppendLine(line);
+                }
+            }
+
+            return sb.ToString();
+        }
+
         private static void AppendPixelData(Canvas c, StringBuilder sb, int maxLineWidth)
         {
             for (var j = 0; j < c.Height; j++)
@@ -116,10 +144,27 @@ namespace Octans.IO
             File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), CanvasToPPM(c));
         }
 
-        public static void ToFile(ReadOnlySpan<float> lrgb, PixelVector resolution, string folderPath, string fileName)
+        public static void ToFileStream(ReadOnlySpan<float> lrgb, PixelVector resolution, string folderPath, string fileName)
         {
-            // TODO: File streaming
-            File.WriteAllText(Path.Combine(folderPath, fileName + ".ppm"), LRGBToPPM(lrgb, resolution));
+            var path = Path.Combine(folderPath, fileName + ".ppm");
+            using var output = new StreamWriter(path, false);
+            output.Write(Preamble(resolution));
+            const int yDelta = 1;
+            for (var y =0; y < resolution.Y; y += yDelta)
+            {
+                output.Write(PixelDataSpan(y, yDelta, resolution, lrgb, MaxLineWidth));
+            }
+        }
+
+        private static StringBuilder Preamble(PixelVector resolution)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(string.Format(
+                              CultureInfo.InstalledUICulture,
+                              @"P3
+{0} {1}
+{2}", resolution.X, resolution.Y, MaxValue));
+            return sb;
         }
     }
 }
